@@ -100,6 +100,26 @@ type Metadata struct {
 	Title, Author, Subject, Keywords, Creator string
 	// Lang ist die Dokumentsprache nach BCP 47, etwa "de-DE".
 	Lang string
+	// XMP sind zusätzliche XMP-Schemata. Unter PDF/A wird für jedes ein
+	// pdfaExtension-Schema geschrieben.
+	XMP []XMPSchema
+}
+
+// XMPSchema ist ein eigenes XMP-Schema mit Werten.
+type XMPSchema struct {
+	NamespaceURI string
+	Prefix       string
+	Description  string
+	Properties   []XMPProperty
+}
+
+// XMPProperty ist eine einfache Texteigenschaft eines XMP-Schemas.
+type XMPProperty struct {
+	Name        string
+	Value       string
+	Description string
+	// ValueType ist der XMP-Werttyp, etwa "Text" oder "Date". Leer heißt Text.
+	ValueType string
 }
 
 // FontID indiziert Document.Fonts.

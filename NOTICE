@@ -13,8 +13,8 @@ Enthaltene Fremdbestandteile:
   Copyright 2014 - 2023 Adobe
   SIL Open Font License 1.1, siehe testdata/fonts/source-serif-4/LICENSE.md
 
-* Das sRGB-ICC-Profil in icc/ wird von icc/gen aus den Parametern der
-  Norm IEC 61966-2-1 erzeugt und steht unter der Lizenz dieses Projekts.
+* Das sRGB-ICC-Profil wird zur Laufzeit von icc/ aus den Parametern der
+  Norm IEC 61966-2-1 berechnet und steht unter der Lizenz dieses Projekts.
 
 Abhängigkeiten:
 
