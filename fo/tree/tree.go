@@ -118,12 +118,23 @@ var allowed = map[string][]string{
 	"block-container":                     {"#block"},
 	"inline":                              {"#inline", "#text"},
 	"external-graphic":                    {},
+	"table":                               {"table-column", "table-header", "table-footer", "table-body"},
+	"table-column":                        {},
+	"table-header":                        {"table-row", "table-cell"},
+	"table-footer":                        {"table-row", "table-cell"},
+	"table-body":                          {"table-row", "table-cell"},
+	"table-row":                           {"table-cell"},
+	"table-cell":                          {"#block"},
+	"list-block":                          {"list-item"},
+	"list-item":                           {"list-item-label", "list-item-body"},
+	"list-item-label":                     {"#block"},
+	"list-item-body":                      {"#block"},
 	"page-number":                         {},
 	"page-number-citation":                {},
 	"page-number-citation-last":           {},
 }
 
-var blockLevel = map[string]bool{"block": true, "block-container": true}
+var blockLevel = map[string]bool{"block": true, "block-container": true, "table": true, "list-block": true}
 var inlineLevel = map[string]bool{"inline": true, "external-graphic": true, "page-number": true,
 	"page-number-citation": true, "page-number-citation-last": true}
 

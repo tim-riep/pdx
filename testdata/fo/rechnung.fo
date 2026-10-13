@@ -33,13 +33,31 @@
     <fo:flow flow-name="xsl-region-body">
       <fo:block font-size="14pt" font-weight="bold" space-after="6mm">Rechnung RE-2026-0001</fo:block>
       <fo:block space-after="4mm">Für unsere Leistungen im Dezember 2025 berechnen wir Ihnen:</fo:block>
-      <fo:block font-weight="bold" background-color="#1f4e79" color="white" padding="1.5mm 2mm" text-align-last="justify">Pos.&#160;Leistung <fo:inline>Betrag</fo:inline></fo:block>
-      <fo:block border-bottom="0.25pt solid #cccccc" padding-top="1.5mm" padding-bottom="1.5mm" text-align-last="justify">1&#160;Beratung&#160;Konzeptphase&#160;·&#160;8&#160;h&#160;à&#160;95,00&#160;€ <fo:inline font-weight="bold">760,00&#160;€</fo:inline></fo:block>
-      <fo:block border-bottom="0.25pt solid #cccccc" padding-top="1.5mm" padding-bottom="1.5mm" text-align-last="justify">2&#160;Workshop&#160;vor&#160;Ort&#160;·&#160;1&#160;Tag&#160;à&#160;180,00&#160;€ <fo:inline font-weight="bold">180,00&#160;€</fo:inline></fo:block>
-      <fo:block border-bottom="0.25pt solid #cccccc" padding-top="1.5mm" padding-bottom="1.5mm" text-align-last="justify">3&#160;Reisekosten&#160;pauschal&#160;·&#160;1&#160;à&#160;60,00&#160;€ <fo:inline font-weight="bold">60,00&#160;€</fo:inline></fo:block>
-      <fo:block start-indent="95mm" space-before="4mm" text-align-last="justify">Nettobetrag <fo:inline>1.000,00&#160;€</fo:inline></fo:block>
-      <fo:block start-indent="95mm" text-align-last="justify">Umsatzsteuer&#160;19&#160;% <fo:inline>190,00&#160;€</fo:inline></fo:block>
-      <fo:block start-indent="95mm" font-weight="bold" border-top="1pt solid black" border-bottom="2.5pt double black" padding-top="1mm" padding-bottom="1mm" space-before="1mm" text-align-last="justify">Gesamtbetrag <fo:inline>1.190,00&#160;€</fo:inline></fo:block>
+      <fo:table width="100%" border-collapse="collapse">
+        <fo:table-column column-width="12mm"/>
+        <fo:table-column column-width="proportional-column-width(1)"/>
+        <fo:table-column column-width="20mm"/>
+        <fo:table-column column-width="25mm"/>
+        <fo:table-column column-width="28mm"/>
+        <fo:table-header font-weight="bold" color="white" background-color="#1f4e79">
+          <fo:table-row><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">Pos.</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="start">Leistung</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">Menge</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">Einzelpreis</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">Betrag</fo:block></fo:table-cell></fo:table-row>
+        </fo:table-header>
+        <fo:table-body>
+          <fo:table-row border-bottom="0.25pt solid #cccccc"><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">1</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="start">Beratung Konzeptphase</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">8 h</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">95,00 €</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm" font-weight="bold"><fo:block text-align="end">760,00 €</fo:block></fo:table-cell></fo:table-row>
+          <fo:table-row border-bottom="0.25pt solid #cccccc"><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">2</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="start">Workshop vor Ort</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">1 Tag</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">180,00 €</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm" font-weight="bold"><fo:block text-align="end">180,00 €</fo:block></fo:table-cell></fo:table-row>
+          <fo:table-row border-bottom="0.25pt solid #cccccc"><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">3</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="start">Reisekosten pauschal</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">1</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">60,00 €</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm" font-weight="bold"><fo:block text-align="end">60,00 €</fo:block></fo:table-cell></fo:table-row>
+        </fo:table-body>
+      </fo:table>
+      <fo:table width="100%" space-before="4mm">
+        <fo:table-column column-width="proportional-column-width(1)"/>
+        <fo:table-column column-width="45mm"/>
+        <fo:table-column column-width="28mm"/>
+        <fo:table-body>
+          <fo:table-row><fo:table-cell><fo:block/></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="start">Nettobetrag</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">1.000,00 €</fo:block></fo:table-cell></fo:table-row>
+          <fo:table-row><fo:table-cell><fo:block/></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="start">Umsatzsteuer 19 %</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm"><fo:block text-align="end">190,00 €</fo:block></fo:table-cell></fo:table-row>
+          <fo:table-row font-weight="bold"><fo:table-cell><fo:block/></fo:table-cell><fo:table-cell padding="1.5mm 1mm" border-top="1pt solid black" border-bottom="2.5pt double black"><fo:block text-align="start">Gesamtbetrag</fo:block></fo:table-cell><fo:table-cell padding="1.5mm 1mm" border-top="1pt solid black" border-bottom="2.5pt double black"><fo:block text-align="end">1.190,00 €</fo:block></fo:table-cell></fo:table-row>
+        </fo:table-body>
+      </fo:table>
       <fo:block space-before="10mm">Zahlbar innerhalb von 14 Tagen ohne Abzug. Die Rechnungsdaten liegen dieser Datei zusätzlich maschinenlesbar als factur-x.xml bei.</fo:block>
     </fo:flow>
   </fo:page-sequence>

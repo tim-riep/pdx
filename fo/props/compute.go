@@ -74,6 +74,11 @@ var fontSizes = map[string]float64{
 // Compute löst die Eigenschaften eines Elements auf. width ist die Breite
 // des umgebenden Bereichs für Prozentangaben.
 func Compute(parent *Computed, n *tree.Node, width Length) (*Computed, error) {
+	return ComputeEnv(parent, n, width, nil)
+}
+
+// ComputeEnv ist Compute mit Kontextfunktionen wie body-start().
+func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Computed, error) {
 	c := parent.inherit()
 	a := n.Attrs
 	fail := func(prop string, err error) error {
@@ -90,7 +95,7 @@ func Compute(parent *Computed, n *tree.Node, width Length) (*Computed, error) {
 		case v == "larger":
 			c.FontSize = Length(float64(parent.FontSize) * 1.2)
 		default:
-			l, err := ParseLength(v, parent.FontSize, parent.FontSize)
+			l, err := EvalLength(v, parent.FontSize, parent.FontSize, env)
 			if err != nil {
 				return nil, fail("font-size", err)
 			}
@@ -167,7 +172,7 @@ func Compute(parent *Computed, n *tree.Node, width Length) (*Computed, error) {
 		} else if f, err := strconv.ParseFloat(v, 64); err == nil {
 			c.LineHeightFactor = f
 		} else {
-			l, err := ParseLength(v, fs, fs)
+			l, err := EvalLength(v, fs, fs, env)
 			if err != nil {
 				return nil, fail("line-height", err)
 			}
@@ -192,7 +197,7 @@ func Compute(parent *Computed, n *tree.Node, width Length) (*Computed, error) {
 		}
 	}
 
-	if err := c.boxProps(n, parent, width); err != nil {
+	if err := c.boxProps(n, parent, width, env); err != nil {
 		return nil, err
 	}
 	return c, nil
@@ -238,12 +243,12 @@ func lookupSide(a map[string]string, prefix string, side int, suffix string) (st
 	return "", false
 }
 
-func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length) error {
+func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *Env) error {
 	a := n.Attrs
 	fs := c.FontSize
 	fail := func(prop string, err error) error { return tree.Errorf(n, "%s: %v", prop, err) }
 	length := func(prop, v string) (Length, error) {
-		l, err := ParseLength(v, fs, width)
+		l, err := EvalLength(v, fs, width, env)
 		if err != nil {
 			return 0, fail(prop, err)
 		}

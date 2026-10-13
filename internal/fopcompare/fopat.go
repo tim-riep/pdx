@@ -124,14 +124,32 @@ func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 				if parent != nil && parent.stacks {
 					top = parent.cursor
 				}
+				// Tabellenzellen und ähnliche Bereiche liegen mit top-offset
+				// relativ zur Inhaltsoberkante des Elternbereichs.
+				if off, ok := attrF(t.Attr, "top-offset"); ok && parent != nil {
+					f.top = parent.top + off + bapBefore(t.Attr)
+					f.cursor = f.top
+					f.advance = 0
+					f.stacks = stacking[name]
+					if name == "block" {
+						f.block = &Block{Page: page, Top: -1}
+					}
+					stack = append(stack, f)
+					continue
+				}
 				switch attrS(t.Attr, "positioning") {
 				case "fixed":
 					tp, _ := attrF(t.Attr, "top-position")
 					top = tp
 					bpda = 0
 				case "absolute":
-					tp, _ := attrF(t.Attr, "top-position")
-					top = regionTop + tp
+					// Mit top-position (block-container) relativ zur Region,
+					// ohne (etwa Label und Body einer Liste) über dem Elternbereich.
+					if tp, ok := attrF(t.Attr, "top-position"); ok {
+						top = regionTop + tp
+					} else if parent != nil {
+						top = parent.top
+					}
 					bpda = 0
 				}
 				sb, _ := attrF(t.Attr, "space-before")

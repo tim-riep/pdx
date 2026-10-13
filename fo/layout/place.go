@@ -15,6 +15,7 @@ type placer struct {
 	y       areatree.Length
 	started bool
 	open    []*openFrag
+	curRow  *rowFrag
 }
 
 // openFrag ist das Fragment eines Blocks auf der aktuellen Seite.
@@ -36,7 +37,19 @@ func (pl *placer) parent() *areatree.Container {
 }
 
 // place setzt die Einträge und schließt am Ende alle offenen Fragmente.
+// Beginnt die Seite mitten im Rumpf einer Tabelle, wird der Kopf wiederholt,
+// endet sie dort, der Fuß.
 func (pl *placer) place(items []item) error {
+	if first := firstBox(items); first != nil && first.row != nil {
+		if t := first.row.tbl; t != nil && first.row.sec == secBody && !t.omitHeader && len(t.header) > 0 &&
+			!(first.row == t.firstBody && first.slice == 0) {
+			pl.sync(first.path, edgeNone)
+			if err := pl.drawRows(t.header); err != nil {
+				return err
+			}
+			pl.started = true
+		}
+	}
 	for _, it := range items {
 		switch it.kind {
 		case itPenalty:
@@ -50,11 +63,45 @@ func (pl *placer) place(items []item) error {
 			}
 		}
 	}
+	if err := pl.flushRow(); err != nil {
+		return err
+	}
+	if last := lastBox(items); last != nil && last.row != nil {
+		if t := last.row.tbl; t != nil && last.row.sec == secBody && !t.omitFooter && len(t.footer) > 0 &&
+			t.continuesAfter(last.row, last.slice) {
+			if err := pl.drawRows(t.footer); err != nil {
+				return err
+			}
+		}
+	}
 	pl.closeAll()
 	return nil
 }
 
+func firstBox(items []item) *item {
+	for i := range items {
+		if items[i].kind == itBox {
+			return &items[i]
+		}
+	}
+	return nil
+}
+
+func lastBox(items []item) *item {
+	for i := len(items) - 1; i >= 0; i-- {
+		if items[i].kind == itBox {
+			return &items[i]
+		}
+	}
+	return nil
+}
+
 func (pl *placer) box(it item) error {
+	if it.row == nil || pl.curRow == nil || pl.curRow.r != it.row || pl.curRow.s1 != it.slice {
+		if err := pl.flushRow(); err != nil {
+			return err
+		}
+	}
 	pl.sync(it.path, it.edge)
 	folio := formatNumber(pl.page.Number, pl.e.format)
 	for _, ctx := range it.path {
@@ -86,6 +133,13 @@ func (pl *placer) box(it item) error {
 		if err := pl.absolute(it.anchor); err != nil {
 			return err
 		}
+	case it.row != nil:
+		if pl.curRow == nil {
+			pl.curRow = &rowFrag{r: it.row, s0: it.slice, s1: it.slice + 1, y: pl.y}
+		} else {
+			pl.curRow.s1++
+		}
+		pl.y += it.h
 	}
 	pl.started = true
 	for _, f := range pl.open {

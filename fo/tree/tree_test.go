@@ -47,7 +47,7 @@ func TestParse(t *testing.T) {
 func TestErrors(t *testing.T) {
 	cases := map[string]string{
 		`<x/>`: "fo:root",
-		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:table/></fo:root>`:            "fo:table wird noch nicht unterstützt",
+		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:float/></fo:root>`:            "fo:float wird noch nicht unterstützt",
 		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:block/></fo:root>`:            "fo:block ist in fo:root nicht erlaubt",
 		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">Text</fo:root>`:                   "keinen Text",
 		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set></fo:root>`: "nicht wohlgeformt",

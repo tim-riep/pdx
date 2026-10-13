@@ -59,6 +59,9 @@ type item struct {
 	edge   edgeKind
 	line   *lineBox
 	anchor *absAnchor
+	// row und slice sind bei Scheiben von Tabellenzeilen und Listenpunkten gesetzt.
+	row   *rowLayout
+	slice int
 }
 
 // blockCtx beschreibt einen Block unabhängig von der Seite. x und w sind die
@@ -183,6 +186,12 @@ func (g *galley) blocks(n *tree.Node, p *props.Computed) error {
 }
 
 func (g *galley) block(n *tree.Node, parent *props.Computed) error {
+	switch {
+	case n.IsFO("table"):
+		return g.table(n, parent)
+	case n.IsFO("list-block"):
+		return g.list(n, parent)
+	}
 	p, err := props.Compute(parent, n, g.refW)
 	if err != nil {
 		return err
@@ -242,7 +251,7 @@ func (g *galley) mixed(n *tree.Node, p *props.Computed) error {
 		return err
 	}
 	for _, ch := range n.Children {
-		if ch.Kind == tree.Element && (ch.IsFO("block") || ch.IsFO("block-container")) {
+		if ch.Kind == tree.Element && isBlockLevel(ch) {
 			if err := flush(); err != nil {
 				return err
 			}
@@ -266,4 +275,8 @@ func hasBox(p *props.Computed) bool {
 		}
 	}
 	return false
+}
+
+func isBlockLevel(n *tree.Node) bool {
+	return n.IsFO("block") || n.IsFO("block-container") || n.IsFO("table") || n.IsFO("list-block")
 }

@@ -74,3 +74,35 @@ func TestComputeInheritanceAndBox(t *testing.T) {
 		t.Error("ungültiges font-weight ohne Fehler")
 	}
 }
+
+func TestEvalLength(t *testing.T) {
+	env := &Env{BodyStart: func() (Length, error) { return 30000, nil }, LabelEnd: func() (Length, error) { return 400000, nil }}
+	cases := map[string]Length{
+		"2pt + 3mm":         2000 + 8504,
+		"(10pt - 4pt) * 2":  12000,
+		"12pt div 4":        3000,
+		"-1em":              -10000,
+		"body-start()":      30000,
+		"label-end() - 6pt": 394000,
+		"max(5pt, 1em)":     10000,
+		"abs(-3pt)":         3000,
+		"50% + 10pt":        60000,
+	}
+	for in, want := range cases {
+		got, err := EvalLength(in, 10000, 100000, env)
+		if err != nil || got != want {
+			t.Errorf("EvalLength(%q) = %d, %v, erwartet %d", in, got, err, want)
+		}
+	}
+	for _, bad := range []string{"2pt + 3", "body-start()", "(1pt", "2pt * 3pt", "foo(1)", "proportional-column-width(1)"} {
+		if _, err := EvalLength(bad, 10000, 100000, nil); err == nil {
+			t.Errorf("EvalLength(%q) ohne Fehler", bad)
+		}
+	}
+	if _, p, err := EvalColumnWidth("proportional-column-width(2)", 10000, 100000); err != nil || p != 2 {
+		t.Errorf("proportional-column-width: %v %v", p, err)
+	}
+	if f, _, err := EvalColumnWidth("25%", 10000, 200000); err != nil || f != 50000 {
+		t.Errorf("column-width 25%%: %v %v", f, err)
+	}
+}
