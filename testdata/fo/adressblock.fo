@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Absolut positionierter Adressblock (Fensterumschlag DIN 5008 Form B). -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="urn:pdx:extensions" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm">
+      <fo:region-body margin="105mm 20mm 25mm 25mm"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Adressblock" subject="Korpus: absolut positionierter Adressblock"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4" font-family="Helvetica" font-size="10pt">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block-container absolute-position="fixed" left="20mm" top="45mm" width="85mm" height="45mm" border="0.5pt dotted #999999" padding="5mm">
+        <fo:block font-size="7pt" border-bottom="0.5pt solid black" space-after="2mm">Beispiel GmbH · Hauptstraße 1 · 50667 Köln</fo:block>
+        <fo:block>Herrn</fo:block>
+        <fo:block>Dr. Max Mustermann</fo:block>
+        <fo:block>Lindenallee 7 b</fo:block>
+        <fo:block font-weight="bold" space-before="2mm">80331 München</fo:block>
+      </fo:block-container>
+      <fo:block-container absolute-position="fixed" left="125mm" top="50mm" width="65mm">
+        <fo:block font-size="8pt" color="#444444">Ihr Zeichen: MM-17</fo:block>
+        <fo:block font-size="8pt" color="#444444">Unser Zeichen: BG-2026-001</fo:block>
+        <fo:block font-size="8pt" color="#444444">Datum: 01.01.2026</fo:block>
+      </fo:block-container>
+      <fo:block-container absolute-position="absolute" left="-20mm" top="-15mm" width="5mm">
+        <fo:block border-top="0.5pt solid black"/>
+      </fo:block-container>
+      <fo:block font-weight="bold" space-after="5mm">Absolut positionierte Blöcke</fo:block>
+      <fo:block text-align="justify">Der Adressblock und die Infospalte stehen fest auf der Seite und nehmen keinen Platz im Fluss ein. Die Falzmarke links ist relativ zur Region positioniert. Dieser Text beginnt am oberen Rand der Region body.</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

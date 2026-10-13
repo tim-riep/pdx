@@ -128,8 +128,18 @@ func (pc *pageCtx) glyphs(g *areatree.GlyphRun) error {
 		}
 		xo := gl.XOffset.Pt() * k
 		gids = append(gids, e.CID[gl.ID])
-		adj = append(adj, round3(carry-xo))
-		carry = e.Width[gl.ID] - gl.Advance.Pt()*k + xo
+		// Rundungsreste unter einem halben Tausendstel Geviert werden
+		// aufgesammelt statt einzeln geschrieben. Der Positionsfehler bleibt
+		// damit unter 0,0005 Geviert und der Content Stream kompakt.
+		a := carry - xo
+		if math.Abs(a) < 0.5 {
+			adj = append(adj, 0)
+			carry = a
+		} else {
+			adj = append(adj, round3(a))
+			carry = 0
+		}
+		carry += e.Width[gl.ID] - gl.Advance.Pt()*k + xo
 	}
 	flush()
 	pc.c.EndText()

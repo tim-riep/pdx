@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Einfacher Geschäftsbrief nach DIN 5008 (vereinfacht). -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="urn:pdx:extensions" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="0mm">
+      <fo:region-body margin-top="45mm" margin-bottom="25mm" margin-left="25mm" margin-right="20mm"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Brief an Familie Mustermann" author="Beispiel GmbH" subject="Korpus: einfacher Brief" creator="pdx-Korpus"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4">
+    <fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="11pt" line-height="1.35">
+      <fo:block font-size="8pt" color="#555555" border-bottom="0.5pt solid #555555" space-after="2mm" end-indent="95mm">Beispiel GmbH · Hauptstraße 1 · 50667 Köln</fo:block>
+      <fo:block>Familie Mustermann</fo:block>
+      <fo:block>Musterweg 12</fo:block>
+      <fo:block space-after="20mm">12345 Musterstadt</fo:block>
+      <fo:block text-align="end" space-after="10mm">Köln, 1. Januar 2026</fo:block>
+      <fo:block font-weight="bold" space-after="6mm">Ihre Anfrage vom 15. Dezember 2025</fo:block>
+      <fo:block space-after="4mm">Sehr geehrte Damen und Herren,</fo:block>
+      <fo:block text-align="justify" space-after="4mm">vielen Dank für Ihre Anfrage. Gern bestätigen wir Ihnen die Lieferung der bestellten Waren zum vereinbarten Termin. Die Ware wird in einer stabilen Verpackung versandt, die Sie bei Bedarf an uns zurückgeben können. Für Rückfragen steht Ihnen unser Kundenservice montags bis freitags von 8 bis 17 Uhr zur Verfügung.</fo:block>
+      <fo:block text-align="justify" space-after="8mm">Wir freuen uns auf die weitere Zusammenarbeit und verbleiben <fo:inline font-style="italic">mit freundlichen Grüßen</fo:inline> aus Köln.</fo:block>
+      <fo:block>Ihre Beispiel GmbH</fo:block>
+      <fo:block space-before="12mm" font-size="9pt">Erika Musterfrau, Vertrieb</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

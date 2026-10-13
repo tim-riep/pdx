@@ -1,0 +1,382 @@
+package layout
+
+import (
+	"errors"
+	"strconv"
+	"strings"
+
+	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/fo/linebreak"
+	"github.com/tim-riep/pdx/fo/props"
+	"github.com/tim-riep/pdx/fo/tree"
+	"github.com/tim-riep/pdx/font"
+)
+
+type pieceKind uint8
+
+const (
+	pText pieceKind = iota
+	pSpace
+	pGraphic
+	pBreak
+)
+
+// style ist ein Textstil mit aufgelöster Schrift.
+type style struct {
+	face     *font.Face
+	fontID   areatree.FontID
+	p        *props.Computed
+	asc      areatree.Length
+	desc     areatree.Length
+	space    areatree.Glyph
+	hasSpace bool
+}
+
+// above und below liefern die Ausdehnung über und unter der Grundlinie
+// einschließlich halbem Durchschuss (half-leading).
+func (s *style) above() areatree.Length {
+	return s.asc + (s.p.LineHeight-s.asc-s.desc)/2
+}
+
+func (s *style) below() areatree.Length {
+	return s.desc + (s.p.LineHeight-s.asc-s.desc+1)/2
+}
+
+// piece ist ein Stück eines Absatzes: ein Wort, ein Leerraum, ein Bild oder
+// ein erzwungener Umbruch.
+type piece struct {
+	kind   pieceKind
+	st     *style
+	glyphs []areatree.Glyph
+	width  areatree.Length
+	img    areatree.ImageID
+	height areatree.Length
+}
+
+// paragraph sammelt die Stücke eines Absatzes.
+type paragraph struct {
+	c      *column
+	p      *props.Computed
+	node   *tree.Node
+	pieces []piece
+	styles map[styleKey]*style
+}
+
+type styleKey struct {
+	p    *props.Computed
+	face *font.Face
+}
+
+func newParagraph(c *column, p *props.Computed, n *tree.Node) *paragraph {
+	return &paragraph{c: c, p: p, node: n, styles: map[styleKey]*style{}}
+}
+
+func (pa *paragraph) empty() bool {
+	for _, pc := range pa.pieces {
+		if pc.kind != pSpace {
+			return false
+		}
+	}
+	return true
+}
+
+func (pa *paragraph) style(n *tree.Node, p *props.Computed, f *font.Face) (*style, error) {
+	if f == nil {
+		var err error
+		if f, err = pa.c.e.face(n, p); err != nil {
+			return nil, err
+		}
+	}
+	k := styleKey{p, f}
+	if s, ok := pa.styles[k]; ok {
+		return s, nil
+	}
+	asc, desc, _ := f.Metrics(p.FontSize)
+	s := &style{face: f, fontID: pa.c.e.fontID(f), p: p, asc: asc, desc: desc}
+	if gs, err := f.Shape(" ", p.FontSize, font.ShapeOptions{}); err == nil && len(gs) == 1 {
+		s.space, s.hasSpace = gs[0], true
+	}
+	pa.styles[k] = s
+	return s, nil
+}
+
+// add nimmt einen Text- oder Inlineknoten auf.
+func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
+	if n.Kind == tree.Text {
+		return pa.text(n, p, n.Data, true)
+	}
+	switch {
+	case n.IsFO("inline"):
+		ip, err := props.Compute(p, n, pa.c.contentW(pa.p))
+		if err != nil {
+			return err
+		}
+		for _, ch := range n.Children {
+			if err := pa.add(ch, ip); err != nil {
+				return err
+			}
+		}
+		return nil
+	case n.IsFO("page-number"):
+		ip, err := props.Compute(p, n, pa.c.contentW(pa.p))
+		if err != nil {
+			return err
+		}
+		return pa.text(n, ip, strconv.Itoa(pa.c.pageNumber()), false)
+	case n.IsFO("external-graphic"):
+		return pa.graphic(n, p)
+	}
+	return tree.Errorf(n, "%s wird im Absatz nicht unterstützt", n.Label())
+}
+
+// text zerlegt Text in Wörter und Leerräume. Leerraum wird nach den
+// Vorgaben von XSL (white-space-collapse) zusammengefasst, Zeilenumbrüche
+// werden mit linefeed-treatment="preserve" zu erzwungenen Umbrüchen.
+func (pa *paragraph) text(n *tree.Node, p *props.Computed, s string, collapse bool) error {
+	st, err := pa.style(n, p, nil)
+	if err != nil {
+		return err
+	}
+	var word strings.Builder
+	flushWord := func() error {
+		if word.Len() == 0 {
+			return nil
+		}
+		w := word.String()
+		word.Reset()
+		return pa.word(n, p, st, w)
+	}
+	for _, r := range s {
+		switch {
+		case r == '\n' && p.LinefeedPreserve && collapse:
+			if err := flushWord(); err != nil {
+				return err
+			}
+			pa.trimSpace()
+			pa.pieces = append(pa.pieces, piece{kind: pBreak, st: st})
+		case collapse && (r == ' ' || r == '\t' || r == '\r' || r == '\n'):
+			if err := flushWord(); err != nil {
+				return err
+			}
+			pa.addSpace(n, st)
+		default:
+			word.WriteRune(r)
+		}
+	}
+	return flushWord()
+}
+
+func (pa *paragraph) trimSpace() {
+	for len(pa.pieces) > 0 && pa.pieces[len(pa.pieces)-1].kind == pSpace {
+		pa.pieces = pa.pieces[:len(pa.pieces)-1]
+	}
+}
+
+func (pa *paragraph) addSpace(n *tree.Node, st *style) {
+	if len(pa.pieces) == 0 {
+		return
+	}
+	switch pa.pieces[len(pa.pieces)-1].kind {
+	case pSpace, pBreak:
+		return
+	}
+	if !st.hasSpace {
+		return
+	}
+	pa.pieces = append(pa.pieces, piece{kind: pSpace, st: st, width: st.space.Advance})
+}
+
+// word formt ein Wort. Fehlen der Schrift Zeichen, werden die eingebetteten
+// Liberation-Schriften als Ersatz versucht.
+func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) error {
+	gs, err := st.face.Shape(w, p.FontSize, font.ShapeOptions{})
+	var miss *font.MissingGlyphError
+	if errors.As(err, &miss) {
+		for _, fam := range []string{"sans-serif", "serif", "monospace"} {
+			f, ferr := pa.c.e.opts.Fonts.Lookup(fam, p.FontWeight, p.Italic)
+			if ferr != nil || f == st.face {
+				continue
+			}
+			if g2, err2 := f.Shape(w, p.FontSize, font.ShapeOptions{}); err2 == nil {
+				fst, serr := pa.style(n, p, f)
+				if serr != nil {
+					return serr
+				}
+				gs, st, err = g2, fst, nil
+				break
+			}
+		}
+	}
+	if err != nil {
+		return tree.Errorf(n, "%v", err)
+	}
+	var width areatree.Length
+	for _, g := range gs {
+		width += g.Advance
+	}
+	pa.pieces = append(pa.pieces, piece{kind: pText, st: st, glyphs: gs, width: width})
+	return nil
+}
+
+// items übersetzt die Stücke in das Box-Glue-Penalty-Modell.
+func (pa *paragraph) items() []linebreak.Item {
+	items := make([]linebreak.Item, 0, len(pa.pieces))
+	for i, pc := range pa.pieces {
+		switch pc.kind {
+		case pText, pGraphic:
+			items = append(items, linebreak.Item{Kind: linebreak.Box, Width: pc.width, Payload: i})
+		case pSpace:
+			items = append(items, linebreak.Item{Kind: linebreak.Glue, Width: pc.width,
+				Stretch: pc.width / 2, Shrink: pc.width / 3, Payload: i})
+		case pBreak:
+			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.ForcedBreak, Payload: i})
+		}
+	}
+	return items
+}
+
+// setParagraph bricht den Absatz um und setzt die Zeilen.
+func (c *column) setParagraph(pa *paragraph, first bool) error {
+	pa.trimSpace()
+	p := pa.p
+	avail := c.contentW(p)
+	x0 := c.contentX(p)
+	indent := areatree.Length(0)
+	if first {
+		indent = p.TextIndent
+	}
+	items := pa.items()
+	breaks, err := c.e.opts.Breaker.Break(items, func(line int) areatree.Length {
+		if line == 0 {
+			return avail - indent
+		}
+		return avail
+	})
+	if err != nil {
+		return tree.Errorf(pa.node, "%v", err)
+	}
+	strut, err := pa.style(pa.node, p, nil)
+	if err != nil {
+		return err
+	}
+	start := 0
+	for li, br := range breaks {
+		end := br.Index
+		// Glue und Penalties am Zeilenanfang und Glue am Zeilenende entfallen.
+		s := start
+		for s < end && items[s].Kind != linebreak.Box {
+			s++
+		}
+		e := end
+		for e > s && items[e-1].Kind != linebreak.Box {
+			e--
+		}
+		last := end >= len(items) || items[end].Kind == linebreak.Penalty
+		lineW := avail
+		lx := x0
+		if li == 0 {
+			lineW -= indent
+			lx += indent
+		}
+		if err := c.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last); err != nil {
+			return err
+		}
+		start = end + 1
+	}
+	return nil
+}
+
+func (c *column) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool) error {
+	p := pa.p
+	align := p.TextAlign
+	if last {
+		switch {
+		case p.TextAlignLast != "relative":
+			align = p.TextAlignLast
+		case align == "justify":
+			align = "start"
+		}
+	}
+	var natural, stretch, shrink areatree.Length
+	for _, it := range seg {
+		natural += it.Width
+		stretch += it.Stretch
+		shrink += it.Shrink
+	}
+	if align == "justify" && last && stretch > 0 && natural < avail {
+		ratio = float64(avail-natural) / float64(stretch)
+	}
+	if align != "justify" {
+		ratio = 0
+	}
+	adjust := func(it linebreak.Item) areatree.Length {
+		switch {
+		case ratio > 0:
+			return it.Width + areatree.Length(ratio*float64(it.Stretch))
+		case ratio < 0:
+			return it.Width + areatree.Length(ratio*float64(it.Shrink))
+		}
+		return it.Width
+	}
+	var width areatree.Length
+	for _, it := range seg {
+		width += adjust(it)
+	}
+	x := x0
+	switch align {
+	case "center":
+		x += (avail - width) / 2
+	case "end":
+		x += avail - width
+	}
+
+	// Vertikale Maße.
+	above, below := strut.above(), strut.below()
+	for _, it := range seg {
+		pc := pa.pieces[it.Payload]
+		switch pc.kind {
+		case pText, pSpace:
+			above, below = max(above, pc.st.above()), max(below, pc.st.below())
+		case pGraphic:
+			above = max(above, pc.height)
+		}
+	}
+	h := above + below
+	if err := c.ensureRoom(h); err != nil {
+		return err
+	}
+	baseline := c.y + above
+	line := &areatree.Container{Kind: areatree.KindLine, Rect: areatree.Rect{X: x0, Y: c.y, W: avail, H: h}}
+
+	var run *areatree.GlyphRun
+	var runStyle *style
+	for _, it := range seg {
+		pc := pa.pieces[it.Payload]
+		switch pc.kind {
+		case pText, pSpace:
+			if run == nil || runStyle != pc.st {
+				run = &areatree.GlyphRun{Origin: areatree.Point{X: x, Y: baseline}, Font: pc.st.fontID,
+					Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc}
+				runStyle = pc.st
+				line.Children = append(line.Children, run)
+			}
+			if pc.kind == pText {
+				run.Glyphs = append(run.Glyphs, pc.glyphs...)
+			} else {
+				g := pc.st.space
+				g.Advance = adjust(it)
+				run.Glyphs = append(run.Glyphs, g)
+			}
+			x += adjust(it)
+		case pGraphic:
+			run = nil
+			line.Children = append(line.Children, &areatree.Image{
+				Rect:  areatree.Rect{X: x, Y: baseline - pc.height, W: pc.width, H: pc.height},
+				Image: pc.img,
+			})
+			x += pc.width
+		}
+	}
+	c.place(line, h)
+	return nil
+}

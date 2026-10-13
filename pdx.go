@@ -1,0 +1,106 @@
+// Package pdx ist die Fassade der PDF-Engine: XSL-FO lesen, setzen und unter
+// einem Konformitätsprofil als PDF schreiben.
+//
+// Ablauf: fo/tree liest das FO-Dokument, fo/layout erzeugt den Area Tree,
+// pdf/render schreibt ihn unter dem Profil aus pdf/profile. Die CLI in
+// cmd/pdx, später der Designer und der Serverbetrieb nutzen nur diese
+// Fassade.
+package pdx
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/fo/layout"
+	"github.com/tim-riep/pdx/fo/tree"
+	"github.com/tim-riep/pdx/font"
+	"github.com/tim-riep/pdx/pdf/profile"
+	"github.com/tim-riep/pdx/pdf/render"
+)
+
+// Version ist die Programmversion. Sie steht im Producer der PDF-Dateien.
+const Version = "0.1.0-dev"
+
+// DefaultProfile ist das Profil ohne ausdrückliche Angabe.
+const DefaultProfile = "pdfa-3b"
+
+// Options steuert Render.
+type Options struct {
+	// Profile ist der Profilname, etwa "pdfa-3b" oder "pdf-1.7".
+	Profile string
+	// CreationDate ist das Erstellungsdatum. Gleiche Eingabe und gleiches
+	// Datum ergeben byte-identische Dateien.
+	CreationDate time.Time
+	// BaseDir ist das Verzeichnis für relative Pfade von Bildern und Anhängen.
+	BaseDir string
+	// Resolver ersetzt den Dateizugriff relativ zu BaseDir, etwa für
+	// Vorlagenpakete. Optional.
+	Resolver layout.Resolver
+	// Attachments werden zusätzlich zu den Anhängen aus dem FO eingebettet.
+	Attachments []areatree.Attachment
+	// Fonts ist die Schriftregistry. nil bedeutet die eingebauten Schriften.
+	Fonts *font.Registry
+}
+
+// Result enthält das PDF und den Area Tree.
+type Result struct {
+	PDF  []byte
+	Tree *areatree.Document
+}
+
+// Render liest XSL-FO und erzeugt das PDF.
+func Render(fo io.Reader, opts Options) (*Result, error) {
+	if opts.Profile == "" {
+		opts.Profile = DefaultProfile
+	}
+	if opts.CreationDate.IsZero() {
+		return nil, fmt.Errorf("Erstellungsdatum fehlt")
+	}
+	prof, err := profile.Lookup(opts.Profile)
+	if err != nil {
+		return nil, err
+	}
+	root, err := tree.Parse(fo)
+	if err != nil {
+		return nil, err
+	}
+	res := opts.Resolver
+	if res == nil {
+		res = layout.DirResolver{Dir: opts.BaseDir}
+	}
+	doc, err := layout.Layout(root, layout.Options{Fonts: opts.Fonts, Resolver: res})
+	if err != nil {
+		return nil, err
+	}
+	doc.Attachments = append(doc.Attachments, opts.Attachments...)
+	pdf, err := render.Render(doc, render.Options{
+		Profile:      prof,
+		CreationDate: opts.CreationDate,
+		Producer:     "pdx " + Version,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &Result{PDF: pdf, Tree: doc}, nil
+}
+
+// RenderFile liest eine FO-Datei. Ist BaseDir leer, gilt ihr Verzeichnis.
+func RenderFile(path string, opts Options) (*Result, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	if opts.BaseDir == "" {
+		opts.BaseDir = filepath.Dir(path)
+	}
+	res, err := Render(bytes.NewReader(data), opts)
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", path, err)
+	}
+	return res, nil
+}

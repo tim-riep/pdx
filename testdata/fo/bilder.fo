@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- JPEG und PNG, auch mit Alphakanal und in verschiedenen Größen. -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="urn:pdx:extensions" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm">
+      <fo:region-body/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Bilder" subject="Korpus: JPEG und PNG"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4" font-family="Helvetica" font-size="10pt">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block font-size="16pt" font-weight="bold" space-after="5mm">Bilder</fo:block>
+      <fo:block space-after="2mm">JPEG in natürlicher Größe (72 dpi):</fo:block>
+      <fo:block space-after="5mm"><fo:external-graphic src="../images/foto.jpg"/></fo:block>
+      <fo:block space-after="2mm">JPEG auf 50 mm Breite, Höhe proportional, und auf halbe Größe:</fo:block>
+      <fo:block space-after="5mm"><fo:external-graphic src="../images/foto.jpg" content-width="50mm"/> <fo:external-graphic src="../images/foto.jpg" content-width="50%"/></fo:block>
+      <fo:block space-after="2mm">PNG mit Alphakanal auf farbigem Hintergrund:</fo:block>
+      <fo:block background-color="#ffe9a8" padding="3mm" space-after="5mm">Logo <fo:external-graphic src="../images/logo-alpha.png" content-height="15mm"/> im Text mit Grundlinie an der Bildunterkante.</fo:block>
+      <fo:block space-after="2mm">Graustufen-PNG, verzerrt mit scaling="non-uniform":</fo:block>
+      <fo:block><fo:external-graphic src="../images/verlauf-grau.png" content-width="170mm" content-height="8mm" scaling="non-uniform"/></fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

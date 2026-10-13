@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Rechnung mit eingebettetem XML-Anhang (Factur-X-ähnlich, Profil MINIMUM). -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="urn:pdx:extensions" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="15mm 20mm 15mm 25mm">
+      <fo:region-body margin-top="85mm" margin-bottom="20mm"/>
+      <fo:region-before extent="80mm"/>
+      <fo:region-after extent="15mm"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Rechnung RE-2026-0001" author="Beispiel GmbH" subject="Rechnung an Muster AG" keywords="Rechnung, Factur-X" creator="pdx-Korpus"/>
+    <pdx:attachment src="rechnung-factur-x.xml" name="factur-x.xml" mime-type="text/xml" relationship="Alternative" description="Rechnungsdaten im Format Factur-X"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4" font-family="Helvetica" font-size="10pt" line-height="1.3">
+    <fo:static-content flow-name="xsl-region-before">
+      <fo:block font-size="20pt" font-weight="bold" color="#1f4e79" text-align="end">Beispiel GmbH</fo:block>
+      <fo:block font-size="8pt" text-align="end" space-after="12mm">Hauptstraße 1 · 50667 Köln · USt-IdNr. DE000000000</fo:block>
+      <fo:block font-size="7pt" end-indent="85mm" border-bottom="0.5pt solid black">Beispiel GmbH · Hauptstraße 1 · 50667 Köln</fo:block>
+      <fo:block space-before="2mm">Muster AG</fo:block>
+      <fo:block>Buchhaltung</fo:block>
+      <fo:block>Industriestraße 99</fo:block>
+      <fo:block>70173 Stuttgart</fo:block>
+      <fo:block-container absolute-position="absolute" left="110mm" top="45mm" width="55mm" font-size="9pt">
+        <fo:block>Rechnungsnummer: <fo:inline font-weight="bold">RE-2026-0001</fo:inline></fo:block>
+        <fo:block>Rechnungsdatum: 01.01.2026</fo:block>
+        <fo:block>Kundennummer: 10042</fo:block>
+      </fo:block-container>
+    </fo:static-content>
+    <fo:static-content flow-name="xsl-region-after">
+      <fo:block font-size="7pt" color="#666666" text-align="center" border-top="0.5pt solid #999999" padding-top="1mm">Bankverbindung: Beispielbank · IBAN DE00 0000 0000 0000 0000 00 · Seite <fo:page-number/></fo:block>
+    </fo:static-content>
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block font-size="14pt" font-weight="bold" space-after="6mm">Rechnung RE-2026-0001</fo:block>
+      <fo:block space-after="4mm">Für unsere Leistungen im Dezember 2025 berechnen wir Ihnen:</fo:block>
+      <fo:block font-weight="bold" background-color="#1f4e79" color="white" padding="1.5mm 2mm" text-align-last="justify">Pos.&#160;Leistung <fo:inline>Betrag</fo:inline></fo:block>
+      <fo:block border-bottom="0.25pt solid #cccccc" padding-top="1.5mm" padding-bottom="1.5mm" text-align-last="justify">1&#160;Beratung&#160;Konzeptphase&#160;·&#160;8&#160;h&#160;à&#160;95,00&#160;€ <fo:inline font-weight="bold">760,00&#160;€</fo:inline></fo:block>
+      <fo:block border-bottom="0.25pt solid #cccccc" padding-top="1.5mm" padding-bottom="1.5mm" text-align-last="justify">2&#160;Workshop&#160;vor&#160;Ort&#160;·&#160;1&#160;Tag&#160;à&#160;180,00&#160;€ <fo:inline font-weight="bold">180,00&#160;€</fo:inline></fo:block>
+      <fo:block border-bottom="0.25pt solid #cccccc" padding-top="1.5mm" padding-bottom="1.5mm" text-align-last="justify">3&#160;Reisekosten&#160;pauschal&#160;·&#160;1&#160;à&#160;60,00&#160;€ <fo:inline font-weight="bold">60,00&#160;€</fo:inline></fo:block>
+      <fo:block start-indent="95mm" space-before="4mm" text-align-last="justify">Nettobetrag <fo:inline>1.000,00&#160;€</fo:inline></fo:block>
+      <fo:block start-indent="95mm" text-align-last="justify">Umsatzsteuer&#160;19&#160;% <fo:inline>190,00&#160;€</fo:inline></fo:block>
+      <fo:block start-indent="95mm" font-weight="bold" border-top="1pt solid black" border-bottom="2.5pt double black" padding-top="1mm" padding-bottom="1mm" space-before="1mm" text-align-last="justify">Gesamtbetrag <fo:inline>1.190,00&#160;€</fo:inline></fo:block>
+      <fo:block space-before="10mm">Zahlbar innerhalb von 14 Tagen ohne Abzug. Die Rechnungsdaten liegen dieser Datei zusätzlich maschinenlesbar als factur-x.xml bei.</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

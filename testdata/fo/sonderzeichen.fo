@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Umlaute, ß, Euro, typografische Zeichen, Ligaturen und Kerning. -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="urn:pdx:extensions" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm">
+      <fo:region-body/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Sonderzeichen äöü ß €" subject="Korpus: Sonderzeichen und Typografie" keywords="Umlaute, Euro, Typografie"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4" font-size="12pt" line-height="1.5">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block font-size="16pt" font-weight="bold" space-after="5mm">Sonderzeichen &amp; Typografie</fo:block>
+      <fo:block font-family="Helvetica">Umlaute: ä ö ü Ä Ö Ü · Eszett: ß ẞ · Währung: 1.234,56 € · 9,90 $ · 5 £</fo:block>
+      <fo:block font-family="Helvetica">Anführungen: „deutsch“ ‚einfach‘ »französisch« ›einfach‹ “englisch”</fo:block>
+      <fo:block font-family="Helvetica">Striche: Bindestrich - Halbgeviert – Geviert — Minus − · Auslassung …</fo:block>
+      <fo:block font-family="Helvetica">Sonstiges: § 12 Abs. 3 · © ® ™ · ° · ± × ÷ · ½ ¼ ¾ · µ · Nr.&#160;5 mit festem Leerzeichen</fo:block>
+      <fo:block font-family="Times" space-before="4mm">Times: Grüße aus Köln, Straße für Straße – „Qualität“ für 19,99 €.</fo:block>
+      <fo:block font-family="Courier">Courier: Grüße, Maße, Größe: 100 € | 0O 1lI</fo:block>
+      <fo:block font-family="serif" font-style="italic">Kursiv: Größere Ähnlichkeit übte Spaß Ω</fo:block>
+      <fo:block font-family="sans-serif" font-weight="bold">Fett: ÄÖÜ äöü ß € „Zitat“</fo:block>
+      <fo:block font-family="serif" space-before="4mm">Ligaturen und Kerning (Liberation Serif): Offizielle Effizienz, fließend, AVATAR, Tower, Wolfgang.</fo:block>
+      <fo:block font-family="Courier" font-size="9pt" space-before="4mm" linefeed-treatment="preserve">  Leerraum wird zusammengefasst,
+Zeilenumbrüche bleiben mit linefeed-treatment erhalten.</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>
