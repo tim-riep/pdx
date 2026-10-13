@@ -1,0 +1,76 @@
+package pdf
+
+import "fmt"
+
+// Feature ist eine PDF-Funktion, deren Nutzung ein Konformitätsprofil
+// erlauben muss. Der Writer fragt vor jeder Nutzung über Document.Use nach.
+type Feature int
+
+const (
+	// Transparency steht für Soft Masks, Konstantalpha und Blend-Modi.
+	Transparency Feature = iota + 1
+	// Encryption steht für ein Encrypt-Dictionary.
+	Encryption
+	// LZW steht für den Filter LZWDecode.
+	LZW
+	// ExternalContent steht für Streams oder Dateien außerhalb des PDF.
+	ExternalContent
+	// JavaScript steht für JavaScript-Aktionen und Namensbäume.
+	JavaScript
+	// XFA steht für XFA-Formulare.
+	XFA
+	// Attachment steht für eingebettete Dateien.
+	Attachment
+	// UnembeddedFont steht für eine nicht eingebettete Schrift.
+	UnembeddedFont
+)
+
+var featureNames = map[Feature]string{
+	Transparency:    "Transparenz",
+	Encryption:      "Verschlüsselung",
+	LZW:             "LZW-Kompression",
+	ExternalContent: "externe Inhalte",
+	JavaScript:      "JavaScript",
+	XFA:             "XFA",
+	Attachment:      "Dateianhänge",
+	UnembeddedFont:  "nicht eingebettete Schriften",
+}
+
+func (f Feature) String() string {
+	if s, ok := featureNames[f]; ok {
+		return s
+	}
+	return fmt.Sprintf("Feature(%d)", int(f))
+}
+
+// Policy entscheidet, ob eine Funktion genutzt werden darf. Konformitätsprofile
+// in pdf/profile implementieren diese Schnittstelle.
+type Policy interface {
+	// Name ist der Profilname für Fehlermeldungen, etwa "pdfa-3b".
+	Name() string
+	// Allow liefert nil, wenn die Funktion erlaubt ist, sonst einen Fehler,
+	// der die verletzte Regel nennt.
+	Allow(f Feature) error
+}
+
+// FeatureError meldet eine vom Profil verweigerte Funktion.
+type FeatureError struct {
+	Feature Feature
+	Profile string
+	Reason  string
+}
+
+func (e *FeatureError) Error() string {
+	msg := fmt.Sprintf("Profil %s verbietet %s", e.Profile, e.Feature)
+	if e.Reason != "" {
+		msg += ": " + e.Reason
+	}
+	return msg
+}
+
+// alwaysForbidden sind Funktionen, die pdx unabhängig vom Profil nie schreibt.
+var alwaysForbidden = map[Feature]string{
+	JavaScript: "pdx schreibt grundsätzlich kein JavaScript",
+	XFA:        "pdx schreibt grundsätzlich kein XFA",
+	Encryption: "pdx verschlüsselt nicht",
+}

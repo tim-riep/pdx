@@ -21,7 +21,7 @@ vet:
 
 # Golden Files nach bewusster Änderung neu schreiben.
 golden:
-	$(GO) test ./... -update
+	UPDATE_GOLDEN=1 $(GO) test ./...
 
 fuzz:
 	$(GO) test -run=^$$ -fuzz=FuzzParse -fuzztime=30s ./fo/tree
