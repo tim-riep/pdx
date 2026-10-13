@@ -123,10 +123,10 @@ func (pc *pageCtx) borders(r areatree.Rect, b [4]areatree.Border) error {
 		from pt
 		to   pt
 	}{
-		{t, [4]pt{P(ox0, oy0), P(ox1, oy0), P(ix1, iy0), P(ix0, iy0)}, P(ox0, oy0 + w(t)/2), P(ox1, oy0 + w(t)/2)},
-		{rt, [4]pt{P(ox1, oy0), P(ox1, oy1), P(ix1, iy1), P(ix1, iy0)}, P(ox1 - w(rt)/2, oy0), P(ox1 - w(rt)/2, oy1)},
-		{bt, [4]pt{P(ox1, oy1), P(ox0, oy1), P(ix0, iy1), P(ix1, iy1)}, P(ox1, oy1 - w(bt)/2), P(ox0, oy1 - w(bt)/2)},
-		{l, [4]pt{P(ox0, oy1), P(ox0, oy0), P(ix0, iy0), P(ix0, iy1)}, P(ox0 + w(l)/2, oy1), P(ox0 + w(l)/2, oy0)},
+		{t, [4]pt{P(ox0, oy0), P(ox1, oy0), P(ix1, iy0), P(ix0, iy0)}, P(ox0, oy0+w(t)/2), P(ox1, oy0+w(t)/2)},
+		{rt, [4]pt{P(ox1, oy0), P(ox1, oy1), P(ix1, iy1), P(ix1, iy0)}, P(ox1-w(rt)/2, oy0), P(ox1-w(rt)/2, oy1)},
+		{bt, [4]pt{P(ox1, oy1), P(ox0, oy1), P(ix0, iy1), P(ix1, iy1)}, P(ox1, oy1-w(bt)/2), P(ox0, oy1-w(bt)/2)},
+		{l, [4]pt{P(ox0, oy1), P(ox0, oy0), P(ix0, iy0), P(ix0, iy1)}, P(ox0+w(l)/2, oy1), P(ox0+w(l)/2, oy0)},
 	}
 	for _, s := range sides {
 		if !s.e.Visible() {
