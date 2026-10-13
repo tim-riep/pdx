@@ -117,12 +117,15 @@ func Compare(ctx context.Context, name string, pdxPDF []byte, pdxTree *areatree.
 		return nil, err
 	}
 	r.PagesPDX, r.PagesFOP = pn, fn
-	compareLines(r, pl, fl, tol)
-
-	fb, _, err := ParseAreaTree(fop.AreaTree)
+	fb, fal, _, err := ParseAreaTreeLines(fop.AreaTree)
 	if err != nil {
 		return nil, fmt.Errorf("FOP-Area-Tree: %w", err)
 	}
+	// Text und senkrechte Lage (Grundlinie) kommen aus den Area Trees.
+	// Poppler leitet Zeilenoberkanten aus dem /Ascent des FontDescriptor ab,
+	// den beide Engines verschieden schreiben, und ordnet Zeilen nach eigener
+	// Lesereihenfolge. Waagerecht ist Poppler verlässlich und liefert X.
+	compareLines(r, withX(PDXLines(pdxTree), pl), withX(fal, fl), tol)
 	compareBlocks(r, PDXBlocks(pdxTree), fb, tol)
 
 	pp, err := Rasterize(ctx, pdxPDF, tol.DPI)
@@ -139,33 +142,117 @@ func Compare(ctx context.Context, name string, pdxPDF []byte, pdxTree *areatree.
 	return r, nil
 }
 
-// compareLines ordnet die Zeilen je Seite über die längste gemeinsame
-// Teilfolge der Texte zu und vergleicht die Lage der Paare.
-func compareLines(r *Report, pdx, fop []Line, tol Tolerance) {
-	pages := max(r.PagesPDX, r.PagesFOP)
-	for p := 1; p <= pages; p++ {
-		a, b := onPage(pdx, p), onPage(fop, p)
-		pairs := lcs(len(a), len(b), func(i, j int) bool { return a[i].Text == b[j].Text })
-		ia, ib := 0, 0
-		flush := func(toA, toB int) {
-			for ; ia < toA; ia++ {
-				r.Lines = append(r.Lines, LineDiff{Page: p, PDX: a[ia].Text})
-			}
-			for ; ib < toB; ib++ {
-				r.Lines = append(r.Lines, LineDiff{Page: p, FOP: b[ib].Text})
-			}
+// cmpLine ist eine Zeile für den Vergleich. HasX ist gesetzt, wenn Poppler
+// eine textgleiche Zeile gefunden hat.
+type cmpLine struct {
+	Page int
+	Text string
+	X, Y float64
+	HasX bool
+}
+
+func norm(s string) string {
+	return strings.Join(strings.Fields(strings.ReplaceAll(s, "\u00a0", " ")), " ")
+}
+
+// withX ergänzt Zeilen aus dem Area Tree um X aus Poppler, zugeordnet über
+// Seite, Text und Vorkommen.
+func withX(at []ATLine, pl []Line) []cmpLine {
+	type key struct {
+		page int
+		text string
+	}
+	xs := map[key][]float64{}
+	for _, l := range pl {
+		k := key{l.Page, norm(l.Text)}
+		xs[k] = append(xs[k], l.X)
+	}
+	var out []cmpLine
+	for _, l := range at {
+		// Zeilen ohne Text (etwa nur ein Bild) werden über ihre Blöcke und
+		// den Pixelvergleich geprüft.
+		if norm(l.Text) == "" {
+			continue
 		}
-		for _, pr := range pairs {
-			flush(pr[0], pr[1])
-			la, lb := a[pr[0]], b[pr[1]]
-			r.LinesCompared++
-			dx, dy := la.X-lb.X, la.Y-lb.Y
-			if math.Abs(dx) > tol.Position || math.Abs(dy) > tol.Position {
-				r.Lines = append(r.Lines, LineDiff{Page: p, PDX: la.Text, FOP: lb.Text, DX: dx, DY: dy})
-			}
-			ia, ib = pr[0]+1, pr[1]+1
+		k := key{l.Page, norm(l.Text)}
+		c := cmpLine{Page: l.Page, Text: norm(l.Text), Y: l.Baseline}
+		if q := xs[k]; len(q) > 0 {
+			c.X, c.HasX = q[0], true
+			xs[k] = q[1:]
 		}
-		flush(len(a), len(b))
+		out = append(out, c)
+	}
+	return out
+}
+
+// PDXLines liest die Zeilen mit Grundlinie aus dem Area Tree von pdx.
+func PDXLines(d *areatree.Document) []ATLine {
+	var out []ATLine
+	first := 0
+	if len(d.Pages) > 0 {
+		first = d.Pages[0].Number
+	}
+	for _, p := range d.Pages {
+		areatree.Walk(p.Areas, func(a areatree.Area) bool {
+			c, ok := a.(*areatree.Container)
+			if !ok || c.Kind != areatree.KindLine {
+				return true
+			}
+			base := -1.0
+			areatree.Walk(c.Children, func(x areatree.Area) bool {
+				if g, ok := x.(*areatree.GlyphRun); ok && base < 0 {
+					base = g.Origin.Y.Pt()
+				}
+				return true
+			})
+			if base >= 0 {
+				out = append(out, ATLine{Page: p.Number - first + 1, Text: lineText(c), Baseline: base})
+			}
+			return false
+		})
+	}
+	return out
+}
+
+// compareLines ordnet die Zeilen je Seite über Text und Vorkommen zu und
+// vergleicht die Lage der Paare.
+func compareLines(r *Report, pdx, fop []cmpLine, tol Tolerance) {
+	type key struct {
+		page int
+		text string
+	}
+	rest := map[key][]cmpLine{}
+	var order []key
+	for _, l := range fop {
+		k := key{l.Page, l.Text}
+		if _, ok := rest[k]; !ok {
+			order = append(order, k)
+		}
+		rest[k] = append(rest[k], l)
+	}
+	for _, a := range pdx {
+		k := key{a.Page, a.Text}
+		q := rest[k]
+		if len(q) == 0 {
+			r.Lines = append(r.Lines, LineDiff{Page: a.Page, PDX: a.Text})
+			continue
+		}
+		b := q[0]
+		rest[k] = q[1:]
+		r.LinesCompared++
+		dy := a.Y - b.Y
+		dx := 0.0
+		if a.HasX && b.HasX {
+			dx = a.X - b.X
+		}
+		if math.Abs(dx) > tol.Position || math.Abs(dy) > tol.Position {
+			r.Lines = append(r.Lines, LineDiff{Page: a.Page, PDX: a.Text, FOP: b.Text, DX: dx, DY: dy})
+		}
+	}
+	for _, k := range order {
+		for _, b := range rest[k] {
+			r.Lines = append(r.Lines, LineDiff{Page: b.Page, FOP: b.Text})
+		}
 	}
 }
 

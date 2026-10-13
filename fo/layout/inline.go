@@ -19,6 +19,8 @@ const (
 	pSpace
 	pGraphic
 	pBreak
+	// pNoBreak verbietet den Umbruch am folgenden Leerraum (U+00A0).
+	pNoBreak
 )
 
 // style ist ein Textstil mit aufgelöster Schrift.
@@ -30,12 +32,18 @@ type style struct {
 	desc     areatree.Length
 	space    areatree.Glyph
 	hasSpace bool
+	nbsp     areatree.Glyph
+	hasNbsp  bool
 }
 
 // above und below liefern die Ausdehnung über und unter der Grundlinie
 // einschließlich halbem Durchschuss (half-leading).
 func (s *style) above() areatree.Length {
 	return s.asc + (s.p.LineHeight-s.asc-s.desc)/2
+}
+
+func (s *style) halfLeading() areatree.Length {
+	return (s.p.LineHeight - s.asc - s.desc) / 2
 }
 
 func (s *style) below() areatree.Length {
@@ -51,11 +59,16 @@ type piece struct {
 	width  areatree.Length
 	img    areatree.ImageID
 	height areatree.Length
+	// glyph ist bei Leerräumen die Glyphe (Leerzeichen oder U+00A0).
+	glyph areatree.Glyph
+	// deferred ist bei Seitenzahlen im Fluss gesetzt, deren Wert erst beim
+	// Platzieren feststeht.
+	deferred *tree.Node
 }
 
 // paragraph sammelt die Stücke eines Absatzes.
 type paragraph struct {
-	c      *column
+	g      *galley
 	p      *props.Computed
 	node   *tree.Node
 	pieces []piece
@@ -67,8 +80,8 @@ type styleKey struct {
 	face *font.Face
 }
 
-func newParagraph(c *column, p *props.Computed, n *tree.Node) *paragraph {
-	return &paragraph{c: c, p: p, node: n, styles: map[styleKey]*style{}}
+func newParagraph(g *galley, p *props.Computed, n *tree.Node) *paragraph {
+	return &paragraph{g: g, p: p, node: n, styles: map[styleKey]*style{}}
 }
 
 func (pa *paragraph) empty() bool {
@@ -83,7 +96,7 @@ func (pa *paragraph) empty() bool {
 func (pa *paragraph) style(n *tree.Node, p *props.Computed, f *font.Face) (*style, error) {
 	if f == nil {
 		var err error
-		if f, err = pa.c.e.face(n, p); err != nil {
+		if f, err = pa.g.e.face(n, p); err != nil {
 			return nil, err
 		}
 	}
@@ -92,9 +105,12 @@ func (pa *paragraph) style(n *tree.Node, p *props.Computed, f *font.Face) (*styl
 		return s, nil
 	}
 	asc, desc, _ := f.Metrics(p.FontSize)
-	s := &style{face: f, fontID: pa.c.e.fontID(f), p: p, asc: asc, desc: desc}
+	s := &style{face: f, fontID: pa.g.e.fontID(f), p: p, asc: asc, desc: desc}
 	if gs, err := f.Shape(" ", p.FontSize, font.ShapeOptions{}); err == nil && len(gs) == 1 {
 		s.space, s.hasSpace = gs[0], true
+	}
+	if gs, err := f.Shape("\u00a0", p.FontSize, font.ShapeOptions{}); err == nil && len(gs) == 1 {
+		s.nbsp, s.hasNbsp = gs[0], true
 	}
 	pa.styles[k] = s
 	return s, nil
@@ -107,7 +123,7 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 	}
 	switch {
 	case n.IsFO("inline"):
-		ip, err := props.Compute(p, n, pa.c.contentW(pa.p))
+		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
 		if err != nil {
 			return err
 		}
@@ -118,11 +134,18 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 		}
 		return nil
 	case n.IsFO("page-number"):
-		ip, err := props.Compute(p, n, pa.c.contentW(pa.p))
+		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
 		if err != nil {
 			return err
 		}
-		return pa.text(n, ip, strconv.Itoa(pa.c.pageNumber()), false)
+		if pa.g.pageNo > 0 {
+			return pa.text(n, ip, strconv.Itoa(pa.g.pageNo), false)
+		}
+		if err := pa.text(n, ip, pa.g.e.guess(n), false); err != nil {
+			return err
+		}
+		pa.pieces[len(pa.pieces)-1].deferred = n
+		return nil
 	case n.IsFO("external-graphic"):
 		return pa.graphic(n, p)
 	}
@@ -154,6 +177,14 @@ func (pa *paragraph) text(n *tree.Node, p *props.Computed, s string, collapse bo
 			}
 			pa.trimSpace()
 			pa.pieces = append(pa.pieces, piece{kind: pBreak, st: st})
+		case r == 0x00a0 && st.hasNbsp:
+			// U+00A0 ist nach XSL 1.1 7.17.7 ein Wortzwischenraum und wird im
+			// Blocksatz gedehnt, an ihm darf aber nicht umbrochen werden.
+			if err := flushWord(); err != nil {
+				return err
+			}
+			pa.pieces = append(pa.pieces, piece{kind: pNoBreak, st: st},
+				piece{kind: pSpace, st: st, width: st.nbsp.Advance, glyph: st.nbsp})
 		case collapse && (r == ' ' || r == '\t' || r == '\r' || r == '\n'):
 			if err := flushWord(); err != nil {
 				return err
@@ -167,7 +198,7 @@ func (pa *paragraph) text(n *tree.Node, p *props.Computed, s string, collapse bo
 }
 
 func (pa *paragraph) trimSpace() {
-	for len(pa.pieces) > 0 && pa.pieces[len(pa.pieces)-1].kind == pSpace {
+	for len(pa.pieces) > 0 && (pa.pieces[len(pa.pieces)-1].kind == pSpace || pa.pieces[len(pa.pieces)-1].kind == pNoBreak) {
 		pa.pieces = pa.pieces[:len(pa.pieces)-1]
 	}
 }
@@ -177,13 +208,13 @@ func (pa *paragraph) addSpace(n *tree.Node, st *style) {
 		return
 	}
 	switch pa.pieces[len(pa.pieces)-1].kind {
-	case pSpace, pBreak:
+	case pSpace, pBreak, pNoBreak:
 		return
 	}
 	if !st.hasSpace {
 		return
 	}
-	pa.pieces = append(pa.pieces, piece{kind: pSpace, st: st, width: st.space.Advance})
+	pa.pieces = append(pa.pieces, piece{kind: pSpace, st: st, width: st.space.Advance, glyph: st.space})
 }
 
 // word formt ein Wort. Fehlen der Schrift Zeichen, werden die eingebetteten
@@ -193,7 +224,7 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 	var miss *font.MissingGlyphError
 	if errors.As(err, &miss) {
 		for _, fam := range []string{"sans-serif", "serif", "monospace"} {
-			f, ferr := pa.c.e.opts.Fonts.Lookup(fam, p.FontWeight, p.Italic)
+			f, ferr := pa.g.e.opts.Fonts.Lookup(fam, p.FontWeight, p.Italic)
 			if ferr != nil || f == st.face {
 				continue
 			}
@@ -230,23 +261,25 @@ func (pa *paragraph) items() []linebreak.Item {
 				Stretch: pc.width / 2, Shrink: pc.width / 3, Payload: i})
 		case pBreak:
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.ForcedBreak, Payload: i})
+		case pNoBreak:
+			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.Forbidden, Payload: i})
 		}
 	}
 	return items
 }
 
 // setParagraph bricht den Absatz um und setzt die Zeilen.
-func (c *column) setParagraph(pa *paragraph, first bool) error {
+func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	pa.trimSpace()
 	p := pa.p
-	avail := c.contentW(p)
-	x0 := c.contentX(p)
+	avail := g.contentW(p)
+	x0 := g.contentX(p)
 	indent := areatree.Length(0)
 	if first {
 		indent = p.TextIndent
 	}
 	items := pa.items()
-	breaks, err := c.e.opts.Breaker.Break(items, func(line int) areatree.Length {
+	breaks, err := g.e.opts.Breaker.Break(items, func(line int) areatree.Length {
 		if line == 0 {
 			return avail - indent
 		}
@@ -278,7 +311,7 @@ func (c *column) setParagraph(pa *paragraph, first bool) error {
 			lineW -= indent
 			lx += indent
 		}
-		if err := c.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last); err != nil {
+		if err := g.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last); err != nil {
 			return err
 		}
 		start = end + 1
@@ -286,7 +319,7 @@ func (c *column) setParagraph(pa *paragraph, first bool) error {
 	return nil
 }
 
-func (c *column) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool) error {
+func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool) error {
 	p := pa.p
 	align := p.TextAlign
 	if last {
@@ -338,15 +371,14 @@ func (c *column) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		case pText, pSpace:
 			above, below = max(above, pc.st.above()), max(below, pc.st.below())
 		case pGraphic:
-			above = max(above, pc.height)
+			// Wie bei Apache FOP erhält auch ein Bild den halben Durchschuss
+			// der Zeile über sich (Strut des Blocks).
+			above = max(above, pc.height+strut.halfLeading())
 		}
 	}
 	h := above + below
-	if err := c.ensureRoom(h); err != nil {
-		return err
-	}
-	baseline := c.y + above
-	line := &areatree.Container{Kind: areatree.KindLine, Rect: areatree.Rect{X: x0, Y: c.y, W: avail, H: h}}
+	baseline := above
+	line := &lineBox{h: h, w: avail, x: x0}
 
 	var run *areatree.GlyphRun
 	var runStyle *style
@@ -354,29 +386,35 @@ func (c *column) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		pc := pa.pieces[it.Payload]
 		switch pc.kind {
 		case pText, pSpace:
-			if run == nil || runStyle != pc.st {
+			if run == nil || runStyle != pc.st || pc.deferred != nil {
 				run = &areatree.GlyphRun{Origin: areatree.Point{X: x, Y: baseline}, Font: pc.st.fontID,
 					Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc}
 				runStyle = pc.st
-				line.Children = append(line.Children, run)
+				line.areas = append(line.areas, run)
+				if pc.deferred != nil {
+					line.deferred = append(line.deferred, deferredRun{index: len(line.areas) - 1, node: pc.deferred, st: pc.st, reserved: pc.width})
+				}
 			}
 			if pc.kind == pText {
 				run.Glyphs = append(run.Glyphs, pc.glyphs...)
 			} else {
-				g := pc.st.space
+				g := pc.glyph
 				g.Advance = adjust(it)
 				run.Glyphs = append(run.Glyphs, g)
 			}
 			x += adjust(it)
+			if pc.deferred != nil {
+				run = nil // nach der Seitenzahl beginnt ein neuer Run
+			}
 		case pGraphic:
 			run = nil
-			line.Children = append(line.Children, &areatree.Image{
+			line.areas = append(line.areas, &areatree.Image{
 				Rect:  areatree.Rect{X: x, Y: baseline - pc.height, W: pc.width, H: pc.height},
 				Image: pc.img,
 			})
 			x += pc.width
 		}
 	}
-	c.place(line, h)
+	g.addLine(line)
 	return nil
 }

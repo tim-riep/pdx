@@ -20,6 +20,13 @@ type Block struct {
 	Lines     int
 }
 
+// ATLine ist eine Zeile aus einem Area Tree mit der Lage ihrer Grundlinie.
+type ATLine struct {
+	Page     int
+	Text     string
+	Baseline float64
+}
+
 // frame ist ein offener Bereich beim Lesen von FOPs Area Tree.
 type frame struct {
 	name    string
@@ -28,7 +35,9 @@ type frame struct {
 	advance float64 // Höhe, um die der Elternbereich weiterrückt
 	block   *Block  // bei Blöcken mit Zeilen
 	line    *strings.Builder
-	stacks  bool // Kinder werden übereinander gestapelt
+	stacks  bool    // Kinder werden übereinander gestapelt
+	space   float64 // space-before einer Zeile (halber Durchschuss)
+	base    float64 // Grundlinie relativ zur Zeilenoberkante, -1 wenn unbekannt
 }
 
 func attrF(a []xml.Attr, name string) (float64, bool) {
@@ -68,9 +77,16 @@ var stacking = map[string]bool{
 
 // ParseAreaTree liest FOPs Area-Tree-XML (fop -at) und liefert die Blöcke.
 func ParseAreaTree(data []byte) ([]Block, int, error) {
+	b, _, n, err := ParseAreaTreeLines(data)
+	return b, n, err
+}
+
+// ParseAreaTreeLines liest Blöcke und Zeilen aus FOPs Area-Tree-XML.
+func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	var stack []*frame
 	var blocks []Block
+	var lines []ATLine
 	page := 0
 	var regionTop float64
 	for {
@@ -79,7 +95,7 @@ func ParseAreaTree(data []byte) ([]Block, int, error) {
 			break
 		}
 		if err != nil {
-			return nil, 0, err
+			return nil, nil, 0, err
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
@@ -124,6 +140,8 @@ func ParseAreaTree(data []byte) ([]Block, int, error) {
 				if name == "lineArea" {
 					f.top = top
 					f.line = &strings.Builder{}
+					f.space = sb
+					f.base = -1
 				} else {
 					f.top = top + sb + bapBefore(t.Attr)
 					if attrS(t.Attr, "positioning") != "" {
@@ -134,6 +152,20 @@ func ParseAreaTree(data []byte) ([]Block, int, error) {
 			}
 			if name == "block" {
 				f.block = &Block{Page: page, Top: -1}
+			}
+			if name == "text" || name == "inlineparent" || name == "viewport" {
+				// Die erste Inline-Fläche mit baseline legt die Grundlinie fest.
+				if bl, ok := attrF(t.Attr, "baseline"); ok {
+					off, _ := attrF(t.Attr, "offset")
+					for i := len(stack) - 1; i >= 0; i-- {
+						if stack[i].line != nil {
+							if stack[i].base < 0 {
+								stack[i].base = stack[i].space + off + bl
+							}
+							break
+						}
+					}
+				}
 			}
 			stack = append(stack, f)
 		case xml.CharData:
@@ -151,6 +183,9 @@ func ParseAreaTree(data []byte) ([]Block, int, error) {
 				parent = stack[len(stack)-1]
 			}
 			if f.line != nil {
+				if f.base >= 0 {
+					lines = append(lines, ATLine{Page: page, Text: strings.Join(strings.Fields(f.line.String()), " "), Baseline: f.top + f.base})
+				}
 				// Zeile dem nächsten Block zuordnen.
 				for i := len(stack) - 1; i >= 0; i-- {
 					if b := stack[i].block; b != nil {
@@ -172,5 +207,5 @@ func ParseAreaTree(data []byte) ([]Block, int, error) {
 			}
 		}
 	}
-	return blocks, page, nil
+	return blocks, lines, page, nil
 }

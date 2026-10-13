@@ -20,7 +20,7 @@ func srcURI(s string) string {
 // graphic nimmt ein fo:external-graphic als Inline-Box auf. Die Grundlinie
 // liegt an der Unterkante des Bildes.
 func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
-	avail := pa.c.contentW(pa.p)
+	avail := pa.g.contentW(pa.p)
 	p, err := props.Compute(parent, n, avail)
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
 	if !ok || srcURI(src) == "" {
 		return tree.Errorf(n, "src fehlt")
 	}
-	id, im, err := pa.c.e.imageID(n, srcURI(src))
+	id, im, err := pa.g.e.imageID(n, srcURI(src))
 	if err != nil {
 		return err
 	}

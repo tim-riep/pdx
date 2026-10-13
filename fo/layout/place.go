@@ -1,0 +1,218 @@
+package layout
+
+import (
+	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/font"
+)
+
+// placer setzt Galley-Einträge in einen Referenzbereich einer Seite. Er wird
+// für Seiten des Flusses, statische Inhalte und absolute Container genutzt.
+type placer struct {
+	e       *engine
+	page    *areatree.Page
+	ref     areatree.Rect
+	root    *areatree.Container
+	y       areatree.Length
+	started bool
+	open    []*openFrag
+}
+
+// openFrag ist das Fragment eines Blocks auf der aktuellen Seite.
+type openFrag struct {
+	ctx *blockCtx
+	c   *areatree.Container
+	end areatree.Length // Unterkante des bisher letzten Inhalts
+}
+
+func newPlacer(e *engine, page *areatree.Page, ref areatree.Rect, root *areatree.Container) *placer {
+	return &placer{e: e, page: page, ref: ref, root: root, y: ref.Y}
+}
+
+func (pl *placer) parent() *areatree.Container {
+	if n := len(pl.open); n > 0 {
+		return pl.open[n-1].c
+	}
+	return pl.root
+}
+
+// place setzt die Einträge und schließt am Ende alle offenen Fragmente.
+func (pl *placer) place(items []item) error {
+	for _, it := range items {
+		switch it.kind {
+		case itPenalty:
+		case itGlue:
+			if pl.started {
+				pl.y += it.h
+			}
+		case itBox:
+			if err := pl.box(it); err != nil {
+				return err
+			}
+		}
+	}
+	pl.closeAll()
+	return nil
+}
+
+func (pl *placer) box(it item) error {
+	pl.sync(it.path, it.edge)
+	switch {
+	case it.edge == edgeTop:
+		pl.y += it.h
+	case it.edge == edgeBottom:
+		f := pl.open[len(pl.open)-1]
+		p := f.ctx.p
+		pl.y += p.Padding[areatree.Bottom]
+		f.c.H = pl.y - f.c.Y
+		pl.y += p.BorderWidth(areatree.Bottom)
+		pl.open = pl.open[:len(pl.open)-1]
+	case it.line != nil:
+		if err := pl.line(it.line); err != nil {
+			return err
+		}
+		pl.y += it.h
+	case it.anchor != nil:
+		if err := pl.absolute(it.anchor); err != nil {
+			return err
+		}
+	}
+	pl.started = true
+	for _, f := range pl.open {
+		f.end = pl.y
+	}
+	return nil
+}
+
+// sync schließt Fragmente, die nicht mehr im Pfad liegen, und öffnet die
+// fehlenden. Ein Fragment ist das erste seines Blocks, wenn es mit der
+// Oberkante des Blocks beginnt.
+func (pl *placer) sync(path []*blockCtx, edge edgeKind) {
+	k := 0
+	for k < len(pl.open) && k < len(path) && pl.open[k].ctx == path[k] {
+		k++
+	}
+	for len(pl.open) > k {
+		pl.closeTop()
+	}
+	for i := k; i < len(path); i++ {
+		ctx := path[i]
+		p := ctx.p
+		first := edge == edgeTop && i == len(path)-1
+		c := &areatree.Container{Kind: areatree.KindBlock, Background: p.Background, Border: p.Border, Source: ctx.node.Label()}
+		c.X = pl.ref.X + ctx.x
+		c.W = ctx.w
+		c.Y = pl.y
+		if first {
+			c.Y += p.BorderWidth(areatree.Top)
+		} else {
+			c.Border[areatree.Top] = areatree.Border{}
+		}
+		par := pl.parent()
+		par.Children = append(par.Children, c)
+		pl.open = append(pl.open, &openFrag{ctx: ctx, c: c, end: pl.y})
+	}
+}
+
+// closeTop schließt das innerste Fragment an einem Umbruch oder Pfadwechsel.
+// Ohne die Unterkante des Blocks entfällt der untere Rahmen.
+func (pl *placer) closeTop() {
+	f := pl.open[len(pl.open)-1]
+	f.c.H = max(f.end-f.c.Y, 0)
+	f.c.Border[areatree.Bottom] = areatree.Border{}
+	pl.open = pl.open[:len(pl.open)-1]
+}
+
+func (pl *placer) closeAll() {
+	for len(pl.open) > 0 {
+		pl.closeTop()
+	}
+}
+
+// line kopiert die Bereiche einer Zeile an ihre Lage auf der Seite und löst
+// Seitenzahlen auf.
+func (pl *placer) line(l *lineBox) error {
+	c := &areatree.Container{Kind: areatree.KindLine, Rect: areatree.Rect{X: pl.ref.X + l.x, Y: pl.y, W: l.w, H: l.h}}
+	for _, a := range l.areas {
+		c.Children = append(c.Children, shift(a, pl.ref.X, pl.y))
+	}
+	for _, d := range l.deferred {
+		run := c.Children[d.index].(*areatree.GlyphRun)
+		text := itoa(pl.page.Number)
+		gs, err := d.st.face.Shape(text, d.st.p.FontSize, font.ShapeOptions{})
+		if err != nil {
+			return errorAt(d.node, err)
+		}
+		run.Glyphs = gs
+		var w areatree.Length
+		for _, g := range gs {
+			w += g.Advance
+		}
+		pl.e.estimate(d.node, text, w != d.reserved)
+	}
+	par := pl.parent()
+	par.Children = append(par.Children, c)
+	return nil
+}
+
+// absolute setzt einen absolut positionierten fo:block-container. "absolute"
+// bezieht sich auf den Referenzbereich, "fixed" auf die Seite. left und top
+// bezeichnen nach XSL 1.1 7.6.4 (aus CSS2 9.3.2) die Randkante, width und
+// height das Inhaltsrechteck. Apache FOP setzt left und top an die
+// Inhaltskante, das ist eine bewusste Abweichung (testdata/suites/DEVIATIONS.md).
+func (pl *placer) absolute(a *absAnchor) error {
+	p := a.p
+	ref := pl.ref
+	if p.Absolute == "fixed" {
+		ref = areatree.Rect{W: pl.page.Width, H: pl.page.Height}
+	}
+	left, top := areatree.Length(0), areatree.Length(0)
+	if p.Left != nil {
+		left = *p.Left
+	}
+	if p.Top != nil {
+		top = *p.Top
+	}
+	bl, br := p.BorderWidth(areatree.Left), p.BorderWidth(areatree.Right)
+	bt := p.BorderWidth(areatree.Top)
+	padL, padR := p.Padding[areatree.Left], p.Padding[areatree.Right]
+	padT, padB := p.Padding[areatree.Top], p.Padding[areatree.Bottom]
+	var contentW areatree.Length
+	switch {
+	case p.Width != nil:
+		contentW = *p.Width
+	default:
+		right := areatree.Length(0)
+		if p.Right != nil {
+			right = *p.Right
+		}
+		contentW = ref.W - left - right - bl - br - padL - padR
+	}
+	contentW = max(contentW, 0)
+	inner := areatree.Rect{X: ref.X + left + bl + padL, Y: ref.Y + top + bt + padT, W: contentW}
+	kind := areatree.KindBlock
+	if v, _ := a.node.Attr("overflow"); v == "hidden" || v == "error-if-overflow" {
+		kind = areatree.KindViewport
+	}
+	cont := &areatree.Container{Kind: kind, Background: p.Background, Border: p.Border, Source: a.node.Label()}
+	cont.X, cont.Y = inner.X-padL, inner.Y-padT
+	cont.W = contentW + padL + padR
+	pl.page.Areas = append(pl.page.Areas, cont)
+
+	// Der Container ist ein neuer Referenzbereich, Einzüge beginnen bei 0.
+	inside := *p
+	inside.StartIndent, inside.EndIndent = 0, 0
+	g := newGalley(pl.e, contentW, pl.page.Number)
+	if err := g.blocks(a.node, &inside); err != nil {
+		return err
+	}
+	sub := newPlacer(pl.e, pl.page, inner, cont)
+	if err := sub.place(g.items); err != nil {
+		return err
+	}
+	contentH := sub.y - inner.Y
+	if p.Height != nil {
+		contentH = *p.Height
+	}
+	cont.H = contentH + padT + padB
+	return nil
+}

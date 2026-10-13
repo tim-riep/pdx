@@ -36,6 +36,31 @@ type engine struct {
 	fontIDs map[*font.Face]areatree.FontID
 	imgIDs  map[string]areatree.ImageID
 	pageNo  int
+
+	// prev enthält die Texte seitenabhängiger Inhalte aus dem vorigen
+	// Durchlauf, next die dieses Durchlaufs. unstable ist gesetzt, wenn sich
+	// eine reservierte Breite als falsch erwiesen hat.
+	prev, next map[*tree.Node]string
+	unstable   bool
+}
+
+// maxPasses begrenzt die Durchläufe für seitenabhängige Inhalte.
+const maxPasses = 4
+
+// estimate vermerkt den tatsächlichen Text eines seitenabhängigen Inhalts.
+func (e *engine) estimate(n *tree.Node, text string, widthChanged bool) {
+	e.next[n] = text
+	if widthChanged {
+		e.unstable = true
+	}
+}
+
+// guess liefert den Text aus dem vorigen Durchlauf oder eine Schätzung.
+func (e *engine) guess(n *tree.Node) string {
+	if t, ok := e.prev[n]; ok {
+		return t
+	}
+	return "1"
 }
 
 // Layout setzt das Dokument.
@@ -49,16 +74,34 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 	if opts.Resolver == nil {
 		opts.Resolver = denyResolver{}
 	}
-	e := &engine{
-		opts:    opts,
-		doc:     &areatree.Document{},
-		masters: map[string]*master{},
-		fontIDs: map[*font.Face]areatree.FontID{},
-		imgIDs:  map[string]areatree.ImageID{},
+	prev := map[*tree.Node]string{}
+	for pass := 1; ; pass++ {
+		e := &engine{
+			opts:    opts,
+			doc:     &areatree.Document{},
+			masters: map[string]*master{},
+			fontIDs: map[*font.Face]areatree.FontID{},
+			imgIDs:  map[string]areatree.ImageID{},
+			prev:    prev,
+			next:    map[*tree.Node]string{},
+		}
+		if err := e.run(root); err != nil {
+			return nil, err
+		}
+		if !e.unstable {
+			return e.doc, nil
+		}
+		if pass == maxPasses {
+			return nil, tree.Errorf(root, "Seitenzahlen nach %d Durchläufen nicht stabil", maxPasses)
+		}
+		prev = e.next
 	}
+}
+
+func (e *engine) run(root *tree.Node) error {
 	rootProps, err := props.Compute(props.Root(), root, 0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	e.doc.Meta.Lang = rootProps.Lang
 	sequences := 0
@@ -66,26 +109,26 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 		switch {
 		case c.IsFO("layout-master-set"):
 			if err := e.readMasters(c); err != nil {
-				return nil, err
+				return err
 			}
 		case c.IsFO("declarations"):
 			if err := e.declarations(c); err != nil {
-				return nil, err
+				return err
 			}
 		case c.IsFO("page-sequence"):
 			if len(e.masters) == 0 {
-				return nil, tree.Errorf(c, "fo:layout-master-set fehlt vor fo:page-sequence")
+				return tree.Errorf(c, "fo:layout-master-set fehlt vor fo:page-sequence")
 			}
 			sequences++
 			if err := e.pageSequence(c, rootProps); err != nil {
-				return nil, err
+				return err
 			}
 		}
 	}
 	if sequences == 0 {
-		return nil, tree.Errorf(root, "fo:root enthält keine fo:page-sequence")
+		return tree.Errorf(root, "fo:root enthält keine fo:page-sequence")
 	}
-	return e.doc, nil
+	return nil
 }
 
 // master ist eine einfache Seitenvorlage.
@@ -184,7 +227,6 @@ type sequence struct {
 	props   *props.Computed
 	statics map[string]*tree.Node
 	page    *areatree.Page
-	body    *column
 }
 
 func (e *engine) pageSequence(ps *tree.Node, rootProps *props.Computed) error {
@@ -231,35 +273,41 @@ func (e *engine) pageSequence(ps *tree.Node, rootProps *props.Computed) error {
 	if err != nil {
 		return err
 	}
-	if err := s.newPage(); err != nil {
+	g := newGalley(e, m.body.W, 0)
+	if err := g.blocks(flow, flowProps); err != nil {
 		return err
 	}
-	if err := s.body.blocks(flow, flowProps); err != nil {
-		return err
-	}
-	return s.finishPage()
+	return s.paginate(g.items)
 }
 
-// newPage schließt die aktuelle Seite ab und beginnt eine neue.
-func (s *sequence) newPage() error {
-	var open []*openBlock
-	if s.page != nil {
-		open = s.body.suspend()
+// paginate verteilt die Galley auf Seiten.
+func (s *sequence) paginate(items []item) error {
+	pos := 0
+	for {
+		region := s.newPage()
+		end := breakPage(items, pos, s.m.body.H)
+		pl := newPlacer(s.e, s.page, s.m.body, region)
+		if err := pl.place(items[pos:end]); err != nil {
+			return err
+		}
 		if err := s.finishPage(); err != nil {
 			return err
 		}
+		if end >= len(items) {
+			return nil
+		}
+		pos = end + 1
 	}
+}
+
+// newPage beginnt eine neue Seite und liefert den Container der Region body.
+func (s *sequence) newPage() *areatree.Container {
 	s.e.pageNo++
 	s.page = &areatree.Page{Number: s.e.pageNo, Width: s.m.width, Height: s.m.height}
 	s.e.doc.Pages = append(s.e.doc.Pages, s.page)
 	region := &areatree.Container{Kind: areatree.KindRegion, Rect: s.m.body, Source: s.m.bodyNode.Label()}
 	s.page.Areas = append(s.page.Areas, region)
-	if s.body == nil {
-		s.body = &column{e: s.e, seq: s, breakPage: s.newPage}
-	}
-	s.body.reset(s.m.body, region)
-	s.body.resume(open)
-	return nil
+	return region
 }
 
 // finishPage setzt die statischen Inhalte der aktuellen Seite.
@@ -275,9 +323,11 @@ func (s *sequence) finishPage() error {
 		}
 		cont := &areatree.Container{Kind: areatree.KindRegion, Rect: r.rect, Source: r.node.Label()}
 		s.page.Areas = append(s.page.Areas, cont)
-		col := &column{e: s.e, seq: s}
-		col.reset(r.rect, cont)
-		if err := col.blocks(sc, p); err != nil {
+		g := newGalley(s.e, r.rect.W, s.page.Number)
+		if err := g.blocks(sc, p); err != nil {
+			return err
+		}
+		if err := newPlacer(s.e, s.page, r.rect, cont).place(g.items); err != nil {
 			return err
 		}
 	}

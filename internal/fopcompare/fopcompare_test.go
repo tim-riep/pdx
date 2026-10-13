@@ -54,8 +54,8 @@ func TestLCS(t *testing.T) {
 
 func TestCompareLinesTolerance(t *testing.T) {
 	r := &Report{PagesPDX: 1, PagesFOP: 1, Tol: Default}
-	pdx := []Line{{Page: 1, Text: "A", X: 10, Y: 10}, {Page: 1, Text: "B", X: 10, Y: 30}, {Page: 1, Text: "nur pdx", Y: 50}}
-	fop := []Line{{Page: 1, Text: "A", X: 10.9, Y: 9.2}, {Page: 1, Text: "B", X: 10, Y: 31.5}}
+	pdx := []cmpLine{{Page: 1, Text: "A", X: 10, Y: 10, HasX: true}, {Page: 1, Text: "B", X: 10, Y: 30, HasX: true}, {Page: 1, Text: "nur pdx", Y: 50}}
+	fop := []cmpLine{{Page: 1, Text: "B", X: 10, Y: 31.5, HasX: true}, {Page: 1, Text: "A", X: 10.9, Y: 9.2, HasX: true}}
 	compareLines(r, pdx, fop, Default)
 	if r.LinesCompared != 2 || len(r.Lines) != 2 {
 		t.Fatalf("verglichen %d, Abweichungen %+v", r.LinesCompared, r.Lines)

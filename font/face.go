@@ -119,6 +119,16 @@ func Load(data []byte, index int) (f *Face, err error) {
 	}
 	if os2, err := fnt.TableData(ot.TagOS2); err == nil && len(os2) >= 10 {
 		f.FsType = binary.BigEndian.Uint16(os2[8:10])
+		// Ober- und Unterlänge aus den Typo-Metriken, wie Apache FOP sie für
+		// die Zeilenhöhe nutzt. hhea bleibt der Rückfall.
+		if len(os2) >= 74 {
+			asc := int(int16(binary.BigEndian.Uint16(os2[68:70])))
+			desc := int(int16(binary.BigEndian.Uint16(os2[70:72])))
+			gap := int(int16(binary.BigEndian.Uint16(os2[72:74])))
+			if asc > 0 && desc < 0 {
+				f.Ascender, f.Descender, f.LineGap = asc, desc, gap
+			}
+		}
 	}
 	return f, nil
 }
