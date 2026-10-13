@@ -4,7 +4,7 @@
 // übergehen.
 //
 // Elemente fremder Namespaces in fo:declarations werden übernommen, damit
-// das Layout die Erweiterungen von pdx (Namespace urn:pdx:extensions) lesen
+// das Layout die Erweiterungen von pdx (Namespace https://pdx.example/ns/pdx/1.0) lesen
 // kann. Andere fremde Elemente werden ignoriert, wie es XSL 1.1 erlaubt.
 package tree
 
@@ -20,8 +20,10 @@ import (
 const (
 	// NSFO ist der XSL-FO-Namespace.
 	NSFO = "http://www.w3.org/1999/XSL/Format"
-	// NSPDX ist der Erweiterungs-Namespace von pdx (Arbeitsname).
-	NSPDX = "urn:pdx:extensions"
+	// NSPDX ist der Erweiterungs-Namespace von pdx. Die Domain pdx.example
+	// ist ein Platzhalter (RFC 2606) und wird durch die endgültige Domain
+	// ersetzt. Der Namespace steht nur hier, in den Testdaten und im README.
+	NSPDX = "https://pdx.example/ns/pdx/1.0"
 	// NSXML ist der XML-Namespace für xml:lang.
 	NSXML = "http://www.w3.org/XML/1998/namespace"
 )

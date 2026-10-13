@@ -77,7 +77,7 @@ Andere FO-Elemente werden mit Position abgelehnt. Unbekannte Eigenschaften werde
 
 ### Erweiterungen
 
-Namespace `urn:pdx:extensions` (Arbeitsname), nur in `fo:declarations`, damit Apache FOP sie ignoriert:
+Namespace `https://pdx.example/ns/pdx/1.0` (die Domain pdx.example ist ein Platzhalter), nur in `fo:declarations`, damit Apache FOP sie ignoriert:
 
 ```xml
 <fo:declarations>

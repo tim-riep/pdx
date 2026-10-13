@@ -21,14 +21,14 @@
 <xmp:MetadataDate>2026-01-01T00:00:00+00:00</xmp:MetadataDate>
 <xmp:CreatorTool>pdx-Test</xmp:CreatorTool>
 </rdf:Description>
-<rdf:Description rdf:about="" xmlns:pdxt="urn:pdx:test#">
+<rdf:Description rdf:about="" xmlns:pdxt="https://pdx.example/ns/pdx-test/1.0#">
 <pdxt:Version>1.0</pdxt:Version>
 </rdf:Description>
 <rdf:Description rdf:about="" xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/" xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#" xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#">
 <pdfaExtension:schemas><rdf:Bag>
 <rdf:li rdf:parseType="Resource">
 <pdfaSchema:schema>Testschema</pdfaSchema:schema>
-<pdfaSchema:namespaceURI>urn:pdx:test#</pdfaSchema:namespaceURI>
+<pdfaSchema:namespaceURI>https://pdx.example/ns/pdx-test/1.0#</pdfaSchema:namespaceURI>
 <pdfaSchema:prefix>pdxt</pdfaSchema:prefix>
 <pdfaSchema:property><rdf:Seq>
 <rdf:li rdf:parseType="Resource"><pdfaProperty:name>Version</pdfaProperty:name>

@@ -7,7 +7,7 @@ import (
 )
 
 const minimal = `<?xml version="1.0"?>
-<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="urn:pdx:extensions" xml:lang="de">
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de">
   <fo:layout-master-set>
     <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm">
       <fo:region-body margin="20mm"/>

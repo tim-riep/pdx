@@ -28,7 +28,7 @@ func pdfaDoc(t testing.TB) *areatree.Document {
 	doc.Meta = areatree.Metadata{
 		Title: "Rechnung Nr. 4711 – Grüße", Author: "Tim Riep", Subject: "PDF/A-3b-Test",
 		Keywords: "Rechnung, Test", Creator: "pdx-Testsuite", Lang: "de-DE",
-		XMP: []areatree.XMPSchema{{NamespaceURI: "urn:pdx:test#", Prefix: "pdxt", Description: "pdx Testschema",
+		XMP: []areatree.XMPSchema{{NamespaceURI: "https://pdx.example/ns/pdx-test/1.0#", Prefix: "pdxt", Description: "pdx Testschema",
 			Properties: []areatree.XMPProperty{{Name: "Version", Value: "1.0", Description: "Version des Testschemas"}}}},
 	}
 	doc.Attachments = []areatree.Attachment{{

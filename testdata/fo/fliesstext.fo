@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Mehrseitiger Fließtext mit Seitenzahlen in Kopf und Fuß. -->
-<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="urn:pdx:extensions" xml:lang="de-DE">
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
   <fo:layout-master-set>
     <fo:simple-page-master master-name="seite" page-width="210mm" page-height="297mm" margin="15mm 20mm 15mm 25mm">
       <fo:region-body margin-top="15mm" margin-bottom="15mm"/>
