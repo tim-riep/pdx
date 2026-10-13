@@ -17,13 +17,41 @@ func (pl *placer) flushRow() error {
 	}
 	f := pl.curRow
 	pl.curRow = nil
-	return pl.drawRow(f.r, f.r.slices[f.s0], f.r.slices[f.s1], f.y)
+	r := f.r
+	if t := r.tbl; t != nil && t.dynamic && r.sec != secBody {
+		if r.sec == secHeader {
+			pl.deferred = append(pl.deferred, deferredRow{r: r, y: f.y, parent: pl.parent()})
+			return nil
+		}
+		nr, err := r.relayout(pl.e, pl.page)
+		if err != nil {
+			return err
+		}
+		r = nr
+	}
+	return pl.drawRow(r, r.slices[f.s0], r.slices[f.s1], f.y)
 }
 
 // drawRows zeichnet ganze Zeilen ab der aktuellen Position, etwa einen
 // wiederholten Tabellenkopf.
 func (pl *placer) drawRows(rows []*rowLayout) error {
 	for _, r := range rows {
+		if t := r.tbl; t != nil && t.dynamic {
+			if r.sec == secHeader {
+				pl.deferred = append(pl.deferred, deferredRow{r: r, y: pl.y, parent: pl.parent()})
+				pl.y += r.h
+				continue
+			}
+			nr, err := r.relayout(pl.e, pl.page)
+			if err != nil {
+				return err
+			}
+			if err := pl.drawRow(nr, 0, nr.h, pl.y); err != nil {
+				return err
+			}
+			pl.y += r.h
+			continue
+		}
 		if err := pl.drawRow(r, 0, r.h, pl.y); err != nil {
 			return err
 		}
@@ -34,7 +62,11 @@ func (pl *placer) drawRows(rows []*rowLayout) error {
 
 // drawRow zeichnet den Bereich [a, b) einer Zeile mit Oberkante y.
 func (pl *placer) drawRow(r *rowLayout, a, b, y areatree.Length) error {
-	parent := pl.parent()
+	return pl.drawRowIn(pl.parent(), r, a, b, y)
+}
+
+// drawRowIn zeichnet in einen bestimmten Container.
+func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y areatree.Length) error {
 	whole := a == 0 && b == r.h
 	if r.bg != nil {
 		bg := *r.bg

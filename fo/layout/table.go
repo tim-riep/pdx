@@ -34,6 +34,10 @@ type tableCtx struct {
 	omitFooter bool
 	firstBody  *rowLayout
 	lastBody   *rowLayout
+	// dynamic ist gesetzt, wenn Kopf oder Fuß fo:retrieve-table-marker
+	// enthalten. Sie werden dann je Seite neu gesetzt.
+	dynamic bool
+	frags   []*tableFrag
 }
 
 // continuesAfter meldet, ob nach dieser Scheibe noch Zeilen des Rumpfs folgen.
@@ -54,6 +58,7 @@ type rowLayout struct {
 	slices   []areatree.Length // Grenzen der Scheiben, beginnend bei 0, endend bei h
 	last     bool              // letzte Zeile ihres Abschnitts
 	keep     int               // Penalty zwischen den Scheiben
+	markers  markerSet
 	collapse bool
 }
 
@@ -148,11 +153,12 @@ func (c *cellLayout) breakable(off areatree.Length, top areatree.Length) bool {
 
 // layoutCell setzt den Inhalt einer Zelle in einer eigenen Galley. Die Zelle
 // ist ein Referenzbereich, Einzüge beginnen darin bei 0.
-func (g *galley) layoutCell(c *cellLayout, content *tree.Node) error {
+func (g *galley) layoutCell(c *cellLayout, content *tree.Node, tbl *tableCtx) error {
 	w := max(c.w-c.inset[areatree.Left]-c.inset[areatree.Right], 0)
 	inside := *c.p
 	inside.StartIndent, inside.EndIndent = 0, 0
 	sg := newGalley(g.e, w, g.pageNo)
+	sg.tbl = tbl
 	if err := sg.blocks(content, &inside); err != nil {
 		return err
 	}
@@ -431,6 +437,9 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	for ri, rs := range rows {
 		rl := &rowLayout{node: rs.node, tbl: tc, sec: rs.sec, sepV: sepV / 2, x: x0, w: tw, collapse: collapse,
 			keep: keepValue(rs.node, "keep-together"), bg: rs.props.Background}
+		if rs.node.IsFO("table-row") {
+			rl.markers = collectMarkers(rs.node)
+		}
 		if !rs.node.IsFO("table-row") || rl.bg == nil {
 			// Hintergrund des Abschnitts liegt unter seinen Zeilen.
 			rl.bg = rs.secBg
@@ -522,7 +531,11 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	spannedUntil := -1
 	for ri, rl := range layouts {
 		for _, c := range rl.cells {
-			if err := g.layoutCell(c, c.node); err != nil {
+			var tbl *tableCtx
+			if rl.sec != secBody {
+				tbl = tc
+			}
+			if err := g.layoutCell(c, c.node, tbl); err != nil {
 				return err
 			}
 			if c.rowSpan > 1 {
@@ -568,6 +581,13 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		}
 	}
 	tc.header, tc.footer = header, footer
+	for _, r := range append(append([]*rowLayout(nil), header...), footer...) {
+		for _, c := range r.cells {
+			if hasTableMarker(c.node) {
+				tc.dynamic = true
+			}
+		}
+	}
 	if len(body) > 0 {
 		tc.firstBody, tc.lastBody = body[0], body[len(body)-1]
 	}
@@ -786,7 +806,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 			}
 			c := &cellLayout{node: part, p: pp, span: 1, rowSpan: 1, align: "before"}
 			c.x, c.w = g.contentX(pp), g.contentW(pp)
-			if err := g.layoutCell(c, part); err != nil {
+			if err := g.layoutCell(c, part, nil); err != nil {
 				return err
 			}
 			row.cells = append(row.cells, c)
@@ -823,4 +843,27 @@ func listLength(n *tree.Node, name, def string, fs areatree.Length) (areatree.Le
 		return 0, tree.Errorf(n, "%s: %v", name, err)
 	}
 	return l, nil
+}
+
+// relayout setzt eine Zeile von Kopf oder Fuß für eine Seite neu, damit
+// fo:retrieve-table-marker die Marker dieser Seite einsetzen. Die Höhe der
+// Zeile bleibt wie beim Seitenumbruch reserviert.
+func (r *rowLayout) relayout(e *engine, page *areatree.Page) (*rowLayout, error) {
+	nr := *r
+	nr.cells = make([]*cellLayout, len(r.cells))
+	for i, c := range r.cells {
+		nc := *c
+		w := max(c.w-c.inset[areatree.Left]-c.inset[areatree.Right], 0)
+		inside := *c.p
+		inside.StartIndent, inside.EndIndent = 0, 0
+		sg := newGalley(e, w, page.Number)
+		sg.page, sg.tbl = page, r.tbl
+		if err := sg.blocks(c.node, &inside); err != nil {
+			return nil, err
+		}
+		nc.items = sg.items
+		nc.contentH, nc.bounds = measure(sg.items)
+		nr.cells[i] = &nc
+	}
+	return &nr, nil
 }

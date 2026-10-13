@@ -50,6 +50,11 @@ type engine struct {
 	prevIDs map[string]*idPages
 	// format ist das Seitenzahlformat der aktuellen Seitenfolge.
 	format string
+
+	// marks sind die Marker-Ereignisse je Seite, markOrder in Seitenfolge.
+	marks     map[*areatree.Page]*pageMarks
+	markOrder []*pageMarks
+	curSeq    *tree.Node
 }
 
 // idPages sind die erste und letzte Seite einer ID.
@@ -148,6 +153,7 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 			seqMasters: map[string]*seqMaster{},
 			ids:        map[string]*idPages{},
 			cited:      map[*tree.Node]citation{},
+			marks:      map[*areatree.Page]*pageMarks{},
 			fontIDs:    map[*font.Face]areatree.FontID{},
 			imgIDs:     map[string]areatree.ImageID{},
 			prev:       prev,

@@ -122,6 +122,20 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 	if n.Kind == tree.Text {
 		return pa.text(n, p, n.Data, true)
 	}
+	if n.IsFO("marker") {
+		return nil
+	}
+	if m, isRetrieve, err := pa.g.retrieve(n); isRetrieve {
+		if err != nil || m == nil {
+			return err
+		}
+		for _, ch := range m.Children {
+			if err := pa.add(ch, p); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	switch {
 	case n.IsFO("inline"):
 		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))

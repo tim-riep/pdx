@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Marker: Übertrag im Tabellenkopf und Zwischensumme im Tabellenfuß je
+     Seite (fo:retrieve-table-marker) sowie ein lebender Kolumnentitel
+     (fo:retrieve-marker). -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="15mm 20mm">
+      <fo:region-body margin-top="12mm" margin-bottom="12mm"/>
+      <fo:region-before extent="10mm"/>
+      <fo:region-after extent="8mm"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Überträge" subject="Korpus: Marker und Überträge"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4" font-family="Helvetica" font-size="10pt">
+    <fo:static-content flow-name="xsl-region-before">
+      <fo:block font-size="8pt" color="#666666" border-bottom="0.5pt solid #999999">Kapitel: <fo:retrieve-marker retrieve-class-name="kapitel" retrieve-position="first-including-carryover" retrieve-boundary="page-sequence"/></fo:block>
+    </fo:static-content>
+    <fo:static-content flow-name="xsl-region-after">
+      <fo:block font-size="8pt" text-align="center">Seite <fo:page-number/> von <fo:page-number-citation-last ref-id="ende"/></fo:block>
+    </fo:static-content>
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block font-size="14pt" font-weight="bold" space-after="4mm"><fo:marker marker-class-name="kapitel">Einleitung</fo:marker>Einleitung</fo:block>
+      <fo:block space-after="6mm">Die folgende Aufstellung läuft über mehrere Seiten. Jede Zeile trägt zwei Marker: den Übertrag vor der Zeile und die Zwischensumme nach der Zeile. Der Tabellenfuß zeigt die Zwischensumme der Seite, der Kopf der Folgeseite den Übertrag.</fo:block>
+      <fo:block font-size="14pt" font-weight="bold" space-after="4mm" keep-with-next="always"><fo:marker marker-class-name="kapitel">Positionen</fo:marker>Positionen</fo:block>
+      <fo:table width="100%" border-collapse="collapse">
+        <fo:table-column column-width="12mm"/>
+        <fo:table-column column-width="proportional-column-width(1)"/>
+        <fo:table-column column-width="35mm"/>
+        <fo:table-header>
+          <fo:table-row font-weight="bold" background-color="#e8eef5">
+            <fo:table-cell padding="2pt" border-bottom="0.5pt solid black"><fo:block text-align="end">Pos.</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt" border-bottom="0.5pt solid black"><fo:block>Leistung</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt" border-bottom="0.5pt solid black"><fo:block text-align="end">Betrag</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row font-style="italic">
+            <fo:table-cell number-columns-spanned="2" padding="2pt"><fo:block text-align="end">Übertrag</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end"><fo:retrieve-table-marker retrieve-class-name="uebertrag" retrieve-position-within-table="first-starting" retrieve-boundary-within-table="table-fragment"/></fo:block></fo:table-cell>
+          </fo:table-row>
+        </fo:table-header>
+        <fo:table-footer>
+          <fo:table-row font-weight="bold">
+            <fo:table-cell number-columns-spanned="2" padding="2pt" border-top="0.5pt solid black"><fo:block text-align="end">Zwischensumme</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt" border-top="0.5pt solid black"><fo:block text-align="end"><fo:retrieve-table-marker retrieve-class-name="zwischensumme" retrieve-position-within-table="last-ending" retrieve-boundary-within-table="table-fragment"/></fo:block></fo:table-cell>
+          </fo:table-row>
+        </fo:table-footer>
+        <fo:table-body>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">0,00 €</fo:marker><fo:marker marker-class-name="zwischensumme">89,19 €</fo:marker><fo:block text-align="end">1</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 1</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">89,19 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">89,19 €</fo:marker><fo:marker marker-class-name="zwischensumme">257,57 €</fo:marker><fo:block text-align="end">2</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 2</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">168,38 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">257,57 €</fo:marker><fo:marker marker-class-name="zwischensumme">505,14 €</fo:marker><fo:block text-align="end">3</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 3</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">247,57 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">505,14 €</fo:marker><fo:marker marker-class-name="zwischensumme">831,90 €</fo:marker><fo:block text-align="end">4</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 4</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">326,76 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">831,90 €</fo:marker><fo:marker marker-class-name="zwischensumme">1.237,85 €</fo:marker><fo:block text-align="end">5</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 5</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">405,95 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">1.237,85 €</fo:marker><fo:marker marker-class-name="zwischensumme">1.722,99 €</fo:marker><fo:block text-align="end">6</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 6</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">485,14 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">1.722,99 €</fo:marker><fo:marker marker-class-name="zwischensumme">2.287,32 €</fo:marker><fo:block text-align="end">7</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 7</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">564,33 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">2.287,32 €</fo:marker><fo:marker marker-class-name="zwischensumme">2.930,84 €</fo:marker><fo:block text-align="end">8</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 8</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">643,52 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">2.930,84 €</fo:marker><fo:marker marker-class-name="zwischensumme">3.653,55 €</fo:marker><fo:block text-align="end">9</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 9</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">722,71 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">3.653,55 €</fo:marker><fo:marker marker-class-name="zwischensumme">4.455,45 €</fo:marker><fo:block text-align="end">10</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 10</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">801,90 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">4.455,45 €</fo:marker><fo:marker marker-class-name="zwischensumme">5.336,54 €</fo:marker><fo:block text-align="end">11</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 11</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">881,09 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">5.336,54 €</fo:marker><fo:marker marker-class-name="zwischensumme">5.396,82 €</fo:marker><fo:block text-align="end">12</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 12</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">60,28 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">5.396,82 €</fo:marker><fo:marker marker-class-name="zwischensumme">5.536,29 €</fo:marker><fo:block text-align="end">13</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 13</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">139,47 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">5.536,29 €</fo:marker><fo:marker marker-class-name="zwischensumme">5.754,95 €</fo:marker><fo:block text-align="end">14</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 14</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">218,66 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">5.754,95 €</fo:marker><fo:marker marker-class-name="zwischensumme">6.052,80 €</fo:marker><fo:block text-align="end">15</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 15</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">297,85 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">6.052,80 €</fo:marker><fo:marker marker-class-name="zwischensumme">6.429,84 €</fo:marker><fo:block text-align="end">16</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 16</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">377,04 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">6.429,84 €</fo:marker><fo:marker marker-class-name="zwischensumme">6.886,07 €</fo:marker><fo:block text-align="end">17</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 17</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">456,23 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">6.886,07 €</fo:marker><fo:marker marker-class-name="zwischensumme">7.421,49 €</fo:marker><fo:block text-align="end">18</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 18</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">535,42 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">7.421,49 €</fo:marker><fo:marker marker-class-name="zwischensumme">8.036,10 €</fo:marker><fo:block text-align="end">19</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 19</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">614,61 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">8.036,10 €</fo:marker><fo:marker marker-class-name="zwischensumme">8.729,90 €</fo:marker><fo:block text-align="end">20</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 20</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">693,80 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">8.729,90 €</fo:marker><fo:marker marker-class-name="zwischensumme">9.502,89 €</fo:marker><fo:block text-align="end">21</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 21</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">772,99 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">9.502,89 €</fo:marker><fo:marker marker-class-name="zwischensumme">10.355,07 €</fo:marker><fo:block text-align="end">22</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 22</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">852,18 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">10.355,07 €</fo:marker><fo:marker marker-class-name="zwischensumme">10.386,44 €</fo:marker><fo:block text-align="end">23</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 23</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">31,37 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">10.386,44 €</fo:marker><fo:marker marker-class-name="zwischensumme">10.497,00 €</fo:marker><fo:block text-align="end">24</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 24</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">110,56 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">10.497,00 €</fo:marker><fo:marker marker-class-name="zwischensumme">10.686,75 €</fo:marker><fo:block text-align="end">25</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 25</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">189,75 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">10.686,75 €</fo:marker><fo:marker marker-class-name="zwischensumme">10.955,69 €</fo:marker><fo:block text-align="end">26</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 26</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">268,94 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">10.955,69 €</fo:marker><fo:marker marker-class-name="zwischensumme">11.303,82 €</fo:marker><fo:block text-align="end">27</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 27</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">348,13 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">11.303,82 €</fo:marker><fo:marker marker-class-name="zwischensumme">11.731,14 €</fo:marker><fo:block text-align="end">28</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 28</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">427,32 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">11.731,14 €</fo:marker><fo:marker marker-class-name="zwischensumme">12.237,65 €</fo:marker><fo:block text-align="end">29</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 29</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">506,51 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">12.237,65 €</fo:marker><fo:marker marker-class-name="zwischensumme">12.823,35 €</fo:marker><fo:block text-align="end">30</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 30</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">585,70 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">12.823,35 €</fo:marker><fo:marker marker-class-name="zwischensumme">13.488,24 €</fo:marker><fo:block text-align="end">31</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 31</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">664,89 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">13.488,24 €</fo:marker><fo:marker marker-class-name="zwischensumme">14.232,32 €</fo:marker><fo:block text-align="end">32</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 32</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">744,08 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">14.232,32 €</fo:marker><fo:marker marker-class-name="zwischensumme">15.055,59 €</fo:marker><fo:block text-align="end">33</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 33</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">823,27 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">15.055,59 €</fo:marker><fo:marker marker-class-name="zwischensumme">15.958,05 €</fo:marker><fo:block text-align="end">34</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 34</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">902,46 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">15.958,05 €</fo:marker><fo:marker marker-class-name="zwischensumme">16.039,70 €</fo:marker><fo:block text-align="end">35</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 35</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">81,65 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">16.039,70 €</fo:marker><fo:marker marker-class-name="zwischensumme">16.200,54 €</fo:marker><fo:block text-align="end">36</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 36</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">160,84 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">16.200,54 €</fo:marker><fo:marker marker-class-name="zwischensumme">16.440,57 €</fo:marker><fo:block text-align="end">37</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 37</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">240,03 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">16.440,57 €</fo:marker><fo:marker marker-class-name="zwischensumme">16.759,79 €</fo:marker><fo:block text-align="end">38</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 38</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">319,22 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">16.759,79 €</fo:marker><fo:marker marker-class-name="zwischensumme">17.158,20 €</fo:marker><fo:block text-align="end">39</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 39</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">398,41 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">17.158,20 €</fo:marker><fo:marker marker-class-name="zwischensumme">17.635,80 €</fo:marker><fo:block text-align="end">40</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 40</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">477,60 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">17.635,80 €</fo:marker><fo:marker marker-class-name="zwischensumme">18.192,59 €</fo:marker><fo:block text-align="end">41</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 41</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">556,79 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">18.192,59 €</fo:marker><fo:marker marker-class-name="zwischensumme">18.828,57 €</fo:marker><fo:block text-align="end">42</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 42</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">635,98 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">18.828,57 €</fo:marker><fo:marker marker-class-name="zwischensumme">19.543,74 €</fo:marker><fo:block text-align="end">43</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 43</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">715,17 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">19.543,74 €</fo:marker><fo:marker marker-class-name="zwischensumme">20.338,10 €</fo:marker><fo:block text-align="end">44</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 44</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">794,36 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">20.338,10 €</fo:marker><fo:marker marker-class-name="zwischensumme">21.211,65 €</fo:marker><fo:block text-align="end">45</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 45</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">873,55 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">21.211,65 €</fo:marker><fo:marker marker-class-name="zwischensumme">21.264,39 €</fo:marker><fo:block text-align="end">46</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 46</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">52,74 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">21.264,39 €</fo:marker><fo:marker marker-class-name="zwischensumme">21.396,32 €</fo:marker><fo:block text-align="end">47</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 47</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">131,93 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">21.396,32 €</fo:marker><fo:marker marker-class-name="zwischensumme">21.607,44 €</fo:marker><fo:block text-align="end">48</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 48</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">211,12 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">21.607,44 €</fo:marker><fo:marker marker-class-name="zwischensumme">21.897,75 €</fo:marker><fo:block text-align="end">49</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 49</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">290,31 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">21.897,75 €</fo:marker><fo:marker marker-class-name="zwischensumme">22.267,25 €</fo:marker><fo:block text-align="end">50</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 50</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">369,50 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">22.267,25 €</fo:marker><fo:marker marker-class-name="zwischensumme">22.715,94 €</fo:marker><fo:block text-align="end">51</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 51</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">448,69 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">22.715,94 €</fo:marker><fo:marker marker-class-name="zwischensumme">23.243,82 €</fo:marker><fo:block text-align="end">52</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 52</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">527,88 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">23.243,82 €</fo:marker><fo:marker marker-class-name="zwischensumme">23.850,89 €</fo:marker><fo:block text-align="end">53</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 53</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">607,07 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">23.850,89 €</fo:marker><fo:marker marker-class-name="zwischensumme">24.537,15 €</fo:marker><fo:block text-align="end">54</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 54</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">686,26 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">24.537,15 €</fo:marker><fo:marker marker-class-name="zwischensumme">25.302,60 €</fo:marker><fo:block text-align="end">55</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 55</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">765,45 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">25.302,60 €</fo:marker><fo:marker marker-class-name="zwischensumme">26.147,24 €</fo:marker><fo:block text-align="end">56</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 56</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">844,64 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">26.147,24 €</fo:marker><fo:marker marker-class-name="zwischensumme">26.171,07 €</fo:marker><fo:block text-align="end">57</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 57</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">23,83 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">26.171,07 €</fo:marker><fo:marker marker-class-name="zwischensumme">26.274,09 €</fo:marker><fo:block text-align="end">58</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 58</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">103,02 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">26.274,09 €</fo:marker><fo:marker marker-class-name="zwischensumme">26.456,30 €</fo:marker><fo:block text-align="end">59</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 59</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">182,21 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">26.456,30 €</fo:marker><fo:marker marker-class-name="zwischensumme">26.717,70 €</fo:marker><fo:block text-align="end">60</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 60</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">261,40 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">26.717,70 €</fo:marker><fo:marker marker-class-name="zwischensumme">27.058,29 €</fo:marker><fo:block text-align="end">61</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 61</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">340,59 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">27.058,29 €</fo:marker><fo:marker marker-class-name="zwischensumme">27.478,07 €</fo:marker><fo:block text-align="end">62</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 62</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">419,78 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">27.478,07 €</fo:marker><fo:marker marker-class-name="zwischensumme">27.977,04 €</fo:marker><fo:block text-align="end">63</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Lizenzgebühr Abschnitt 63</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">498,97 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">27.977,04 €</fo:marker><fo:marker marker-class-name="zwischensumme">28.555,20 €</fo:marker><fo:block text-align="end">64</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Beratung Abschnitt 64</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">578,16 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">28.555,20 €</fo:marker><fo:marker marker-class-name="zwischensumme">29.212,55 €</fo:marker><fo:block text-align="end">65</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Konzeption Abschnitt 65</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">657,35 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">29.212,55 €</fo:marker><fo:marker marker-class-name="zwischensumme">29.949,09 €</fo:marker><fo:block text-align="end">66</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Umsetzung Modul Abschnitt 66</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">736,54 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">29.949,09 €</fo:marker><fo:marker marker-class-name="zwischensumme">30.764,82 €</fo:marker><fo:block text-align="end">67</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Test und Abnahme Abschnitt 67</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">815,73 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">30.764,82 €</fo:marker><fo:marker marker-class-name="zwischensumme">31.659,74 €</fo:marker><fo:block text-align="end">68</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Schulung Abschnitt 68</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">894,92 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">31.659,74 €</fo:marker><fo:marker marker-class-name="zwischensumme">31.733,85 €</fo:marker><fo:block text-align="end">69</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Dokumentation Abschnitt 69</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">74,11 €</fo:block></fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="2pt"><fo:marker marker-class-name="uebertrag">31.733,85 €</fo:marker><fo:marker marker-class-name="zwischensumme">31.887,15 €</fo:marker><fo:block text-align="end">70</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block>Reisekosten Abschnitt 70</fo:block></fo:table-cell>
+            <fo:table-cell padding="2pt"><fo:block text-align="end">153,30 €</fo:block></fo:table-cell>
+          </fo:table-row>
+        </fo:table-body>
+      </fo:table>
+      <fo:block id="ende" font-weight="bold" space-before="4mm" text-align="end">Gesamtsumme 31.887,15 €</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

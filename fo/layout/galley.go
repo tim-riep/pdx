@@ -58,7 +58,9 @@ type item struct {
 	path []*blockCtx
 	edge edgeKind
 	// brk ist bei erzwungenen Umbrüchen page, odd-page oder even-page.
-	brk    string
+	brk string
+	// seq ist der Index der Box in der Galley.
+	seq    int
 	line   *lineBox
 	anchor *absAnchor
 	// row und slice sind bei Scheiben von Tabellenzeilen und Listenpunkten gesetzt.
@@ -74,6 +76,10 @@ type blockCtx struct {
 	x, w areatree.Length
 	// keep ist die Stärke von keep-together als Penalty.
 	keep int
+	// markers sind die fo:marker des Blocks, first und last die Indizes
+	// seiner ersten und letzten Box in der Galley.
+	markers     markerSet
+	first, last int
 }
 
 // lineBox ist eine gesetzte Zeile. Die Bereiche haben x relativ zum linken
@@ -123,6 +129,11 @@ type galley struct {
 	keepPrev int
 	brk      string
 	lastPath []*blockCtx // Pfad der letzten Box
+
+	// page ist die Seite bei statischen Inhalten (für fo:retrieve-marker),
+	// tbl die Tabelle beim Neusetzen von Kopf und Fuß (fo:retrieve-table-marker).
+	page *areatree.Page
+	tbl  *tableCtx
 }
 
 // push öffnet einen Block: keep-together, keep-with-previous und
@@ -130,6 +141,8 @@ type galley struct {
 func (g *galley) push(ctx *blockCtx) {
 	n := ctx.node
 	ctx.keep = keepValue(n, "keep-together")
+	ctx.markers = collectMarkers(n)
+	ctx.first, ctx.last = -1, -1
 	g.keepPrev = max(g.keepPrev, keepValue(n, "keep-with-previous"))
 	if b := breakValue(n, "break-before"); b != "" {
 		g.brk = b
@@ -204,6 +217,13 @@ func (g *galley) box(it item, before int) {
 	}
 	g.pending = 0
 	it.kind = itBox
+	it.seq = len(g.items)
+	for _, ctx := range it.path {
+		if ctx.first < 0 {
+			ctx.first = it.seq
+		}
+		ctx.last = it.seq
+	}
 	g.items = append(g.items, it)
 }
 
@@ -237,7 +257,18 @@ func (g *galley) next() ordinal {
 // blocks erzeugt die Einträge der Blockkinder eines Elements.
 func (g *galley) blocks(n *tree.Node, p *props.Computed) error {
 	for _, ch := range n.Children {
-		if ch.Kind != tree.Element {
+		if ch.Kind != tree.Element || ch.IsFO("marker") {
+			continue
+		}
+		if m, isRetrieve, err := g.retrieve(ch); isRetrieve {
+			if err != nil {
+				return err
+			}
+			if m != nil {
+				if err := g.mixed(m, p); err != nil {
+					return err
+				}
+			}
 			continue
 		}
 		if err := g.block(ch, p); err != nil {
@@ -245,6 +276,33 @@ func (g *galley) blocks(n *tree.Node, p *props.Computed) error {
 		}
 	}
 	return nil
+}
+
+// retrieve löst fo:retrieve-marker und fo:retrieve-table-marker auf. Der
+// zweite Rückgabewert meldet, ob n ein solches Element ist.
+func (g *galley) retrieve(n *tree.Node) (*tree.Node, bool, error) {
+	switch {
+	case n.IsFO("retrieve-marker"):
+		if g.page == nil {
+			return nil, true, tree.Errorf(n, "fo:retrieve-marker ist nur in fo:static-content erlaubt")
+		}
+		m, err := g.e.retrieveMarker(n, g.page)
+		return m, true, err
+	case n.IsFO("retrieve-table-marker"):
+		if g.tbl == nil {
+			return nil, true, tree.Errorf(n, "fo:retrieve-table-marker ist nur in fo:table-header und fo:table-footer erlaubt")
+		}
+		if g.page == nil {
+			// Beim ersten Setzen steht die Seite noch nicht fest. Für die
+			// reservierte Höhe gilt ein Marker derselben Klasse aus der Tabelle,
+			// der echte Inhalt folgt beim Zeichnen.
+			cls, _ := n.Attr("retrieve-class-name")
+			return g.tbl.sample(cls), true, nil
+		}
+		m, err := g.tbl.retrieveTableMarker(n, g.page)
+		return m, true, err
+	}
+	return nil, false, nil
 }
 
 func (g *galley) block(n *tree.Node, parent *props.Computed) error {
@@ -312,19 +370,40 @@ func (g *galley) mixed(n *tree.Node, p *props.Computed) error {
 		para = newParagraph(g, p, n)
 		return err
 	}
-	for _, ch := range n.Children {
-		if ch.Kind == tree.Element && isBlockLevel(ch) {
-			if err := flush(); err != nil {
+	var walk func(children []*tree.Node) error
+	walk = func(children []*tree.Node) error {
+		for _, ch := range children {
+			if ch.IsFO("marker") {
+				continue
+			}
+			if m, isRetrieve, err := g.retrieve(ch); isRetrieve {
+				if err != nil {
+					return err
+				}
+				if m != nil {
+					if err := walk(m.Children); err != nil {
+						return err
+					}
+				}
+				continue
+			}
+			if ch.Kind == tree.Element && isBlockLevel(ch) {
+				if err := flush(); err != nil {
+					return err
+				}
+				if err := g.block(ch, p); err != nil {
+					return err
+				}
+				continue
+			}
+			if err := para.add(ch, p); err != nil {
 				return err
 			}
-			if err := g.block(ch, p); err != nil {
-				return err
-			}
-			continue
 		}
-		if err := para.add(ch, p); err != nil {
-			return err
-		}
+		return nil
+	}
+	if err := walk(n.Children); err != nil {
+		return err
 	}
 	return flush()
 }

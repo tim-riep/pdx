@@ -51,3 +51,20 @@ der Tabelle nach Breite und dann nach Stilrang auf (6.7.10). Rahmen von
 Spalten und Abschnitten (fo:table-column, fo:table-body) gehen noch nicht in
 die Auflösung ein. Das Modell `collapse-with-precedence` wird wie `collapse`
 behandelt.
+
+## fo:retrieve-table-marker im Tabellenkopf
+
+XSL 1.1 6.13.7 und 7.25.6 erlauben `fo:retrieve-table-marker` in
+`fo:table-header` und `fo:table-footer`. Für `first-starting` gilt der
+erste Bereich mit Marker, der im primären Suchbereich (dem Tabellenfragment
+der Seite) beginnt. pdx setzt den Kopf deshalb erst, nachdem die
+Rumpfzeilen der Seite feststehen, und zeigt im Kopf der Folgeseite den
+Übertrag aus der ersten dort beginnenden Zeile.
+
+FOP 2.11 setzt Tabellenmarker im Kopf nicht ein, der Kopf bleibt an dieser
+Stelle leer. Im Fuß arbeiten beide Engines gleich. Der Vergleich wertet die
+fehlende Zeile im Kopf bei FOP nicht als Fehler (Korpus: uebertrag).
+
+Marker müssen bei FOP in `fo:table-cell` stehen. XSL erlaubt sie auch
+direkt in `fo:table-row`, pdx unterstützt beides. Marker an `fo:inline`
+setzt pdx noch nicht um.

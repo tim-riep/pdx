@@ -129,14 +129,23 @@ var allowed = map[string][]string{
 	"list-item":                           {"list-item-label", "list-item-body"},
 	"list-item-label":                     {"#block"},
 	"list-item-body":                      {"#block"},
+	"marker":                              {"#block", "#inline", "#text"},
+	"retrieve-marker":                     {},
+	"retrieve-table-marker":               {},
 	"page-number":                         {},
 	"page-number-citation":                {},
 	"page-number-citation-last":           {},
 }
 
-var blockLevel = map[string]bool{"block": true, "block-container": true, "table": true, "list-block": true}
+var blockLevel = map[string]bool{"block": true, "block-container": true, "table": true, "list-block": true,
+	"retrieve-marker": true, "retrieve-table-marker": true}
 var inlineLevel = map[string]bool{"inline": true, "external-graphic": true, "page-number": true,
-	"page-number-citation": true, "page-number-citation-last": true}
+	"page-number-citation": true, "page-number-citation-last": true,
+	"retrieve-marker": true, "retrieve-table-marker": true}
+
+// markerParents dürfen fo:marker als Kinder haben.
+var markerParents = map[string]bool{"block": true, "block-container": true, "inline": true, "table-row": true,
+	"table-cell": true, "list-item": true, "list-item-label": true, "list-item-body": true}
 
 // Limits schützen vor entarteten Eingaben.
 const (
@@ -274,6 +283,12 @@ func acceptsText(name string) bool {
 }
 
 func checkChild(parent, n *Node) error {
+	if n.Name == "marker" {
+		if markerParents[parent.Name] {
+			return nil
+		}
+		return Errorf(n, "fo:marker ist in fo:%s nicht erlaubt", parent.Name)
+	}
 	if _, known := allowed[n.Name]; !known {
 		return Errorf(n, "fo:%s wird noch nicht unterstützt", n.Name)
 	}

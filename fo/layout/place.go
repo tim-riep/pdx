@@ -16,6 +16,18 @@ type placer struct {
 	started bool
 	open    []*openFrag
 	curRow  *rowFrag
+	// seen ordnet Bereichen mit Markern ihr Ereignis auf dieser Seite zu.
+	seen map[any]*mkEvent
+	// deferred sind Kopfzeilen mit Tabellenmarkern, die erst nach den
+	// Rumpfzeilen der Seite gezeichnet werden.
+	deferred []deferredRow
+}
+
+// deferredRow ist eine später zu zeichnende Zeile.
+type deferredRow struct {
+	r      *rowLayout
+	y      areatree.Length
+	parent *areatree.Container
 }
 
 // openFrag ist das Fragment eines Blocks auf der aktuellen Seite.
@@ -74,6 +86,17 @@ func (pl *placer) place(items []item) error {
 			}
 		}
 	}
+	// Köpfe mit Tabellenmarkern kennen jetzt die Rumpfzeilen der Seite.
+	for _, d := range pl.deferred {
+		nr, err := d.r.relayout(pl.e, pl.page)
+		if err != nil {
+			return err
+		}
+		if err := pl.drawRowIn(d.parent, nr, 0, nr.h, d.y); err != nil {
+			return err
+		}
+	}
+	pl.deferred = nil
 	pl.closeAll()
 	return nil
 }
@@ -103,6 +126,9 @@ func (pl *placer) box(it item) error {
 		}
 	}
 	pl.sync(it.path, it.edge)
+	for _, ctx := range it.path {
+		pl.note(ctx, ctx.markers, it.seq == ctx.first, it.seq == ctx.last)
+	}
 	folio := formatNumber(pl.page.Number, pl.e.format)
 	for _, ctx := range it.path {
 		if id, ok := ctx.node.Attr("id"); ok && id != "" {
@@ -134,6 +160,11 @@ func (pl *placer) box(it item) error {
 			return err
 		}
 	case it.row != nil:
+		r := it.row
+		if ev, isNew := pl.note(r, r.markers, it.slice == 0, it.slice == len(r.slices)-2); ev != nil && isNew && r.tbl != nil && r.sec == secBody {
+			f := r.tbl.fragFor(pl.page)
+			f.events = append(f.events, ev)
+		}
 		if pl.curRow == nil {
 			pl.curRow = &rowFrag{r: it.row, s0: it.slice, s1: it.slice + 1, y: pl.y}
 		} else {

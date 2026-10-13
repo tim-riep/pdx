@@ -45,6 +45,7 @@ func (e *engine) pageSequence(ps *tree.Node, rootProps *props.Computed) error {
 		e.pageNo = n - 1
 	}
 	e.format = attrOr(ps, "format", "1")
+	e.curSeq = ps
 	p, err := props.Compute(rootProps, ps, 0)
 	if err != nil {
 		return err
@@ -217,6 +218,7 @@ func (s *sequence) finishPage() error {
 		cont := &areatree.Container{Kind: areatree.KindRegion, Rect: r.rect, Source: r.node.Label()}
 		s.page.Areas = append(s.page.Areas, cont)
 		g := newGalley(s.e, r.rect.W, s.page.Number)
+		g.page = s.page
 		if err := g.blocks(sc, p); err != nil {
 			return err
 		}
