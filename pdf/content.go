@@ -112,22 +112,36 @@ func (c *Content) Font(name Name, size float64) {
 // TextMatrix schreibt Tm.
 func (c *Content) TextMatrix(a, b, cc, d, e, f float64) { c.nums(a, b, cc, d, e, f); c.op("Tm") }
 
+// TextRise schreibt Ts.
+func (c *Content) TextRise(v float64) { c.nums(v); c.op("Ts") }
+
 // ShowGlyphs schreibt TJ für zweibyteige Glyph-IDs (Identity-H). adjust[i]
 // ist die Korrektur vor Glyph i in Tausendstel der Schriftgröße, positiv nach
 // links wie in TJ üblich. adjust darf nil sein.
 func (c *Content) ShowGlyphs(gids []uint16, adjust []float64) {
 	const hex = "0123456789ABCDEF"
-	c.b.WriteString("[<")
+	c.b.WriteByte('[')
+	open := false
 	for i, g := range gids {
-		if adjust != nil && adjust[i] != 0 && i > 0 {
-			c.b.WriteString("> ")
+		if adjust != nil && adjust[i] != 0 {
+			if open {
+				c.b.WriteString("> ")
+				open = false
+			}
 			c.b.WriteString(FormatNumber(adjust[i]))
-			c.b.WriteString(" <")
+			c.b.WriteByte(' ')
+		}
+		if !open {
+			c.b.WriteByte('<')
+			open = true
 		}
 		c.b.WriteByte(hex[g>>12&15])
 		c.b.WriteByte(hex[g>>8&15])
 		c.b.WriteByte(hex[g>>4&15])
 		c.b.WriteByte(hex[g&15])
 	}
-	c.op(">] TJ")
+	if open {
+		c.b.WriteByte('>')
+	}
+	c.op("] TJ")
 }

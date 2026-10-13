@@ -2,18 +2,145 @@ package render
 
 import (
 	"fmt"
+	"math"
+	"strconv"
 
 	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/font"
+	"github.com/tim-riep/pdx/pdf"
 )
 
-// fontSet verwaltet die eingebetteten Schriften. Die Einbettung folgt im
-// Schritt Schriften.
-type fontSet struct{ r *renderer }
+// fontSet sammelt die Glyphennutzung aller Seiten und bettet jede Schrift
+// einmal als Teilmenge ein.
+type fontSet struct {
+	r     *renderer
+	usage map[areatree.FontID]*font.Usage
+	emb   map[areatree.FontID]*font.Embedded
+}
 
-func newFontSet(r *renderer) *fontSet { return &fontSet{r: r} }
+func newFontSet(r *renderer) *fontSet {
+	return &fontSet{r: r, usage: map[areatree.FontID]*font.Usage{}, emb: map[areatree.FontID]*font.Embedded{}}
+}
 
-func (fs *fontSet) embed() error { return nil }
+// collect durchläuft alle Seiten und vermerkt jede genutzte Glyphe.
+func (fs *fontSet) collect() error {
+	var err error
+	for _, p := range fs.r.doc.Pages {
+		areatree.Walk(p.Areas, func(a areatree.Area) bool {
+			g, ok := a.(*areatree.GlyphRun)
+			if !ok || err != nil {
+				return err == nil
+			}
+			u, e := fs.usageFor(g.Font)
+			if e != nil {
+				err = e
+				return false
+			}
+			for _, gl := range g.Glyphs {
+				if gl.ID == 0 {
+					err = fmt.Errorf("Seite %d: Glyph-Run nutzt die .notdef-Glyphe", p.Number)
+					return false
+				}
+				u.Add(gl.ID, gl.Text)
+			}
+			return true
+		})
+	}
+	return err
+}
 
+func (fs *fontSet) usageFor(id areatree.FontID) (*font.Usage, error) {
+	if u, ok := fs.usage[id]; ok {
+		return u, nil
+	}
+	if int(id) < 0 || int(id) >= len(fs.r.doc.Fonts) {
+		return nil, fmt.Errorf("Schrift %d ist im Dokument nicht deklariert", id)
+	}
+	face, ok := fs.r.doc.Fonts[id].Source.(*font.Face)
+	if !ok {
+		return nil, fmt.Errorf("Schrift %d hat keine ladbare Schriftquelle", id)
+	}
+	u := font.NewUsage(face)
+	fs.usage[id] = u
+	return u, nil
+}
+
+// embed bettet die Schriften in der Reihenfolge ihrer FontID ein.
+func (fs *fontSet) embed() error {
+	for id := range fs.r.doc.Fonts {
+		u, ok := fs.usage[areatree.FontID(id)]
+		if !ok {
+			continue
+		}
+		e, err := font.Embed(fs.r.d, u)
+		if err != nil {
+			return err
+		}
+		fs.emb[areatree.FontID(id)] = e
+	}
+	return nil
+}
+
+func fontResName(id areatree.FontID) pdf.Name { return pdf.Name("F" + strconv.Itoa(int(id))) }
+
+// glyphs schreibt einen Glyph-Run. Die Vorschübe des Area Tree werden über
+// TJ-Korrekturen gegenüber den /W-Breiten exakt nachgebildet, vertikale
+// Versätze über die Textanhebung Ts.
 func (pc *pageCtx) glyphs(g *areatree.GlyphRun) error {
-	return fmt.Errorf("Glyph-Runs werden noch nicht unterstützt")
+	if len(g.Glyphs) == 0 {
+		return nil
+	}
+	e, ok := pc.r.fonts.emb[g.Font]
+	if !ok {
+		return fmt.Errorf("Schrift %d wurde nicht eingebettet", g.Font)
+	}
+	name := fontResName(g.Font)
+	pc.res.fonts.Set(name, e.Ref)
+
+	size := g.Size.Pt()
+	if size <= 0 {
+		return fmt.Errorf("Schriftgröße muss positiv sein")
+	}
+	pc.c.Save()
+	if err := pc.fill(g.Color); err != nil {
+		return err
+	}
+	pc.c.BeginText()
+	pc.c.Font(name, size)
+	pc.c.TextMatrix(1, 0, 0, 1, pc.x(g.Origin.X), pc.y(g.Origin.Y))
+
+	k := 1000 / size
+	carry := 0.0 // Korrektur aus der vorigen Glyphe
+	rise := areatree.Length(0)
+	var gids []uint16
+	var adj []float64
+	flush := func() {
+		if len(gids) > 0 {
+			pc.c.ShowGlyphs(gids, adj)
+			gids, adj = gids[:0], adj[:0]
+		}
+	}
+	for _, gl := range g.Glyphs {
+		if gl.YOffset != rise {
+			flush()
+			rise = gl.YOffset
+			pc.c.TextRise(-rise.Pt())
+		}
+		xo := gl.XOffset.Pt() * k
+		gids = append(gids, e.CID[gl.ID])
+		adj = append(adj, round3(carry-xo))
+		carry = e.Width[gl.ID] - gl.Advance.Pt()*k + xo
+	}
+	flush()
+	pc.c.EndText()
+	pc.c.Restore()
+	return nil
+}
+
+func round3(v float64) float64 {
+	r := math.Round(v*1000) / 1000
+	if r == 0 {
+		return 0
+	}
+	return r
 }

@@ -77,6 +77,12 @@ func (r *renderer) build() error {
 		return fmt.Errorf("render: Dokument hat keine Seiten")
 	}
 	r.pages = r.d.Reserve()
+	if err := r.fonts.collect(); err != nil {
+		return err
+	}
+	if err := r.fonts.embed(); err != nil {
+		return err
+	}
 	var kids pdf.Array
 	for _, p := range r.doc.Pages {
 		ref, err := r.page(p)
@@ -84,9 +90,6 @@ func (r *renderer) build() error {
 			return fmt.Errorf("Seite %d: %w", p.Number, err)
 		}
 		kids = append(kids, ref)
-	}
-	if err := r.fonts.embed(); err != nil {
-		return err
 	}
 	r.d.Set(r.pages, pdf.D("Type", pdf.Name("Pages"), "Kids", kids, "Count", pdf.Int(len(kids))))
 
