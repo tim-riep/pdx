@@ -1,0 +1,12 @@
+document title="Probe" lang="de-DE"
+  font 0 LiberationSans
+  image 0 sha256:abc 640x480
+  attachment "a.xml" mime=text/xml rel=Alternative bytes=4
+  page 1 595.276x841.89
+    block 56.693,56.693 481.89x30 bg=rgb(1,0,0) top=0.5/solid/gray(0) src=fo:block@3:7
+      line 56.693,56.693 481.89x14.4
+        text 56.693,67 font=0 size=12 color=gray(0) asc=10.86 desc=2.544 "Ha"
+          glyphs 43:8.664 1:6.672@0.01,0
+    image 0,100 64x48 id=0
+    line 0,0 100,0 0.25/dashed/gray(0.5)
+    box 0,0 1x1 fill=rgb(1,0,0) stroke=0.1/solid/gray(0)
