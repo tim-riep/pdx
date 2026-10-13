@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FOP-Konfiguration für Vergleichstests: dieselben Liberation-Schriften wie
+     in pdx, damit Metriken und Umbrüche vergleichbar sind. -->
+<fop version="1.0">
+  <source-resolution>72</source-resolution>
+  <target-resolution>72</target-resolution>
+  <default-page-settings height="297mm" width="210mm"/>
+  <renderers>
+    <renderer mime="application/pdf">
+      <fonts>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSans-Regular.ttf">
+          <font-triplet name="Liberation Sans" style="normal" weight="normal"/>
+          <font-triplet name="Helvetica" style="normal" weight="normal"/>
+          <font-triplet name="Arial" style="normal" weight="normal"/>
+          <font-triplet name="sans-serif" style="normal" weight="normal"/>
+          <font-triplet name="any" style="normal" weight="normal"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSans-Bold.ttf">
+          <font-triplet name="Liberation Sans" style="normal" weight="bold"/>
+          <font-triplet name="Helvetica" style="normal" weight="bold"/>
+          <font-triplet name="Arial" style="normal" weight="bold"/>
+          <font-triplet name="sans-serif" style="normal" weight="bold"/>
+          <font-triplet name="any" style="normal" weight="bold"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSans-Italic.ttf">
+          <font-triplet name="Liberation Sans" style="italic" weight="normal"/>
+          <font-triplet name="Helvetica" style="italic" weight="normal"/>
+          <font-triplet name="Arial" style="italic" weight="normal"/>
+          <font-triplet name="sans-serif" style="italic" weight="normal"/>
+          <font-triplet name="any" style="italic" weight="normal"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSans-BoldItalic.ttf">
+          <font-triplet name="Liberation Sans" style="italic" weight="bold"/>
+          <font-triplet name="Helvetica" style="italic" weight="bold"/>
+          <font-triplet name="Arial" style="italic" weight="bold"/>
+          <font-triplet name="sans-serif" style="italic" weight="bold"/>
+          <font-triplet name="any" style="italic" weight="bold"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSerif-Regular.ttf">
+          <font-triplet name="Liberation Serif" style="normal" weight="normal"/>
+          <font-triplet name="Times" style="normal" weight="normal"/>
+          <font-triplet name="Times-Roman" style="normal" weight="normal"/>
+          <font-triplet name="Times New Roman" style="normal" weight="normal"/>
+          <font-triplet name="serif" style="normal" weight="normal"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSerif-Bold.ttf">
+          <font-triplet name="Liberation Serif" style="normal" weight="bold"/>
+          <font-triplet name="Times" style="normal" weight="bold"/>
+          <font-triplet name="Times-Roman" style="normal" weight="bold"/>
+          <font-triplet name="Times New Roman" style="normal" weight="bold"/>
+          <font-triplet name="serif" style="normal" weight="bold"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSerif-Italic.ttf">
+          <font-triplet name="Liberation Serif" style="italic" weight="normal"/>
+          <font-triplet name="Times" style="italic" weight="normal"/>
+          <font-triplet name="Times-Roman" style="italic" weight="normal"/>
+          <font-triplet name="Times New Roman" style="italic" weight="normal"/>
+          <font-triplet name="serif" style="italic" weight="normal"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationSerif-BoldItalic.ttf">
+          <font-triplet name="Liberation Serif" style="italic" weight="bold"/>
+          <font-triplet name="Times" style="italic" weight="bold"/>
+          <font-triplet name="Times-Roman" style="italic" weight="bold"/>
+          <font-triplet name="Times New Roman" style="italic" weight="bold"/>
+          <font-triplet name="serif" style="italic" weight="bold"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationMono-Regular.ttf">
+          <font-triplet name="Liberation Mono" style="normal" weight="normal"/>
+          <font-triplet name="Courier" style="normal" weight="normal"/>
+          <font-triplet name="Courier New" style="normal" weight="normal"/>
+          <font-triplet name="monospace" style="normal" weight="normal"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationMono-Bold.ttf">
+          <font-triplet name="Liberation Mono" style="normal" weight="bold"/>
+          <font-triplet name="Courier" style="normal" weight="bold"/>
+          <font-triplet name="Courier New" style="normal" weight="bold"/>
+          <font-triplet name="monospace" style="normal" weight="bold"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationMono-Italic.ttf">
+          <font-triplet name="Liberation Mono" style="italic" weight="normal"/>
+          <font-triplet name="Courier" style="italic" weight="normal"/>
+          <font-triplet name="Courier New" style="italic" weight="normal"/>
+          <font-triplet name="monospace" style="italic" weight="normal"/>
+        </font>
+        <font kerning="yes" embed-url="file:///fonts/LiberationMono-BoldItalic.ttf">
+          <font-triplet name="Liberation Mono" style="italic" weight="bold"/>
+          <font-triplet name="Courier" style="italic" weight="bold"/>
+          <font-triplet name="Courier New" style="italic" weight="bold"/>
+          <font-triplet name="monospace" style="italic" weight="bold"/>
+        </font>
+      </fonts>
+    </renderer>
+  </renderers>
+</fop>

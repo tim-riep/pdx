@@ -6,7 +6,7 @@ DATE    ?= 2026-01-01T00:00:00Z
 CORPUS := $(wildcard testdata/fo/*.fo)
 PDFS   := $(patsubst testdata/fo/%.fo,$(OUT)/%.pdf,$(CORPUS))
 
-.PHONY: all build test vet fuzz golden conformance clean
+.PHONY: all build test vet fuzz golden conformance fop-compare clean
 
 all: vet test
 
@@ -39,3 +39,7 @@ $(OUT)/%.pdf: testdata/fo/%.fo build
 
 clean:
 	rm -rf $(OUT) pdx
+
+# Vergleicht den Korpus mit Apache FOP (Docker, nur für Tests).
+fop-compare:
+	PDX_FOP=1 $(GO) test -run CorpusAgainstFOP -v ./internal/fopcompare
