@@ -1,0 +1,5 @@
+/pdx
+/out/
+*.test
+*.prof
+testdata/fuzz/**/corpus-tmp
