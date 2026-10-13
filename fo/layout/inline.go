@@ -2,7 +2,6 @@ package layout
 
 import (
 	"errors"
-	"strconv"
 	"strings"
 
 	"github.com/tim-riep/pdx/areatree"
@@ -64,6 +63,8 @@ type piece struct {
 	// deferred ist bei Seitenzahlen im Fluss gesetzt, deren Wert erst beim
 	// Platzieren feststeht.
 	deferred *tree.Node
+	// ids sind IDs von Inline-Elementen, deren Inhalt mit diesem Stück beginnt.
+	ids []string
 }
 
 // paragraph sammelt die Stücke eines Absatzes.
@@ -127,19 +128,32 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 		if err != nil {
 			return err
 		}
+		before := len(pa.pieces)
 		for _, ch := range n.Children {
 			if err := pa.add(ch, ip); err != nil {
 				return err
 			}
 		}
+		pa.markID(n, before)
 		return nil
+	case n.IsFO("page-number-citation"), n.IsFO("page-number-citation-last"):
+		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
+		if err != nil {
+			return err
+		}
+		ref, _ := n.Attr("ref-id")
+		if ref == "" {
+			return tree.Errorf(n, "ref-id fehlt")
+		}
+		text := pa.g.e.citationText(n, ref, n.IsFO("page-number-citation-last"))
+		return pa.text(n, ip, text, false)
 	case n.IsFO("page-number"):
 		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
 		if err != nil {
 			return err
 		}
 		if pa.g.pageNo > 0 {
-			return pa.text(n, ip, strconv.Itoa(pa.g.pageNo), false)
+			return pa.text(n, ip, formatNumber(pa.g.pageNo, pa.g.e.format), false)
 		}
 		if err := pa.text(n, ip, pa.g.e.guess(n), false); err != nil {
 			return err
@@ -150,6 +164,20 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 		return pa.graphic(n, p)
 	}
 	return tree.Errorf(n, "%s wird im Absatz nicht unterstützt", n.Label())
+}
+
+// markID hängt die ID eines Inline-Elements an das erste Stück mit Inhalt.
+func (pa *paragraph) markID(n *tree.Node, from int) {
+	id, ok := n.Attr("id")
+	if !ok || id == "" {
+		return
+	}
+	for i := from; i < len(pa.pieces); i++ {
+		if k := pa.pieces[i].kind; k == pText || k == pGraphic {
+			pa.pieces[i].ids = append(pa.pieces[i].ids, id)
+			return
+		}
+	}
 }
 
 // text zerlegt Text in Wörter und Leerräume. Leerraum wird nach den
@@ -250,9 +278,10 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 }
 
 // items übersetzt die Stücke in das Box-Glue-Penalty-Modell.
-func (pa *paragraph) items() []linebreak.Item {
+func (pa *paragraph) items(from int) []linebreak.Item {
 	items := make([]linebreak.Item, 0, len(pa.pieces))
-	for i, pc := range pa.pieces {
+	for i := from; i < len(pa.pieces); i++ {
+		pc := pa.pieces[i]
 		switch pc.kind {
 		case pText, pGraphic:
 			items = append(items, linebreak.Item{Kind: linebreak.Box, Width: pc.width, Payload: i})
@@ -278,7 +307,17 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	if first {
 		indent = p.TextIndent
 	}
-	items := pa.items()
+	ord := g.next()
+	if ord.major < g.skip.major {
+		return nil
+	}
+	from := 0
+	if ord.major == g.skip.major {
+		// Neuaufbau nach Breitenwechsel: der Absatz wird ab dem ersten Stück
+		// der neuen Seite umbrochen, ohne Einzug der ersten Zeile.
+		from, indent = g.skip.minor, 0
+	}
+	items := pa.items(from)
 	breaks, err := g.e.opts.Breaker.Break(items, func(line int) areatree.Length {
 		if line == 0 {
 			return avail - indent
@@ -304,14 +343,18 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 		for e > s && items[e-1].Kind != linebreak.Box {
 			e--
 		}
-		last := end >= len(items) || items[end].Kind == linebreak.Penalty
+		last := end >= len(items) || (items[end].Kind == linebreak.Penalty && items[end].Penalty <= linebreak.ForcedBreak)
 		lineW := avail
 		lx := x0
 		if li == 0 {
 			lineW -= indent
 			lx += indent
 		}
-		if err := g.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last); err != nil {
+		lo := ord
+		if s < len(items) {
+			lo.minor = items[s].Payload
+		}
+		if err := g.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last, lo); err != nil {
 			return err
 		}
 		start = end + 1
@@ -319,7 +362,7 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	return nil
 }
 
-func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool) error {
+func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool, ord ordinal) error {
 	p := pa.p
 	align := p.TextAlign
 	if last {
@@ -415,6 +458,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			x += pc.width
 		}
 	}
-	g.addLine(line)
+	for _, it := range seg {
+		line.ids = append(line.ids, pa.pieces[it.Payload].ids...)
+	}
+	g.addLine(line, ord)
 	return nil
 }

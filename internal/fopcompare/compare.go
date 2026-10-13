@@ -188,11 +188,8 @@ func withX(at []ATLine, pl []Line) []cmpLine {
 // PDXLines liest die Zeilen mit Grundlinie aus dem Area Tree von pdx.
 func PDXLines(d *areatree.Document) []ATLine {
 	var out []ATLine
-	first := 0
-	if len(d.Pages) > 0 {
-		first = d.Pages[0].Number
-	}
-	for _, p := range d.Pages {
+	for pi, p := range d.Pages {
+		pageIdx := pi + 1
 		areatree.Walk(p.Areas, func(a areatree.Area) bool {
 			c, ok := a.(*areatree.Container)
 			if !ok || c.Kind != areatree.KindLine {
@@ -206,7 +203,7 @@ func PDXLines(d *areatree.Document) []ATLine {
 				return true
 			})
 			if base >= 0 {
-				out = append(out, ATLine{Page: p.Number - first + 1, Text: lineText(c), Baseline: base})
+				out = append(out, ATLine{Page: pageIdx, Text: lineText(c), Baseline: base})
 			}
 			return false
 		})
@@ -300,7 +297,8 @@ func lcs(n, m int, eq func(i, j int) bool) [][2]int {
 // PDXBlocks liest die Blöcke mit eigenen Zeilen aus dem Area Tree von pdx.
 func PDXBlocks(d *areatree.Document) []Block {
 	var out []Block
-	for _, p := range d.Pages {
+	for pi, p := range d.Pages {
+		pageIdx := pi + 1
 		var visit func(areas []areatree.Area)
 		visit = func(areas []areatree.Area) {
 			for _, a := range areas {
@@ -309,7 +307,7 @@ func PDXBlocks(d *areatree.Document) []Block {
 					continue
 				}
 				if c.Kind == areatree.KindBlock {
-					b := Block{Page: p.Number, Top: -1}
+					b := Block{Page: pageIdx, Top: -1}
 					for _, ch := range c.Children {
 						if l, ok := ch.(*areatree.Container); ok && l.Kind == areatree.KindLine {
 							if b.Lines == 0 {
@@ -327,13 +325,6 @@ func PDXBlocks(d *areatree.Document) []Block {
 			}
 		}
 		visit(p.Areas)
-	}
-	// Seitenzahlen relativ zur ersten Seite, wie bei FOP ab 1 gezählt.
-	if len(out) > 0 && len(d.Pages) > 0 {
-		first := d.Pages[0].Number
-		for i := range out {
-			out[i].Page = out[i].Page - first + 1
-		}
 	}
 	return out
 }

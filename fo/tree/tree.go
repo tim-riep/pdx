@@ -96,28 +96,36 @@ func Errorf(n *Node, format string, args ...any) error {
 	return &Error{Line: n.Line, Col: n.Col, Msg: fmt.Sprintf(format, args...)}
 }
 
-// Elemente des Teilumfangs von Phase 0 und ihre erlaubten FO-Kinder. "#text"
+// Elemente des unterstützten Teilumfangs und ihre erlaubten FO-Kinder. "#text"
 // erlaubt Text, "#block" alle Blockelemente, "#inline" alle Inlineelemente.
 var allowed = map[string][]string{
-	"root":               {"layout-master-set", "declarations", "page-sequence"},
-	"layout-master-set":  {"simple-page-master"},
-	"declarations":       {},
-	"simple-page-master": {"region-body", "region-before", "region-after"},
-	"region-body":        {},
-	"region-before":      {},
-	"region-after":       {},
-	"page-sequence":      {"flow", "static-content"},
-	"flow":               {"#block"},
-	"static-content":     {"#block"},
-	"block":              {"#block", "#inline", "#text"},
-	"block-container":    {"#block"},
-	"inline":             {"#inline", "#text"},
-	"external-graphic":   {},
-	"page-number":        {},
+	"root":                                {"layout-master-set", "declarations", "page-sequence"},
+	"layout-master-set":                   {"simple-page-master", "page-sequence-master"},
+	"page-sequence-master":                {"single-page-master-reference", "repeatable-page-master-reference", "repeatable-page-master-alternatives"},
+	"single-page-master-reference":        {},
+	"repeatable-page-master-reference":    {},
+	"repeatable-page-master-alternatives": {"conditional-page-master-reference"},
+	"conditional-page-master-reference":   {},
+	"declarations":                        {},
+	"simple-page-master":                  {"region-body", "region-before", "region-after"},
+	"region-body":                         {},
+	"region-before":                       {},
+	"region-after":                        {},
+	"page-sequence":                       {"flow", "static-content"},
+	"flow":                                {"#block"},
+	"static-content":                      {"#block"},
+	"block":                               {"#block", "#inline", "#text"},
+	"block-container":                     {"#block"},
+	"inline":                              {"#inline", "#text"},
+	"external-graphic":                    {},
+	"page-number":                         {},
+	"page-number-citation":                {},
+	"page-number-citation-last":           {},
 }
 
 var blockLevel = map[string]bool{"block": true, "block-container": true}
-var inlineLevel = map[string]bool{"inline": true, "external-graphic": true, "page-number": true}
+var inlineLevel = map[string]bool{"inline": true, "external-graphic": true, "page-number": true,
+	"page-number-citation": true, "page-number-citation-last": true}
 
 // Limits schützen vor entarteten Eingaben.
 const (
@@ -256,7 +264,7 @@ func acceptsText(name string) bool {
 
 func checkChild(parent, n *Node) error {
 	if _, known := allowed[n.Name]; !known {
-		return Errorf(n, "fo:%s wird in Phase 0 nicht unterstützt", n.Name)
+		return Errorf(n, "fo:%s wird noch nicht unterstützt", n.Name)
 	}
 	for _, c := range allowed[parent.Name] {
 		switch {

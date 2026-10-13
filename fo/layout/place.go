@@ -56,6 +56,17 @@ func (pl *placer) place(items []item) error {
 
 func (pl *placer) box(it item) error {
 	pl.sync(it.path, it.edge)
+	folio := formatNumber(pl.page.Number, pl.e.format)
+	for _, ctx := range it.path {
+		if id, ok := ctx.node.Attr("id"); ok && id != "" {
+			pl.e.recordID(id, folio)
+		}
+	}
+	if it.line != nil {
+		for _, id := range it.line.ids {
+			pl.e.recordID(id, folio)
+		}
+	}
 	switch {
 	case it.edge == edgeTop:
 		pl.y += it.h
@@ -137,7 +148,7 @@ func (pl *placer) line(l *lineBox) error {
 	}
 	for _, d := range l.deferred {
 		run := c.Children[d.index].(*areatree.GlyphRun)
-		text := itoa(pl.page.Number)
+		text := formatNumber(pl.page.Number, pl.e.format)
 		gs, err := d.st.face.Shape(text, d.st.p.FontSize, font.ShapeOptions{})
 		if err != nil {
 			return errorAt(d.node, err)

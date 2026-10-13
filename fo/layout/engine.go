@@ -9,8 +9,6 @@
 package layout
 
 import (
-	"strconv"
-
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/fo/linebreak"
 	"github.com/tim-riep/pdx/fo/props"
@@ -30,18 +28,81 @@ type Options struct {
 }
 
 type engine struct {
-	opts    Options
-	doc     *areatree.Document
-	masters map[string]*master
-	fontIDs map[*font.Face]areatree.FontID
-	imgIDs  map[string]areatree.ImageID
-	pageNo  int
+	opts       Options
+	doc        *areatree.Document
+	masters    map[string]*master
+	seqMasters map[string]*seqMaster
+	fontIDs    map[*font.Face]areatree.FontID
+	imgIDs     map[string]areatree.ImageID
+	pageNo     int
 
 	// prev enthält die Texte seitenabhängiger Inhalte aus dem vorigen
 	// Durchlauf, next die dieses Durchlaufs. unstable ist gesetzt, wenn sich
 	// eine reservierte Breite als falsch erwiesen hat.
 	prev, next map[*tree.Node]string
 	unstable   bool
+
+	// ids ordnet jeder ID die erste und letzte Seite zu (formatiert).
+	ids map[string]*idPages
+	// cited merkt sich die in diesem Durchlauf ausgegebenen Verweise.
+	cited map[*tree.Node]citation
+	// prevIDs sind die Seiten der IDs aus dem vorigen Durchlauf.
+	prevIDs map[string]*idPages
+	// format ist das Seitenzahlformat der aktuellen Seitenfolge.
+	format string
+}
+
+// idPages sind die erste und letzte Seite einer ID.
+type idPages struct {
+	first, last string
+}
+
+// citation ist ein ausgegebener Seitenverweis.
+type citation struct {
+	ref  string
+	last bool
+	text string
+}
+
+// recordID vermerkt, dass ein Bereich mit der ID auf einer Seite liegt.
+func (e *engine) recordID(id string, page string) {
+	if p, ok := e.ids[id]; ok {
+		p.last = page
+		return
+	}
+	e.ids[id] = &idPages{first: page, last: page}
+}
+
+// citationText liefert den Text eines Verweises aus dem vorigen Durchlauf.
+// Fehlt er, wird geschätzt und ein weiterer Durchlauf ist nötig.
+func (e *engine) citationText(n *tree.Node, ref string, last bool) string {
+	text := "1"
+	if p, ok := e.prevIDs[ref]; ok {
+		text = p.first
+		if last {
+			text = p.last
+		}
+	}
+	e.cited[n] = citation{ref: ref, last: last, text: text}
+	return text
+}
+
+// checkCitations prüft nach einem Durchlauf alle Verweise.
+func (e *engine) checkCitations() error {
+	for n, c := range e.cited {
+		p, ok := e.ids[c.ref]
+		if !ok {
+			return tree.Errorf(n, "ref-id %q verweist auf keine ID im Dokument", c.ref)
+		}
+		want := p.first
+		if c.last {
+			want = p.last
+		}
+		if want != c.text {
+			e.unstable = true
+		}
+	}
+	return nil
 }
 
 // maxPasses begrenzt die Durchläufe für seitenabhängige Inhalte.
@@ -74,18 +135,29 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 	if opts.Resolver == nil {
 		opts.Resolver = denyResolver{}
 	}
+	if err := checkIDs(root); err != nil {
+		return nil, err
+	}
 	prev := map[*tree.Node]string{}
+	prevIDs := map[string]*idPages{}
 	for pass := 1; ; pass++ {
 		e := &engine{
-			opts:    opts,
-			doc:     &areatree.Document{},
-			masters: map[string]*master{},
-			fontIDs: map[*font.Face]areatree.FontID{},
-			imgIDs:  map[string]areatree.ImageID{},
-			prev:    prev,
-			next:    map[*tree.Node]string{},
+			opts:       opts,
+			doc:        &areatree.Document{},
+			masters:    map[string]*master{},
+			seqMasters: map[string]*seqMaster{},
+			ids:        map[string]*idPages{},
+			cited:      map[*tree.Node]citation{},
+			fontIDs:    map[*font.Face]areatree.FontID{},
+			imgIDs:     map[string]areatree.ImageID{},
+			prev:       prev,
+			prevIDs:    prevIDs,
+			next:       map[*tree.Node]string{},
 		}
 		if err := e.run(root); err != nil {
+			return nil, err
+		}
+		if err := e.checkCitations(); err != nil {
 			return nil, err
 		}
 		if !e.unstable {
@@ -94,8 +166,32 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 		if pass == maxPasses {
 			return nil, tree.Errorf(root, "Seitenzahlen nach %d Durchläufen nicht stabil", maxPasses)
 		}
-		prev = e.next
+		prev, prevIDs = e.next, e.ids
 	}
+}
+
+// checkIDs prüft, dass jede ID nur einmal vorkommt.
+func checkIDs(root *tree.Node) error {
+	seen := map[string]*tree.Node{}
+	var walk func(n *tree.Node) error
+	walk = func(n *tree.Node) error {
+		if n.Kind != tree.Element {
+			return nil
+		}
+		if id, ok := n.Attr("id"); ok && id != "" && n.Space == tree.NSFO {
+			if prev, dup := seen[id]; dup {
+				return tree.Errorf(n, "id %q ist doppelt, zuerst bei %s", id, prev.Pos())
+			}
+			seen[id] = n
+		}
+		for _, c := range n.Children {
+			if err := walk(c); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return walk(root)
 }
 
 func (e *engine) run(root *tree.Node) error {
@@ -149,6 +245,12 @@ type region struct {
 
 func (e *engine) readMasters(lms *tree.Node) error {
 	for _, m := range lms.Children {
+		if m.IsFO("page-sequence-master") {
+			if err := e.readSequenceMaster(m); err != nil {
+				return err
+			}
+			continue
+		}
 		if !m.IsFO("simple-page-master") {
 			continue
 		}
@@ -156,7 +258,7 @@ func (e *engine) readMasters(lms *tree.Node) error {
 		if !ok || name == "" {
 			return tree.Errorf(m, "master-name fehlt")
 		}
-		if _, dup := e.masters[name]; dup {
+		if _, dup := e.masters[name]; dup || e.seqMasters[name] != nil {
 			return tree.Errorf(m, "master-name %q ist doppelt", name)
 		}
 		w, err := props.LengthAttr(m, "page-width", areatree.Points(595.276), 12*areatree.Pt, -1)
@@ -210,7 +312,7 @@ func (e *engine) readMasters(lms *tree.Node) error {
 		}
 		e.masters[name] = mm
 	}
-	return nil
+	return e.checkMasters()
 }
 
 func attrOr(n *tree.Node, name, def string) string {
@@ -218,120 +320,6 @@ func attrOr(n *tree.Node, name, def string) string {
 		return v
 	}
 	return def
-}
-
-// sequence ist der Zustand einer fo:page-sequence.
-type sequence struct {
-	e       *engine
-	m       *master
-	props   *props.Computed
-	statics map[string]*tree.Node
-	page    *areatree.Page
-}
-
-func (e *engine) pageSequence(ps *tree.Node, rootProps *props.Computed) error {
-	ref, _ := ps.Attr("master-reference")
-	m, ok := e.masters[ref]
-	if !ok {
-		return tree.Errorf(ps, "Seitenvorlage %q nicht gefunden (fo:page-sequence-master folgt in Phase 1)", ref)
-	}
-	if v, ok := ps.Attr("initial-page-number"); ok && v != "auto" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n < 1 {
-			return tree.Errorf(ps, "initial-page-number %q wird nicht unterstützt", v)
-		}
-		e.pageNo = n - 1
-	}
-	p, err := props.Compute(rootProps, ps, m.body.W)
-	if err != nil {
-		return err
-	}
-	s := &sequence{e: e, m: m, props: p, statics: map[string]*tree.Node{}}
-	var flow *tree.Node
-	for _, c := range ps.Children {
-		switch {
-		case c.IsFO("static-content"):
-			name, _ := c.Attr("flow-name")
-			if _, dup := s.statics[name]; dup {
-				return tree.Errorf(c, "flow-name %q ist doppelt", name)
-			}
-			s.statics[name] = c
-		case c.IsFO("flow"):
-			if flow != nil {
-				return tree.Errorf(c, "mehr als ein fo:flow")
-			}
-			flow = c
-		}
-	}
-	if flow == nil {
-		return tree.Errorf(ps, "fo:flow fehlt")
-	}
-	if name, _ := flow.Attr("flow-name"); name != m.bodyName {
-		return tree.Errorf(flow, "flow-name %q passt nicht zur Region %q", name, m.bodyName)
-	}
-	flowProps, err := props.Compute(p, flow, m.body.W)
-	if err != nil {
-		return err
-	}
-	g := newGalley(e, m.body.W, 0)
-	if err := g.blocks(flow, flowProps); err != nil {
-		return err
-	}
-	return s.paginate(g.items)
-}
-
-// paginate verteilt die Galley auf Seiten.
-func (s *sequence) paginate(items []item) error {
-	pos := 0
-	for {
-		region := s.newPage()
-		end := breakPage(items, pos, s.m.body.H)
-		pl := newPlacer(s.e, s.page, s.m.body, region)
-		if err := pl.place(items[pos:end]); err != nil {
-			return err
-		}
-		if err := s.finishPage(); err != nil {
-			return err
-		}
-		if end >= len(items) {
-			return nil
-		}
-		pos = end + 1
-	}
-}
-
-// newPage beginnt eine neue Seite und liefert den Container der Region body.
-func (s *sequence) newPage() *areatree.Container {
-	s.e.pageNo++
-	s.page = &areatree.Page{Number: s.e.pageNo, Width: s.m.width, Height: s.m.height}
-	s.e.doc.Pages = append(s.e.doc.Pages, s.page)
-	region := &areatree.Container{Kind: areatree.KindRegion, Rect: s.m.body, Source: s.m.bodyNode.Label()}
-	s.page.Areas = append(s.page.Areas, region)
-	return region
-}
-
-// finishPage setzt die statischen Inhalte der aktuellen Seite.
-func (s *sequence) finishPage() error {
-	for _, r := range s.m.regions {
-		sc, ok := s.statics[r.name]
-		if !ok {
-			continue
-		}
-		p, err := props.Compute(s.props, sc, r.rect.W)
-		if err != nil {
-			return err
-		}
-		cont := &areatree.Container{Kind: areatree.KindRegion, Rect: r.rect, Source: r.node.Label()}
-		s.page.Areas = append(s.page.Areas, cont)
-		g := newGalley(s.e, r.rect.W, s.page.Number)
-		if err := g.blocks(sc, p); err != nil {
-			return err
-		}
-		if err := newPlacer(s.e, s.page, r.rect, cont).place(g.items); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // fontID registriert eine Schrift im Dokument.

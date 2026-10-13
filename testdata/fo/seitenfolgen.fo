@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Seitenfolgen: Erstseite, gerade und ungerade Folgeseiten, letzte Seite,
+     Seite X von Y, Verweise, römische Zählung und force-page-count. -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="erste" page-width="210mm" page-height="297mm" margin="15mm 20mm">
+      <fo:region-body margin-top="40mm" margin-bottom="20mm" margin-right="50mm"/>
+      <fo:region-before extent="35mm" region-name="kopf-erste"/>
+      <fo:region-after extent="15mm" region-name="fuss-ungerade"/>
+    </fo:simple-page-master>
+    <fo:simple-page-master master-name="ungerade" page-width="210mm" page-height="297mm" margin="15mm 20mm">
+      <fo:region-body margin-top="15mm" margin-bottom="20mm"/>
+      <fo:region-before extent="10mm" region-name="kopf"/>
+      <fo:region-after extent="15mm" region-name="fuss-ungerade"/>
+    </fo:simple-page-master>
+    <fo:simple-page-master master-name="gerade" page-width="210mm" page-height="297mm" margin="15mm 20mm">
+      <fo:region-body margin-top="15mm" margin-bottom="20mm"/>
+      <fo:region-before extent="10mm" region-name="kopf"/>
+      <fo:region-after extent="15mm" region-name="fuss-gerade"/>
+    </fo:simple-page-master>
+    <fo:simple-page-master master-name="letzte" page-width="210mm" page-height="297mm" margin="15mm 20mm">
+      <fo:region-body margin-top="15mm" margin-bottom="35mm"/>
+      <fo:region-before extent="10mm" region-name="kopf"/>
+      <fo:region-after extent="30mm" region-name="fuss-letzte"/>
+    </fo:simple-page-master>
+    <fo:simple-page-master master-name="leer" page-width="210mm" page-height="297mm" margin="15mm 20mm">
+      <fo:region-body/>
+      <fo:region-after extent="15mm" region-name="fuss-leer"/>
+    </fo:simple-page-master>
+    <fo:page-sequence-master master-name="dokument">
+      <fo:repeatable-page-master-alternatives>
+        <fo:conditional-page-master-reference master-reference="leer" blank-or-not-blank="blank"/>
+        <fo:conditional-page-master-reference master-reference="erste" page-position="first"/>
+        <fo:conditional-page-master-reference master-reference="letzte" page-position="last"/>
+        <fo:conditional-page-master-reference master-reference="gerade" odd-or-even="even"/>
+        <fo:conditional-page-master-reference master-reference="ungerade" odd-or-even="odd"/>
+      </fo:repeatable-page-master-alternatives>
+    </fo:page-sequence-master>
+    <fo:page-sequence-master master-name="vorspann">
+      <fo:repeatable-page-master-reference master-reference="ungerade"/>
+    </fo:page-sequence-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Seitenfolgen" subject="Korpus: Seitenfolgen und Verweise"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="vorspann" format="i" force-page-count="even">
+    <fo:static-content flow-name="kopf"><fo:block font-size="8pt" color="#666666">Vorspann</fo:block></fo:static-content>
+    <fo:static-content flow-name="fuss-ungerade"><fo:block font-size="8pt" text-align="center">Seite <fo:page-number/></fo:block></fo:static-content>
+    <fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="11pt">
+      <fo:block font-size="16pt" font-weight="bold" space-after="6mm">Inhalt</fo:block>
+      <fo:block>Abschnitt 3 beginnt auf Seite <fo:page-number-citation ref-id="abschnitt-3"/>.</fo:block>
+      <fo:block>Abschnitt 17 beginnt auf Seite <fo:page-number-citation ref-id="abschnitt-17"/>.</fo:block>
+      <fo:block>Der Hauptteil endet auf Seite <fo:page-number-citation-last ref-id="hauptteil"/>.</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+  <fo:page-sequence id="hauptteil" master-reference="dokument" initial-page-number="1" force-page-count="end-on-even">
+    <fo:static-content flow-name="kopf-erste">
+      <fo:block font-size="20pt" font-weight="bold" color="#1f4e79" border-bottom="1pt solid #1f4e79">Hauptteil</fo:block>
+    </fo:static-content>
+    <fo:static-content flow-name="kopf"><fo:block font-size="8pt" color="#666666" text-align="end">Seitenfolgen</fo:block></fo:static-content>
+    <fo:static-content flow-name="fuss-ungerade"><fo:block font-size="8pt" text-align="end">Seite <fo:page-number/> von <fo:page-number-citation-last ref-id="hauptteil"/></fo:block></fo:static-content>
+    <fo:static-content flow-name="fuss-gerade"><fo:block font-size="8pt" text-align="start">Seite <fo:page-number/> von <fo:page-number-citation-last ref-id="hauptteil"/></fo:block></fo:static-content>
+    <fo:static-content flow-name="fuss-letzte"><fo:block font-size="8pt" border-top="0.5pt solid black" padding-top="2mm">Letzte Seite <fo:page-number/> von <fo:page-number-citation-last ref-id="hauptteil"/>. Ende des Hauptteils.</fo:block></fo:static-content>
+    <fo:static-content flow-name="fuss-leer"><fo:block font-size="8pt" text-align="center" font-style="italic">Diese Seite bleibt absichtlich leer.</fo:block></fo:static-content>
+    <fo:flow flow-name="xsl-region-body" font-family="serif" font-size="11pt" line-height="1.4">
+      <fo:block space-after="6pt" text-align="justify">1. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">2. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify" id="abschnitt-3">3. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">4. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">5. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">6. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">7. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">8. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">9. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">10. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">11. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">12. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">13. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">14. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">15. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">16. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify" id="abschnitt-17">17. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">18. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">19. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">20. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">21. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">22. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">23. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">24. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+      <fo:block space-after="6pt" text-align="justify">25. Seitenfolgen wählen für jede Seite eine eigene Vorlage. Die erste Seite trägt hier einen größeren Kopf und eine schmalere Spalte, die Folgeseiten sind breiter und gerade und ungerade Seiten unterscheiden sich in der Fußzeile. Die letzte Seite bekommt eine eigene Vorlage mit Schlussvermerk.</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

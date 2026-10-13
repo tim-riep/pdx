@@ -36,8 +36,20 @@ const (
 	edgeBottom
 )
 
+// ordinal ist die Stelle einer Box im Fluss, unabhängig von der Breite:
+// major zählt Kanten, Anker und Absätze, minor ist bei Zeilen das erste
+// Stück des Absatzes in der Zeile.
+type ordinal struct {
+	major, minor int
+}
+
+func (o ordinal) less(p ordinal) bool {
+	return o.major < p.major || o.major == p.major && o.minor < p.minor
+}
+
 // item ist ein Eintrag der Galley.
 type item struct {
+	ord     ordinal
 	kind    itemKind
 	h       areatree.Length
 	penalty int
@@ -65,6 +77,8 @@ type lineBox struct {
 	x        areatree.Length
 	areas    []areatree.Area
 	deferred []deferredRun
+	// ids sind die IDs von Inline-Elementen mit Inhalt in dieser Zeile.
+	ids []string
 }
 
 // deferredRun ist eine Seitenzahl im Fluss, die erst beim Platzieren der
@@ -74,6 +88,9 @@ type deferredRun struct {
 	node     *tree.Node
 	st       *style
 	reserved areatree.Length
+	// ref ist bei Seitenverweisen die Ziel-ID, last wählt die letzte Seite.
+	ref  string
+	last bool
 }
 
 // absAnchor trägt einen absolut positionierten Container durch die Galley.
@@ -91,6 +108,8 @@ type galley struct {
 	items   []item
 	stack   []*blockCtx
 	pending areatree.Length // angesammelter Abstand
+	major   int             // Zähler für ordinal
+	skip    ordinal         // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
 }
 
 func newGalley(e *engine, refW areatree.Length, pageNo int) *galley {
@@ -108,6 +127,10 @@ func (g *galley) path() []*blockCtx {
 
 // box hängt eine Box an, davor eine Penalty und den angesammelten Abstand.
 func (g *galley) box(it item, before int) {
+	if it.ord.less(g.skip) {
+		g.pending = 0
+		return
+	}
 	if len(g.items) > 0 {
 		g.items = append(g.items, item{kind: itPenalty, penalty: before})
 	}
@@ -137,8 +160,13 @@ func (g *galley) breakBefore(edge edgeKind) int {
 	return 0
 }
 
-func (g *galley) addLine(l *lineBox) {
-	g.box(item{h: l.h, path: g.path(), line: l}, g.breakBefore(edgeNone))
+func (g *galley) addLine(l *lineBox, ord ordinal) {
+	g.box(item{h: l.h, path: g.path(), line: l, ord: ord}, g.breakBefore(edgeNone))
+}
+
+func (g *galley) next() ordinal {
+	g.major++
+	return ordinal{major: g.major}
 }
 
 // blocks erzeugt die Einträge der Blockkinder eines Elements.
@@ -161,7 +189,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	}
 	if n.IsFO("block-container") {
 		if p.Absolute != "" {
-			g.box(item{path: g.path(), anchor: &absAnchor{node: n, p: p}}, g.breakBefore(edgeNone))
+			g.box(item{path: g.path(), anchor: &absAnchor{node: n, p: p}, ord: g.next()}, g.breakBefore(edgeNone))
 			return nil
 		}
 		if p.Width != nil {
@@ -176,7 +204,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	edges := hasBox(p)
 	if edges {
 		h := p.BorderWidth(areatree.Top) + p.Padding[areatree.Top]
-		g.box(item{h: h, path: g.path(), edge: edgeTop}, g.breakBefore(edgeTop))
+		g.box(item{h: h, path: g.path(), edge: edgeTop, ord: g.next()}, g.breakBefore(edgeTop))
 	}
 
 	if n.IsFO("block-container") {
@@ -191,7 +219,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	if edges {
 		// Der Abstand nach dem letzten Kind steht innerhalb des Paddings.
 		h := p.Padding[areatree.Bottom] + p.BorderWidth(areatree.Bottom)
-		g.box(item{h: h, path: g.path(), edge: edgeBottom}, g.breakBefore(edgeBottom))
+		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
 	}
 	g.stack = g.stack[:len(g.stack)-1]
 	g.pending = max(g.pending, p.SpaceAfter)
