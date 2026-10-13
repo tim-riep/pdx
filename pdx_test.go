@@ -65,8 +65,8 @@ func TestReproducible(t *testing.T) {
 
 func TestRenderErrors(t *testing.T) {
 	cases := map[string]string{
-		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="b"><fo:flow flow-name="xsl-region-body"/></fo:page-sequence></fo:root>`: "Seitenvorlage \"b\" nicht gefunden",
-		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="a"><fo:flow flow-name="xsl-region-body"><fo:block font-family="Symbol">x</fo:block></fo:flow></fo:page-sequence></fo:root>`: "Schriftfamilie \"Symbol\" nicht gefunden",
+		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="b"><fo:flow flow-name="xsl-region-body"/></fo:page-sequence></fo:root>`:                                                                                    "Seitenvorlage \"b\" nicht gefunden",
+		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="a"><fo:flow flow-name="xsl-region-body"><fo:block font-family="Symbol">x</fo:block></fo:flow></fo:page-sequence></fo:root>`:                                "Schriftfamilie \"Symbol\" nicht gefunden",
 		`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="a"><fo:flow flow-name="xsl-region-body"><fo:block><fo:external-graphic src="http://example.org/a.png"/></fo:block></fo:flow></fo:page-sequence></fo:root>`: "nur lokale Dateien",
 	}
 	for in, want := range cases {

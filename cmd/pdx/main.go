@@ -1,0 +1,246 @@
+// Command pdx erzeugt PDF-Dateien aus XSL-FO und prüft sie mit veraPDF.
+//
+//	pdx render eingabe.fo -o ausgabe.pdf --profile pdfa-3b \
+//	    --attach factur-x.xml:Alternative:text/xml \
+//	    --creation-date 2026-01-01T00:00:00Z
+//	pdx verify ausgabe.pdf --profile pdfa-3b
+//
+// Exit-Codes: 0 Erfolg, 1 Prüfung fehlgeschlagen oder Fehler beim Rendern,
+// 2 Bedienfehler.
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/tim-riep/pdx"
+	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/font"
+	"github.com/tim-riep/pdx/internal/verapdf"
+	"github.com/tim-riep/pdx/pdf/profile"
+)
+
+func main() {
+	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
+}
+
+const usage = `pdx %s: XSL-FO zu PDF bis PDF/A-3
+
+Aufruf:
+  pdx render <eingabe.fo> [-o ausgabe.pdf] [--profile NAME] [--attach DATEI:BEZIEHUNG:MIME]...
+             [--creation-date RFC3339] [--font DATEI]... [--area-tree DATEI]
+  pdx verify <datei.pdf> [--profile NAME] [--format text|json]
+  pdx version
+
+Profile: %s
+`
+
+func run(args []string, stdout, stderr io.Writer) int {
+	if len(args) == 0 {
+		fmt.Fprintf(stderr, usage, pdx.Version, strings.Join(profile.Names(), ", "))
+		return 2
+	}
+	switch args[0] {
+	case "render":
+		return cmdRender(args[1:], stdout, stderr)
+	case "verify":
+		return cmdVerify(args[1:], stdout, stderr)
+	case "version":
+		fmt.Fprintf(stdout, "pdx %s (veraPDF %s)\n", pdx.Version, verapdf.Version)
+		return 0
+	case "help", "-h", "--help":
+		fmt.Fprintf(stdout, usage, pdx.Version, strings.Join(profile.Names(), ", "))
+		return 0
+	}
+	fmt.Fprintf(stderr, "pdx: unbekannter Befehl %q\n", args[0])
+	return 2
+}
+
+// multi sammelt wiederholbare Flags.
+type multi []string
+
+func (m *multi) String() string     { return strings.Join(*m, ",") }
+func (m *multi) Set(v string) error { *m = append(*m, v); return nil }
+
+// parse erlaubt Flags vor und nach dem Positionsargument.
+func parse(fs *flag.FlagSet, args []string) ([]string, error) {
+	var pos []string
+	for {
+		if err := fs.Parse(args); err != nil {
+			return nil, err
+		}
+		args = fs.Args()
+		if len(args) == 0 {
+			return pos, nil
+		}
+		pos = append(pos, args[0])
+		args = args[1:]
+	}
+}
+
+func cmdRender(args []string, stdout, stderr io.Writer) int {
+	fs := flag.NewFlagSet("render", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	out := fs.String("o", "", "Ausgabedatei (Vorgabe: Eingabe mit Endung .pdf)")
+	prof := fs.String("profile", pdx.DefaultProfile, "Konformitätsprofil")
+	date := fs.String("creation-date", "", "Erstellungsdatum RFC 3339 (Vorgabe: SOURCE_DATE_EPOCH oder jetzt)")
+	tree := fs.String("area-tree", "", "Area Tree zusätzlich als Text in diese Datei schreiben")
+	var attach, fonts multi
+	fs.Var(&attach, "attach", "Anhang DATEI:BEZIEHUNG:MIME, wiederholbar")
+	fs.Var(&fonts, "font", "zusätzliche Schriftdatei, wiederholbar")
+	pos, err := parse(fs, args)
+	if err != nil {
+		return 2
+	}
+	if len(pos) != 1 {
+		fmt.Fprintln(stderr, "pdx render: genau eine Eingabedatei erwartet")
+		return 2
+	}
+	in := pos[0]
+	if *out == "" {
+		*out = strings.TrimSuffix(in, filepath.Ext(in)) + ".pdf"
+	}
+	created, err := creationDate(*date)
+	if err != nil {
+		fmt.Fprintf(stderr, "pdx render: %v\n", err)
+		return 2
+	}
+	opts := pdx.Options{Profile: *prof, CreationDate: created}
+	for _, a := range attach {
+		att, err := parseAttach(a)
+		if err != nil {
+			fmt.Fprintf(stderr, "pdx render: %v\n", err)
+			return 2
+		}
+		opts.Attachments = append(opts.Attachments, att)
+	}
+	if len(fonts) > 0 {
+		opts.Fonts = font.NewRegistry()
+		for _, f := range fonts {
+			if _, err := opts.Fonts.AddFile(f); err != nil {
+				fmt.Fprintf(stderr, "pdx render: %v\n", err)
+				return 1
+			}
+		}
+	}
+	res, err := pdx.RenderFile(in, opts)
+	if err != nil {
+		fmt.Fprintf(stderr, "pdx render: %v\n", err)
+		return 1
+	}
+	if err := os.WriteFile(*out, res.PDF, 0o644); err != nil {
+		fmt.Fprintf(stderr, "pdx render: %v\n", err)
+		return 1
+	}
+	if *tree != "" {
+		if err := os.WriteFile(*tree, areatree.Dump(res.Tree), 0o644); err != nil {
+			fmt.Fprintf(stderr, "pdx render: %v\n", err)
+			return 1
+		}
+	}
+	fmt.Fprintf(stdout, "%s: %d Seiten, %d Bytes, Profil %s\n", *out, len(res.Tree.Pages), len(res.PDF), *prof)
+	return 0
+}
+
+// creationDate liest das Datum aus dem Flag, sonst aus SOURCE_DATE_EPOCH,
+// sonst gilt die aktuelle Zeit (dann ist die Ausgabe nicht reproduzierbar).
+func creationDate(v string) (time.Time, error) {
+	if v != "" {
+		t, err := time.Parse(time.RFC3339, v)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("--creation-date %q ist kein Datum nach RFC 3339", v)
+		}
+		return t, nil
+	}
+	if s := os.Getenv("SOURCE_DATE_EPOCH"); s != "" {
+		n, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("SOURCE_DATE_EPOCH %q ist keine Zahl", s)
+		}
+		return time.Unix(n, 0).UTC(), nil
+	}
+	return time.Now().UTC().Truncate(time.Second), nil
+}
+
+// parseAttach liest DATEI:BEZIEHUNG:MIME. Der Pfad darf Doppelpunkte
+// enthalten, getrennt wird an den letzten beiden.
+func parseAttach(v string) (areatree.Attachment, error) {
+	i := strings.LastIndex(v, ":")
+	j := -1
+	if i > 0 {
+		j = strings.LastIndex(v[:i], ":")
+	}
+	if j <= 0 {
+		return areatree.Attachment{}, fmt.Errorf("--attach %q: erwartet DATEI:BEZIEHUNG:MIME", v)
+	}
+	file, rel, mime := v[:j], v[j+1:i], v[i+1:]
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return areatree.Attachment{}, fmt.Errorf("--attach: %w", err)
+	}
+	return areatree.Attachment{
+		Name: filepath.Base(file), MIMEType: mime, Relationship: areatree.Relationship(rel), Data: data,
+	}, nil
+}
+
+func cmdVerify(args []string, stdout, stderr io.Writer) int {
+	fs := flag.NewFlagSet("verify", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	prof := fs.String("profile", pdx.DefaultProfile, "Konformitätsprofil")
+	format := fs.String("format", "text", "Ausgabeformat text oder json")
+	pos, err := parse(fs, args)
+	if err != nil {
+		return 2
+	}
+	if len(pos) != 1 {
+		fmt.Fprintln(stderr, "pdx verify: genau eine PDF-Datei erwartet")
+		return 2
+	}
+	if *format != "text" && *format != "json" {
+		fmt.Fprintf(stderr, "pdx verify: Format %q unbekannt\n", *format)
+		return 2
+	}
+	flavour, err := verapdf.Flavour(*prof)
+	if err != nil {
+		fmt.Fprintf(stderr, "pdx verify: %v\n", err)
+		return 2
+	}
+	ctx := context.Background()
+	runner, err := verapdf.Detect(ctx, func(s string) { fmt.Fprintln(stderr, "pdx verify:", s) })
+	if err != nil {
+		fmt.Fprintf(stderr, "pdx verify: %v\n", err)
+		return 1
+	}
+	rep, err := runner.Validate(ctx, pos[0], flavour)
+	if err != nil {
+		var pe *os.PathError
+		if errors.As(err, &pe) {
+			fmt.Fprintf(stderr, "pdx verify: %v\n", err)
+			return 2
+		}
+		fmt.Fprintf(stderr, "pdx verify: %v\n", err)
+		return 1
+	}
+	rep.File = pos[0]
+	if *format == "json" {
+		enc := json.NewEncoder(stdout)
+		enc.SetIndent("", "  ")
+		enc.Encode(rep)
+	} else {
+		fmt.Fprintf(stdout, "%s\n", pos[0])
+		rep.WriteText(stdout)
+	}
+	if rep.Failed() {
+		return 1
+	}
+	return 0
+}

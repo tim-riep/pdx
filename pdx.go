@@ -9,6 +9,7 @@ package pdx
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -99,8 +100,11 @@ func RenderFile(path string, opts Options) (*Result, error) {
 		opts.BaseDir = filepath.Dir(path)
 	}
 	res, err := Render(bytes.NewReader(data), opts)
-	if err != nil {
+	var pe *tree.Error
+	if errors.As(err, &pe) {
 		return nil, fmt.Errorf("%s:%w", path, err)
+	} else if err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
 	}
 	return res, nil
 }
