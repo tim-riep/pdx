@@ -354,7 +354,14 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 		if s < len(items) {
 			lo.minor = items[s].Payload
 		}
-		if err := g.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last, lo); err != nil {
+		// Witwen und Waisen (XSL 1.1 7.20.6 und 7.20.4): Vor Zeile li darf
+		// nur umbrochen werden, wenn davor mindestens orphans und danach
+		// mindestens widows Zeilen stehen.
+		pen := 0
+		if li > 0 && (li < p.Orphans || len(breaks)-li < p.Widows) {
+			pen = penaltyInf
+		}
+		if err := g.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last, lo, pen); err != nil {
 			return err
 		}
 		start = end + 1
@@ -362,7 +369,7 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	return nil
 }
 
-func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool, ord ordinal) error {
+func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool, ord ordinal, pen int) error {
 	p := pa.p
 	align := p.TextAlign
 	if last {
@@ -461,6 +468,6 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	for _, it := range seg {
 		line.ids = append(line.ids, pa.pieces[it.Payload].ids...)
 	}
-	g.addLine(line, ord)
+	g.addLine(line, ord, pen)
 	return nil
 }

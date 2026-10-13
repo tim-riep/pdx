@@ -55,8 +55,10 @@ type item struct {
 	penalty int
 	// path sind die umschließenden Blöcke von außen nach innen. Bei Kanten
 	// gehört der Block der Kante dazu.
-	path   []*blockCtx
-	edge   edgeKind
+	path []*blockCtx
+	edge edgeKind
+	// brk ist bei erzwungenen Umbrüchen page, odd-page oder even-page.
+	brk    string
 	line   *lineBox
 	anchor *absAnchor
 	// row und slice sind bei Scheiben von Tabellenzeilen und Listenpunkten gesetzt.
@@ -70,6 +72,8 @@ type blockCtx struct {
 	node *tree.Node
 	p    *props.Computed
 	x, w areatree.Length
+	// keep ist die Stärke von keep-together als Penalty.
+	keep int
 }
 
 // lineBox ist eine gesetzte Zeile. Die Bereiche haben x relativ zum linken
@@ -113,6 +117,57 @@ type galley struct {
 	pending areatree.Length // angesammelter Abstand
 	major   int             // Zähler für ordinal
 	skip    ordinal         // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
+
+	// Für die nächste Penalty vorgemerkte Keeps und Umbrüche.
+	keepNext int
+	keepPrev int
+	brk      string
+	lastPath []*blockCtx // Pfad der letzten Box
+}
+
+// push öffnet einen Block: keep-together, keep-with-previous und
+// break-before wirken ab hier.
+func (g *galley) push(ctx *blockCtx) {
+	n := ctx.node
+	ctx.keep = keepValue(n, "keep-together")
+	g.keepPrev = max(g.keepPrev, keepValue(n, "keep-with-previous"))
+	if b := breakValue(n, "break-before"); b != "" {
+		g.brk = b
+	}
+	g.stack = append(g.stack, ctx)
+}
+
+// pop schließt den innersten Block: keep-with-next und break-after wirken
+// auf die nächste Penalty.
+func (g *galley) pop() {
+	ctx := g.stack[len(g.stack)-1]
+	g.stack = g.stack[:len(g.stack)-1]
+	g.keepNext = max(g.keepNext, keepValue(ctx.node, "keep-with-next"))
+	if b := breakValue(ctx.node, "break-after"); b != "" {
+		g.brk = b
+	}
+}
+
+// breakValue liest break-before oder break-after. column gilt wie page, weil
+// es in Phase 1 keine mehrspaltigen Regionen gibt.
+func breakValue(n *tree.Node, prop string) string {
+	switch v, _ := n.Attr(prop); v {
+	case "page", "column":
+		return "page"
+	case "odd-page", "even-page":
+		return v
+	}
+	return ""
+}
+
+// keepInside liefert die stärkste keep-together-Bindung der Blöcke, die die
+// vorige und die neue Box gemeinsam umschließen.
+func keepInside(a, b []*blockCtx) int {
+	k := 0
+	for i := 0; i < len(a) && i < len(b) && a[i] == b[i]; i++ {
+		k = max(k, a[i].keep)
+	}
+	return k
 }
 
 func newGalley(e *engine, refW areatree.Length, pageNo int) *galley {
@@ -130,13 +185,20 @@ func (g *galley) path() []*blockCtx {
 
 // box hängt eine Box an, davor eine Penalty und den angesammelten Abstand.
 func (g *galley) box(it item, before int) {
+	pen := max(before, g.keepNext, g.keepPrev, keepInside(g.lastPath, it.path))
+	brk := g.brk
+	g.keepNext, g.keepPrev, g.brk = 0, 0, ""
 	if it.ord.less(g.skip) {
 		g.pending = 0
 		return
 	}
-	if len(g.items) > 0 {
-		g.items = append(g.items, item{kind: itPenalty, penalty: before})
+	if brk != "" {
+		pen = penaltyForced
 	}
+	if len(g.items) > 0 {
+		g.items = append(g.items, item{kind: itPenalty, penalty: pen, brk: brk})
+	}
+	g.lastPath = it.path
 	if g.pending > 0 {
 		g.items = append(g.items, item{kind: itGlue, h: g.pending})
 	}
@@ -163,8 +225,8 @@ func (g *galley) breakBefore(edge edgeKind) int {
 	return 0
 }
 
-func (g *galley) addLine(l *lineBox, ord ordinal) {
-	g.box(item{h: l.h, path: g.path(), line: l, ord: ord}, g.breakBefore(edgeNone))
+func (g *galley) addLine(l *lineBox, ord ordinal, pen int) {
+	g.box(item{h: l.h, path: g.path(), line: l, ord: ord}, max(pen, g.breakBefore(edgeNone)))
 }
 
 func (g *galley) next() ordinal {
@@ -208,7 +270,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	ctx := &blockCtx{node: n, p: p}
 	ctx.x = g.contentX(p) - p.Padding[areatree.Left]
 	ctx.w = g.contentW(p) + p.Padding[areatree.Left] + p.Padding[areatree.Right]
-	g.stack = append(g.stack, ctx)
+	g.push(ctx)
 	g.pending = max(g.pending, p.SpaceBefore)
 	edges := hasBox(p)
 	if edges {
@@ -230,7 +292,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 		h := p.Padding[areatree.Bottom] + p.BorderWidth(areatree.Bottom)
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
 	}
-	g.stack = g.stack[:len(g.stack)-1]
+	g.pop()
 	g.pending = max(g.pending, p.SpaceAfter)
 	return nil
 }

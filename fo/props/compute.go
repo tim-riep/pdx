@@ -28,6 +28,8 @@ type Computed struct {
 	EndIndent        Length
 	TextIndent       Length
 	LinefeedPreserve bool
+	Widows           int
+	Orphans          int
 	Lang             string
 
 	// Nicht vererbte Eigenschaften.
@@ -53,6 +55,8 @@ func Root() *Computed {
 		TextAlignLast:    "relative",
 		LineHeightFactor: 1.2,
 		LineHeight:       areatree.Points(14.4),
+		Widows:           2,
+		Orphans:          2,
 	}
 }
 
@@ -63,7 +67,7 @@ func (c *Computed) inherit() *Computed {
 		Color: c.Color, TextAlign: c.TextAlign, TextAlignLast: c.TextAlignLast,
 		LineHeightFactor: c.LineHeightFactor, LineHeight: c.LineHeight,
 		StartIndent: c.StartIndent, EndIndent: c.EndIndent, TextIndent: c.TextIndent,
-		LinefeedPreserve: c.LinefeedPreserve, Lang: c.Lang,
+		LinefeedPreserve: c.LinefeedPreserve, Lang: c.Lang, Widows: c.Widows, Orphans: c.Orphans,
 	}
 }
 
@@ -181,6 +185,18 @@ func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Comput
 	}
 	if c.LineHeightFactor > 0 {
 		c.LineHeight = Length(float64(fs) * c.LineHeightFactor)
+	}
+	for _, wo := range []struct {
+		name string
+		dst  *int
+	}{{"widows", &c.Widows}, {"orphans", &c.Orphans}} {
+		if v, ok := a[wo.name]; ok {
+			k, err := strconv.Atoi(v)
+			if err != nil || k < 1 {
+				return nil, fail(wo.name, fmt.Errorf("ungültiger Wert %q", v))
+			}
+			*wo.dst = k
+		}
 	}
 	if v, ok := a["linefeed-treatment"]; ok {
 		c.LinefeedPreserve = v == "preserve"

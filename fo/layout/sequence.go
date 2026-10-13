@@ -153,6 +153,14 @@ func (s *sequence) paginate() error {
 		if end >= len(items) {
 			return nil
 		}
+		// odd-page und even-page erzwingen notfalls eine Leerseite.
+		if brk := items[end].brk; brk == "odd-page" || brk == "even-page" {
+			if next := s.e.pageNo + 1; (brk == "odd-page") != (next%2 == 1) {
+				if err := s.blankPage(false); err != nil {
+					return err
+				}
+			}
+		}
 		pos = end + 1
 	}
 }

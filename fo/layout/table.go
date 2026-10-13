@@ -211,6 +211,18 @@ func sortLengths(v []areatree.Length) {
 
 // emitRow hängt die Scheiben einer Zeile an die Galley.
 func (g *galley) emitRow(r *rowLayout, before int) {
+	if r.node.IsFO("table-row") {
+		g.keepPrev = max(g.keepPrev, keepValue(r.node, "keep-with-previous"))
+		if b := breakValue(r.node, "break-before"); b != "" {
+			g.brk = b
+		}
+		defer func() {
+			g.keepNext = max(g.keepNext, keepValue(r.node, "keep-with-next"))
+			if b := breakValue(r.node, "break-after"); b != "" {
+				g.brk = b
+			}
+		}()
+	}
 	ord := g.next()
 	for k := 0; k+1 < len(r.slices); k++ {
 		pen := before
@@ -570,7 +582,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	ctx := &blockCtx{node: n, p: p}
 	ctx.x = x0 - p.Padding[areatree.Left]
 	ctx.w = tw + p.Padding[areatree.Left] + p.Padding[areatree.Right]
-	g.stack = append(g.stack, ctx)
+	g.push(ctx)
 	g.pending = max(g.pending, p.SpaceBefore)
 	edges := hasBox(p)
 	if edges {
@@ -600,7 +612,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		h := p.Padding[areatree.Bottom] + p.BorderWidth(areatree.Bottom)
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, penaltyInf)
 	}
-	g.stack = g.stack[:len(g.stack)-1]
+	g.pop()
 	g.pending = max(g.pending, p.SpaceAfter)
 	return nil
 }
@@ -744,7 +756,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 	ctx := &blockCtx{node: n, p: p}
 	ctx.x = g.contentX(p) - p.Padding[areatree.Left]
 	ctx.w = g.contentW(p) + p.Padding[areatree.Left] + p.Padding[areatree.Right]
-	g.stack = append(g.stack, ctx)
+	g.push(ctx)
 	g.pending = max(g.pending, p.SpaceBefore)
 	if hasBox(p) {
 		h := p.BorderWidth(areatree.Top) + p.Padding[areatree.Top]
@@ -761,7 +773,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 		ictx := &blockCtx{node: it, p: ip}
 		ictx.x = g.contentX(ip) - ip.Padding[areatree.Left]
 		ictx.w = g.contentW(ip) + ip.Padding[areatree.Left] + ip.Padding[areatree.Right]
-		g.stack = append(g.stack, ictx)
+		g.push(ictx)
 		g.pending = max(g.pending, ip.SpaceBefore)
 		row := &rowLayout{node: it, keep: keepValue(it, "keep-together"), w: g.refW}
 		for _, part := range it.Children {
@@ -784,14 +796,14 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 		}
 		finishRow(row, 0, false)
 		g.emitRow(row, g.breakBefore(edgeNone))
-		g.stack = g.stack[:len(g.stack)-1]
+		g.pop()
 		g.pending = max(g.pending, ip.SpaceAfter)
 	}
 	if hasBox(p) {
 		h := p.Padding[areatree.Bottom] + p.BorderWidth(areatree.Bottom)
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
 	}
-	g.stack = g.stack[:len(g.stack)-1]
+	g.pop()
 	g.pending = max(g.pending, p.SpaceAfter)
 	return nil
 }
