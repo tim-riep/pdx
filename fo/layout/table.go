@@ -50,17 +50,17 @@ func (t *tableCtx) continuesAfter(r *rowLayout, slice int) bool {
 
 // rowLayout ist eine gesetzte Zeile einer Tabelle oder ein Listenpunkt.
 type rowLayout struct {
-	node     *tree.Node
-	tbl      *tableCtx // nil bei Listen
-	sec      section
-	cells    []*cellLayout // Zellen, die in dieser Zeile beginnen
-	h        areatree.Length
-	sepV     areatree.Length // halbe border-separation über und unter den Zellen
-	bg       *areatree.Color
-	x, w     areatree.Length   // Zeilenrechteck relativ zum Referenzbereich
-	slices   []areatree.Length // Grenzen der Scheiben, beginnend bei 0, endend bei h
-	last     bool              // letzte Zeile ihres Abschnitts
-	keep     int               // Penalty zwischen den Scheiben
+	node   *tree.Node
+	tbl    *tableCtx // nil bei Listen
+	sec    section
+	cells  []*cellLayout // Zellen, die in dieser Zeile beginnen
+	h      areatree.Length
+	sepV   areatree.Length // halbe border-separation über und unter den Zellen
+	bg     *areatree.Color
+	x, w   areatree.Length   // Zeilenrechteck relativ zum Referenzbereich
+	slices []areatree.Length // Grenzen der Scheiben, beginnend bei 0, endend bei h
+	last   bool              // letzte Zeile ihres Abschnitts
+	keep   int               // Penalty zwischen den Scheiben
 	// forced sind erzwungene Umbrüche aus dem Zellinhalt an Scheibengrenzen
 	// (Index der Grenze), leadBrk und trailBrk Umbrüche vor und nach der
 	// Zeile (break-before am Anfang, break-after am Ende einer Zelle).
@@ -69,8 +69,11 @@ type rowLayout struct {
 	// skipBreakBefore ist gesetzt, wenn break-before der ersten Rumpfzeile
 	// schon vor der Tabelle wirkt.
 	skipBreakBefore bool
-	markers  markerSet
-	collapse bool
+	// skipBreakAfter ist gesetzt, wenn break-after der letzten Rumpfzeile
+	// erst nach der Tabelle wirkt.
+	skipBreakAfter bool
+	markers        markerSet
+	collapse       bool
 }
 
 // cellLayout ist eine gesetzte Zelle.
@@ -307,7 +310,7 @@ func (g *galley) emitRow(r *rowLayout, before int) {
 		}
 		defer func() {
 			g.keepNext = max(g.keepNext, keepValue(r.node, "keep-with-next"))
-			if b := breakValue(r.node, "break-after"); b != "" {
+			if b := breakValue(r.node, "break-after"); b != "" && !r.skipBreakAfter {
 				g.brk = b
 			}
 		}()
@@ -779,12 +782,17 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	g.spaceBefore(p)
 	// Ein erzwungener Umbruch am Anfang der ersten Rumpfzeile gilt vor der
 	// Tabelle, sonst bliebe der Kopf allein auf der Seite.
-	if len(body) > 0 && g.brk == "" {
+	// Steht schon ein Umbruch vor der Tabelle an, fallen beide zusammen.
+	if len(body) > 0 {
 		if body[0].leadBrk != "" {
-			g.brk = body[0].leadBrk
+			if g.brk == "" {
+				g.brk = body[0].leadBrk
+			}
 			body[0].leadBrk = ""
 		} else if b := breakValue(body[0].node, "break-before"); b != "" && body[0].node.IsFO("table-row") {
-			g.brk = b
+			if g.brk == "" {
+				g.brk = b
+			}
 			body[0].skipBreakBefore = true
 		}
 	}
@@ -809,6 +817,19 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 			glueNext = hasSpanStart(r) || spansInto(layouts, r)
 		}
 	}
+	// Ein erzwungener Umbruch am Ende der letzten Rumpfzeile wirkt nach der
+	// Tabelle, sonst stünde der Fuß allein auf der nächsten Seite.
+	var after string
+	if len(body) > 0 {
+		last := body[len(body)-1]
+		if last.trailBrk != "" {
+			after, last.trailBrk = last.trailBrk, ""
+		}
+		if b := breakValue(last.node, "break-after"); b != "" && last.node.IsFO("table-row") {
+			after = b
+			last.skipBreakAfter = true
+		}
+	}
 	emit(header, secHeader)
 	emit(body, secBody)
 	emit(footer, secFooter)
@@ -817,6 +838,9 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, penaltyInf)
 	}
 	g.pop()
+	if after != "" && g.brk == "" {
+		g.brk = after
+	}
 	g.pending = max(g.pending, p.SpaceAfter)
 	return nil
 }

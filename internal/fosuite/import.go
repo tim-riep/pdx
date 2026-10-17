@@ -96,6 +96,7 @@ var unsupportedProps = map[string][]string{
 	"text-depth":                   {"use-font-metrics"},
 	"line-stacking-strategy":       {"max-height"},
 	"line-height-shift-adjustment": {"consider-shifts"},
+	"wrap-option":                  {"wrap"},
 }
 
 var attrRe = regexp.MustCompile(`\s([a-z][a-z-]*)((?:\.[a-z-]+)*)="([^"]*)"`)

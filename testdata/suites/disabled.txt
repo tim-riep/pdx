@@ -85,6 +85,7 @@ fop/block_white-space_bug50988: nicht im Teilumfang von pdx: 9:21: fo:character 
 fop/block_white-space_nbsp_2: in FOP 2.11 deaktiviert: The nbsp given as an fo:character is not adjustable and therefore the justification does not work in this case.
 fop/block_word-spacing: in FOP 2.11 deaktiviert: Word-spacing may not work as expected.
 fop/block_word-spacing_text-align_justify: in FOP 2.11 deaktiviert: Word-spacing may not work as expected.
+fop/block_wrap-option: nicht im Teilumfang von pdx: Eigenschaft wrap-option="no-wrap"
 fop/bookmarks_1: nicht im Teilumfang von pdx: 44:32: fo:flow darf keinen Text enthalten
 fop/bookmarks_3: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
 fop/change-bar_block: nicht im Teilumfang von pdx: 12:19: fo:change-bar-begin wird noch nicht unterstützt
@@ -275,7 +276,7 @@ fop/leader_leader-pattern_use-content: nicht im Teilumfang von pdx: fo:instream-
 fop/leader_leader-pattern_use-content_bug: in FOP 2.11 deaktiviert: Line height is not correctly calculated for use-content leaders whose height is larger than the rest of the line.
 fop/leader_leader-pattern_use-content_writing-mode_rl: nicht im Teilumfang von pdx: 10:13: fo:bidi-override wird noch nicht unterstützt
 fop/linearea_nonempty_1: nicht im Teilumfang von pdx: Eigenschaft line-height-shift-adjustment="disregard-shifts"
-fop/linefeed-treatment_preserve: nicht im Teilumfang von pdx: Eigenschaft white-space="pre"
+fop/linefeed-treatment_preserve: nicht im Teilumfang von pdx: Eigenschaft wrap-option="no-wrap"
 fop/list-2-columns: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
 fop/list-block_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
 fop/list-block_fox_orphan-content-limit_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
@@ -565,6 +566,7 @@ w3c/xep-lineheight: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nic
 w3c/xep-lists: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
 w3c/xep-marker: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
 w3c/xep-maximum-repeats: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/xep-maximum-repeats.fo:46:10: Element "fo:page-sequence-master" is missing requir…
+w3c/xep-ogorek: nicht im Teilumfang von pdx: Eigenschaft wrap-option="no-wrap"
 w3c/xep-padding: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
 w3c/xep-pagebreak: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
 w3c/xep-pagemaster: nicht im Teilumfang von pdx: 49:21: fo:wrapper wird noch nicht unterstützt
