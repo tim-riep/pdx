@@ -5,7 +5,9 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -48,6 +50,10 @@ func TestAnalyze(t *testing.T) {
 			if over := overflow(c); over != "" {
 				class += ", Überlauf"
 				classes["Überlauf: "+c.ID()] = append(classes["Überlauf: "+c.ID()], over)
+			} else if sameWidths(c, at) {
+				class += ", gleiche Zeilenbreiten"
+			} else {
+				class += ", andere Zeilenbreiten"
 			}
 		}
 		// Abweichungen nur wegen der Pixelgröße: mit 1 px = 1 pt wie bei FOP
@@ -195,4 +201,39 @@ func overflow(c Case) string {
 		}
 	}
 	return ""
+}
+
+var lineIPD = regexp.MustCompile(`<lineArea ipd="(\d+)"`)
+
+// sameWidths vergleicht die verfügbaren Zeilenbreiten von pdx (Breite der
+// Zeilencontainer) und FOP (ipd der lineArea) als Mengen auf 0,1 pt genau.
+func sameWidths(c Case, at []byte) bool {
+	fw := map[int]bool{}
+	for _, m := range lineIPD.FindAllSubmatch(at, -1) {
+		v, _ := strconv.Atoi(string(m[1]))
+		fw[(v+50)/100] = true
+	}
+	res, err := pdx.RenderFile(c.File, pdx.Options{Profile: "pdf-1.7", CreationDate: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)})
+	if err != nil {
+		return false
+	}
+	pw := map[int]bool{}
+	for _, p := range res.Tree.Pages {
+		areatree.Walk(p.Areas, func(a areatree.Area) bool {
+			if l, ok := a.(*areatree.Container); ok && l.Kind == areatree.KindLine {
+				pw[(int(l.W)+50)/100] = true
+				return false
+			}
+			return true
+		})
+	}
+	if len(fw) != len(pw) {
+		return false
+	}
+	for k := range fw {
+		if !pw[k] {
+			return false
+		}
+	}
+	return true
 }

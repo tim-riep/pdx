@@ -12,27 +12,27 @@ fop/block-container_absolute-position_overflow: begründet, left und top beziehe
 fop/block-container_content_size_percentage: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "nested autoheight"
 fop/block-container_overconstrained_ipd: begründet, überbestimmte Geometrie (XSL 1.1 5.3.4), pdx setzt die Inhaltsbreite auf 0, FOP verteilt die Wörter regellos
 fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit." verschoben um 0.00 pt waagerecht, 31.20 pt senkrecht
-fop/block_break-before_bug44412: offen, erste Abweichung: Seite 2: "The break-before set on this block causes the parent block" verschoben um 0.00 pt waagerecht, -4.00 pt senkrecht
+fop/block_break-before_bug44412: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "In olden times when wishing still helped one, there lived a king whose"
 fop/block_margin_shorthands: begründet, ein leerer fo:block mit Rahmen erzeugt einen Bereich mit dessen Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
 fop/block_space-before_space-after_bug38102: begründet, pdx nimmt das Optimum von Abständen, FOP staucht bis zum Minimum, XSL 1.1 4.3 lässt jeden Wert im Bereich zu
-fop/block_text-align_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi" verschoben um -14.14 pt waagerecht, -43.20 pt senkrecht
+fop/block_text-align_1: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/block_uax14_explicit-breaks: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 fop/block_uax14_linebreaking: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 fop/empty_table: begründet, leeres fo:table-body verletzt das Inhaltsmodell aus XSL 1.1 6.7.6 (table-row+|table-cell+)
 fop/flow_changing-ipd_5: offen, erste Abweichung: Seite 3: "beautiful, but the youngest was so beautiful that the sun itself, which has seen so much," verschoben um 0.00 pt waagerecht, -43.20 pt senkrecht
-fop/flow_changing-ipd_break-before: offen, erste Abweichung: Seite 1: "In olden times when wishing still helped one, there lived a" verschoben um 0.00 pt waagerecht, -1.60 pt senkrecht
+fop/flow_changing-ipd_break-before: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/flow_changing-ipd_last-page: begründet, Zirkelschluss bei page-position last, pdx wählt die erste passende Alternative (XSL 1.1 6.4.11), beide Lösungen sind zulässig
 fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "After the big"
 fop/inline_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This demonstrates a long inline which stretches over multiple lines to show"
-fop/inline_border_padding: offen, erste Abweichung: Seite 1: "This demonstrates correct line breaking of a fo:inline because it does fit" verschoben um 0.00 pt waagerecht, -12.00 pt senkrecht
+fop/inline_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item-with-ipd-change: offen, erste Abweichung: Seite 2: "b" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
 fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, FOP 3
-fop/list-item_padding_percentages: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "body 1: We should have 5% padding around this"
+fop/list-item_padding_percentages: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
 fop/list-item_two_pages: offen, erste Abweichung: Seite 2: "13" verschoben um 0.00 pt waagerecht, 12.00 pt senkrecht
 fop/marker_page-number-citation_bugzilla45295: offen, erste Abweichung: Seite 4: "[marker content]" verschoben um 0.00 pt waagerecht, 28.34 pt senkrecht
@@ -40,7 +40,7 @@ fop/markers_3: offen, erste Abweichung: Seite 2: "[PS] [DOC]" verschoben um 3.24
 fop/markers_6a: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
 fop/markers_6b: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
 fop/page-number-citation-last_complex: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "table-header= 1"
-fop/page-number-citation_border_padding: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Page number citation 1 with border and"
+fop/page-number-citation_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/page-number-citation_bugzilla44794: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "inline: 1 to 1."
 fop/page-number-citation_list: offen, erste Abweichung: Seite 3: Zeile nur in pdx: "1"
 fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-position only und first, den XSL 1.1 nicht regelt, pdx setzt eine Seite, FOP fügt leere Seiten an
@@ -81,10 +81,10 @@ fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-ind
 w3c/fopc-fonts: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 w3c/fopc-hyphen: offen, erste Abweichung: Seite 1: "US English" verschoben um 0.00 pt waagerecht, 2.79 pt senkrecht
 w3c/fopc-leader: offen, erste Abweichung: Seite 1: "The dimensions of fo:leader are determined by the compound property leader-" verschoben um 0.00 pt waagerecht, 1.86 pt senkrecht
-w3c/fopc-newlinktest: offen, erste Abweichung: Seite 1: "Apache FOP is the world's first print formatter driven by XSL formatting objects. It is a Java" verschoben um 2.77 pt waagerecht, -110.41 pt senkrecht
+w3c/fopc-newlinktest: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/fopc-pagelevel2: offen, erste Abweichung: Seite 4: Zeile nur in pdx: "The area tree is constrained to satisfy all break conditions imposed."
 w3c/fopc-pagelevel3: offen, erste Abweichung: Seite 4: "Keep conditions are imposed by the \"within-page\", \"within-column\", and" verschoben um 0.00 pt waagerecht, 4.34 pt senkrecht
-w3c/fopc-simple: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "and processed on the Web in the way that is now possible with HTML. XML has"
+w3c/fopc-simple: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-adp-height1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-height2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-height3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
@@ -92,10 +92,10 @@ w3c/nist-adp-width1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This p
 w3c/nist-adp-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-width3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-width4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph"
-w3c/nist-bcfobordercolor2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "\"red\" (before),\"blue\""
+w3c/nist-bcfobordercolor2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-blockarea2: begründet, ein leerer fo:block mit Rahmen und Padding erzeugt einen Bereich mit deren Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
-w3c/nist-blockarea3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should increase in size from"
-w3c/nist-blockarea4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should decrease in size from"
+w3c/nist-blockarea3: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-blockarea4: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-blockarea5: begründet, ein leerer fo:block mit Rahmen und Padding erzeugt einen Bereich mit deren Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 w3c/nist-blrp-heightoflines1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-blrp-heightoflines2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
@@ -115,9 +115,9 @@ w3c/nist-cbpbp-border-left-inline1: begründet, px als Referenzpixel von CSS2 (1
 w3c/nist-cbpbp-border-left-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cbpbp-border-left-width-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-right-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-cbpbp-border-right-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph has a background color of gray and a 20-pixel right margin, and it contains an inline element of"
-w3c/nist-cbpbp-border-right-width5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should have a thin right border width, which will become more obvious if the element is more than"
-w3c/nist-cbpbp-border-style-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border-style groove"
+w3c/nist-cbpbp-border-right-inline2: begründet, px als Referenzpixel (5.9.13.1), mit 1 px = 1 pt bleibt ein Grenzfall beim Umbruch, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-cbpbp-border-right-width5: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-cbpbp-border-style-inline2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-cbpbp-border-top-width-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-top-width-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-top-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
@@ -129,33 +129,32 @@ w3c/nist-cbpbp-border3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL
 w3c/nist-cbpbp-border4: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border7: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 w3c/nist-cbpbp-padding-left-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-cbpbp-padding-left-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "element of padding-left 40mm and background-color of red, which should result in 4omm left padding (which"
+w3c/nist-cbpbp-padding-left-inline2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-cbpbp-padding-right-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-padding-right5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "to the width"
 w3c/nist-cbpbp-padding-top3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-padding3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-cfp-font-family6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "These sentences should be in a sans-serif font, not fantasy, if fantasy is not supported. Fantasy is the first one in the list, but …
-w3c/nist-cfp-font-family7: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "These sentences should be in a monospace font, not serif, if monospace (the first"
+w3c/nist-cfp-font-family7: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-cfp-font-size17: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font-size18: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font10: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font11: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font4: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-cfp-font5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in a cursive font, 'small' in size, with a line-height of 20px. The actual value of the font-size may be UA-d…
+w3c/nist-cfp-font5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cmpb-margin-left3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cmpb-margin-right3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
-w3c/nist-cmpi-margin-top-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "25px and background-color of red, giving it a red background and a 25px top margin. Margins on inline elements"
+w3c/nist-cmpi-margin-top-inline1: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-crp-color-units8: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 w3c/nist-inl-inline-elem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-keepandbreak13: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a leading area in P (there should be no areas before"
-w3c/nist-keepandbreak14: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a trailing area in P (there should be no areas other"
-w3c/nist-keepandbreak15: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is the page"
-w3c/nist-keepandbreak16: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "All page sizes should be"
+w3c/nist-keepandbreak13: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-keepandbreak14: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-keepandbreak15: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-keepandbreak16: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-keepandbreak17: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "All page sizes should be"
-w3c/nist-lbfomarginbottom2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"margin-Bottom\" for this list-block was set to \"inherit\""
-w3c/nist-lbfospacebefore2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"space-before\" on this \"block-list\" was set to \"inherit\""
-w3c/nist-lifoborderwidth6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The border width properties for this list item were set \"inherit\""
+w3c/nist-lbfomarginbottom2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-lbfospacebefore2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
+w3c/nist-lifoborderwidth6: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-misc-comments2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 w3c/nist-misc-hformatting1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-hformatting2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
