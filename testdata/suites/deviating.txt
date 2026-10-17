@@ -95,7 +95,7 @@ w3c/nist-adp-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.
 w3c/nist-adp-width3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-width4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph"
 w3c/nist-bcfobordercolor2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "\"red\" (before),\"blue\""
-w3c/nist-blockarea2: offen, erste Abweichung: Seite 1: "Space before this area should be" verschoben um 0.00 pt waagerecht, 4.32 pt senkrecht
+w3c/nist-blockarea2: begründet, ein leerer fo:block mit Rahmen und Padding erzeugt einen Bereich mit deren Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 w3c/nist-blockarea3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should increase in size from"
 w3c/nist-blockarea4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should decrease in size from"
 w3c/nist-blockarea5: offen, erste Abweichung: Seite 1: "Should have two child areas" verschoben um 0.00 pt waagerecht, 40.32 pt senkrecht
@@ -171,5 +171,3 @@ w3c/nist-misc-replelem1: begründet, px als Referenzpixel von CSS2 (1/96 in), XS
 w3c/nist-misc-replelem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-replelem5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-recarea9: offen, erste Abweichung: Seite 1: "This block contains a block-progression-dimension of 0.5 inches and an" verschoben um 0.00 pt waagerecht, 28.80 pt senkrecht
-w3c/nist-space1: offen, erste Abweichung: Seite 1: "This is line 2, overlaps line 1." verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht
-w3c/nist-space2: offen, erste Abweichung: Seite 1: "This is line 2, overlaps line 1." verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht

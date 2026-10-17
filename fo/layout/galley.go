@@ -132,11 +132,12 @@ type galley struct {
 	pageNo   int // 0, solange die Seite nicht feststeht (Fluss)
 	items    []item
 	stack    []*blockCtx
-	pending  areatree.Length // angesammelter Abstand
-	// pendingKeep ist der Teil des Abstands, der am Seitenanfang bleibt.
-	pendingKeep areatree.Length
-	major       int     // Zähler für ordinal
-	skip        ordinal // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
+	// spaces sind die Abstände der laufenden Folge (space-after und
+	// space-before aufeinanderfolgender Blöcke), aufgelöst nach XSL 1.1
+	// 4.3.1 beim nächsten Inhalt.
+	spaces []spaceSpec
+	major  int     // Zähler für ordinal
+	skip   ordinal // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
 
 	// Für die nächste Penalty vorgemerkte Keeps und Umbrüche.
 	keepNext int
@@ -207,10 +208,49 @@ func noContent(n *tree.Node) bool {
 // spaceBefore sammelt space-before eines Blocks. Der erhaltene Anteil gilt
 // auch am Anfang einer Seite.
 func (g *galley) spaceBefore(p *props.Computed) {
-	g.pending = max(g.pending, p.SpaceBefore)
-	if p.SpaceBeforeRetain {
-		g.pendingKeep = max(g.pendingKeep, p.SpaceBefore)
+	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceBefore, prec: p.SpaceBeforePrec, retain: p.SpaceBeforeRetain})
+}
+
+// spaceAfter sammelt space-after eines Blocks.
+func (g *galley) spaceAfter(p *props.Computed) {
+	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceAfter, prec: p.SpaceAfterPrec})
+}
+
+// spaceSpec ist ein Abstand mit Priorität und Konditionalität.
+type spaceSpec struct {
+	v      areatree.Length
+	prec   int
+	retain bool
+}
+
+// resolveSpaces löst eine Folge von Abständen nach XSL 1.1 4.3.1 auf:
+// Erzwingende Abstände (force) gelten alle und heben die übrigen auf, sonst
+// gewinnt die höchste Priorität und darunter das größte Optimum. keep ist
+// das Ergebnis am Anfang einer Seite, dort entfallen bedingte Abstände.
+func resolveSpaces(specs []spaceSpec) (h, keep areatree.Length) {
+	resolve := func(retainedOnly bool) areatree.Length {
+		var forced areatree.Length
+		anyForce := false
+		bestPrec, best, found := 0, areatree.Length(0), false
+		for _, s := range specs {
+			if retainedOnly && !s.retain {
+				continue
+			}
+			if s.prec == props.PrecForce {
+				forced += s.v
+				anyForce = true
+				continue
+			}
+			if !found || s.prec > bestPrec || s.prec == bestPrec && s.v > best {
+				bestPrec, best, found = s.prec, s.v, true
+			}
+		}
+		if anyForce {
+			return forced
+		}
+		return best
 	}
+	return resolve(false), resolve(true)
 }
 
 // breakValue liest break-before oder break-after. column gilt wie page, weil
@@ -284,7 +324,7 @@ func (g *galley) box(it item, before int) {
 	brk := g.brk
 	g.keepNext, g.keepPrev, g.brk = 0, 0, ""
 	if it.ord.less(g.skip) {
-		g.pending, g.pendingKeep = 0, 0
+		g.spaces = g.spaces[:0]
 		return
 	}
 	if brk != "" {
@@ -298,10 +338,10 @@ func (g *galley) box(it item, before int) {
 		g.items = append(g.items, item{kind: itPenalty, penalty: penaltyForced, brk: brk})
 	}
 	g.lastPath = it.path
-	if g.pending > 0 || g.pendingKeep > 0 {
-		g.items = append(g.items, item{kind: itGlue, h: g.pending, keep: g.pendingKeep})
+	if h, keep := resolveSpaces(g.spaces); h != 0 || keep != 0 {
+		g.items = append(g.items, item{kind: itGlue, h: h, keep: keep})
 	}
-	g.pending, g.pendingKeep = 0, 0
+	g.spaces = g.spaces[:0]
 	it.kind = itBox
 	it.seq = len(g.items)
 	for _, ctx := range it.path {
@@ -467,7 +507,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
 	}
 	g.pop()
-	g.pending = max(g.pending, p.SpaceAfter)
+	g.spaceAfter(p)
 	return nil
 }
 

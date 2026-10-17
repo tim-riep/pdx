@@ -951,7 +951,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	if after != "" && g.brk == "" {
 		g.brk = after
 	}
-	g.pending = max(g.pending, p.SpaceAfter)
+	g.spaceAfter(p)
 	return nil
 }
 
@@ -1200,14 +1200,14 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 			g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
 		}
 		g.pop()
-		g.pending = max(g.pending, ip.SpaceAfter)
+		g.spaceAfter(ip)
 	}
 	if hasBox(p) {
 		h := p.Padding[areatree.Bottom] + p.BorderWidth(areatree.Bottom)
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
 	}
 	g.pop()
-	g.pending = max(g.pending, p.SpaceAfter)
+	g.spaceAfter(p)
 	return nil
 }
 

@@ -46,16 +46,22 @@ type Computed struct {
 	// erhalten bleibt: bei .conditionality="retain" und immer, wenn der
 	// Abstand aus margin-top stammt (XSL 1.1 5.3.2).
 	SpaceBeforeRetain bool
-	Padding           [4]Length
+	// SpaceBeforePrec und SpaceAfterPrec sind die Komponente .precedence
+	// (XSL 1.1 4.3.1), PrecForce steht für force.
+	SpaceBeforePrec, SpaceAfterPrec int
+	Padding                         [4]Length
 	// Margin sind die berechneten Ränder, für inherit an Kindern.
-	Margin [4]Length
-	Border            [4]areatree.Border
-	Background        *areatree.Color
+	Margin     [4]Length
+	Border     [4]areatree.Border
+	Background *areatree.Color
 	// Absolute ist "absolute" oder "fixed" bei absoluter Positionierung.
 	Absolute                 string
 	Top, Left, Right, Bottom *Length
 	Width, Height            *Length
 }
+
+// PrecForce ist der Wert force der Komponente .precedence.
+const PrecForce = 1 << 30
 
 // Root liefert die Anfangswerte nach XSL 1.1 (Schrift wie bei Apache FOP
 // 12pt sans-serif).
@@ -524,6 +530,25 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}
 	if v, ok := a["space-before.conditionality"]; ok {
 		c.SpaceBeforeRetain = strings.TrimSpace(v) == "retain"
+	}
+	for _, sp := range []struct {
+		name string
+		dst  *int
+	}{{"space-before.precedence", &c.SpaceBeforePrec}, {"space-after.precedence", &c.SpaceAfterPrec}} {
+		v, ok := a[sp.name]
+		if !ok {
+			continue
+		}
+		v = strings.TrimSpace(v)
+		if v == "force" {
+			*sp.dst = PrecForce
+			continue
+		}
+		k, err := strconv.Atoi(v)
+		if err != nil {
+			return fail(sp.name, fmt.Errorf("ungültiger Wert %q", v))
+		}
+		*sp.dst = k
 	}
 
 	// Positionierung und Größe.
