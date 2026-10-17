@@ -263,6 +263,13 @@ func (g *galley) path() []*blockCtx {
 
 // box hängt eine Box an, davor eine Penalty und den angesammelten Abstand.
 func (g *galley) box(it item, before int) {
+	// Ein break-after des letzten Kindes wirkt erst nach den Unterkanten der
+	// umschließenden Blöcke, deren Rahmen gehört noch auf die Seite.
+	if it.edge == edgeBottom && g.brk != "" {
+		held := g.brk
+		g.brk = ""
+		defer func() { g.brk = held }()
+	}
 	pen := max(before, g.keepNext, g.keepPrev, keepInside(g.lastPath, it.path))
 	brk := g.brk
 	g.keepNext, g.keepPrev, g.brk = 0, 0, ""

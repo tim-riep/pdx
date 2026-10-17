@@ -312,6 +312,20 @@ func resolveInherit(n *Node) {
 				n.Attrs[name] = pv
 				break
 			}
+			// Zusammengesetzte Eigenschaften wie space-after können am
+			// Vorfahren nur als Komponenten stehen (space-after.optimum).
+			found := false
+			for pn, pv := range p.Attrs {
+				if strings.HasPrefix(pn, name+".") {
+					if _, own := n.Attrs[pn]; !own {
+						n.Attrs[pn] = pv
+					}
+					found = true
+				}
+			}
+			if found {
+				break
+			}
 		}
 	}
 	for _, c := range n.Children {

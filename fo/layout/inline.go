@@ -688,6 +688,12 @@ func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 // setParagraph bricht den Absatz um und setzt die Zeilen.
 func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	pa.trimSpace()
+	// Ein erhaltener Zeilenwechsel am Absatzende beendet die letzte Zeile,
+	// er eröffnet keine leere Zeile mehr.
+	if n := len(pa.pieces); n > 1 && pa.pieces[n-1].kind == pBreak {
+		pa.pieces = pa.pieces[:n-1]
+		pa.trimSpace()
+	}
 	p := pa.p
 	avail := g.contentW(p)
 	x0 := g.contentX(p)
