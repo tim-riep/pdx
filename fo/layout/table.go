@@ -909,12 +909,48 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				}
 				c.border[side] = best
 			}
+			// Oben und unten bestimmt bei überspannten Spalten die breiteste
+			// Kante der einzelnen Spalten den Einzug, damit der Inhalt in
+			// keinem Rahmen liegt.
+			seg := func(side int) areatree.Length {
+				var best areatree.Length
+				nb, nbSide, outer := ri-1, areatree.Bottom, ri == 0
+				if side == areatree.Bottom {
+					nb, nbSide, outer = lastRow+1, areatree.Top, lastRow == len(rows)-1
+				}
+				for k := c.col; k < c.col+c.span; k++ {
+					cands = cands[:0]
+					add(c.p.Border[side], precCell)
+					if side == areatree.Top {
+						add(rows[ri].props.Border[side], precRow)
+					} else {
+						add(rows[lastRow].props.Border[side], precRow)
+					}
+					if o := neighbour(nb, k); o != nil {
+						add(o.p.Border[nbSide], precCell)
+					}
+					if nb >= 0 && nb < len(rows) {
+						add(rows[nb].props.Border[nbSide], precRow)
+					}
+					if outer {
+						add(tableBorder[side], precTable)
+						colB(k, side)
+					}
+					if w := winnerPrec(cands); w.Visible() {
+						best = max(best, w.Width)
+					}
+				}
+				return best
+			}
 			for s := 0; s < 4; s++ {
 				w := areatree.Length(0)
 				if c.border[s].Visible() {
-					w = c.border[s].Width / 2
+					w = c.border[s].Width
 				}
-				c.inset[s] = w + c.p.Padding[s]
+				if c.span > 1 && (s == areatree.Top || s == areatree.Bottom) {
+					w = max(w, seg(s))
+				}
+				c.inset[s] = w/2 + c.p.Padding[s]
 			}
 		}
 	}
