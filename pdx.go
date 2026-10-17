@@ -9,6 +9,7 @@ package pdx
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -45,7 +46,10 @@ type Options struct {
 	// Attachments werden zusätzlich zu den Anhängen aus dem FO eingebettet.
 	Attachments []areatree.Attachment
 	// Fonts ist die Schriftregistry. nil bedeutet die eingebauten Schriften.
+	// Eine gemeinsame Registry hält geladene Schriften über viele Läufe.
 	Fonts *font.Registry
+	// Context bricht Layout und Rendern ab. nil bedeutet ohne Abbruch.
+	Context context.Context
 }
 
 // Result enthält das PDF und den Area Tree.
@@ -66,19 +70,10 @@ func Render(fo io.Reader, opts Options) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	root, err := tree.Parse(fo)
+	doc, err := Layout(fo, opts)
 	if err != nil {
 		return nil, err
 	}
-	res := opts.Resolver
-	if res == nil {
-		res = layout.DirResolver{Dir: opts.BaseDir}
-	}
-	doc, err := layout.Layout(root, layout.Options{Fonts: opts.Fonts, Resolver: res})
-	if err != nil {
-		return nil, err
-	}
-	doc.Attachments = append(doc.Attachments, opts.Attachments...)
 	pdf, err := render.Render(doc, render.Options{
 		Profile:      prof,
 		CreationDate: opts.CreationDate,
@@ -88,6 +83,25 @@ func Render(fo io.Reader, opts Options) (*Result, error) {
 		return nil, err
 	}
 	return &Result{PDF: pdf, Tree: doc}, nil
+}
+
+// Layout liest XSL-FO und liefert nur den Area Tree, ohne PDF. Profil und
+// Erstellungsdatum werden nicht gebraucht. Für Vorschau und Designer.
+func Layout(fo io.Reader, opts Options) (*areatree.Document, error) {
+	root, err := tree.Parse(fo)
+	if err != nil {
+		return nil, err
+	}
+	res := opts.Resolver
+	if res == nil {
+		res = layout.DirResolver{Dir: opts.BaseDir}
+	}
+	doc, err := layout.Layout(root, layout.Options{Fonts: opts.Fonts, Resolver: res, Context: opts.Context})
+	if err != nil {
+		return nil, err
+	}
+	doc.Attachments = append(doc.Attachments, opts.Attachments...)
+	return doc, nil
 }
 
 // RenderFile liest eine FO-Datei. Ist BaseDir leer, gilt ihr Verzeichnis.

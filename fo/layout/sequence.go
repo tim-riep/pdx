@@ -112,6 +112,9 @@ func (s *sequence) paginate() error {
 	var width areatree.Length = -1
 	pos, empty := 0, 0
 	for {
+		if err := s.e.opts.Context.Err(); err != nil {
+			return err
+		}
 		cond := pageCond{number: s.e.pageNo + 1, first: s.count == 0}
 		m, err := s.sel.pick(cond, false)
 		if err != nil {

@@ -59,14 +59,47 @@ func RenderTemplate(p *pkg.Package, data []byte, opts TemplateOptions) (*Result,
 // Render setzt einen Datensatz. opts.Lang wird ignoriert, die Sprache steht
 // beim Kompilieren fest.
 func (t *Template) Render(data []byte, opts TemplateOptions) (*Result, error) {
+	fo, o, err := t.prepare(data, opts)
+	if err != nil {
+		return nil, err
+	}
+	res, err := Render(bytes.NewReader(fo), o)
+	if err != nil {
+		return nil, mapError(fo, err)
+	}
+	return res, nil
+}
+
+// Layout setzt einen Datensatz und liefert nur den Area Tree, ohne PDF.
+// Profil und Erstellungsdatum werden nicht gebraucht.
+func (t *Template) Layout(data []byte, opts TemplateOptions) (*areatree.Document, error) {
+	fo, o, err := t.prepare(data, opts)
+	if err != nil {
+		return nil, err
+	}
+	doc, err := Layout(bytes.NewReader(fo), o)
+	if err != nil {
+		return nil, mapError(fo, err)
+	}
+	return doc, nil
+}
+
+// prepare prüft die Daten auf Wunsch, transformiert sie und stellt die
+// Optionen für das Paket zusammen.
+func (t *Template) prepare(data []byte, opts TemplateOptions) ([]byte, Options, error) {
 	if opts.Strict {
 		if err := t.Validate(data); err != nil {
-			return nil, err
+			return nil, Options{}, err
+		}
+	}
+	if opts.Context != nil {
+		if err := opts.Context.Err(); err != nil {
+			return nil, Options{}, err
 		}
 	}
 	fo, err := t.Compiled.Transform(data)
 	if err != nil {
-		return nil, err
+		return nil, Options{}, err
 	}
 	o := opts.Options
 	o.Resolver = packageResolver{t.Package}
@@ -77,14 +110,17 @@ func (t *Template) Render(data []byte, opts TemplateOptions) (*Result, error) {
 			Description: a.Description, Data: data,
 		})
 	}
-	res, err := Render(bytes.NewReader(fo), o)
+	return fo, o, nil
+}
+
+// mapError übersetzt Fehler beim Setzen in Fehler mit Vorlagen-ID. Sie
+// beziehen sich auf eine Stelle im FO, das Element dort trägt die ID.
+func mapError(fo []byte, err error) error {
 	var te *tree.Error
 	if errors.As(err, &te) {
-		// Fehler beim Setzen beziehen sich auf eine Stelle im FO. Das Element
-		// dort trägt die ID des Vorlagenelements.
-		return nil, &template.Error{ID: foIDAt(fo, te.Line, te.Col), Msg: te.Msg}
+		return &template.Error{ID: foIDAt(fo, te.Line, te.Col), Msg: te.Msg}
 	}
-	return res, err
+	return err
 }
 
 // Validate prüft Daten gegen das Daten-XSD des Pakets.

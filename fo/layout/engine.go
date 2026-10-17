@@ -9,6 +9,8 @@
 package layout
 
 import (
+	"context"
+
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/fo/linebreak"
 	"github.com/tim-riep/pdx/fo/props"
@@ -26,6 +28,9 @@ type Options struct {
 	Resolver Resolver
 	// Breaker bricht Absätze um. nil bedeutet linebreak.KnuthPlass.
 	Breaker linebreak.Breaker
+	// Context bricht das Layout ab, geprüft je Durchlauf und je Seite. nil
+	// bedeutet ohne Abbruch.
+	Context context.Context
 }
 
 type engine struct {
@@ -176,12 +181,18 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 	if opts.Resolver == nil {
 		opts.Resolver = denyResolver{}
 	}
+	if opts.Context == nil {
+		opts.Context = context.Background()
+	}
 	if err := checkIDs(root); err != nil {
 		return nil, err
 	}
 	prev := map[*tree.Node]string{}
 	prevIDs := map[string]*idPages{}
 	for pass := 1; ; pass++ {
+		if err := opts.Context.Err(); err != nil {
+			return nil, err
+		}
 		e := &engine{
 			opts:       opts,
 			doc:        &areatree.Document{},

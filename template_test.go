@@ -2,6 +2,7 @@ package pdx
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"os"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/internal/testutil"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
@@ -163,5 +165,49 @@ func TestTemplateIDsInAreaTree(t *testing.T) {
 	}
 	if !paths["girocode"] {
 		t.Error("Barcode ohne ID girocode")
+	}
+}
+
+// TestTemplateLayout prüft, dass Layout ohne PDF denselben Area Tree liefert
+// wie Render und dass ein abgebrochener Kontext das Setzen beendet.
+func TestTemplateLayout(t *testing.T) {
+	p, data := loadMuster(t)
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	reg := font.NewRegistry()
+	res, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Fonts: reg}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc, err := tpl.Layout(data, TemplateOptions{Options: Options{Fonts: reg}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(areatree.Dump(doc), areatree.Dump(res.Tree)) {
+		t.Error("Layout und Render liefern verschiedene Area Trees")
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := tpl.Layout(data, TemplateOptions{Options: Options{Fonts: reg, Context: ctx}}); !errors.Is(err, context.Canceled) {
+		t.Errorf("abgebrochener Kontext: Fehler %v, erwartet context.Canceled", err)
+	}
+}
+
+// BenchmarkLayoutInvoice misst Transformation und Layout ohne PDF mit
+// gemeinsamer Schriftregistry, wie der Designer es für die Vorschau nutzt.
+func BenchmarkLayoutInvoice(b *testing.B) {
+	p, data := loadMuster(b)
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		b.Fatal(err)
+	}
+	opts := TemplateOptions{Options: Options{Fonts: font.NewRegistry()}}
+	for b.Loop() {
+		if _, err := tpl.Layout(data, opts); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
