@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 
-	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/fo/layout"
+	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/internal/testutil"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
@@ -19,7 +19,15 @@ import (
 
 const musterDir = "../testdata/templates/musterrechnung"
 
-var creation = time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+// render setzt FO ohne PDF. Das Wurzelpaket pdx importiert compile, die
+// Tests setzen daher direkt mit fo/layout.
+func render(fo []byte) (*areatree.Document, error) {
+	root, err := tree.Parse(bytes.NewReader(fo))
+	if err != nil {
+		return nil, err
+	}
+	return layout.Layout(root, layout.Options{Resolver: layout.DirResolver{}})
+}
 
 func compileMuster(t testing.TB) (*pkg.Package, *Result) {
 	t.Helper()
@@ -45,17 +53,14 @@ func TestMusterrechnung(t *testing.T) {
 		t.Fatal(err)
 	}
 	testutil.Golden(t, "../testdata/golden/musterrechnung.fo", fo)
-	r, err := pdx.Render(bytes.NewReader(fo), pdx.Options{CreationDate: creation})
+	r, err := render(fo)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if d := os.Getenv("PDX_OUT"); d != "" {
-		os.WriteFile(filepath.Join(d, "musterrechnung.pdf"), r.PDF, 0o644)
-	}
-	if n := len(r.Tree.Pages); n < 3 {
+	if n := len(r.Pages); n < 3 {
 		t.Fatalf("%d Seiten, erwartet mindestens 3", n)
 	}
-	pages := pageLines(r.Tree)
+	pages := pageLines(r)
 	// Seite 1 endet mit der Zwischensumme, Seite 2 beginnt mit ihr als Übertrag.
 	p1, p2 := pages[0], pages[1]
 	sub := after(t, p1, "Zwischensumme")
@@ -239,12 +244,12 @@ func TestGroups(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v\n%s", err, res.XSLT)
 	}
-	r, err := pdx.Render(bytes.NewReader(fo), pdx.Options{CreationDate: creation})
+	r, err := render(fo)
 	if err != nil {
 		t.Fatalf("%v\n%s", err, fo)
 	}
 	var got []string
-	for _, l := range pageLines(r.Tree)[0] {
+	for _, l := range pageLines(r)[0] {
 		if l != "" {
 			got = append(got, l)
 		}
@@ -296,15 +301,15 @@ func TestInlines(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	r, err := pdx.Render(bytes.NewReader(fo), pdx.Options{CreationDate: creation})
+	r, err := render(fo)
 	if err != nil {
 		t.Fatalf("%v\n%s", err, fo)
 	}
-	got := strings.Join(pageLines(r.Tree)[0], "|")
+	got := strings.Join(pageLines(r)[0], "|")
 	if got != "Erste|Zweite Link leer|1/1" {
 		t.Fatalf("Zeilen %q", got)
 	}
-	if !bytes.Contains(areatree.Dump(r.Tree), []byte(`uri="https://pdx.example/"`)) {
+	if !bytes.Contains(areatree.Dump(r), []byte(`uri="https://pdx.example/"`)) {
 		t.Error("Link fehlt")
 	}
 }
