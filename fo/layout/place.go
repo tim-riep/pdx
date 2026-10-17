@@ -180,6 +180,10 @@ func (pl *placer) box(it item) error {
 			pl.curRow.s1++
 		}
 		pl.y += it.h
+	default:
+		// Schlichte Box, etwa der Rest eines fo:block-container mit fester
+		// Höhe.
+		pl.y += it.h
 	}
 	pl.started = true
 	for _, f := range pl.open {

@@ -408,6 +408,13 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 		g.box(item{h: h, path: g.path(), edge: edgeTop, ord: g.next()}, g.breakBefore(edgeTop))
 	}
 
+	// Ein fo:block-container mit fester Höhe wird nicht umbrochen, fehlende
+	// Höhe füllt eine Box auf (block-progression-dimension, XSL 1.1 7.15.3).
+	fixedH := n.IsFO("block-container") && p.Height != nil
+	if fixedH {
+		ctx.keep = penaltyInf
+	}
+	start := len(g.items)
 	if n.IsFO("block-container") {
 		// fo:block-container ist eine Referenzfläche (XSL 1.1 6.5.3): Die
 		// Einzüge der Kinder zählen ab ihrem Inhaltsrechteck.
@@ -420,6 +427,17 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	}
 	if err != nil {
 		return err
+	}
+	if fixedH {
+		var used areatree.Length
+		for _, it := range g.items[start:] {
+			if it.kind == itBox || it.kind == itGlue {
+				used += it.h
+			}
+		}
+		if *p.Height > used {
+			g.box(item{h: *p.Height - used, path: g.path(), ord: g.next()}, g.breakBefore(edgeNone))
+		}
 	}
 
 	if edges {

@@ -78,8 +78,11 @@ type cellLayout struct {
 	inset    [4]areatree.Length // Rahmen (ganz oder halb) plus Padding
 	items    []item
 	contentH areatree.Length
-	bounds   []bound
-	align    string
+	// minH ist die Mindesthöhe des Inhaltsrechtecks aus height oder
+	// block-progression-dimension der Zelle.
+	minH   areatree.Length
+	bounds []bound
+	align  string
 }
 
 // bound ist eine erlaubte Umbruchstelle im Inhalt einer Zelle.
@@ -210,7 +213,7 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 		if c.rowSpan > 1 {
 			continue
 		}
-		h = max(h, c.inset[areatree.Top]+c.contentH+c.inset[areatree.Bottom])
+		h = max(h, c.inset[areatree.Top]+max(c.contentH, c.minH)+c.inset[areatree.Bottom])
 	}
 	r.h = r.sepV + h + r.sepV
 	r.slices = []areatree.Length{0}
@@ -566,6 +569,9 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				return err
 			}
 			c := &cellLayout{node: cn, p: cp, col: col, span: span, rowSpan: rspan, align: attrOr(cn, "display-align", "before")}
+			if c.minH, err = minHeight(cn, cp.FontSize); err != nil {
+				return err
+			}
 			c.x = colX[col] + sepH/2
 			c.w = colX[col+span] - colX[col] - sepH
 			gc := &gridCell{c: c, row: ri}
@@ -659,7 +665,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				have += r.h
 			}
 			have -= span[0].sepV + span[len(span)-1].sepV
-			need := c.inset[areatree.Top] + c.contentH + c.inset[areatree.Bottom]
+			need := c.inset[areatree.Top] + max(c.contentH, c.minH) + c.inset[areatree.Bottom]
 			if need > have {
 				last := span[len(span)-1]
 				last.h += need - have
@@ -798,6 +804,12 @@ func rowHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 	if !n.IsFO("table-row") {
 		return 0, nil
 	}
+	return minHeight(n, fs)
+}
+
+// minHeight liest die Mindesthöhe aus height oder block-progression-dimension
+// (XSL 1.1 7.15.3, 7.15.6).
+func minHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 	for _, name := range []string{"height", "block-progression-dimension", "block-progression-dimension.minimum"} {
 		if v, ok := n.Attr(name); ok && v != "auto" {
 			l, err := props.EvalLength(v, fs, -1, nil)

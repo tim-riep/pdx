@@ -9,12 +9,9 @@ fop/block-container_absolute-position: offen, erste Abweichung: Seite 1: Zeile n
 fop/block-container_absolute-position_border_padding: offen, erste Abweichung: Seite 1: "background-text." verschoben um -233.93 pt waagerecht, -0.00 pt senkrecht
 fop/block-container_absolute-position_no-height: offen, erste Abweichung: Seite 1: "absolutely positioned width, no height" verschoben um -10.00 pt waagerecht, -10.00 pt senkrecht
 fop/block-container_absolute-position_overflow: begründet, left und top beziehen sich auf die Randkante (DEVIATIONS.md, left und top bei absoluter Positionierung)
-fop/block-container_content_size_percentage: offen, erste Abweichung: Seite 1: "50%" verschoben um -150.00 pt waagerecht, -11.20 pt senkrecht
-fop/block-container_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 196.00 pt waagerecht, -10.00 pt senkrecht
-fop/block-container_padding_percentages: offen, erste Abweichung: Seite 1: "margin=\"0pt\"" verschoben um 0.00 pt waagerecht, -28.80 pt senkrecht
-fop/block-container_page-breaking: offen, erste Abweichung: Seiten: pdx 1, FOP 3
+fop/block-container_content_size_percentage: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "nested autoheight"
+fop/block-container_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 196.00 pt waagerecht, -0.00 pt senkrecht
 fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit." verschoben um 0.00 pt waagerecht, 31.20 pt senkrecht
-fop/block-container_width_height: offen, erste Abweichung: Seite 1: "inline-progression-dimension=\"4in\" specified" verschoben um 71.89 pt waagerecht, -0.00 pt senkrecht
 fop/block_border_bug43917: offen, erste Abweichung: Seiten: pdx 3, FOP 2
 fop/block_break-before_bug44412: offen, erste Abweichung: Seite 2: "The break-before set on this block causes the parent block" verschoben um 0.00 pt waagerecht, -4.00 pt senkrecht
 fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
@@ -25,7 +22,6 @@ fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished wh
 fop/block_linefeed-treatment_2: offen, erste Abweichung: Seite 1: "Leasing a ..." verschoben um -0.05 pt waagerecht, 14.40 pt senkrecht
 fop/block_margin_inherit: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "margin=\"inherit\" - should have the same margin as the"
 fop/block_margin_shorthands: offen, erste Abweichung: Seite 1: "left/right" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
-fop/block_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
 fop/block_space-before_space-after_1: offen, erste Abweichung: Seite 1: "normal block1" verschoben um 0.00 pt waagerecht, 8.00 pt senkrecht
 fop/block_space-before_space-after_bug38102: offen, erste Abweichung: Seiten: pdx 6, FOP 3
 fop/block_text-align_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi" verschoben um -14.14 pt waagerecht, -43.20 pt senkrecht
@@ -39,7 +35,7 @@ fop/flow_changing-ipd_break-before: offen, erste Abweichung: Seite 1: "In olden 
 fop/flow_changing-ipd_break-before-table: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/flow_changing-ipd_last-page: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/flow_changing-ipd_last-page_7: offen, erste Abweichung: Seiten: pdx 2, FOP 5
-fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seiten: pdx 3, FOP 2
 fop/inline_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This demonstrates a long inline which stretches over multiple lines to show"
 fop/inline_border_padding: offen, erste Abweichung: Seite 1: "This demonstrates correct line breaking of a fo:inline because it does fit" verschoben um 0.00 pt waagerecht, -12.00 pt senkrecht
 fop/leader_background-color: offen, erste Abweichung: Seite 1: ".... dots yellow background" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
@@ -53,8 +49,7 @@ fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, 
 fop/list-item_padding_percentages: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "body 1: We should have 5% padding around this"
 fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
 fop/list-item_two_pages: offen, erste Abweichung: Seite 2: "13" verschoben um 0.00 pt waagerecht, 12.00 pt senkrecht
-fop/marker_percentage-resolution: offen, erste Abweichung: Seite 1: "Test" verschoben um 89.99 pt waagerecht, -0.00 pt senkrecht
-fop/markers_1: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/marker_page-number-citation_bugzilla45295: offen, erste Abweichung: Seite 4: "[marker content]" verschoben um 0.00 pt waagerecht, 28.34 pt senkrecht
 fop/markers_3: offen, erste Abweichung: Seite 2: "[PS] [DOC]" verschoben um 3.24 pt waagerecht, -0.00 pt senkrecht
 fop/markers_6a: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
 fop/markers_6b: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
@@ -68,7 +63,6 @@ fop/page-position-last_break-before_bugzilla46489: offen, erste Abweichung: Seit
 fop/page-position_only_elastic: offen, erste Abweichung: Seite 1: "Only page" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
 fop/page-sequence-force-page-count-odd: offen, erste Abweichung: Seiten: pdx 1, FOP 3
 fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11, FOP 13
-fop/page-sequence_last-page_space-before: offen, erste Abweichung: Seite 2: "Before the page break" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
 fop/simple-page-master_unmapped_flow-name: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-border-separate3: offen, erste Abweichung: Seite 1: "cell6" verschoben um 0.00 pt waagerecht, 5.00 pt senkrecht
@@ -79,17 +73,15 @@ fop/table-cell_break-after_last-block: offen, erste Abweichung: Seiten: pdx 1, F
 fop/table-cell_break-after_last-row: offen, erste Abweichung: Seiten: pdx 6, FOP 12
 fop/table-cell_break-before_first-row: offen, erste Abweichung: Seiten: pdx 6, FOP 12
 fop/table-cell_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 4
-fop/table-cell_display-align: offen, erste Abweichung: Seite 1: "cell5" verschoben um 0.00 pt waagerecht, -25.60 pt senkrecht
 fop/table-cell_display-align_page-break: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "cell3"
-fop/table-cell_height: offen, erste Abweichung: Seite 1: "cell5" verschoben um 0.00 pt waagerecht, -5.60 pt senkrecht
+fop/table-cell_height: offen, erste Abweichung: Seite 1: "cell10a" verschoben um 0.00 pt waagerecht, -6.00 pt senkrecht
 fop/table-cell_keep-together: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_keep-with-next: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
-fop/table-cell_page-break_span: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/table-cell_page-break_span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "cell3"
 fop/table-cell_row-span_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 7
 fop/table-cell_span-combinations: offen, erste Abweichung: Seite 1: "cell2" verschoben um -0.00 pt waagerecht, -7.20 pt senkrecht
-fop/table-cell_various-combinations: offen, erste Abweichung: Seite 1: "cell with border and height" verschoben um 0.00 pt waagerecht, -7.80 pt senkrecht
 fop/table-column_column-width_proportional-column-width: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-header_in_list_bug: offen, erste Abweichung: Seite 1: "Header" verschoben um -12.01 pt waagerecht, -0.00 pt senkrecht
 fop/table-header_table-footer_4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "content content content"
@@ -111,16 +103,13 @@ fop/table_border-collapse_collapse_resolution_no-col: offen, erste Abweichung: S
 fop/table_border-collapse_collapse_spans_1: offen, erste Abweichung: Seite 1: "Cell 1.2 Cell" verschoben um -6.00 pt waagerecht, -0.00 pt senkrecht
 fop/table_border-collapse_collapse_spans_2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3"
 fop/table_border-collapse_collapse_spans_2_no-col: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3"
-fop/table_border-collapse_separate_border-spacing_1: offen, erste Abweichung: Seite 1: "Reference block" verschoben um 0.00 pt waagerecht, -5.60 pt senkrecht
 fop/table_break-before_break-after: offen, erste Abweichung: Seite 3: "cell1" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
 fop/table_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table_keep-together_row-span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "Before the table"
 fop/table_layout_change_ipd: offen, erste Abweichung: Seiten: pdx 1, FOP 2
-fop/table_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
 fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
 fop/table_row-height_break: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/table_table-row_break-before: offen, erste Abweichung: Seiten: pdx 3, FOP 2
-fop/table_width: offen, erste Abweichung: Seite 1: "cell1" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
 w3c/fopc-fonts: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 w3c/fopc-hyphen: offen, erste Abweichung: Seite 1: "US English" verschoben um 0.00 pt waagerecht, 2.79 pt senkrecht
 w3c/fopc-leader: offen, erste Abweichung: Seite 1: "The dimensions of fo:leader are determined by the compound property leader-" verschoben um 0.00 pt waagerecht, 1.86 pt senkrecht
@@ -213,7 +202,6 @@ w3c/nist-misc-parsing3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (
 w3c/nist-misc-replelem1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-replelem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-replelem5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-recarea8: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This block contains an inline-progression-dimension of 2.0 inches and a"
 w3c/nist-recarea9: offen, erste Abweichung: Seite 1: "This block contains a block-progression-dimension of 0.5 inches and an" verschoben um 0.00 pt waagerecht, 28.80 pt senkrecht
 w3c/nist-space1: offen, erste Abweichung: Seite 1: "This is line 2, overlaps line 1." verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht
 w3c/nist-space2: offen, erste Abweichung: Seite 1: "This is line 2, overlaps line 1." verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht

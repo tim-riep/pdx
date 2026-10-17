@@ -530,6 +530,27 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		}
 		*p.dst = &l
 	}
+	// inline-progression-dimension und block-progression-dimension sind im
+	// Schreibmodus lr-tb width und height (XSL 1.1 7.15.6, 7.15.14). Sie
+	// haben Vorrang, von den Komponenten zählt optimum, sonst minimum.
+	for _, p := range []struct {
+		name string
+		dst  **Length
+	}{{"inline-progression-dimension", &c.Width}, {"block-progression-dimension", &c.Height}} {
+		v, ok := a[p.name]
+		if !ok || v == "auto" {
+			if v, ok = a[p.name+".optimum"]; !ok || v == "auto" {
+				if v, ok = a[p.name+".minimum"]; !ok || v == "auto" {
+					continue
+				}
+			}
+		}
+		l, err := length(p.name, v)
+		if err != nil {
+			return err
+		}
+		*p.dst = &l
+	}
 	return nil
 }
 
