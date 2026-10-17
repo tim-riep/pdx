@@ -53,3 +53,21 @@ func TestXPathService(t *testing.T) {
 		t.Fatalf("Felder %v", paths)
 	}
 }
+
+func TestRelativeBind(t *testing.T) {
+	c := NewCore(nil, nil, t.TempDir())
+	if _, err := NewProjectService(c).Open(muster); err != nil {
+		t.Fatal(err)
+	}
+	ts := NewTemplateService(c)
+	for ref, want := range map[string]string{"rechnungsnummer": "inv:number", "z-betrag": "inv:amount", "empfaenger-ort": "../inv:number"} {
+		path := "inv:invoice/inv:number"
+		if ref == "z-betrag" {
+			path = "inv:invoice/inv:items/inv:item/inv:amount"
+		}
+		got, err := ts.RelativeBind(ref, path)
+		if err != nil || got != want {
+			t.Errorf("%s: %q %v, erwartet %q", ref, got, err, want)
+		}
+	}
+}

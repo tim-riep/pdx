@@ -176,3 +176,17 @@ func byteIndex(s string, u int) int {
 	}
 	return len(s)
 }
+
+// RelativeBind liefert den XPath zu einem Datenknoten (Pfad im Datenbaum)
+// relativ zum Kontext eines Elements, etwa für ein Feld, das in einen Text
+// gezogen wird.
+func (s *TemplateService) RelativeBind(ref, path string) (string, error) {
+	in, err := s.xpathInput(ref)
+	if err != nil {
+		return "", err
+	}
+	if in.ctx == "" {
+		return "", errors.New("die Vorlage hat keine Datenwurzel")
+	}
+	return schema.Relative(in.ctx, path), nil
+}

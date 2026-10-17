@@ -1,5 +1,6 @@
 <script lang="ts">
   import { openElementMenu } from "../../lib/menu.svelte";
+  import ContentEditor from "../ContentEditor.svelte";
   import type { Area, Page, Rect } from "../../lib/canvas/model";
   import { drawPage, type ImageSource } from "../../lib/canvas/render";
   import { HitIndex } from "../../lib/canvas/hit";
@@ -223,6 +224,29 @@
     else select("");
   }
 
+  // Doppelklick auf Text öffnet den Editor an Ort und Stelle. Ein Treffer auf
+  // ein eingebettetes Feld bearbeitet den Text darum.
+  let editing = $state<{ ref: string; r: number[] } | null>(null);
+  function dblclick(e: MouseEvent) {
+    const hit: Area | undefined = index.at(...pagePoint(e));
+    if (!hit) return;
+    let ref = "";
+    for (let x = node(hit.id); x; x = node(x.parent)) {
+      if (typeOf(x)?.mixed) {
+        ref = x.ref;
+        break;
+      }
+    }
+    if (!ref) return;
+    e.preventDefault();
+    const areas = page.els.filter((a) => a.id === ref);
+    const rs = areas.length ? areas.map((a) => a.r) : [hit.r];
+    const x0 = Math.min(...rs.map((r) => r[0])), y0 = Math.min(...rs.map((r) => r[1]));
+    const x1 = Math.max(...rs.map((r) => r[0] + r[2])), y1 = Math.max(...rs.map((r) => r[1] + r[3]));
+    select(ref, null);
+    editing = { ref, r: [x0, y0, x1 - x0, y1 - y0] };
+  }
+
   // Rechtsklick wählt das Element unter dem Zeiger und öffnet sein Menü.
   function contextmenu(e: MouseEvent) {
     const hit: Area | undefined = index.at(...pagePoint(e));
@@ -281,9 +305,15 @@
 </script>
 
 <div class="page" data-page={page.n} style="width:{page.w * zoom}px;height:{page.h * zoom}px" bind:this={pageEl}
-  onmousemove={move} onmouseleave={() => (selection.hover = "")} onmousedown={down} oncontextmenu={contextmenu} role="presentation"
+  onmousemove={move} onmouseleave={() => (selection.hover = "")} onmousedown={down} oncontextmenu={contextmenu} ondblclick={dblclick} role="presentation"
   ondragover={dragover} ondragleave={() => (target = null)} ondrop={drop}>
   {#if visible}<canvas bind:this={canvas}></canvas>{/if}
+  {#if editing}
+    <div class="inline-edit" style="{box(editing.r)};font-size:{Math.max(11, 12.5 * zoom)}px" role="presentation" data-testid="inline-edit"
+      onmousedown={(e) => e.stopPropagation()} ondblclick={(e) => e.stopPropagation()}>
+      <ContentEditor ref={editing.ref} autofocus ondone={() => (editing = null)} />
+    </div>
+  {/if}
   <div class="overlay">
     {#each frames as f}
       <div class="box frame" class:flowed={f.flowed} style={box(f.a.r)}>{#if f.flowed}<span class="flow">↓</span>{/if}</div>
@@ -329,6 +359,12 @@
 </div>
 
 <style>
+  .inline-edit {
+    position: absolute;
+    z-index: 6;
+    min-width: 180px;
+    height: auto !important;
+  }
   .page {
     position: relative;
     background: #fff;

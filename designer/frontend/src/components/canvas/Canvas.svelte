@@ -42,12 +42,17 @@
   let viewport: HTMLElement | undefined = $state();
 
   // Ausgewähltes Element sichtbar machen, etwa nach Klick in der Hierarchie.
+  // Nur einmal je Bitte: sonst springt die Ansicht bei jedem Setzen und jeder
+  // späteren Auswahl.
+  let revealed = 0;
   $effect(() => {
-    if (!selection.reveal || !viewport) return;
+    const req = selection.reveal;
+    if (!req || req === revealed || !viewport) return;
     const ref = selection.ref;
     for (let i = 0; i < render.pages.length; i++) {
       const a = render.pages[i].els.find((e) => e.id === ref);
       if (a) {
+        revealed = req;
         const y = tops[i] + a.r[1] * zoom - 48;
         if (y < viewport.scrollTop || y > viewport.scrollTop + height - 96) viewport.scrollTo({ top: y });
         break;

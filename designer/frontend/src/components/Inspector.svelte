@@ -6,6 +6,7 @@
   import TableTools from "./TableTools.svelte";
   import XPathInput from "./XPathInput.svelte";
   import PresenceEditor from "./PresenceEditor.svelte";
+  import ContentEditor from "./ContentEditor.svelte";
   import { resolveColor, tokens } from "../lib/tokens.svelte";
 
   let query = $state("");
@@ -55,6 +56,13 @@
       {#if !n.ref.startsWith("~")}<code>{n.ref}</code>{/if}
     </header>
     <TableTools {n} />
+    {#if type.text}
+      <section class="content" data-testid="inspector-content">
+        <h3>{t("content.title")}</h3>
+        {#key n.ref}<ContentEditor ref={n.ref} />{/key}
+        <p class="hint">{type.mixed ? t("content.hint") : t("content.hintPlain")}</p>
+      </section>
+    {/if}
     <input class="search" type="search" placeholder={t("inspector.search")} aria-label={t("inspector.search")} bind:value={query} />
     {#each groups as [g, props] (g)}
       <section>
@@ -174,6 +182,17 @@
     border-radius: 3px;
     border: 1px solid var(--border);
     flex: none;
+  }
+  .content {
+    margin-bottom: var(--space-2);
+  }
+  .content h3 {
+    margin-top: 0;
+  }
+  .hint {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: var(--text-muted);
   }
   .mono {
     font-family: var(--font-mono);

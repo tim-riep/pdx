@@ -306,5 +306,13 @@
   "el.tokens": "Tokens",
   "el.tokens/color": "Farb-Token",
   "el.tokens/length": "Längen-Token",
-  "el.tokens/font": "Schrift-Token"
+  "el.tokens/font": "Schrift-Token",
+  "content.title": "Inhalt",
+  "content.hint": "@ fügt ein Feld ein, Daten lassen sich hineinziehen. Umschalt+Eingabe bricht die Zeile um.",
+  "content.hintPlain": "Nur Text.",
+  "content.label": "Inhalt von {el}",
+  "content.fields": "Felder",
+  "content.chip": "{el}, Entf löscht",
+  "prop.font": "Schrift-Token",
+  "prop.family": "Familie"
 }

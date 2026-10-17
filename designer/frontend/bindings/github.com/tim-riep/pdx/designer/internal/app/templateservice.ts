@@ -148,6 +148,15 @@ export function Redo(): $CancellablePromise<$models.Result> {
 }
 
 /**
+ * RelativeBind liefert den XPath zu einem Datenknoten (Pfad im Datenbaum)
+ * relativ zum Kontext eines Elements, etwa für ein Feld, das in einen Text
+ * gezogen wird.
+ */
+export function RelativeBind(ref: string, path: string): $CancellablePromise<string> {
+    return $Call.ByID(2930240580, ref, path);
+}
+
+/**
  * SetContent ersetzt Text und eingebettete Elemente als ein Schritt.
  * Eingebettete Elemente, die nicht mehr vorkommen, entfallen.
  */

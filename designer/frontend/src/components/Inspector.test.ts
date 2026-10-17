@@ -29,7 +29,7 @@ beforeEach(() => {
   api.Apply.mockReset();
   tpl.catalog = {
     subform: {
-      key: "subform", name: "subform", mixed: false, children: [],
+      key: "subform", name: "subform", mixed: false, text: false, children: [],
       properties: [
         { name: "id", group: "general", kind: "id", required: true },
         { name: "x", group: "position", kind: "length" },
