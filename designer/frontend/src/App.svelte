@@ -11,6 +11,8 @@
   import ContextMenu from "./components/ContextMenu.svelte";
   import PdfView from "./components/PdfView.svelte";
   import SamplesPanel from "./components/SamplesPanel.svelte";
+  import SchemaDiffDialog from "./components/SchemaDiffDialog.svelte";
+  import { sd } from "./lib/schemadiff.svelte";
   import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
   import ConformancePanel from "./components/ConformancePanel.svelte";
@@ -162,6 +164,7 @@
 </div>
 
 <ContextMenu />
+{#if sd.open}<SchemaDiffDialog />{/if}
 
 {#if ui.pathPrompt}
   <Modal title={t("path.title")}>

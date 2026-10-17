@@ -1,6 +1,7 @@
 // Datenbaum des Daten-XSD als Lesecache, neu geholt nach jeder Änderung der
 // Vorlage (das Backend cacht das aufbereitete Schema).
 
+import { changeSchema } from "./schemadiff.svelte";
 import { EVENT, SchemaAPI, message, on, type DataNode, type DataSchema, type ProjectState } from "./api";
 import { ui } from "./project.svelte";
 import { select } from "./selection.svelte";
@@ -26,6 +27,8 @@ refresh();
 export const DATA_MIME = "application/x-pdx-data";
 
 export async function loadSchema(askPath: (title: string) => Promise<string | null>) {
+  // Mit vorhandenem Schema erst die Unterschiede zeigen.
+  if (roots().length > 0) return changeSchema(askPath);
   try {
     const res = await SchemaAPI.ImportDialog("");
     if (res.rev) select(res.select);

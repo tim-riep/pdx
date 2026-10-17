@@ -3,7 +3,17 @@
   import { node } from "../lib/template.svelte";
   import { select, selection } from "../lib/selection.svelte";
   import { ui } from "../lib/project.svelte";
-  import { entries, type Entry } from "../lib/problems.svelte";
+  import { entries, problems, type Entry } from "../lib/problems.svelte";
+  import { sd, type Task } from "../lib/schemadiff.svelte";
+
+  // Eine Aufgabe ist offen, solange eines ihrer Elemente einen Befund hat
+  // (oder bei Beispieldaten eine Datei). Abhaken geht auch von Hand.
+  function open(task: Task): boolean {
+    if (sd.done[task.id]) return false;
+    const ps = problems.report?.problems ?? [];
+    if (task.samples) return ps.some((p) => p.source === "beispiel");
+    return task.refs.some((r) => node(r) && ps.some((p) => p.ref === r));
+  }
 
   const list = $derived(entries());
   const errors = $derived(list.filter((e) => e.level === "Fehler").length);
@@ -27,6 +37,26 @@
 </script>
 
 <div class="problems" data-testid="problems">
+  {#if sd.tasks.length}
+    <section class="tasks" data-testid="schema-tasks">
+      <h4>
+        {t("schemadiff.tasks")}
+        <button class="close" title={t("schemadiff.dismiss")} aria-label={t("schemadiff.dismiss")} onclick={() => (sd.tasks = [])}>×</button>
+      </h4>
+      <ul>
+        {#each sd.tasks as task (task.id)}
+          {@const isOpen = open(task)}
+          <li class:done={!isOpen} data-task={task.id}>
+            <input type="checkbox" checked={!isOpen} aria-label={t("schemadiff.done")} onchange={(e) => (sd.done[task.id] = e.currentTarget.checked)} />
+            <span class="text">{task.text}</span>
+            {#each task.refs.filter((r) => node(r)) as r (r)}
+              <button class="ref" onclick={() => go({ level: "", source: "", ref: r, file: "", msg: "" })}>{r}</button>
+            {/each}
+          </li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
   {#if list.length === 0}
     <p class="none">✓ {t("problems.none")}</p>
   {:else}
@@ -51,6 +81,43 @@
 <style>
   .problems {
     padding: var(--space-1) var(--space-2);
+  }
+  .tasks {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-1) var(--space-2);
+    margin: var(--space-1) 0 var(--space-2);
+    background: var(--surface-2);
+  }
+  .tasks h4 {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 4px;
+    font-size: 12px;
+  }
+  .tasks ul li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px var(--space-2);
+    align-items: center;
+    padding: 1px 0;
+  }
+  .tasks li.done .text {
+    color: var(--text-muted);
+    text-decoration: line-through;
+  }
+  .tasks button.ref,
+  .tasks button.close {
+    display: inline;
+    width: auto;
+    padding: 0 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .tasks button.close {
+    color: var(--text-muted);
+    font-family: var(--font-ui);
   }
   .none,
   .summary {
