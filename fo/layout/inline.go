@@ -127,6 +127,9 @@ type piece struct {
 	start bool
 	// box ist bei Bildern mit Rahmen, Padding oder Hintergrund gesetzt.
 	box *graphicBox
+	// nbsp ist bei U+00A0 gesetzt. Es ist kein XML-Leerraum und wird weder
+	// am Absatzrand entfernt noch macht es einen Absatz leer (7.16.12).
+	nbsp bool
 }
 
 // inlineDeco ist ein Inline-Element mit Hintergrund, Rahmen oder Padding.
@@ -204,7 +207,7 @@ func newParagraph(g *galley, p *props.Computed, n *tree.Node) *paragraph {
 
 func (pa *paragraph) empty() bool {
 	for _, pc := range pa.pieces {
-		if pc.kind != pSpace {
+		if pc.kind != pSpace || pc.nbsp {
 			return false
 		}
 	}
@@ -444,8 +447,12 @@ func (pa *paragraph) text(n *tree.Node, p *props.Computed, s string, collapse bo
 			if err := flushWord(); err != nil {
 				return err
 			}
+			// Am Absatzanfang hält eine Box der Breite 0 das Zeichen fest.
+			if len(pa.pieces) == 0 {
+				pa.pieces = append(pa.pieces, piece{kind: pEdge, st: st})
+			}
 			pa.pieces = append(pa.pieces, piece{kind: pNoBreak, st: st},
-				piece{kind: pSpace, st: st, width: st.nbsp.Advance, glyph: st.nbsp})
+				piece{kind: pSpace, st: st, width: st.nbsp.Advance, glyph: st.nbsp, nbsp: true})
 		case collapse && (r == ' ' || r == '\t' || r == '\r' || r == '\n'):
 			if err := flushWord(); err != nil {
 				return err
@@ -459,10 +466,16 @@ func (pa *paragraph) text(n *tree.Node, p *props.Computed, s string, collapse bo
 }
 
 func (pa *paragraph) trimSpace() {
-	for len(pa.pieces) > 0 && (pa.pieces[len(pa.pieces)-1].kind == pSpace || pa.pieces[len(pa.pieces)-1].kind == pNoBreak) {
-		pa.pieces = pa.pieces[:len(pa.pieces)-1]
+	for len(pa.pieces) > 0 {
+		last := pa.pieces[len(pa.pieces)-1]
+		if last.kind == pSpace && !last.nbsp || last.kind == pNoBreak {
+			pa.pieces = pa.pieces[:len(pa.pieces)-1]
+			continue
+		}
+		break
 	}
 }
+
 
 func (pa *paragraph) addSpace(n *tree.Node, st *style) {
 	if len(pa.pieces) == 0 {

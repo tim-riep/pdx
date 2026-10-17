@@ -96,8 +96,11 @@ func (c *Computed) inherit() *Computed {
 	}
 }
 
+// fontSizes sind die Schlüsselwörter von font-size mit dem Faktor 1,2
+// zwischen benachbarten Größen, wie XSL 1.1 7.9.4 ihn empfiehlt.
 var fontSizes = map[string]float64{
-	"xx-small": 7, "x-small": 8.3, "small": 10, "medium": 12, "large": 14.4, "x-large": 17.3, "xx-large": 20.7,
+	"xx-small": 12 / 1.2 / 1.2 / 1.2, "x-small": 12 / 1.2 / 1.2, "small": 12 / 1.2, "medium": 12,
+	"large": 12 * 1.2, "x-large": 12 * 1.2 * 1.2, "xx-large": 12 * 1.2 * 1.2 * 1.2,
 }
 
 // Compute löst die Eigenschaften eines Elements auf. width ist die Breite

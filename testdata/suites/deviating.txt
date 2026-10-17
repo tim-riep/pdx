@@ -16,13 +16,12 @@ fop/block_break-before_bug44412: offen, erste Abweichung: Seite 2: "The break-be
 fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished whenever it shone in her face." verschoben um 19.85 pt waagerecht, -0.00 pt senkrecht
-fop/block_margin_shorthands: offen, erste Abweichung: Seite 1: "left/right" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
+fop/block_margin_shorthands: begründet, ein leerer fo:block mit Rahmen erzeugt einen Bereich mit dessen Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
 fop/block_space-before_space-after_bug38102: begründet, pdx nimmt das Optimum von Abständen, FOP staucht bis zum Minimum, XSL 1.1 4.3 lässt jeden Wert im Bereich zu
 fop/block_text-align_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi" verschoben um -14.14 pt waagerecht, -43.20 pt senkrecht
 fop/block_uax14_explicit-breaks: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 fop/block_uax14_linebreaking: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
-fop/block_white-space_nbsp_1: offen, erste Abweichung: Seite 1: "single nbsp around" verschoben um -3.32 pt waagerecht, -0.00 pt senkrecht
 fop/empty_table: begründet, leeres fo:table-body verletzt das Inhaltsmodell aus XSL 1.1 6.7.6 (table-row+|table-cell+)
 fop/flow_changing-ipd_5: offen, erste Abweichung: Seite 3: "beautiful, but the youngest was so beautiful that the sun itself, which has seen so much," verschoben um 0.00 pt waagerecht, -43.20 pt senkrecht
 fop/flow_changing-ipd_break-before: offen, erste Abweichung: Seite 1: "In olden times when wishing still helped one, there lived a" verschoben um 0.00 pt waagerecht, -1.60 pt senkrecht
@@ -60,7 +59,6 @@ fop/table-cell_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 u
 fop/table-cell_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
 fop/table-cell_page-break_span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "cell3"
 fop/table-cell_row-span_breaks: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 1.1 Line 3"
-fop/table-cell_span-combinations: offen, erste Abweichung: Seite 1: "cell2" verschoben um -0.00 pt waagerecht, -7.20 pt senkrecht
 fop/table-column_column-width_proportional-column-width: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-header_in_list_bug: offen, erste Abweichung: Seite 1: "Header" verschoben um -12.01 pt waagerecht, -0.00 pt senkrecht
 fop/table-header_table-footer_4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "content content content"
