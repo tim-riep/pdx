@@ -145,7 +145,7 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 			ratio float64
 		}
 		var best [4]*cand
-		var deact *kpNode // bester entfernter Knoten für den Notfall
+		var deact *kpNode // spätester entfernter Knoten für den Notfall
 		var deactD float64
 		keep := active[:0]
 		for _, a := range active {
@@ -176,7 +176,9 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 				keep = append(keep, a)
 			}
 			if r < -1 {
-				if deact == nil || a.demerits < deactD {
+				// Für den Notfall zählt der späteste entfernte Knoten: Die
+				// überlange Zeile enthält dann nur, was allein nicht passt.
+				if deact == nil || a.pos > deact.pos || a.pos == deact.pos && a.demerits < deactD {
 					deact, deactD = a, a.demerits
 				}
 				continue
