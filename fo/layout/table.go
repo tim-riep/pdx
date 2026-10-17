@@ -66,6 +66,9 @@ type rowLayout struct {
 	// Zeile (break-before am Anfang, break-after am Ende einer Zelle).
 	forced            map[int]string
 	leadBrk, trailBrk string
+	// skipBreakBefore ist gesetzt, wenn break-before der ersten Rumpfzeile
+	// schon vor der Tabelle wirkt.
+	skipBreakBefore bool
 	markers  markerSet
 	collapse bool
 }
@@ -299,7 +302,7 @@ func sortLengths(v []areatree.Length) {
 func (g *galley) emitRow(r *rowLayout, before int) {
 	if r.node.IsFO("table-row") {
 		g.keepPrev = max(g.keepPrev, keepValue(r.node, "keep-with-previous"))
-		if b := breakValue(r.node, "break-before"); b != "" {
+		if b := breakValue(r.node, "break-before"); b != "" && !r.skipBreakBefore {
 			g.brk = b
 		}
 		defer func() {
@@ -774,6 +777,17 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	ctx.w = tw + p.Padding[areatree.Left] + p.Padding[areatree.Right]
 	g.push(ctx)
 	g.spaceBefore(p)
+	// Ein erzwungener Umbruch am Anfang der ersten Rumpfzeile gilt vor der
+	// Tabelle, sonst bliebe der Kopf allein auf der Seite.
+	if len(body) > 0 && g.brk == "" {
+		if body[0].leadBrk != "" {
+			g.brk = body[0].leadBrk
+			body[0].leadBrk = ""
+		} else if b := breakValue(body[0].node, "break-before"); b != "" && body[0].node.IsFO("table-row") {
+			g.brk = b
+			body[0].skipBreakBefore = true
+		}
+	}
 	edges := hasBox(p)
 	if edges {
 		h := p.BorderWidth(areatree.Top) + p.Padding[areatree.Top]
