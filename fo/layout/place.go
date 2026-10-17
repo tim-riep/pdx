@@ -311,6 +311,7 @@ func (pl *placer) absolute(a *absAnchor) error {
 	inside := *p
 	inside.StartIndent, inside.EndIndent = 0, 0
 	g := newGalley(pl.e, contentW, pl.page.Number)
+	g.page = a.page
 	if err := g.blocks(a.node, &inside); err != nil {
 		return err
 	}

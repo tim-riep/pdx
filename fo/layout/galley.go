@@ -122,6 +122,8 @@ type deferredRun struct {
 type absAnchor struct {
 	node *tree.Node
 	p    *props.Computed
+	// page ist im fo:static-content die Seite für fo:retrieve-marker.
+	page *areatree.Page
 }
 
 // galley erzeugt die Einträge für einen Referenzbereich der Breite refW.
@@ -460,7 +462,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	childParent := p
 	if n.IsFO("block-container") {
 		if p.Absolute != "" {
-			g.box(item{path: g.path(), anchor: &absAnchor{node: n, p: p}, ord: g.next()}, g.breakBefore(edgeNone))
+			g.box(item{path: g.path(), anchor: &absAnchor{node: n, p: p, page: g.page}, ord: g.next()}, g.breakBefore(edgeNone))
 			return nil
 		}
 		if p.Width != nil {

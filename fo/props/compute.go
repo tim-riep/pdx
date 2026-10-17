@@ -583,7 +583,19 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		*sp.dst = k
 	}
 
-	// Positionierung und Größe.
+	// Positionierung und Größe. Die Kurzform position aus CSS2 (XSL 1.1
+	// 7.31.20) gilt, wenn absolute-position fehlt.
+	if v, ok := a["position"]; ok {
+		if _, set := a["absolute-position"]; !set {
+			switch v {
+			case "absolute", "fixed":
+				c.Absolute = v
+			case "static":
+			default:
+				return fail("position", fmt.Errorf("Wert %q wird nicht unterstützt", v))
+			}
+		}
+	}
 	if v, ok := a["absolute-position"]; ok {
 		switch v {
 		case "absolute", "fixed":
