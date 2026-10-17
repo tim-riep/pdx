@@ -1,0 +1,62 @@
+# Engine und Designer bauen und testen. Der Designer wird auf allen drei
+# Systemen nativ gebaut und kurz gestartet (Smoke-Test). Die Ende-zu-Ende-Tests
+# laufen gegen den Server-Build in Chromium und WebKit.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  engine:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.4"
+      - run: go vet ./...
+      - run: CGO_ENABLED=0 go test ./...
+
+  designer:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: designer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.4"
+          cache-dependency-path: designer/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Linux-Pakete für GTK4 und WebKitGTK 6.0
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev libwebkitgtk-6.0-dev xvfb
+      - run: npm ci --ignore-scripts
+        working-directory: designer/frontend
+      - name: Bindungen aktuell
+        run: |
+          make bindings
+          git diff --exit-code frontend/bindings
+      - run: make check
+      - run: make test
+      - name: Natives Binary und Smoke-Test
+        run: |
+          make build
+          EXT=""; [ "$RUNNER_OS" = "Windows" ] && EXT=".exe"
+          if [ "$RUNNER_OS" = "Linux" ]; then xvfb-run -a ../out/pdx-designer$EXT --smoke; else ../out/pdx-designer$EXT --smoke; fi
+      - name: Playwright-Browser
+        run: npx playwright install --with-deps chromium webkit
+        working-directory: designer/frontend
+      - run: make e2e

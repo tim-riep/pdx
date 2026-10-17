@@ -1,0 +1,14 @@
+{
+  "app.title": "pdx Designer",
+  "view.design": "Entwurf",
+  "view.preview": "Vorschau",
+  "view.pdf": "PDF",
+  "panel.data": "Daten",
+  "panel.hierarchy": "Hierarchie",
+  "panel.inspector": "Inspektor",
+  "panel.problems": "Probleme",
+  "panel.conformance": "Konformität",
+  "canvas.empty": "Keine Vorlage geöffnet",
+  "status.version": "Designer {version}, Engine {engine}",
+  "theme.toggle": "Erscheinungsbild wechseln"
+}

@@ -1,0 +1,70 @@
+/* Farbsystem des Designers als Tokens. Zurückhaltend, damit das Dokument im
+   Mittelpunkt steht. Hell ist Standard, dunkel folgt dem System oder der
+   Wahl in der Oberfläche (data-theme). */
+
+:root {
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --surface-2: #f8f9fb;
+  --border: #dde1e6;
+  --text: #1c2026;
+  --text-muted: #687280;
+  --accent: #2f6fe4;
+  --accent-soft: rgba(47, 111, 228, 0.12);
+  --hover: #e8860d;
+  --danger: #c62f2f;
+  --warning: #b8740a;
+  --ok: #2e8540;
+  --canvas: #e6e8ec;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+
+  --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --size-ui: 13px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --radius: 6px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17191d;
+    --surface: #1f2226;
+    --surface-2: #25292e;
+    --border: #353a41;
+    --text: #e6e8eb;
+    --text-muted: #9aa3ad;
+    --accent: #5b8ff0;
+    --accent-soft: rgba(91, 143, 240, 0.18);
+    --canvas: #121417;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #17191d;
+  --surface: #1f2226;
+  --surface-2: #25292e;
+  --border: #353a41;
+  --text: #e6e8eb;
+  --text-muted: #9aa3ad;
+  --accent: #5b8ff0;
+  --accent-soft: rgba(91, 143, 240, 0.18);
+  --canvas: #121417;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--size-ui) / 1.4 var(--font-ui);
+}
