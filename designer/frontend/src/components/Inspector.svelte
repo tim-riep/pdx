@@ -4,6 +4,8 @@
   import { apply, node, typeOf } from "../lib/template.svelte";
   import { selection } from "../lib/selection.svelte";
   import TableTools from "./TableTools.svelte";
+  import XPathInput from "./XPathInput.svelte";
+  import PresenceEditor from "./PresenceEditor.svelte";
 
   let query = $state("");
   const n = $derived(node(selection.ref));
@@ -55,6 +57,16 @@
       <section>
         <h3>{t(`group.${g}` as "group.general")}</h3>
         {#each props as p (p.name)}
+          {#if p.kind === "xpath"}
+            <div class="prop" data-prop={p.name}>
+              <span class="label" title={p.name}>{propLabel(p.name)}{#if p.required}<sup>*</sup>{/if}</span>
+              {#if p.name === "presence"}
+                <PresenceEditor {n} />
+              {:else}
+                <XPathInput ref={n.ref} prop={p.name} value={n.attrs[p.name] ?? ""} label={propLabel(p.name)} placeholder={p.default ?? ""} />
+              {/if}
+            </div>
+          {:else}
           <label class="prop" data-prop={p.name}>
             <span class="label" title={p.name}>{propLabel(p.name)}{#if p.required}<sup>*</sup>{/if}</span>
             {#if p.kind === "enum"}
@@ -67,10 +79,11 @@
                 onchange={(e) => commit(p, e.currentTarget, e.currentTarget.checked ? "true" : "false")} />
             {:else}
               <input value={n.attrs[p.name] ?? ""} placeholder={p.default ?? ""} spellcheck="false"
-                class:mono={p.kind === "xpath" || p.kind === "id" || p.kind === "ref"}
+                class:mono={p.kind === "id" || p.kind === "ref"}
                 onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value.trim())} onkeydown={(e) => key(p, e)} />
             {/if}
           </label>
+          {/if}
         {/each}
       </section>
     {/each}
@@ -111,6 +124,12 @@
     align-items: center;
     gap: var(--space-2);
     margin: 2px 0;
+  }
+  div.prop {
+    align-items: start;
+  }
+  div.prop .label {
+    padding-top: 3px;
   }
   .prop .label {
     color: var(--text-muted);

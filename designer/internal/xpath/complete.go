@@ -111,12 +111,10 @@ func Complete(sc *schema.Schema, ctx, expr string, cursor int) Completion {
 		if node != "" && strings.Contains(node, "/") && strings.HasPrefix("..", partial) {
 			out.Items = append(out.Items, Item{Label: "..", Insert: "..", Kind: "step", Doc: "Elternknoten"})
 		}
-		// Funktionen nur am Anfang eines Ausdrucks, nicht mitten im Pfad.
-		if partial != "" {
-			for _, f := range functions {
-				if strings.HasPrefix(f.Label, strings.ToLower(partial)) {
-					out.Items = append(out.Items, f)
-				}
+		// Funktionen nur am Anfang eines Pfads, nach den Datenknoten.
+		for _, f := range functions {
+			if strings.HasPrefix(f.Label, strings.ToLower(partial)) {
+				out.Items = append(out.Items, f)
 			}
 		}
 	}

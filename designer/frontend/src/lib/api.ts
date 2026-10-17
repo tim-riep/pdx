@@ -9,7 +9,8 @@ export * as RenderAPI from "../../bindings/github.com/tim-riep/pdx/designer/inte
 export * as TemplateAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/templateservice";
 export * as SchemaAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/schemaservice";
 export type { Schema as DataSchema, Node as DataNode } from "../../bindings/github.com/tim-riep/pdx/designer/internal/schema/models";
-export type { Drop, TableOp, Insert } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
+export type { Drop, TableOp, Insert, XPathInfo, XPathQuery, Field as DataField } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
+export type { Completion, Item as Suggestion, Result as XPathResult } from "../../bindings/github.com/tim-riep/pdx/designer/internal/xpath/models";
 export type {
   Snapshot,
   ViewNode,

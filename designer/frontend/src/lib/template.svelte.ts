@@ -94,7 +94,9 @@ export async function redo() {
     ui.error = message(e);
   }
 }
-TemplateAPI.Catalog().then((c) => (tpl.catalog = c as Record<string, ElementType>));
+TemplateAPI.Catalog().then((c) => {
+  tpl.catalog = c as Record<string, ElementType>;
+});
 
 export function node(ref: string | undefined | null): ViewNode | undefined {
   return ref ? tpl.snapshot?.nodes[ref] : undefined;

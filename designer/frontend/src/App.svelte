@@ -6,6 +6,7 @@
   import StartScreen from "./components/StartScreen.svelte";
   import Canvas from "./components/canvas/Canvas.svelte";
   import Tabs from "./components/Tabs.svelte";
+  import XPathPanel from "./components/XPathPanel.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
   import DataPanel from "./components/DataPanel.svelte";
@@ -127,8 +128,12 @@
     </Tabs>
   </aside>
   <section class="bottom">
-    <Tabs tabs={[["problems", t("panel.problems")], ["conformance", t("panel.conformance")]]} bind:active={bottomTab}>
-      <p class="soon">{t(bottomTab === "problems" ? "panel.problems" : "panel.conformance")}</p>
+    <Tabs tabs={[["problems", t("panel.problems")], ["conformance", t("panel.conformance")], ["xpath", t("panel.xpath")]]} bind:active={bottomTab}>
+      {#if bottomTab === "xpath"}
+        <XPathPanel />
+      {:else}
+        <p class="soon">{t(bottomTab === "problems" ? "panel.problems" : "panel.conformance")}</p>
+      {/if}
     </Tabs>
   </section>
   <footer class="status" data-testid="status">

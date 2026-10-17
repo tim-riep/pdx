@@ -46,7 +46,7 @@ export async function loadSchema(askPath: (title: string) => Promise<string | nu
 }
 
 // typeKey liefert die Art eines Datenknotens für Symbol und Beschriftung.
-export function typeKey(n: DataNode): string {
+export function typeKey(n: { type: string }): string {
   if (!n.type) return "complex";
   if (["decimal", "double", "float"].includes(n.type)) return "decimal";
   if (n.type.toLowerCase().includes("int") || ["long", "short", "byte"].includes(n.type)) return "integer";

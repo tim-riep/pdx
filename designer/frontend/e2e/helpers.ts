@@ -47,3 +47,16 @@ export async function dragData(page: Page, source: Locator, target: Locator, pos
     [s, t, pos] as const,
   );
 }
+
+// selectInTree klappt die Hierarchie bis zu einem Element auf und wählt es.
+// ids sind die Vorfahren von oben nach unten, das letzte wird gewählt.
+export async function selectInTree(page: Page, ids: string[]) {
+  await page.getByRole("tab", { name: "Hierarchie" }).click();
+  const tree = page.getByTestId("hierarchy");
+  const row = (id: string) => tree.getByRole("treeitem").filter({ has: page.locator(".id", { hasText: new RegExp(`^${id}$`) }) });
+  for (const id of ids.slice(0, -1)) {
+    const open = row(id).getByRole("button", { name: "Aufklappen" });
+    if (await open.count()) await open.click();
+  }
+  await row(ids[ids.length - 1]).locator("button.name").click();
+}
