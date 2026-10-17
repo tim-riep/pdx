@@ -7,6 +7,7 @@
   import XPathInput from "./XPathInput.svelte";
   import PresenceEditor from "./PresenceEditor.svelte";
   import ContentEditor from "./ContentEditor.svelte";
+  import AlignTools from "./AlignTools.svelte";
   import { resolveColor, tokens } from "../lib/tokens.svelte";
 
   let query = $state("");
@@ -56,6 +57,7 @@
       {#if !n.ref.startsWith("~")}<code>{n.ref}</code>{/if}
     </header>
     <TableTools {n} />
+    <AlignTools {n} />
     {#if type.text}
       <section class="content" data-testid="inspector-content">
         <h3>{t("content.title")}</h3>

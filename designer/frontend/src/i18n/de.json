@@ -372,5 +372,18 @@
   "cmd.nudge": "Verschieben",
   "palette.insert": "{el} einfügen",
   "palette.panel": "{panel} zeigen",
-  "palette.view": "Ansicht {view}"
+  "palette.view": "Ansicht {view}",
+  "align.title": "Ausrichten",
+  "align.left": "Links",
+  "align.hcenter": "Waagerecht mittig",
+  "align.right": "Rechts",
+  "align.top": "Oben",
+  "align.vcenter": "Senkrecht mittig",
+  "align.bottom": "Unten",
+  "align.distH": "Waagerecht verteilen",
+  "align.distV": "Senkrecht verteilen",
+  "align.hintOne": "Am Elternelement. Umschalt+Klick im Canvas wählt weitere Elemente.",
+  "align.hintMany": "{n} Elemente, am gemeinsamen Rahmen",
+  "cmd.align": "Ausrichten",
+  "cmd.distribute": "Verteilen"
 }

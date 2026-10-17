@@ -9,15 +9,26 @@ export const selection = $state({
   instance: null as null | { page: number; k: number },
   // reveal bittet den Canvas, das Element sichtbar zu machen.
   reveal: 0,
+  // extra sind weitere gewählte Elemente (Umschalt+Klick) zum Ausrichten
+  // und Verteilen, Geschwister des ersten.
+  extra: [] as string[],
 });
+
+export function toggleExtra(ref: string) {
+  const i = selection.extra.indexOf(ref);
+  if (i >= 0) selection.extra.splice(i, 1);
+  else selection.extra.push(ref);
+}
 
 export function select(ref: string, instance: { page: number; k: number } | null = null, reveal = false) {
   selection.ref = ref;
   selection.instance = instance;
+  selection.extra = [];
   if (reveal) selection.reveal++;
 }
 
 export function clearSelection() {
   selection.ref = "";
   selection.instance = null;
+  selection.extra = [];
 }

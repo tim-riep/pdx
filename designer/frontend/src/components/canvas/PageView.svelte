@@ -4,7 +4,7 @@
   import type { Area, Page, Rect } from "../../lib/canvas/model";
   import { drawPage, type ImageSource } from "../../lib/canvas/render";
   import { HitIndex } from "../../lib/canvas/hit";
-  import { select, selection } from "../../lib/selection.svelte";
+  import { select, selection, toggleExtra } from "../../lib/selection.svelte";
   import { DATA_MIME } from "../../lib/data.svelte";
   import { ELEMENT_MIME, elementName, insertElement, type Kind } from "../../lib/insert";
   import { dropTarget, type Target } from "../../lib/drop";
@@ -42,6 +42,7 @@
 
   // Bereiche des ausgewählten und des überfahrenen Elements auf dieser Seite.
   const selected = $derived(selection.ref ? page.els.filter((a) => a.id === selection.ref) : []);
+  const extras = $derived(selection.extra.length ? page.els.filter((a) => selection.extra.includes(a.id)) : []);
   const hovered = $derived(
     selection.hover && selection.hover !== selection.ref ? page.els.filter((a) => a.id === selection.hover) : [],
   );
@@ -214,6 +215,17 @@
       startDrag(e, isPositioned(node(selection.ref)) ? "move" : "reorder", [0.5, 0.5]);
       return;
     }
+    // Umschalt+Klick nimmt positionierte Geschwister zur Auswahl hinzu.
+    // Ein Treffer im Inneren zählt für den Vorfahren, der Geschwister ist.
+    if (e.shiftKey && hit && selection.ref && hit.id !== selection.ref) {
+      const a = node(selection.ref);
+      let b = node(hit.id);
+      while (b && a && b.parent !== a.parent) b = node(b.parent);
+      if (a && b && b.ref !== a.ref && isPositioned(a) && isPositioned(b)) {
+        toggleExtra(b.ref);
+        return;
+      }
+    }
     if (hit) select(hit.id, { page: page.n, k: page.els.filter((a) => a.id === hit.id).indexOf(hit) });
     else select("");
   }
@@ -318,6 +330,9 @@
     {#each selected as a}
       <div class="box related" style={box(a.r)}></div>
     {/each}
+    {#each extras as a}
+      <div class="box sel extra" data-extra={a.id} style={box(a.r)}></div>
+    {/each}
     {#if current}
       <div class="box sel" data-sel={selection.ref} style={box(current)}></div>
       {#if resizable && !drag?.active}
@@ -399,6 +414,9 @@
   .sel {
     outline: 2px solid var(--accent);
     background: var(--accent-soft);
+  }
+  .sel.extra {
+    outline-style: dashed;
   }
   .ghost {
     outline: 1px dashed var(--accent);
