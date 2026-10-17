@@ -1,5 +1,14 @@
 <script lang="ts">
-  import { AppAPI } from "./lib/api";
+  import { AppAPI, SampleAPI } from "./lib/api";
+  import CommandPalette from "./components/CommandPalette.svelte";
+  import { closePalette, openPalette, palette, type PaletteItem } from "./lib/palette.svelte";
+  import { checkConformance } from "./lib/conformance.svelte";
+  import { insertAtSelection, kinds } from "./lib/insert";
+  import { loadSchema } from "./lib/data.svelte";
+  import { label } from "./lib/i18n";
+  import { askPath } from "./lib/project.svelte";
+  import { apply, isPositioned, node } from "./lib/template.svelte";
+  import { fmtMM, toMM } from "./lib/geometry";
   import { t } from "./lib/i18n";
   import { newProject, openProject, project, save, saveAs, ui } from "./lib/project.svelte";
   import Modal from "./components/Modal.svelte";
@@ -20,7 +29,7 @@
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
   import DataPanel from "./components/DataPanel.svelte";
-  import { clearSelection, selection } from "./lib/selection.svelte";
+  import { clearSelection, select, selection } from "./lib/selection.svelte";
   import { redo, tpl, undo } from "./lib/template.svelte";
   import { render, setView, type View } from "./lib/render.svelte";
   let version = $state("");
@@ -44,6 +53,80 @@
     document.documentElement.dataset.theme = theme;
   }
 
+  const mac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
+  const mod = mac ? "⌘" : "Strg+";
+
+  // Einträge der Befehlspalette. Elemente mit Auswahl nur, wenn es eine gibt.
+  function paletteItems(): PaletteItem[] {
+    const g = (k: string) => t(`palette.group.${k}`);
+    const items: PaletteItem[] = [
+      { id: "new", label: t("action.new"), group: g("file"), shortcut: `${mod}N`, run: () => newProject() },
+      { id: "open", label: t("action.open"), group: g("file"), shortcut: `${mod}O`, run: () => openProject(false) },
+    ];
+    if (project.open) {
+      items.push(
+        { id: "save", label: t("action.save"), group: g("file"), shortcut: `${mod}S`, run: () => save() },
+        { id: "saveAs", label: t("action.saveAs"), group: g("file"), shortcut: `${mod}⇧S`, run: () => saveAs() },
+        { id: "undo", label: t("action.undo"), group: g("edit"), shortcut: `${mod}Z`, run: () => undo() },
+        { id: "redo", label: t("action.redo"), group: g("edit"), shortcut: `${mod}⇧Z`, run: () => redo() },
+      );
+      if (selection.ref) {
+        const r = selection.ref;
+        items.push(
+          { id: "dup", label: t("menu.duplicate"), group: g("edit"), shortcut: `${mod}D`, run: () => duplicate(r) },
+          { id: "up", label: t("menu.up"), group: g("edit"), run: () => moveBy(r, -1) },
+          { id: "down", label: t("menu.down"), group: g("edit"), run: () => moveBy(r, 1) },
+          { id: "del", label: t("menu.remove"), group: g("edit"), run: () => remove(r) },
+        );
+      }
+      for (const [v, key] of [["design", "view.design"], ["preview", "view.preview"], ["pdf", "view.pdf"]]) {
+        items.push({ id: `view-${v}`, label: t("palette.view", { view: t(key) }), group: g("view"), run: () => setView(v as View) });
+      }
+      for (const k of kinds) {
+        items.push({ id: `insert-${k}`, label: t("palette.insert", { el: t(`insert.${k}`) }), group: g("insert"), run: () => insertAtSelection(k) });
+      }
+      const panels: [string, string, () => void][] = [
+        ["data", "panel.data", () => (leftTab = "data")],
+        ["hierarchy", "panel.hierarchy", () => (leftTab = "hierarchy")],
+        ["samples", "panel.samples", () => (leftTab = "samples")],
+        ["inspector", "panel.inspector", () => (rightTab = "inspector")],
+        ["styles", "panel.styles", () => (rightTab = "styles")],
+        ["problems", "panel.problems", () => (bottomTab = "problems")],
+        ["conformance", "panel.conformance", () => (bottomTab = "conformance")],
+        ["xpath", "panel.xpath", () => (bottomTab = "xpath")],
+      ];
+      for (const [id, key, run] of panels) items.push({ id: `panel-${id}`, label: t("palette.panel", { panel: t(key) }), group: g("panel"), run });
+      items.push(
+        { id: "conf", label: t("conformance.check"), group: g("check"), run: () => ((bottomTab = "conformance"), checkConformance()) },
+        { id: "xsd", label: t("data.load"), group: g("data"), run: () => loadSchema(askPath) },
+        ...(["minimal", "maximal", "lang"] as const).map((k) => ({
+          id: `edge-${k}`, label: `${t("samples.edge")}: ${t(`samples.edge.${k}`)}`, group: g("data"),
+          run: () => SampleAPI.Generate(k).then(() => (leftTab = "samples")).catch((e) => (ui.error = String(e?.message ?? e))),
+        })),
+      );
+      // Alle Elemente mit ID: Gehe zu.
+      for (const n of Object.values(tpl.snapshot?.nodes ?? {})) {
+        if (!n || n.ref.startsWith("~")) continue;
+        items.push({ id: `goto-${n.ref}`, label: label(n.type, n.name), hint: n.ref, group: g("goto"), run: () => { select(n.ref, null, true); leftTab = "hierarchy"; } });
+      }
+    }
+    items.push({ id: "theme", label: t("theme.toggle"), group: g("view"), run: toggleTheme });
+    return items;
+  }
+
+  // nudge verschiebt ein positioniertes Element um dx, dy Millimeter.
+  function nudge(dx: number, dy: number) {
+    const n = node(selection.ref);
+    if (!n || !isPositioned(n)) return false;
+    const x = toMM(n.attrs.x ?? "0mm"), y = toMM(n.attrs.y ?? "0mm");
+    if (x === null || y === null) return false; // etwa ein Token
+    const cmds = [];
+    if (dx) cmds.push({ op: "setAttr", ref: n.ref, name: "x", value: fmtMM(Math.max(0, x + dx)) });
+    if (dy) cmds.push({ op: "setAttr", ref: n.ref, name: "y", value: fmtMM(Math.max(0, y + dy)) });
+    apply(t("cmd.nudge"), { op: "batch", cmds: cmds as never });
+    return true;
+  }
+
   // In Eingabefeldern gelten deren eigene Tasten (Text rückgängig, Löschen).
   const editing = (e: KeyboardEvent) =>
     e.target instanceof HTMLElement && (e.target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName));
@@ -51,6 +134,22 @@
 
   function keydown(e: KeyboardEvent) {
     if (ui.pathPrompt || ui.closeRequest) return;
+    if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === "k" || (e.shiftKey && e.key.toLowerCase() === "p"))) {
+      e.preventDefault();
+      if (palette.open) closePalette();
+      else openPalette();
+      return;
+    }
+    if (palette.open) return;
+    // Pfeile verschieben positionierte Elemente um 1 mm, mit Umschalt um 10 mm.
+    const arrows: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    if (arrows[e.key] && !e.altKey && !e.metaKey && !e.ctrlKey && !editing(e) && selection.ref && render.view === "design") {
+      const step = e.shiftKey ? 10 : 1;
+      if (nudge(arrows[e.key][0] * step, arrows[e.key][1] * step)) {
+        e.preventDefault();
+        return;
+      }
+    }
     if (e.key === "Escape") {
       if (menu.open) {
         closeMenu();
@@ -164,6 +263,7 @@
 </div>
 
 <ContextMenu />
+{#if palette.open}<CommandPalette items={paletteItems} />{/if}
 {#if sd.open}<SchemaDiffDialog />{/if}
 
 {#if ui.pathPrompt}

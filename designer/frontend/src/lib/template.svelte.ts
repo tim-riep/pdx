@@ -117,3 +117,10 @@ export function path(ref: string): string[] {
 TemplateAPI.Snapshot()
   .then((s) => (tpl.snapshot = s))
   .catch(() => (tpl.snapshot = null));
+
+// isPositioned meldet ein Element, dessen Eltern ihre Kinder positionieren.
+export function isPositioned(n: ViewNode | undefined): boolean {
+  const p = node(n?.parent);
+  if (!p) return false;
+  return p.type === "pageMaster/header" || p.type === "pageMaster/footer" || (p.name === "subform" && p.attrs.layout === "positioned");
+}

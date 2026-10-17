@@ -356,5 +356,21 @@
   "schemadiff.taskSamples": "Beispieldaten an das neue XSD anpassen",
   "schemadiff.done": "Erledigt",
   "schemadiff.open": "offen",
-  "schemadiff.dismiss": "Aufgabenliste schließen"
+  "schemadiff.dismiss": "Aufgabenliste schließen",
+  "palette.placeholder": "Befehl oder Element suchen",
+  "palette.none": "Nichts gefunden",
+  "palette.label": "Befehlspalette",
+  "palette.group.file": "Datei",
+  "palette.group.edit": "Bearbeiten",
+  "palette.group.view": "Ansicht",
+  "palette.group.insert": "Einfügen",
+  "palette.group.panel": "Bereich",
+  "palette.group.check": "Prüfen",
+  "palette.group.data": "Daten",
+  "palette.group.goto": "Gehe zu",
+  "palette.open": "Befehlspalette öffnen",
+  "cmd.nudge": "Verschieben",
+  "palette.insert": "{el} einfügen",
+  "palette.panel": "{panel} zeigen",
+  "palette.view": "Ansicht {view}"
 }

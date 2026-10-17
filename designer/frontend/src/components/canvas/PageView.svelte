@@ -9,7 +9,7 @@
   import { ELEMENT_MIME, elementName, insertElement, type Kind } from "../../lib/insert";
   import { dropTarget, type Target } from "../../lib/drop";
   import { PT_PER_MM, fmtMM, gaps, snap, toMM, type Guide } from "../../lib/geometry";
-  import { apply, node, tpl, typeOf } from "../../lib/template.svelte";
+  import { apply, isPositioned, node, tpl, typeOf } from "../../lib/template.svelte";
   import { render } from "../../lib/render.svelte";
   import { TemplateAPI, message, type ViewNode } from "../../lib/api";
   import { ui } from "../../lib/project.svelte";
@@ -70,12 +70,6 @@
     return [(e.clientX - r.left) / zoom, (e.clientY - r.top) / zoom];
   }
 
-  // Positioniert ist ein Element, dessen Eltern ihre Kinder positionieren.
-  function isPositioned(n: ViewNode | undefined): boolean {
-    const p = node(n?.parent);
-    if (!p) return false;
-    return p.type === "pageMaster/header" || p.type === "pageMaster/footer" || (p.name === "subform" && p.attrs.layout === "positioned");
-  }
   const canMove = (n: ViewNode | undefined) =>
     !!n && !!n.parent && n.name !== "body" && !n.type.startsWith("pageMaster") && node(n.parent)?.name !== "template";
 
