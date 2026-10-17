@@ -76,8 +76,6 @@ fop/table-stepper_colspan_border-before: offen, erste Abweichung: Seite 1: Zeile
 fop/table_border-collapse_collapse_nrnc: offen, erste Abweichung: Seite 1: "Cell 2.2" verschoben um 0.00 pt waagerecht, 3.00 pt senkrecht
 fop/table_border-collapse_collapse_nrnc_no-col: offen, erste Abweichung: Seite 1: "Cell 2.2" verschoben um 0.00 pt waagerecht, 3.00 pt senkrecht
 fop/table_border-collapse_collapse_omitHF: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 1.2"
-fop/table_border-collapse_collapse_resolution: offen, erste Abweichung: Seite 1: "Cell 1.2" verschoben um -2.50 pt waagerecht, -1.00 pt senkrecht
-fop/table_border-collapse_collapse_resolution_no-col: offen, erste Abweichung: Seite 1: "Between tables" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
 fop/table_border-collapse_collapse_spans_1: offen, erste Abweichung: Seite 1: "Cell 1.2 Cell" verschoben um -6.00 pt waagerecht, -0.00 pt senkrecht
 fop/table_border-collapse_collapse_spans_2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3"
 fop/table_border-collapse_collapse_spans_2_no-col: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3"

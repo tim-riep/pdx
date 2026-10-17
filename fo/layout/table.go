@@ -1,6 +1,8 @@
 package layout
 
 import (
+	"sort"
+
 	"strconv"
 	"strings"
 
@@ -404,6 +406,10 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		sec   section
 		props *props.Computed
 		secBg *areatree.Color // Hintergrund des Abschnitts
+		// secProps und secNode beschreiben den Abschnitt (table-header,
+		// table-body, table-footer) für das Rahmenmodell collapse.
+		secProps *props.Computed
+		secNode  *tree.Node
 	}
 	var columns []*tree.Node
 	var rows []rowSrc
@@ -445,26 +451,32 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 						cells = append(cells, c)
 					}
 				}
-				rows = append(rows, rowSrc{node: r, cells: cells, sec: sec, props: rp, secBg: sp.Background})
+				rows = append(rows, rowSrc{node: r, cells: cells, sec: sec, props: rp, secBg: sp.Background, secProps: sp, secNode: ch})
 				continue
 			}
 			if r.IsFO("table-cell") {
 				// Zellen direkt im Abschnitt: starts-row und ends-row teilen Zeilen.
 				if attrOr(r, "starts-row", "false") == "true" && len(loose) > 0 {
-					rows = append(rows, rowSrc{node: ch, cells: loose, sec: sec, props: sp, secBg: sp.Background})
+					rows = append(rows, rowSrc{node: ch, cells: loose, sec: sec, props: sp, secBg: sp.Background, secProps: sp, secNode: ch})
 					loose = nil
 				}
 				loose = append(loose, r)
 				if attrOr(r, "ends-row", "false") == "true" {
-					rows = append(rows, rowSrc{node: ch, cells: loose, sec: sec, props: sp, secBg: sp.Background})
+					rows = append(rows, rowSrc{node: ch, cells: loose, sec: sec, props: sp, secBg: sp.Background, secProps: sp, secNode: ch})
 					loose = nil
 				}
 			}
 		}
 		if len(loose) > 0 {
-			rows = append(rows, rowSrc{node: ch, cells: loose, sec: sec, props: sp, secBg: sp.Background})
+			rows = append(rows, rowSrc{node: ch, cells: loose, sec: sec, props: sp, secBg: sp.Background, secProps: sp, secNode: ch})
 		}
 	}
+
+	// Zeilen in Anzeigereihenfolge: Kopf, Rumpf, Fuß. Im Quelltext steht der
+	// Fuß vor dem Rumpf, für Nachbarschaften (etwa Rahmen im Modell collapse)
+	// zählt die Anzeige.
+	order := map[section]int{secHeader: 0, secBody: 1, secFooter: 2}
+	sort.SliceStable(rows, func(i, j int) bool { return order[rows[i].sec] < order[rows[j].sec] })
 
 	// Spaltenbreiten.
 	// Spaltenzahl aus den fo:table-column, auch mit column-number (XSL 1.1
@@ -531,6 +543,24 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		for k := 0; k < repeated(c) && ci < ncols; k++ {
 			widths[ci], fracs[ci], set[ci] = fixed, prop, true
 			ci++
+		}
+	}
+	// Eigenschaften der Spalten, etwa Rahmen für das Modell collapse.
+	colProps := make([]*props.Computed, ncols)
+	cj := 0
+	for _, c := range columns {
+		if num, ok := c.Attr("column-number"); ok {
+			if k, err := strconv.Atoi(strings.TrimSpace(num)); err == nil && k >= 1 {
+				cj = k - 1
+			}
+		}
+		cp, err := props.Compute(p, c, tw)
+		if err != nil {
+			return err
+		}
+		for k := 0; k < repeated(c) && cj < ncols; k++ {
+			colProps[cj] = cp
+			cj++
 		}
 	}
 	// Spalten ohne column-width übernehmen wie im festen Tabellenlayout von
@@ -664,7 +694,6 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				}
 				continue
 			}
-			rowP := rows[ri].props
 			lastRow := ri + c.rowSpan - 1
 			neighbour := func(r, k int) *cellLayout {
 				if r < 0 || r >= len(grid) || k < 0 || k >= ncols || grid[r][k] == nil {
@@ -672,24 +701,90 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				}
 				return grid[r][k].c
 			}
-			edge := func(own areatree.Border, other *cellLayout, otherSide int, outer areatree.Border, isOuter bool, rowB areatree.Border) areatree.Border {
-				cands := []areatree.Border{own, rowB}
-				if other != nil {
-					cands = append(cands, other.p.Border[otherSide])
+			// Kandidaten einer Kante nach XSL 1.1 6.7.10 mit der Priorität aus
+			// den Anfangswerten von border-*-precedence (7.28.1).
+			var cands []cand
+			add := func(b areatree.Border, prec int) { cands = append(cands, cand{b, prec}) }
+			secPrec := map[section]int{secBody: precBody, secHeader: precHeader, secFooter: precFooter}
+			colB := func(k, side int) {
+				if k >= 0 && k < len(colProps) && colProps[k] != nil {
+					add(colProps[k].Border[side], precColumn)
 				}
-				if isOuter {
-					cands = append(cands, outer)
-				}
-				return winner(cands)
 			}
-			top := neighbour(ri-1, c.col)
-			bottom := neighbour(lastRow+1, c.col)
-			left := neighbour(ri, c.col-1)
-			right := neighbour(ri, c.col+c.span)
-			c.border[areatree.Top] = edge(c.p.Border[areatree.Top], top, areatree.Bottom, tableBorder[areatree.Top], ri == 0 || rows[ri-1].sec != rows[ri].sec && top == nil, rowP.Border[areatree.Top])
-			c.border[areatree.Bottom] = edge(c.p.Border[areatree.Bottom], bottom, areatree.Top, tableBorder[areatree.Bottom], lastRow == len(rows)-1, rows[lastRow].props.Border[areatree.Bottom])
-			c.border[areatree.Left] = edge(c.p.Border[areatree.Left], left, areatree.Right, tableBorder[areatree.Left], c.col == 0, areatree.Border{})
-			c.border[areatree.Right] = edge(c.p.Border[areatree.Right], right, areatree.Left, tableBorder[areatree.Right], c.col+c.span == ncols, areatree.Border{})
+			// Oben.
+			cands = cands[:0]
+			add(c.p.Border[areatree.Top], precCell)
+			add(rows[ri].props.Border[areatree.Top], precRow)
+			for k := c.col; k < c.col+c.span; k++ {
+				if o := neighbour(ri-1, k); o != nil {
+					add(o.p.Border[areatree.Bottom], precCell)
+				}
+			}
+			if ri > 0 {
+				add(rows[ri-1].props.Border[areatree.Bottom], precRow)
+			}
+			if ri == 0 || rows[ri-1].secNode != rows[ri].secNode {
+				add(rows[ri].secProps.Border[areatree.Top], secPrec[rows[ri].sec])
+				if ri > 0 {
+					add(rows[ri-1].secProps.Border[areatree.Bottom], secPrec[rows[ri-1].sec])
+				}
+			}
+			if ri == 0 {
+				add(tableBorder[areatree.Top], precTable)
+				for k := c.col; k < c.col+c.span; k++ {
+					colB(k, areatree.Top)
+				}
+			}
+			c.border[areatree.Top] = winnerPrec(cands)
+			// Unten.
+			cands = cands[:0]
+			add(c.p.Border[areatree.Bottom], precCell)
+			add(rows[lastRow].props.Border[areatree.Bottom], precRow)
+			for k := c.col; k < c.col+c.span; k++ {
+				if o := neighbour(lastRow+1, k); o != nil {
+					add(o.p.Border[areatree.Top], precCell)
+				}
+			}
+			if lastRow+1 < len(rows) {
+				add(rows[lastRow+1].props.Border[areatree.Top], precRow)
+			}
+			if lastRow == len(rows)-1 || rows[lastRow+1].secNode != rows[lastRow].secNode {
+				add(rows[lastRow].secProps.Border[areatree.Bottom], secPrec[rows[lastRow].sec])
+				if lastRow+1 < len(rows) {
+					add(rows[lastRow+1].secProps.Border[areatree.Top], secPrec[rows[lastRow+1].sec])
+				}
+			}
+			if lastRow == len(rows)-1 {
+				add(tableBorder[areatree.Bottom], precTable)
+				for k := c.col; k < c.col+c.span; k++ {
+					colB(k, areatree.Bottom)
+				}
+			}
+			c.border[areatree.Bottom] = winnerPrec(cands)
+			// Links und rechts.
+			for _, side := range []int{areatree.Left, areatree.Right} {
+				cands = cands[:0]
+				other, k, otherSide := c.col-1, c.col, areatree.Right
+				outer := c.col == 0
+				if side == areatree.Right {
+					other, k, otherSide = c.col+c.span, c.col+c.span-1, areatree.Left
+					outer = c.col+c.span == ncols
+				}
+				add(c.p.Border[side], precCell)
+				colB(k, side)
+				if o := neighbour(ri, other); o != nil {
+					add(o.p.Border[otherSide], precCell)
+				}
+				colB(other, otherSide)
+				if outer {
+					for r := ri; r <= lastRow; r++ {
+						add(rows[r].props.Border[side], precRow)
+						add(rows[r].secProps.Border[side], secPrec[rows[r].sec])
+					}
+					add(tableBorder[side], precTable)
+				}
+				c.border[side] = winnerPrec(cands)
+			}
 			for s := 0; s < 4; s++ {
 				w := areatree.Length(0)
 				if c.border[s].Visible() {
@@ -967,6 +1062,42 @@ var stylePriority = map[areatree.BorderStyle]int{
 
 // winner wählt nach XSL 1.1 6.7.10 (Modell collapse) die stärkere Kante: die
 // breitere, bei gleicher Breite die mit höherem Stilrang, sonst die erste.
+// Prioritäten nach den Anfangswerten von border-*-precedence (XSL 1.1 7.28.1).
+const (
+	precFooter = iota
+	precHeader
+	precBody
+	precRow
+	precColumn
+	precCell
+	precTable
+)
+
+// cand ist ein Rahmen mit seiner Priorität.
+type cand struct {
+	b    areatree.Border
+	prec int
+}
+
+// winnerPrec löst eine Kante im Modell collapse auf: der breitere Rahmen,
+// dann der stärkere Stil, dann die höhere Priorität (XSL 1.1 6.7.10, CSS2
+// 17.6.2.1).
+func winnerPrec(cands []cand) areatree.Border {
+	var best cand
+	found := false
+	for _, c := range cands {
+		if !c.b.Visible() {
+			continue
+		}
+		if !found || c.b.Width > best.b.Width ||
+			c.b.Width == best.b.Width && stylePriority[c.b.Style] > stylePriority[best.b.Style] ||
+			c.b.Width == best.b.Width && stylePriority[c.b.Style] == stylePriority[best.b.Style] && c.prec > best.prec {
+			best, found = c, true
+		}
+	}
+	return best.b
+}
+
 func winner(cands []areatree.Border) areatree.Border {
 	var best areatree.Border
 	for _, c := range cands {
