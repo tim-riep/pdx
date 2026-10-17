@@ -873,6 +873,12 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 		ictx.w = g.contentW(ip) + ip.Padding[areatree.Left] + ip.Padding[areatree.Right]
 		g.push(ictx)
 		g.spaceBefore(ip)
+		// Rahmen und Padding des Listenpunkts oben und unten wie bei fo:block.
+		itemEdges := hasBox(ip)
+		if itemEdges {
+			h := ip.BorderWidth(areatree.Top) + ip.Padding[areatree.Top]
+			g.box(item{h: h, path: g.path(), edge: edgeTop, ord: g.next()}, g.breakBefore(edgeTop))
+		}
 		row := &rowLayout{node: it, keep: keepValue(it, "keep-together"), w: g.refW}
 		for _, part := range it.Children {
 			if !part.IsFO("list-item-label") && !part.IsFO("list-item-body") {
@@ -894,6 +900,10 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 		}
 		finishRow(row, 0, false)
 		g.emitRow(row, g.breakBefore(edgeNone))
+		if itemEdges {
+			h := ip.Padding[areatree.Bottom] + ip.BorderWidth(areatree.Bottom)
+			g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
+		}
 		g.pop()
 		g.pending = max(g.pending, ip.SpaceAfter)
 	}

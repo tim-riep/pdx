@@ -30,6 +30,8 @@ const (
 	// pBreakAfter ist eine Umbruchstelle nach einem vorhandenen Bindestrich.
 	// Beim Umbruch wird kein Zeichen eingefügt.
 	pBreakAfter
+	// pEdge ist Rahmen plus Padding am Anfang oder Ende eines Inline-Elements.
+	pEdge
 	// pLeader ist ein fo:leader, ein dehnbarer Glue ohne Umbruchstelle.
 	pLeader
 )
@@ -118,6 +120,66 @@ type piece struct {
 	leader *leaderSpec
 	// code ist bei Barcodes gesetzt (pGraphic ohne Bild).
 	code *codeArt
+	// decos sind die Inline-Elemente mit Hintergrund, Rahmen oder Padding,
+	// in denen das Stück liegt, von außen nach innen. Bei pEdge ist decos[0]
+	// das Element der Kante und start gibt an, ob es die Anfangskante ist.
+	decos []*inlineDeco
+	start bool
+}
+
+// inlineDeco ist ein Inline-Element mit Hintergrund, Rahmen oder Padding.
+type inlineDeco struct {
+	p  *props.Computed
+	st *style
+	n  *tree.Node
+}
+
+// hasDeco meldet Hintergrund, sichtbaren Rahmen oder Padding.
+func hasDeco(p *props.Computed) bool {
+	if p.Background != nil {
+		return true
+	}
+	for i := 0; i < 4; i++ {
+		if p.Padding[i] > 0 || p.Border[i].Visible() {
+			return true
+		}
+	}
+	return false
+}
+
+// edgeWidth liefert Rahmen plus Padding einer Seite.
+func edgeWidth(p *props.Computed, side int) areatree.Length {
+	w := p.Padding[side]
+	if p.Border[side].Visible() {
+		w += p.Border[side].Width
+	}
+	return w
+}
+
+// decorate umgibt die Stücke ab before mit den Kanten eines Inline-Elements.
+// Bei einem Umbruch innerhalb des Elements entfallen Rahmen und Padding an
+// der Umbruchstelle (Konditionalität discard, XSL 1.1 7.8.31 bis 7.8.34).
+func (pa *paragraph) decorate(n *tree.Node, ip *props.Computed, before int) error {
+	if !hasDeco(ip) {
+		return nil
+	}
+	st, err := pa.style(n, ip, nil)
+	if err != nil {
+		return err
+	}
+	d := &inlineDeco{p: ip, st: st, n: n}
+	for i := before; i < len(pa.pieces); i++ {
+		pa.pieces[i].decos = append([]*inlineDeco{d}, pa.pieces[i].decos...)
+	}
+	startEdge := piece{kind: pEdge, st: st, width: edgeWidth(ip, areatree.Left), decos: []*inlineDeco{d}, start: true}
+	endEdge := piece{kind: pEdge, st: st, width: edgeWidth(ip, areatree.Right), decos: []*inlineDeco{d}}
+	if len(pa.pieces) > before {
+		startEdge.decos = append(startEdge.decos, pa.pieces[before].decos[1:]...)
+		endEdge.decos = append(endEdge.decos, pa.pieces[len(pa.pieces)-1].decos[1:]...)
+	}
+	rest := append([]piece{startEdge}, pa.pieces[before:]...)
+	pa.pieces = append(append(pa.pieces[:before], rest...), endEdge)
+	return nil
 }
 
 // paragraph sammelt die Stücke eines Absatzes.
@@ -202,7 +264,7 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 			}
 		}
 		pa.markID(n, before)
-		return nil
+		return pa.decorate(n, ip, before)
 	case n.IsFO("basic-link"):
 		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
 		if err != nil {
@@ -229,7 +291,7 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 			}
 		}
 		pa.markID(n, before)
-		return nil
+		return pa.decorate(n, ip, before)
 	case n.IsFO("leader"):
 		return pa.leader(n, p)
 	case n.IsFO("instream-foreign-object"):
@@ -573,7 +635,7 @@ func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 	for i := from; i < len(pa.pieces); i++ {
 		pc := pa.pieces[i]
 		switch pc.kind {
-		case pText, pGraphic:
+		case pText, pGraphic, pEdge:
 			items = append(items, linebreak.Item{Kind: linebreak.Box, Width: pc.width, Payload: i})
 		case pSpace:
 			nobreak := i > 0 && pa.pieces[i-1].kind == pNoBreak
@@ -773,12 +835,17 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 
 	var run *areatree.GlyphRun
 	var runStyle *style
+	frags := &decoFrags{}
 	for _, it := range seg {
 		if it.Payload < 0 {
 			continue
 		}
 		pc := pa.pieces[it.Payload]
+		frags.add(pc, x, x+adjust(it))
 		switch pc.kind {
+		case pEdge:
+			run = nil
+			x += adjust(it)
 		case pText, pSpace:
 			if run == nil || runStyle != pc.st || pc.deferred != nil {
 				run = &areatree.GlyphRun{Origin: areatree.Point{X: x, Y: baseline}, Font: pc.st.fontID,
@@ -819,6 +886,7 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			x += pc.width
 		}
 	}
+	line.areas = append(frags.areas(baseline), line.areas...)
 	line.areas = append(line.areas, linkAreas(pa, seg, x0, align, avail, width, adjust, h)...)
 	if hy != nil {
 		// Trennstrich am Zeilenende, im Stil des getrennten Wortes.
@@ -913,5 +981,69 @@ func linkAreas(pa *paragraph, seg []linebreak.Item, x0 areatree.Length, align st
 		x += adjust(it)
 	}
 	flush(x)
+	return out
+}
+
+// decoFrags sammelt je Inline-Element mit Hintergrund oder Rahmen den Teil
+// in einer Zeile.
+type decoFrags struct {
+	order []*inlineDeco
+	frag  map[*inlineDeco]*decoFrag
+}
+
+type decoFrag struct {
+	x0, x1     areatree.Length
+	start, end bool
+}
+
+func (f *decoFrags) add(pc piece, x0, x1 areatree.Length) {
+	if f.frag == nil {
+		f.frag = map[*inlineDeco]*decoFrag{}
+	}
+	for i, d := range pc.decos {
+		fr, ok := f.frag[d]
+		if !ok {
+			fr = &decoFrag{x0: x0, x1: x1}
+			f.frag[d] = fr
+			f.order = append(f.order, d)
+		}
+		fr.x0, fr.x1 = min(fr.x0, x0), max(fr.x1, x1)
+		if pc.kind == pEdge && i == 0 {
+			if pc.start {
+				fr.start = true
+			} else {
+				fr.end = true
+			}
+		}
+	}
+}
+
+// areas liefert die Hintergründe und Rahmen, äußere Elemente zuerst. Höhe
+// ist der Inhaltsbereich der Schrift (Ober- und Unterlänge) plus Padding und
+// Rahmen davor und danach. Die Zeilenhöhe ändern sie nicht.
+func (f *decoFrags) areas(baseline areatree.Length) []areatree.Area {
+	var out []areatree.Area
+	for _, d := range f.order {
+		fr := f.frag[d]
+		p := d.p
+		top := baseline - d.st.asc - p.Padding[areatree.Top]
+		bottom := baseline + d.st.desc + p.Padding[areatree.Bottom]
+		border := p.Border
+		if p.Border[areatree.Top].Visible() {
+			top -= p.Border[areatree.Top].Width
+		}
+		if p.Border[areatree.Bottom].Visible() {
+			bottom += p.Border[areatree.Bottom].Width
+		}
+		if !fr.start {
+			border[areatree.Left] = areatree.Border{}
+		}
+		if !fr.end {
+			border[areatree.Right] = areatree.Border{}
+		}
+		out = append(out, &areatree.Container{Kind: areatree.KindInline,
+			Rect:       areatree.Rect{X: fr.x0, Y: top, W: fr.x1 - fr.x0, H: bottom - top},
+			Background: p.Background, Border: border, Source: d.n.Label()})
+	}
 	return out
 }
