@@ -7,29 +7,32 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// check übersetzt das Stylesheet probeweise mit leeren Daten. Fehler beim
-// Lesen und Übersetzen, etwa ungültige XPath-Ausdrücke in Bindungen, werden
-// so schon beim Kompilieren mit Vorlagen-ID gemeldet.
+// check kompiliert das Stylesheet. Fehler, etwa ungültige XPath-Ausdrücke in
+// Bindungen, werden so schon beim Kompilieren mit Vorlagen-ID gemeldet. Das
+// kompilierte Stylesheet dient allen folgenden Transformationen.
 func (r *Result) check() error {
-	res := engine.Transform(engine.Request{Stylesheet: string(r.XSLT), Source: "<pdx-probe/>"})
+	sheet, diags := engine.Compile(engine.Request{Stylesheet: string(r.XSLT)})
 	var errs template.Errors
-	for _, d := range res.Diagnostics {
-		if d.Severity != engine.SeverityError || d.Phase == "run" {
-			continue
+	for _, d := range diags {
+		if d.Severity == engine.SeverityError {
+			errs = append(errs, r.diagError(d, "XSLT"))
 		}
-		errs = append(errs, r.diagError(d, "XSLT"))
 	}
-	if len(errs) > 0 {
+	if len(errs) > 0 || sheet == nil {
+		if len(errs) == 0 {
+			errs = append(errs, &template.Error{Msg: "XSLT ließ sich nicht kompilieren"})
+		}
 		return errs
 	}
+	r.sheet = sheet
 	return nil
 }
 
 // Transform wendet das Stylesheet auf die Daten an und liefert XSL-FO.
 // Laufzeitfehler tragen die ID des Vorlagenelements, aus dem die Stelle im
-// Stylesheet stammt.
+// Stylesheet stammt. Transform darf nebenläufig aufgerufen werden.
 func (r *Result) Transform(data []byte) ([]byte, error) {
-	res := engine.Transform(engine.Request{Stylesheet: string(r.XSLT), Source: string(data)})
+	res := r.sheet.Transform(engine.TransformRequest{Source: string(data)})
 	var errs template.Errors
 	for _, d := range res.Diagnostics {
 		if d.Severity != engine.SeverityError {

@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/tim-riep/go-xslt/engine"
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/template"
 )
@@ -61,6 +62,8 @@ type Result struct {
 	XSLT        []byte
 	SourceMap   []Mapping
 	Attachments []Attachment
+
+	sheet *engine.Stylesheet
 }
 
 // IDAt liefert die Vorlagen-ID zur Zeile im Stylesheet, bei verschachtelten
