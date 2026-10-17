@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/tim-riep/pdx/internal/verapdf"
+	"github.com/tim-riep/pdx/verapdf"
 )
 
 // ConformanceEnabled meldet, ob Tests veraPDF aufrufen sollen. Gesetzt wird

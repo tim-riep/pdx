@@ -66,6 +66,7 @@ XSL-FO ──fo/tree──▶ FO-Baum ──fo/layout──▶ Area Tree ──p
 | `template/pkg` | Vorlagenpakete aus ZIP oder Verzeichnis, deterministisches Schreiben |
 | `compile` | Vorlage zu XSLT 3.0 mit Überträgen, Formaten und Quellzuordnung |
 | `dataschema` | statische Prüfung der Bindungen gegen das Daten-XSD |
+| `check` | alle Prüfungen von `pdx check` für CLI und Designer |
 | `font` | Laden über textshape, Shaping, Subsetting, Type0 mit Identity-H, `/W`, ToUnicode, Registry mit Liberation-Schriften |
 | `image` | JPEG durchreichen, PNG nach Flate, Alpha getrennt |
 | `pdf` | Objektmodell, Content Streams, Xref, Trailer, Prüfung des Objektgraphen gegen die Policy |
@@ -73,7 +74,7 @@ XSL-FO ──fo/tree──▶ FO-Baum ──fo/layout──▶ Area Tree ──p
 | `pdf/xmp` | XMP mit pdfaid und pdfaExtension-Schema |
 | `pdf/render` | Area Tree zu PDF |
 | `icc` | selbst berechnetes sRGB-Profil (ICC 2.1) für das Output Intent |
-| `internal/verapdf` | veraPDF-Aufruf und Auswertung des mrr-Berichts |
+| `verapdf` | veraPDF-Aufruf und Auswertung des mrr-Berichts |
 | `internal/fopcompare` | Vergleich mit Apache FOP 2.11 über Docker: Area Tree, Textpositionen, Pixel |
 
 ### Konformität durch Konstruktion
@@ -152,7 +153,7 @@ Schriften werden ausnahmslos als Teilmenge eingebettet. `Helvetica`, `Arial`, `s
 
 ## veraPDF
 
-Version 1.30.3, konfiguriert nur in `internal/verapdf`. Eine lokale CLI wird genutzt, wenn ihre Version passt, sonst das Docker-Image `docker.io/verapdf/cli:v1.30.3` (per Digest gepinnt). Auf ghcr.io gibt es nur Entwicklerstände 1.31, das Release liegt auf Docker Hub. `PDX_VERAPDF=local|docker|<pfad>` erzwingt eine Variante.
+Version 1.30.3, konfiguriert nur in `verapdf`. Eine lokale CLI wird genutzt, wenn ihre Version passt, sonst das Docker-Image `docker.io/verapdf/cli:v1.30.3` (per Digest gepinnt). Auf ghcr.io gibt es nur Entwicklerstände 1.31, das Release liegt auf Docker Hub. `PDX_VERAPDF=local|docker|<pfad>` erzwingt eine Variante.
 
 ## Tests
 

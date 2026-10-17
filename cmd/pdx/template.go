@@ -5,12 +5,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/tim-riep/pdx/check"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/tim-riep/go-xslt/engine"
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/compile"
@@ -147,39 +147,7 @@ func cmdCheck(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "pdx check: Format %q unbekannt\n", *format)
 		return 2
 	}
-	var findings []dataschema.Finding
-	fromErr := func(err error) {
-		var es template.Errors
-		var e *template.Error
-		switch {
-		case errors.As(err, &es):
-			for _, e := range es {
-				findings = append(findings, dataschema.Finding{Level: dataschema.Error, ID: e.ID, Line: e.Line, Col: e.Col, Msg: e.Msg})
-			}
-		case errors.As(err, &e):
-			findings = append(findings, dataschema.Finding{Level: dataschema.Error, ID: e.ID, Line: e.Line, Col: e.Col, Msg: e.Msg})
-		default:
-			findings = append(findings, dataschema.Finding{Level: dataschema.Error, Msg: err.Error()})
-		}
-	}
-	p, err := pkg.Open(pos[0])
-	if err != nil {
-		fromErr(err)
-	} else {
-		if _, err := compile.Compile(p.Template, compile.Options{}); err != nil {
-			fromErr(err)
-		}
-		main, files := p.Schemas()
-		if main == "" {
-			findings = append(findings, dataschema.Finding{Level: dataschema.Warning, ID: p.Template.Root.ID(),
-				Msg: "die Vorlage nennt kein Daten-XSD (template/@schema), Bindungen bleiben ungeprüft"})
-		} else if m, err := dataschema.FromXSD(main, files); err != nil {
-			findings = append(findings, dataschema.Finding{Level: dataschema.Error, ID: p.Template.Root.ID(), Msg: err.Error()})
-		} else {
-			findings = append(findings, dataschema.Check(p.Template, m)...)
-			findings = append(findings, checkSamples(p, main, files)...)
-		}
-	}
+	findings := check.Path(pos[0])
 	if *format == "json" {
 		if findings == nil {
 			findings = []dataschema.Finding{}
@@ -199,34 +167,6 @@ func cmdCheck(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 	return 0
-}
-
-// checkSamples prüft die Beispieldaten gegen das Daten-XSD.
-func checkSamples(p *pkg.Package, main string, files map[string][]byte) []dataschema.Finding {
-	var out []dataschema.Finding
-	docs := []string{string(files[main])}
-	for _, n := range p.Names() {
-		if n != main && strings.HasPrefix(n, "schema/") && strings.HasSuffix(n, ".xsd") {
-			docs = append(docs, string(files[n]))
-		}
-	}
-	for _, s := range p.Samples() {
-		if !strings.HasSuffix(s, ".xml") {
-			continue
-		}
-		b, _ := p.File(s)
-		res := engine.Validate(engine.ValidateRequest{Schemas: docs, Instance: string(b)})
-		if res.Valid {
-			continue
-		}
-		for _, d := range res.Diagnostics {
-			if d.Severity == engine.SeverityError {
-				out = append(out, dataschema.Finding{Level: dataschema.Error,
-					Msg: fmt.Sprintf("%s %d:%d entspricht nicht %s: %s", s, d.Line, d.Col, main, d.Message)})
-			}
-		}
-	}
-	return out
 }
 
 // cmdFmt schreibt template.xml kanonisch.

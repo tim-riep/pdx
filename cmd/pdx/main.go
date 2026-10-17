@@ -29,7 +29,7 @@ import (
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/font"
-	"github.com/tim-riep/pdx/internal/verapdf"
+	"github.com/tim-riep/pdx/verapdf"
 	"github.com/tim-riep/pdx/pdf/profile"
 )
 
