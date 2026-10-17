@@ -54,10 +54,15 @@ func TestSelector(t *testing.T) {
 			t.Errorf("Seite %d: falsche Vorlage, erwartet %s", w.c.number, w.name)
 		}
 	}
-	// Erschöpfte Folge ist ein Fehler.
+	// Erschöpfte Folge: die zuletzt verwendete Vorlage gilt weiter (XSL 1.1
+	// 6.4.5), ohne verwendete Vorlage ist es ein Fehler.
 	s2 := &selector{e: e, sm: &seqMaster{node: n, specs: []pageSpec{{kind: specSingle, master: "einmal", max: 1, node: n}}}}
 	s2.pick(pageCond{number: 1}, true)
-	if _, err := s2.pick(pageCond{number: 2}, true); err == nil {
-		t.Error("erschöpfte Seitenfolge nicht erkannt")
+	if m, err := s2.pick(pageCond{number: 2}, true); err != nil || m != e.masters["einmal"] {
+		t.Errorf("erschöpfte Seitenfolge: %v", err)
+	}
+	s3 := &selector{e: e, sm: &seqMaster{node: n, specs: []pageSpec{{kind: specSingle, master: "einmal", max: 0, node: n}}}}
+	if _, err := s3.pick(pageCond{number: 1}, true); err == nil {
+		t.Error("leere Seitenfolge nicht erkannt")
 	}
 }

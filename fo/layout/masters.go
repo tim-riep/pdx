@@ -145,8 +145,9 @@ type selector struct {
 	e      *engine
 	simple *master
 	sm     *seqMaster
-	i      int // aktuelle Teilfolge
-	used   int // in der aktuellen Teilfolge verbrauchte Seiten
+	i      int    // aktuelle Teilfolge
+	used   int    // in der aktuellen Teilfolge verbrauchte Seiten
+	last   string // zuletzt verwendete Vorlage
 }
 
 func (e *engine) newSelector(ps *tree.Node, ref string) (*selector, error) {
@@ -182,13 +183,22 @@ func (s *selector) pick(c pageCond, commit bool) (*master, error) {
 				}
 			}
 			if name == "" {
-				return nil, tree.Errorf(sp.node, "keine fo:conditional-page-master-reference passt zu Seite %d", c.number)
+				// Keine Alternative passt. XSL 1.1 6.4.5 erlaubt, die zuletzt
+				// verwendete Vorlage weiter zu nutzen.
+				if s.last == "" {
+					return nil, tree.Errorf(sp.node, "keine fo:conditional-page-master-reference passt zu Seite %d", c.number)
+				}
+				name = s.last
 			}
 		}
 		if commit {
-			s.i, s.used = i, used+1
+			s.i, s.used, s.last = i, used+1, name
 		}
 		return s.e.masters[name], nil
+	}
+	// Erschöpfte Folge: ebenso die zuletzt verwendete Vorlage (6.4.5).
+	if s.last != "" {
+		return s.e.masters[s.last], nil
 	}
 	return nil, tree.Errorf(s.sm.node, "Seitenfolge erschöpft bei Seite %d, die Teilfolgen reichen nicht aus", c.number)
 }

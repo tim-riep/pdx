@@ -38,7 +38,7 @@ fop/leader_border_padding: offen, erste Abweichung: Seite 1: ".... dots solid 1p
 fop/leader_leader-pattern_dots: offen, erste Abweichung: Seite 1: "... Default dots pattern" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
 fop/leader_text-align: offen, erste Abweichung: Seite 1: "... dots" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
-fop/list-item-with-ipd-change: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/list-item-with-ipd-change.fo:26:11: keine fo:conditional-page-master-reference passt zu Seite 2
+fop/list-item-with-ipd-change: offen, erste Abweichung: Seite 2: "b" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
 fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/list-item_padding_percentages: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "body 1: We should have 5% padding around this"
 fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
