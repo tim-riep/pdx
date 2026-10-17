@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { openElementMenu } from "../../lib/menu.svelte";
   import type { Area, Page, Rect } from "../../lib/canvas/model";
   import { drawPage, type ImageSource } from "../../lib/canvas/render";
   import { HitIndex } from "../../lib/canvas/hit";
@@ -222,6 +223,15 @@
     else select("");
   }
 
+  // Rechtsklick wählt das Element unter dem Zeiger und öffnet sein Menü.
+  function contextmenu(e: MouseEvent) {
+    const hit: Area | undefined = index.at(...pagePoint(e));
+    if (!hit) return;
+    e.preventDefault();
+    select(hit.id, { page: page.n, k: page.els.filter((a) => a.id === hit.id).indexOf(hit) });
+    openElementMenu(hit.id, e.clientX, e.clientY);
+  }
+
   // Ablage gezogener Datenknoten und Bausteine.
   let target = $state<Target | null>(null);
   const model = {
@@ -271,7 +281,7 @@
 </script>
 
 <div class="page" data-page={page.n} style="width:{page.w * zoom}px;height:{page.h * zoom}px" bind:this={pageEl}
-  onmousemove={move} onmouseleave={() => (selection.hover = "")} onmousedown={down} role="presentation"
+  onmousemove={move} onmouseleave={() => (selection.hover = "")} onmousedown={down} oncontextmenu={contextmenu} role="presentation"
   ondragover={dragover} ondragleave={() => (target = null)} ondrop={drop}>
   {#if visible}<canvas bind:this={canvas}></canvas>{/if}
   <div class="overlay">

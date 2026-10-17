@@ -19,6 +19,7 @@ export {
 };
 
 export {
+    ChildInsert,
     Conformance,
     ConformanceFinding,
     ConformanceItem,

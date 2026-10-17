@@ -295,5 +295,16 @@
   "styles.noStyles": "Noch keine Stile.",
   "styles.parent": "erbt von {parent}",
   "styles.pick": "Farbe wählen",
-  "tokens.none": "kein Token"
+  "tokens.none": "kein Token",
+  "menu.insert": "Einfügen",
+  "menu.duplicate": "Duplizieren",
+  "menu.up": "Nach oben",
+  "menu.down": "Nach unten",
+  "menu.remove": "Löschen",
+  "menu.open": "Aktionen",
+  "menu.nothing": "Hier lässt sich nichts einfügen",
+  "el.tokens": "Tokens",
+  "el.tokens/color": "Farb-Token",
+  "el.tokens/length": "Längen-Token",
+  "el.tokens/font": "Schrift-Token"
 }

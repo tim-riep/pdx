@@ -16,6 +16,48 @@ import * as pipeline$0 from "../pipeline/models.js";
 import * as xpath$0 from "../xpath/models.js";
 
 /**
+ * ChildInsert beschreibt das Einfügen eines beliebigen erlaubten Kindes,
+ * etwa aus dem Kontextmenü der Hierarchie.
+ */
+export class ChildInsert {
+    "parent": string;
+
+    /**
+     * Key ist der Schlüssel des Elementtyps im Katalog (etwa formats/locale).
+     */
+    "key": string;
+
+    /**
+     * Index ist die Stelle unter den Kindern, -1 wählt die Stelle nach der
+     * Reihenfolge des XSD.
+     */
+    "index": number;
+
+    /** Creates a new ChildInsert instance. */
+    constructor($$source: Partial<ChildInsert> = {}) {
+        if (!("parent" in $$source)) {
+            this["parent"] = "";
+        }
+        if (!("key" in $$source)) {
+            this["key"] = "";
+        }
+        if (!("index" in $$source)) {
+            this["index"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ChildInsert instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ChildInsert {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new ChildInsert($$parsedSource as Partial<ChildInsert>);
+    }
+}
+
+/**
  * Conformance ist der Stand der Prüfung.
  */
 export class Conformance {

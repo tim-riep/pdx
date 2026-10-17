@@ -82,6 +82,15 @@ export function Drop(drop: $models.Drop): $CancellablePromise<$models.Result> {
 }
 
 /**
+ * Duplicate fügt eine Kopie des Elements mit neuen IDs direkt dahinter ein.
+ */
+export function Duplicate(ref: string): $CancellablePromise<$models.Result> {
+    return $Call.ByID(2880950772, ref).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * History liefert die Beschriftungen für Undo und Redo.
  */
 export function History(): $CancellablePromise<model$0.History> {
@@ -91,10 +100,40 @@ export function History(): $CancellablePromise<model$0.History> {
 }
 
 /**
+ * InsertChild fügt ein Element mit gültigen Pflichtangaben ein.
+ */
+export function InsertChild(ci: $models.ChildInsert): $CancellablePromise<$models.Result> {
+    return $Call.ByID(3028917160, ci).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * InsertElement fügt einen Baustein ein und wählt ihn aus.
  */
 export function InsertElement($in: $models.Insert): $CancellablePromise<$models.Result> {
     return $Call.ByID(2385084186, $in).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
+ * Insertable liefert die Kinder, die sich unter einem Element jetzt noch
+ * einfügen lassen, in der Reihenfolge des XSD.
+ */
+export function Insertable(ref: string): $CancellablePromise<model$0.Child[]> {
+    return $Call.ByID(2827932310, ref).then(($result: any) => {
+        return $$createType9($result);
+    });
+}
+
+/**
+ * Move verschiebt ein Element unter seinen Geschwistern um delta Elemente
+ * nach vorn (negativ) oder hinten. Das XSD entscheidet, ob die neue
+ * Reihenfolge gültig ist.
+ */
+export function Move(ref: string, delta: number): $CancellablePromise<$models.Result> {
+    return $Call.ByID(2959355450, ref, delta).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -113,7 +152,7 @@ export function Redo(): $CancellablePromise<$models.Result> {
  */
 export function Snapshot(): $CancellablePromise<model$0.Snapshot> {
     return $Call.ByID(1917837331).then(($result: any) => {
-        return $$createType8($result);
+        return $$createType10($result);
     });
 }
 
@@ -131,7 +170,7 @@ export function Table(op: $models.TableOp): $CancellablePromise<$models.Result> 
  */
 export function TokenUsage(): $CancellablePromise<{ [_ in string]?: number }> {
     return $Call.ByID(583016375).then(($result: any) => {
-        return $$createType9($result);
+        return $$createType11($result);
     });
 }
 
@@ -159,7 +198,7 @@ export function Undo(): $CancellablePromise<$models.Result> {
  */
 export function XPathFields(ref: string): $CancellablePromise<$models.Field[]> {
     return $Call.ByID(2528131159, ref).then(($result: any) => {
-        return $$createType11($result);
+        return $$createType13($result);
     });
 }
 
@@ -177,7 +216,9 @@ const $$createType4 = $Create.Map($Create.Any, $$createType3);
 const $$createType5 = $models.XPathInfo.createFrom;
 const $$createType6 = xpath$0.Completion.createFrom;
 const $$createType7 = model$0.History.createFrom;
-const $$createType8 = model$0.Snapshot.createFrom;
-const $$createType9 = $Create.Map($Create.Any, $Create.Any);
-const $$createType10 = $models.Field.createFrom;
-const $$createType11 = $Create.Array($$createType10);
+const $$createType8 = model$0.Child.createFrom;
+const $$createType9 = $Create.Array($$createType8);
+const $$createType10 = model$0.Snapshot.createFrom;
+const $$createType11 = $Create.Map($Create.Any, $Create.Any);
+const $$createType12 = $models.Field.createFrom;
+const $$createType13 = $Create.Array($$createType12);

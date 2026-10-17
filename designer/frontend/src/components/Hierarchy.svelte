@@ -2,8 +2,26 @@
   import { t, label } from "../lib/i18n";
   import { node, path, tpl } from "../lib/template.svelte";
   import { select, selection } from "../lib/selection.svelte";
+  import { openElementMenu } from "../lib/menu.svelte";
 
   let open: Record<string, boolean> = $state({});
+
+  // Die Wurzel ist immer aufgeklappt, sie nimmt Formate, Texte und Anhänge auf.
+  $effect(() => {
+    const root = tpl.snapshot?.root;
+    if (root && open[root] === undefined) open[root] = true;
+  });
+
+  function menuAt(e: MouseEvent, ref: string) {
+    e.preventDefault();
+    select(ref);
+    openElementMenu(ref, e.clientX, e.clientY);
+  }
+
+  function menuButton(e: MouseEvent, ref: string) {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    openElementMenu(ref, r.left, r.bottom + 2);
+  }
 
   // Vorfahren der Auswahl aufklappen.
   $effect(() => {
@@ -20,7 +38,7 @@
     <div class="row" class:selected={selection.ref === ref} class:hover={selection.hover === ref}
       style="padding-left: {depth * 12 + 4}px" role="treeitem" tabindex="-1" aria-selected={selection.ref === ref}
       aria-expanded={children.length ? !!open[ref] : undefined}
-      onmouseenter={() => (selection.hover = ref)} onmouseleave={() => (selection.hover = "")}>
+      onmouseenter={() => (selection.hover = ref)} onmouseleave={() => (selection.hover = "")} oncontextmenu={(e) => menuAt(e, ref)}>
       {#if children.length}
         <button class="twisty" aria-label={open[ref] ? t("tree.collapse") : t("tree.expand")} onclick={() => (open[ref] = !open[ref])}>{open[ref] ? "▾" : "▸"}</button>
       {:else}<span class="twisty"></span>{/if}
@@ -28,6 +46,9 @@
         <span class="type">{label(n.type, n.name)}</span>
         {#if !ref.startsWith("~")}<span class="id">{ref}</span>{/if}
       </button>
+      {#if selection.ref === ref}
+        <button class="more" aria-label={t("menu.open")} title={t("menu.open")} onclick={(e) => menuButton(e, ref)}>⋯</button>
+      {/if}
     </div>
     {#if open[ref]}
       {#each children as c (c)}{@render tree(c, depth + 1)}{/each}
@@ -37,7 +58,7 @@
 
 <div class="hierarchy" role="tree" aria-label={t("panel.hierarchy")} data-testid="hierarchy">
   {#if tpl.snapshot}
-    {#each kids(tpl.snapshot.root) as r (r)}{@render tree(r, 0)}{/each}
+    {@render tree(tpl.snapshot.root, 0)}
   {/if}
 </div>
 
@@ -75,6 +96,10 @@
     text-align: left;
     overflow: hidden;
     white-space: nowrap;
+  }
+  .more {
+    color: var(--text-muted);
+    padding: 0 6px;
   }
   .id {
     color: var(--text-muted);

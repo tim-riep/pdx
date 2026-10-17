@@ -8,6 +8,8 @@
   import Tabs from "./components/Tabs.svelte";
   import XPathPanel from "./components/XPathPanel.svelte";
   import ProblemsPanel from "./components/ProblemsPanel.svelte";
+  import ContextMenu from "./components/ContextMenu.svelte";
+  import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
   import ConformancePanel from "./components/ConformancePanel.svelte";
   import { entries } from "./lib/problems.svelte";
@@ -15,8 +17,7 @@
   import Inspector from "./components/Inspector.svelte";
   import DataPanel from "./components/DataPanel.svelte";
   import { clearSelection, selection } from "./lib/selection.svelte";
-  import { apply, node, redo, tpl, undo } from "./lib/template.svelte";
-  import { label } from "./lib/i18n";
+  import { redo, tpl, undo } from "./lib/template.svelte";
   import { render, setView, type View } from "./lib/render.svelte";
   let version = $state("");
   let theme: "light" | "dark" | null = $state(null);
@@ -43,19 +44,25 @@
   const editing = (e: KeyboardEvent) =>
     e.target instanceof HTMLElement && (e.target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName));
 
-  function removeSelection() {
-    const n = node(selection.ref);
-    if (!n) return;
-    apply(t("cmd.remove", { el: label(n.type, n.name) }), { op: "remove", ref: n.ref });
-    clearSelection();
-  }
 
   function keydown(e: KeyboardEvent) {
     if (ui.pathPrompt || ui.closeRequest) return;
-    if (e.key === "Escape") clearSelection();
+    if (e.key === "Escape") {
+      if (menu.open) {
+        closeMenu();
+        return;
+      }
+      clearSelection();
+    }
     if ((e.key === "Delete" || e.key === "Backspace") && !editing(e) && selection.ref) {
       e.preventDefault();
-      removeSelection();
+      remove(selection.ref);
+      return;
+    }
+    // Alt mit Pfeil verschiebt unter den Geschwistern.
+    if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown") && !editing(e) && selection.ref) {
+      e.preventDefault();
+      moveBy(selection.ref, e.key === "ArrowUp" ? -1 : 1);
       return;
     }
     if (!(e.metaKey || e.ctrlKey)) return;
@@ -66,9 +73,10 @@
       n: () => newProject(),
       z: () => (e.shiftKey ? redo() : undo()),
       y: () => redo(),
+      d: () => selection.ref && duplicate(selection.ref),
     };
-    if (!act[k] || (k === "z" || k === "y") && editing(e)) return;
-    if ((k === "s" || k === "z" || k === "y") && !project.open) return;
+    if (!act[k] || (k === "z" || k === "y" || k === "d") && editing(e)) return;
+    if ((k === "s" || k === "z" || k === "y" || k === "d") && !project.open) return;
     e.preventDefault();
     act[k]();
   }
@@ -148,6 +156,8 @@
     <span class="version">{version}</span>
   </footer>
 </div>
+
+<ContextMenu />
 
 {#if ui.pathPrompt}
   <Modal title={t("path.title")}>

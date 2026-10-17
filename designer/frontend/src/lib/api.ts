@@ -11,7 +11,7 @@ export * as ConformanceAPI from "../../bindings/github.com/tim-riep/pdx/designer
 export * as ValidationAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/validationservice";
 export * as SchemaAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/schemaservice";
 export type { Schema as DataSchema, Node as DataNode } from "../../bindings/github.com/tim-riep/pdx/designer/internal/schema/models";
-export type { Drop, TableOp, Insert, XPathInfo, XPathQuery, Field as DataField, Report, Problem, Conformance, ConformanceFinding, ConformanceItem, TokenOp } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
+export type { Drop, TableOp, Insert, XPathInfo, XPathQuery, Field as DataField, Report, Problem, Conformance, ConformanceFinding, ConformanceItem, TokenOp, ChildInsert, Result } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 export type { Completion, Item as Suggestion, Result as XPathResult } from "../../bindings/github.com/tim-riep/pdx/designer/internal/xpath/models";
 export type {
   Snapshot,
@@ -22,6 +22,7 @@ export type {
   Command,
   Patch,
   History,
+  Child,
 } from "../../bindings/github.com/tim-riep/pdx/designer/internal/model/models";
 export type {
   ProjectState,
