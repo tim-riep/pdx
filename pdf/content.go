@@ -9,8 +9,13 @@ import (
 // damit die Ausgabe deterministisch bleibt. Koordinaten sind PDF-Koordinaten
 // in Punkt mit Ursprung unten links.
 type Content struct {
-	b bytes.Buffer
+	b   bytes.Buffer
+	ops int
 }
+
+// Ops liefert die Zahl der bisher geschriebenen Operatoren. Sie entspricht
+// der Zählung von veraPDF im Objektkontext (operators[n]).
+func (c *Content) Ops() int { return c.ops }
 
 // Bytes liefert den unkomprimierten Stream-Inhalt.
 func (c *Content) Bytes() []byte { return c.b.Bytes() }
@@ -28,6 +33,11 @@ func (c *Content) nums(vs ...float64) {
 func (c *Content) op(s string) {
 	c.b.WriteString(s)
 	c.b.WriteByte('\n')
+	if s == "W n" {
+		c.ops += 2
+	} else {
+		c.ops++
+	}
 }
 
 // Save schreibt q.

@@ -15,6 +15,29 @@ type pageCtx struct {
 	c      pdf.Content
 	h      float64 // Seitenhöhe in Punkt für die Umrechnung der y-Achse
 	annots pdf.Array
+	// trace und id sind gesetzt, wenn eine Spur verlangt ist: die Bereiche
+	// der Seite und die Vorlagen-ID des aktuellen Containers.
+	trace *PageTrace
+	id    string
+}
+
+// areaID liefert die Vorlagen-ID eines Bereichs oder die des Containers.
+func (pc *pageCtx) areaID(a areatree.Area) string {
+	var id string
+	switch v := a.(type) {
+	case *areatree.Container:
+		id = v.ID
+	case *areatree.GlyphRun:
+		id = v.ID
+	case *areatree.Image:
+		id = v.ID
+	case *areatree.Path:
+		id = v.ID
+	}
+	if id == "" {
+		return pc.id
+	}
+	return id
 }
 
 func (pc *pageCtx) x(l areatree.Length) float64 { return l.Pt() }
@@ -55,6 +78,30 @@ func (pc *pageCtx) stroke(c areatree.Color) error {
 }
 
 func (pc *pageCtx) area(a areatree.Area) error {
+	if pc.trace == nil {
+		return pc.draw(a)
+	}
+	outer := pc.id
+	pc.id = pc.areaID(a)
+	defer func() { pc.id = outer }()
+	first := len(pc.trace.Ops)
+	start := pc.c.Ops()
+	if pc.id != "" {
+		// Platzhalter, damit der Bereich vor seinen Kindern steht.
+		pc.trace.Ops = append(pc.trace.Ops, OpRange{First: start, ID: pc.id})
+	}
+	err := pc.draw(a)
+	if pc.id != "" {
+		if end := pc.c.Ops(); end > start {
+			pc.trace.Ops[first].Last = end
+		} else {
+			pc.trace.Ops = append(pc.trace.Ops[:first], pc.trace.Ops[first+1:]...)
+		}
+	}
+	return err
+}
+
+func (pc *pageCtx) draw(a areatree.Area) error {
 	switch v := a.(type) {
 	case *areatree.Container:
 		return pc.container(v)

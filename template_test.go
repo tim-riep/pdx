@@ -12,6 +12,8 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/internal/testutil"
+	"github.com/tim-riep/pdx/pdf/profile"
+	"github.com/tim-riep/pdx/pdf/render"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
 )
@@ -240,6 +242,54 @@ func TestPackageFonts(t *testing.T) {
 		}
 		if !found {
 			t.Fatal("Schrift aus assets/ wird nicht genutzt")
+		}
+	}
+}
+
+// TestRenderTrace prüft die Spur der Operatoren: gleiche Ausgabe mit und
+// ohne Spur, Bereiche mit Vorlagen-IDs, IDAt findet den innersten Bereich.
+func TestRenderTrace(t *testing.T) {
+	p, data := loadMuster(t)
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc, err := tpl.Layout(data, TemplateOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	prof, _ := profile.Lookup(DefaultProfile)
+	opts := render.Options{Profile: prof, CreationDate: templateDate, Producer: "test"}
+	plain, err := render.Render(doc, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tr := &render.Trace{}
+	opts.Trace = tr
+	traced, err := render.Render(doc, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(plain, traced) {
+		t.Error("die Spur verändert die Ausgabe")
+	}
+	if len(tr.Pages) != len(doc.Pages) {
+		t.Fatalf("Spur mit %d Seiten, Dokument hat %d", len(tr.Pages), len(doc.Pages))
+	}
+	seen := map[string]bool{}
+	for pi, pg := range tr.Pages {
+		for _, r := range pg.Ops {
+			seen[r.ID] = true
+			if r.ID == "netto-wert" || r.ID == "girocode" {
+				if got := tr.IDAt(pi, r.First); got != r.ID {
+					t.Errorf("IDAt(%d, %d) = %q, erwartet %q", pi, r.First, got, r.ID)
+				}
+			}
+		}
+	}
+	for _, id := range []string{"positionen", "z-betrag", "netto-wert", "girocode"} {
+		if !seen[id] {
+			t.Errorf("kein Operatorbereich für %q", id)
 		}
 	}
 }

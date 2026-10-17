@@ -21,6 +21,43 @@ type Options struct {
 	CreationDate time.Time
 	// Producer erscheint im Info-Dictionary und im XMP.
 	Producer string
+	// Trace erhält, wenn gesetzt, je Seite die Operatorbereiche mit der
+	// Vorlagen-ID der Bereiche. Die Ausgabe bleibt unverändert.
+	Trace *Trace
+}
+
+// Trace ordnet Operatoren der Inhaltsströme den Vorlagenelementen zu, damit
+// Befunde von veraPDF (Kontext pages[i]/contentStream[0]/operators[n]) auf
+// Elemente zeigen.
+type Trace struct {
+	Pages []PageTrace
+}
+
+// PageTrace sind die Operatorbereiche einer Seite in Zeichenreihenfolge.
+// Innere Bereiche folgen nach dem Bereich ihres Containers.
+type PageTrace struct {
+	Ops []OpRange
+}
+
+// OpRange sind die Operatoren First bis ausschließlich Last eines Bereichs.
+type OpRange struct {
+	First, Last int
+	ID          string
+}
+
+// IDAt liefert die Vorlagen-ID zum Operator op auf Seite page (ab 0), den
+// kleinsten Bereich, der ihn enthält. Leer, wenn keiner passt.
+func (t *Trace) IDAt(page, op int) string {
+	if t == nil || page < 0 || page >= len(t.Pages) {
+		return ""
+	}
+	id, size := "", -1
+	for _, r := range t.Pages[page].Ops {
+		if op >= r.First && op < r.Last && (size < 0 || r.Last-r.First <= size) {
+			id, size = r.ID, r.Last-r.First
+		}
+	}
+	return id
 }
 
 // Render schreibt das Dokument als PDF-Bytes.
@@ -146,10 +183,16 @@ func (r *renderer) infoDict() *pdf.Dict {
 func (r *renderer) page(p *areatree.Page) (pdf.Ref, error) {
 	res := &pageRes{fonts: pdf.NewDict(), xobjects: pdf.NewDict(), gstates: pdf.NewDict()}
 	pc := &pageCtx{r: r, res: res, h: p.Height.Pt()}
+	if r.opts.Trace != nil {
+		pc.trace = &PageTrace{}
+	}
 	for _, a := range p.Areas {
 		if err := pc.area(a); err != nil {
 			return pdf.Ref{}, err
 		}
+	}
+	if pc.trace != nil {
+		r.opts.Trace.Pages = append(r.opts.Trace.Pages, *pc.trace)
 	}
 	resources := pdf.NewDict()
 	if res.fonts.Len() > 0 {

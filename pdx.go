@@ -50,6 +50,9 @@ type Options struct {
 	Fonts *font.Registry
 	// Context bricht Layout und Rendern ab. nil bedeutet ohne Abbruch.
 	Context context.Context
+	// Trace erhält, wenn gesetzt, die Zuordnung der PDF-Operatoren zu den
+	// Vorlagenelementen (für Befunde von veraPDF).
+	Trace *render.Trace
 }
 
 // Result enthält das PDF und den Area Tree.
@@ -78,6 +81,7 @@ func Render(fo io.Reader, opts Options) (*Result, error) {
 		Profile:      prof,
 		CreationDate: opts.CreationDate,
 		Producer:     "pdx " + Version,
+		Trace:        opts.Trace,
 	})
 	if err != nil {
 		return nil, err
