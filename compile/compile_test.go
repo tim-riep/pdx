@@ -91,7 +91,8 @@ func pageLines(d *areatree.Document) [][]string {
 		case strings.HasPrefix(t, "text ") && len(pages) > 0:
 			p := pages[len(pages)-1]
 			if i := strings.Index(t, ` "`); i >= 0 && len(p) > 0 {
-				if s, err := strconv.Unquote(t[i+1:]); err == nil {
+				if q, err := strconv.QuotedPrefix(t[i+1:]); err == nil {
+					s, _ := strconv.Unquote(q)
 					p[len(p)-1] += s
 				}
 			}
