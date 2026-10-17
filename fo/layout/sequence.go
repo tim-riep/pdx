@@ -127,7 +127,17 @@ func (s *sequence) paginate() error {
 			return err
 		}
 		last := false
-		if mLast == m {
+		// Folgt wegen force-page-count noch eine Leerseite, ist diese Seite
+		// nicht die letzte der Folge.
+		blankFollows, err := s.needsBlank(s.count+1, cond.number)
+		if err != nil {
+			return err
+		}
+		if blankFollows {
+			mLast = nil
+		}
+		if mLast == nil {
+		} else if mLast == m {
 			last = breakPage(items, pos, m.body.H) >= len(items)
 		} else {
 			w := width
@@ -244,31 +254,41 @@ func (s *sequence) blankPage(last bool) error {
 // Bedingung nicht erfüllt ist. Bei "auto" entscheidet eine feste
 // initial-page-number der nächsten Seitenfolge.
 func (s *sequence) forcePageCount() error {
-	v := attrOr(s.node, "force-page-count", "auto")
-	need := false
-	switch v {
-	case "even":
-		need = s.count%2 != 0
-	case "odd":
-		need = s.count%2 == 0
-	case "end-on-even":
-		need = s.e.pageNo%2 != 0
-	case "end-on-odd":
-		need = s.e.pageNo%2 == 0
-	case "auto":
-		if n := s.nextInitial(); n > 0 {
-			// Die letzte Seite soll ungerade sein, wenn die nächste Folge
-			// gerade beginnt, und umgekehrt.
-			need = (s.e.pageNo%2 == 0) == (n%2 == 0)
-		}
-	case "no-force":
-	default:
-		return tree.Errorf(s.node, "force-page-count %q ist ungültig", v)
+	need, err := s.needsBlank(s.count, s.e.pageNo)
+	if err != nil {
+		return err
 	}
 	if need {
 		return s.blankPage(true)
 	}
 	return nil
+}
+
+// needsBlank meldet, ob nach count Seiten mit der letzten Seitenzahl last
+// eine Leerseite folgen muss. Die Leerseite ist dann die letzte Seite der
+// Folge, nicht die Seite davor.
+func (s *sequence) needsBlank(count, last int) (bool, error) {
+	switch v := attrOr(s.node, "force-page-count", "auto"); v {
+	case "even":
+		return count%2 != 0, nil
+	case "odd":
+		return count%2 == 0, nil
+	case "end-on-even":
+		return last%2 != 0, nil
+	case "end-on-odd":
+		return last%2 == 0, nil
+	case "auto":
+		if n := s.nextInitial(); n > 0 {
+			// Die letzte Seite soll ungerade sein, wenn die nächste Folge
+			// gerade beginnt, und umgekehrt.
+			return (last%2 == 0) == (n%2 == 0), nil
+		}
+		return false, nil
+	case "no-force":
+		return false, nil
+	default:
+		return false, tree.Errorf(s.node, "force-page-count %q ist ungültig", v)
+	}
 }
 
 // nextInitial liefert eine feste initial-page-number der nächsten

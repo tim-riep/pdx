@@ -291,17 +291,33 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 	return nil
 }
 
-// items übersetzt die Stücke in das Box-Glue-Penalty-Modell.
-func (pa *paragraph) items(from int) []linebreak.Item {
+// items übersetzt die Stücke in das Box-Glue-Penalty-Modell. Im Blocksatz
+// darf ein Wortzwischenraum um die Hälfte wachsen und um ein Drittel
+// schrumpfen. Im Flattersatz erhält wie bei Apache FOP nur die Zeile, die an
+// einem Zwischenraum endet, die Dehnbarkeit RaggedStretch:
+// Glue(0, +R), Penalty(0), Glue(w, −R). Hilfselemente tragen Payload −1.
+func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 	items := make([]linebreak.Item, 0, len(pa.pieces))
+	R := linebreak.RaggedStretch
 	for i := from; i < len(pa.pieces); i++ {
 		pc := pa.pieces[i]
 		switch pc.kind {
 		case pText, pGraphic:
 			items = append(items, linebreak.Item{Kind: linebreak.Box, Width: pc.width, Payload: i})
 		case pSpace:
-			items = append(items, linebreak.Item{Kind: linebreak.Glue, Width: pc.width,
-				Stretch: pc.width / 2, Shrink: pc.width / 3, Payload: i})
+			nobreak := i > 0 && pa.pieces[i-1].kind == pNoBreak
+			switch {
+			case justify:
+				items = append(items, linebreak.Item{Kind: linebreak.Glue, Width: pc.width,
+					Stretch: pc.width / 2, Shrink: pc.width / 3, Payload: i})
+			case nobreak:
+				items = append(items, linebreak.Item{Kind: linebreak.Glue, Width: pc.width, Payload: i})
+			default:
+				items = append(items,
+					linebreak.Item{Kind: linebreak.Glue, Stretch: R, Payload: -1},
+					linebreak.Item{Kind: linebreak.Penalty, Payload: -1},
+					linebreak.Item{Kind: linebreak.Glue, Width: pc.width, Stretch: -R, Payload: i})
+			}
 		case pBreak:
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.ForcedBreak, Payload: i})
 		case pNoBreak:
@@ -331,7 +347,7 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 		// der neuen Seite umbrochen, ohne Einzug der ersten Zeile.
 		from, indent = g.skip.minor, 0
 	}
-	items := pa.items(from)
+	items := pa.items(from, p.TextAlign == "justify")
 	breaks, err := g.e.opts.Breaker.Break(items, func(line int) areatree.Length {
 		if line == 0 {
 			return avail - indent
@@ -430,6 +446,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	// Vertikale Maße.
 	above, below := strut.above(), strut.below()
 	for _, it := range seg {
+		if it.Payload < 0 {
+			continue
+		}
 		pc := pa.pieces[it.Payload]
 		switch pc.kind {
 		case pText, pSpace:
@@ -447,6 +466,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	var run *areatree.GlyphRun
 	var runStyle *style
 	for _, it := range seg {
+		if it.Payload < 0 {
+			continue
+		}
 		pc := pa.pieces[it.Payload]
 		switch pc.kind {
 		case pText, pSpace:
@@ -480,7 +502,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		}
 	}
 	for _, it := range seg {
-		line.ids = append(line.ids, pa.pieces[it.Payload].ids...)
+		if it.Payload >= 0 {
+			line.ids = append(line.ids, pa.pieces[it.Payload].ids...)
+		}
 	}
 	g.addLine(line, ord, pen)
 	return nil

@@ -29,8 +29,8 @@ pdx wendet beim Shaping die OpenType-Standardfeatures an, darunter `liga`
 (fi, fl, ffi). FOP 2.11 nutzt für lateinische Schrift keine Ligaturen. XSL
 1.1 regelt Ligaturen nicht, die Glyphenwahl ist Sache der Implementierung
 (4.7.2 „glyph-areas“). Ligaturen verkürzen Wörter leicht, eine Zeile kann
-dadurch anders umbrechen (Korpus: sonderzeichen). Abschalten lässt sich das
-in pdx über die Shaping-Optionen.
+dadurch in Grenzfällen anders umbrechen. Abschalten lässt sich das in pdx
+über die Shaping-Optionen.
 
 ## Verteilung des Weißraums im Blocksatz
 

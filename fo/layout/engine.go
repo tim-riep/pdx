@@ -23,7 +23,7 @@ type Options struct {
 	Fonts *font.Registry
 	// Resolver lädt Bilder und Anhänge. nil verweigert jeden Zugriff.
 	Resolver Resolver
-	// Breaker bricht Absätze um. nil bedeutet linebreak.Greedy.
+	// Breaker bricht Absätze um. nil bedeutet linebreak.KnuthPlass.
 	Breaker linebreak.Breaker
 }
 
@@ -135,7 +135,7 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 		opts.Fonts = font.NewRegistry()
 	}
 	if opts.Breaker == nil {
-		opts.Breaker = linebreak.Greedy{}
+		opts.Breaker = linebreak.KnuthPlass{}
 	}
 	if opts.Resolver == nil {
 		opts.Resolver = denyResolver{}
