@@ -26,6 +26,8 @@ golden:
 fuzz:
 	$(GO) test -run=^$$ -fuzz=FuzzParse -fuzztime=30s ./fo/tree
 	$(GO) test -run=^$$ -fuzz=FuzzLoad -fuzztime=30s ./font
+	$(GO) test -run=^$$ -fuzz=FuzzTemplateParse -fuzztime=30s ./template
+	$(GO) test -run=^$$ -fuzz=FuzzCompile -fuzztime=30s ./compile
 
 # Rendert den Korpus und prüft jede Datei mit veraPDF.
 conformance: build $(PDFS)

@@ -1,6 +1,8 @@
 package layout
 
 import (
+	"strings"
+
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/fo/tree"
 )
@@ -232,7 +234,8 @@ func hasTableMarker(n *tree.Node) bool {
 	return false
 }
 
-// sample liefert den ersten fo:marker einer Klasse in der Tabelle.
+// sample liefert den ersten fo:marker einer Klasse in der Tabelle, beim
+// Messen wiederholter Köpfe den ersten nicht leeren.
 func (t *tableCtx) sample(cls string) *tree.Node {
 	var found *tree.Node
 	var walk func(n *tree.Node)
@@ -241,7 +244,7 @@ func (t *tableCtx) sample(cls string) *tree.Node {
 			return
 		}
 		if n.IsFO("marker") {
-			if c, _ := n.Attr("marker-class-name"); c == cls {
+			if c, _ := n.Attr("marker-class-name"); c == cls && (!t.representative || !emptyMarker(n)) {
 				found = n
 			}
 			return
@@ -252,4 +255,14 @@ func (t *tableCtx) sample(cls string) *tree.Node {
 	}
 	walk(t.node)
 	return found
+}
+
+// emptyMarker meldet einen fo:marker ohne Elemente und ohne sichtbaren Text.
+func emptyMarker(n *tree.Node) bool {
+	for _, c := range n.Children {
+		if c.Kind == tree.Element || strings.TrimSpace(c.Data) != "" {
+			return false
+		}
+	}
+	return true
 }

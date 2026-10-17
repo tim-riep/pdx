@@ -273,7 +273,7 @@
       </xs:sequence>
       <xs:attribute name="id" type="xs:ID" use="required"/>
       <xs:attribute name="use" default="any">
-        <xs:annotation><xs:documentation>Für welche Seiten die Vorlage gilt, in der Reihenfolge only, first, last, odd, even, rest, any geprüft.</xs:documentation></xs:annotation>
+        <xs:annotation><xs:documentation>Für welche Seiten die Vorlage gilt, in der Reihenfolge only, first, last, odd, even, rest, any geprüft. rest ist jede Seite außer der ersten, einschließlich der letzten.</xs:documentation></xs:annotation>
         <xs:simpleType><xs:restriction base="xs:token">
           <xs:enumeration value="first"/><xs:enumeration value="rest"/><xs:enumeration value="last"/>
           <xs:enumeration value="only"/><xs:enumeration value="odd"/><xs:enumeration value="even"/>

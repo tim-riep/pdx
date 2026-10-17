@@ -38,6 +38,9 @@ type tableCtx struct {
 	// enthalten. Sie werden dann je Seite neu gesetzt.
 	dynamic bool
 	frags   []*tableFrag
+	// representative ist gesetzt, solange wiederholte Köpfe gemessen werden.
+	// sample überspringt dann leere Marker.
+	representative bool
 }
 
 // continuesAfter meldet, ob nach dieser Scheibe noch Zeilen des Rumpfs folgen.
@@ -165,6 +168,39 @@ func (g *galley) layoutCell(c *cellLayout, content *tree.Node, tbl *tableCtx) er
 	c.items = sg.items
 	c.contentH, c.bounds = measure(sg.items)
 	return nil
+}
+
+// repeatRows misst Kopfzeilen mit Tabellenmarkern für die Wiederholung neu.
+// Die Zeilen werden nicht niedriger als beim ersten Setzen.
+func (g *galley) repeatRows(tc *tableCtx, rows []*rowLayout, fs areatree.Length) ([]*rowLayout, error) {
+	tc.representative = true
+	defer func() { tc.representative = false }()
+	out := make([]*rowLayout, len(rows))
+	for i, r := range rows {
+		nr := *r
+		nr.cells = make([]*cellLayout, len(r.cells))
+		for j, c := range r.cells {
+			nc := *c
+			if hasTableMarker(c.node) {
+				if err := g.layoutCell(&nc, nc.node, tc); err != nil {
+					return nil, err
+				}
+			}
+			nr.cells[j] = &nc
+		}
+		minH, err := rowHeight(r.node, fs)
+		if err != nil {
+			return nil, err
+		}
+		finishRow(&nr, max(minH, r.h-2*r.sepV), true)
+		for _, c := range nr.cells {
+			if c.rowSpan == 1 {
+				c.boxH = nr.h - 2*nr.sepV
+			}
+		}
+		out[i] = &nr
+	}
+	return out, nil
 }
 
 // finishRow berechnet Höhe und Scheiben einer Zeile.
@@ -591,7 +627,19 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	if len(body) > 0 {
 		tc.firstBody, tc.lastBody = body[0], body[len(body)-1]
 	}
-	for _, r := range header {
+	// Die Seite, auf der die Tabelle beginnt, zeigt im Kopf die Marker der
+	// ersten Rumpfzeile, gemessen wurde daher mit dem ersten Marker der
+	// Klasse. Wiederholte Köpfe auf Folgeseiten reservieren die Höhe des
+	// ersten nicht leeren Markers, so bleibt ein Übertrag, der auf der ersten
+	// Seite leer ist, auf den Folgeseiten nicht ohne Platz.
+	if tc.dynamic && len(header) > 0 {
+		rep, err := g.repeatRows(tc, header, p.FontSize)
+		if err != nil {
+			return err
+		}
+		tc.header = rep
+	}
+	for _, r := range tc.header {
 		tc.headerH += r.h
 	}
 	for _, r := range footer {
