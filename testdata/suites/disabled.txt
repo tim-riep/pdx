@@ -396,19 +396,24 @@ fop/table-cell_break-after_inside: nicht im Teilumfang von pdx: Eigenschaft bord
 fop/table-cell_break-before: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
 fop/table-cell_break-before_inside: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
 fop/table-cell_break-before_multicolumn: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/table-cell_breaks: noch nicht umgesetzt: Seitenumbruch innerhalb von Zeilen mit number-rows-spanned, pdx hält überspannte Zeilen zusammen
 fop/table-cell_conditional-spaces_1: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
 fop/table-cell_conditional-spaces_2: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
 fop/table-cell_empty_area_with_marker: in FOP 2.11 deaktiviert: A table-cell producing an empty area does currently not add any markers to a page. See TODO entry in AreaAdditionUtil.
 fop/table-cell_height2: nicht im Teilumfang von pdx: 14:15: fo:wrapper wird noch nicht unterstützt
+fop/table-cell_page-break_span: noch nicht umgesetzt: Seitenumbruch innerhalb von Zeilen mit number-rows-spanned, pdx hält überspannte Zeilen zusammen
+fop/table-cell_row-span_breaks: noch nicht umgesetzt: Seitenumbruch innerhalb von Zeilen mit number-rows-spanned, pdx hält überspannte Zeilen zusammen
 fop/table-cell_space-before_space_after: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
 fop/table-column_column-progression-rl_1: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
 fop/table-column_column-progression-rl_2: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
 fop/table-column_column-progression-rl_3: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
 fop/table-header_bug37875: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/table-header_table-footer_4: noch nicht umgesetzt: wiederholter Kopf und Fuß einer inneren Tabelle in einer umbrochenen Zelle
 fop/table-inline-pagebreak: nicht im Teilumfang von pdx: 17:23: fo:block ist in fo:inline nicht erlaubt
 fop/table-row_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
 fop/table-row_break-after: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
 fop/table-row_break-before: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-row_break-inside-span: noch nicht umgesetzt: Seitenumbruch innerhalb von Zeilen mit number-rows-spanned, pdx hält überspannte Zeilen zusammen
 fop/table_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
 fop/table_backgrounds: braucht Dateien aus dem Testverzeichnis: ../resources/images/fop-logo-gray-8bit.png
 fop/table_border-collapse_collapse_conditionals: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
@@ -429,6 +434,7 @@ fop/table_fox_widow-content-limit_2: nicht im Teilumfang von pdx: nutzt FOP-Erwe
 fop/table_in_footnote: nicht im Teilumfang von pdx: 11:11: fo:footnote wird noch nicht unterstützt
 fop/table_in_marker_bug47101: nicht im Teilumfang von pdx: 13:11: fo:marker ist in fo:flow nicht erlaubt
 fop/table_jira2388: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/table_keep-together_row-span: noch nicht umgesetzt: Seitenumbruch innerhalb von Zeilen mit number-rows-spanned, pdx hält überspannte Zeilen zusammen
 fop/table_linefeed: nicht im Teilumfang von pdx: 18:17: fo:wrapper wird noch nicht unterstützt
 fop/table_list: braucht Dateien aus dem Testverzeichnis: www.x.de/x
 fop/table_row-delay: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"

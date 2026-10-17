@@ -31,7 +31,6 @@ fop/inline_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx:
 fop/inline_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item-with-ipd-change: offen, erste Abweichung: Seite 2: "b" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
-fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/list-item_padding_percentages: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
 fop/list-item_two_pages: offen, erste Abweichung: Seite 2: "13" verschoben um 0.00 pt waagerecht, 12.00 pt senkrecht
@@ -47,23 +46,17 @@ fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-posit
 fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11, FOP 13
 fop/simple-page-master_unmapped_flow-name: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-cell_block_keep-with-next: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "line1"
 fop/table-cell_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
-fop/table-cell_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 4
-fop/table-cell_display-align_page-break: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "cell3"
+fop/table-cell_display-align_page-break: begründet, eine Zeile ohne keep-together darf umbrochen werden (XSL 1.1 4.8, 7.20.3), FOP verschiebt Zeilen mit fester Höhe ganz
 fop/table-cell_keep-together: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_keep-with-next: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
-fop/table-cell_page-break_span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "cell3"
-fop/table-cell_row-span_breaks: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 1.1 Line 3"
 fop/table-column_column-width_proportional-column-width: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-header_in_list_bug: offen, erste Abweichung: Seite 1: "Header" verschoben um -12.01 pt waagerecht, -0.00 pt senkrecht
-fop/table-header_table-footer_4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "content content content"
+fop/table-header_in_list_bug: begründet, pdx zentriert in der Inhaltsbreite der Zelle (7.16.9), die Rumpfzeilen stimmen mit FOP überein, FOP zählt den Einzug des Listenrumpfs zur Breite der Kopfzeile
 fop/table-row_break-before_break-after_2: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-row_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-row_break-before_row-span: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
-fop/table-row_break-inside-span: offen, erste Abweichung: Seiten: pdx 2, FOP 1
 fop/table-row_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-row_keep-with-next_3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-row_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
@@ -74,7 +67,6 @@ fop/table_border-collapse_collapse_spans_2: offen, erste Abweichung: Seite 1: "C
 fop/table_border-collapse_collapse_spans_2_no-col: offen, erste Abweichung: Seite 1: "Cell 2.2" verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
 fop/table_break-before_break-after: begründet, der erste Bereich einer Tabelle behält border-before (Konditionalität discard gilt nur für Folgebereiche, XSL 1.1 7.8.12), FOP lässt ihn nach break-before weg
 fop/table_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table_keep-together_row-span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "Before the table"
 fop/table_overconstrained_ipd: offen, erste Abweichung: Seite 1: "Overconstrained" verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht
 fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
 w3c/fopc-fonts: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)

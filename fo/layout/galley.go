@@ -132,6 +132,8 @@ type galley struct {
 	pageNo   int // 0, solange die Seite nicht feststeht (Fluss)
 	items    []item
 	stack    []*blockCtx
+	// leadKeep ist ein keep-with-previous vor dem ersten Inhalt.
+	leadKeep int
 	// spaces sind die Abstände der laufenden Folge (space-after und
 	// space-before aufeinanderfolgender Blöcke), aufgelöst nach XSL 1.1
 	// 4.3.1 beim nächsten Inhalt.
@@ -321,6 +323,11 @@ func (g *galley) box(it item, before int) {
 		defer func() { g.brk = held }()
 	}
 	pen := max(before, g.keepNext, g.keepPrev, keepInside(g.lastPath, it.path))
+	if len(g.items) == 0 {
+		// Keeps vor dem ersten Inhalt gelten für das umschließende Element,
+		// etwa die Zeile einer Tabelle.
+		g.leadKeep = max(g.leadKeep, g.keepPrev)
+	}
 	brk := g.brk
 	g.keepNext, g.keepPrev, g.brk = 0, 0, ""
 	if it.ord.less(g.skip) {

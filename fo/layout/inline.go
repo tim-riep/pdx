@@ -476,7 +476,6 @@ func (pa *paragraph) trimSpace() {
 	}
 }
 
-
 func (pa *paragraph) addSpace(n *tree.Node, st *style) {
 	if len(pa.pieces) == 0 {
 		return

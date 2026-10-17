@@ -66,8 +66,12 @@ type rowLayout struct {
 	// forced sind erzwungene Umbrüche aus dem Zellinhalt an Scheibengrenzen
 	// (Index der Grenze), leadBrk und trailBrk Umbrüche vor und nach der
 	// Zeile (break-before am Anfang, break-after am Ende einer Zelle).
-	forced            map[int]string
-	leadBrk, trailBrk string
+	forced              map[int]string
+	leadBrk, trailBrk   string
+	leadKeep, trailKeep int
+	// sliceKeep sind Keeps an Scheibengrenzen nach dem Inhaltsende einer
+	// Zelle mit keep-with-next.
+	sliceKeep map[int]int
 	// skipBreakBefore ist gesetzt, wenn break-before der ersten Rumpfzeile
 	// schon vor der Tabelle wirkt.
 	skipBreakBefore bool
@@ -97,8 +101,10 @@ type cellLayout struct {
 	bounds []bound
 	align  string
 	// leadBrk und trailBrk sind break-before am Anfang und break-after am
-	// Ende des Inhalts.
-	leadBrk, trailBrk string
+	// Ende des Inhalts, leadKeep und trailKeep keep-with-previous und
+	// keep-with-next.
+	leadBrk, trailBrk   string
+	leadKeep, trailKeep int
 }
 
 // bound ist eine erlaubte Umbruchstelle im Inhalt einer Zelle.
@@ -200,6 +206,8 @@ func (g *galley) layoutCell(c *cellLayout, content *tree.Node, tbl *tableCtx) er
 	if len(sg.items) > 0 && sg.items[0].kind == itPenalty {
 		c.leadBrk = sg.items[0].brk
 	}
+	// Ebenso Keeps am Anfang und Ende des Zellinhalts (XSL 1.1 4.8).
+	c.leadKeep, c.trailKeep = sg.leadKeep, sg.keepNext
 	return nil
 }
 
@@ -292,6 +300,19 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 		if r.trailBrk == "" {
 			r.trailBrk = c.trailBrk
 		}
+		r.leadKeep = max(r.leadKeep, c.leadKeep)
+		r.trailKeep = max(r.trailKeep, c.trailKeep)
+		if c.trailKeep > 0 {
+			end := r.sepV + c.inset[areatree.Top] + c.contentH
+			for k := 1; k+1 < len(r.slices); k++ {
+				if r.slices[k] >= end {
+					if r.sliceKeep == nil {
+						r.sliceKeep = map[int]int{}
+					}
+					r.sliceKeep[k] = max(r.sliceKeep[k], c.trailKeep)
+				}
+			}
+		}
 	}
 }
 
@@ -321,10 +342,11 @@ func (g *galley) emitRow(r *rowLayout, before int) {
 	if r.leadBrk != "" {
 		g.brk = r.leadBrk
 	}
+	g.keepPrev = max(g.keepPrev, r.leadKeep)
 	for k := 0; k+1 < len(r.slices); k++ {
 		pen := before
 		if k > 0 {
-			pen = r.keep
+			pen = max(r.keep, r.sliceKeep[k])
 			if b, ok := r.forced[k]; ok {
 				g.brk = b
 			}
@@ -336,6 +358,7 @@ func (g *galley) emitRow(r *rowLayout, before int) {
 	if r.trailBrk != "" {
 		g.brk = r.trailBrk
 	}
+	g.keepNext = max(g.keepNext, r.trailKeep)
 }
 
 // keepValue übersetzt einen keep-Wert in eine Penalty.
