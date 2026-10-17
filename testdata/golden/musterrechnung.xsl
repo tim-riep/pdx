@@ -168,7 +168,9 @@
               </fo:table-row>
               <fo:table-row pdx:id="uebertragszeile">
                 <fo:table-cell pdx:id="u-label" number-columns-spanned="4" font-family="Helvetica" font-size="9.5pt" line-height="1.3" text-align="end" padding="2pt 3pt" border-bottom="0.25pt solid #cccccc">
-                  <fo:retrieve-table-marker pdx:id="u-label" retrieve-class-name="u-label" retrieve-position-within-table="first-starting" retrieve-boundary-within-table="table-fragment"/>
+                  <fo:block pdx:id="u-label">
+                    <fo:retrieve-table-marker pdx:id="u-label" retrieve-class-name="u-label" retrieve-position-within-table="first-starting" retrieve-boundary-within-table="table-fragment"/>
+                  </fo:block>
                 </fo:table-cell>
                 <fo:table-cell pdx:id="u-wert" font-family="Helvetica" font-size="9.5pt" line-height="1.3" text-align="end" padding="2pt 3pt" border-bottom="0.25pt solid #cccccc">
                   <fo:block pdx:id="u-carry">
@@ -213,9 +215,9 @@
                     <fo:marker marker-class-name="u-label">
                       <xsl:if test="$index-positionen gt 1">
                         <xsl:for-each select="$context-positionen">
-                          <fo:block pdx:id="u-label-t">
+                          <fo:inline pdx:id="u-label-t">
                             <xsl:text>Übertrag</xsl:text>
-                          </fo:block>
+                          </fo:inline>
                         </xsl:for-each>
                       </xsl:if>
                     </fo:marker>

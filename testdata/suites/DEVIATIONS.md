@@ -65,6 +65,18 @@ FOP 2.11 setzt Tabellenmarker im Kopf nicht ein, der Kopf bleibt an dieser
 Stelle leer. Im Fuß arbeiten beide Engines gleich. Der Vergleich wertet die
 fehlende Zeile im Kopf bei FOP nicht als Fehler (Korpus: uebertrag).
 
+In der Musterrechnung (Vorlage testdata/templates/musterrechnung) bleibt die
+Übertragszeile im Kopf der Folgeseiten bei FOP leer und damit niedriger. Alle
+Zeilen der Seite liegen bei FOP um ihre Höhe (12,35 pt) weiter oben. Der
+Seitenumbruch ist bei beiden Engines gleich.
+
+FOP 2.11 bricht außerdem ab, wenn `fo:retrieve-table-marker` direkt in
+`fo:table-cell` steht (NullPointerException im TableCellLayoutManager) oder
+wenn ein Marker, der in einem `fo:block` eingesetzt wird, Blöcke enthält
+(ClassCastException). Der Compiler setzt den Marker deshalb immer in einen
+Block und schreibt in Übertragszeilen nur Inline-Inhalt. Beides ist gültiges
+XSL und ändert das Ergebnis von pdx nicht.
+
 Marker müssen bei FOP in `fo:table-cell` stehen. XSL erlaubt sie auch
 direkt in `fo:table-row`, pdx unterstützt beides. Marker an `fo:inline`
 setzt pdx noch nicht um.
@@ -95,3 +107,20 @@ dimensions of an instream-foreign-object could not be determined“ (SEVERE),
 der Export des Area Tree (`-at`) bricht ab. Der Fall barcodes wird nicht mit
 FOP verglichen. Stattdessen dekodiert ein Test die gerasterten Barcodes mit
 zbar (QR-Code und Code 128) und prüft ihren Inhalt.
+
+## Attribute fremder Namespaces (pdx:id)
+
+XSL 1.1 1.1.2 erlaubt Attribute aus anderen Namespaces an allen
+Formatierungsobjekten, eine Implementierung darf sie ignorieren. Der
+Compiler schreibt an jedes erzeugte FO-Element `pdx:id` mit der ID des
+Vorlagenelements, damit Designer und Fehlermeldungen Bereiche ihrem
+Ursprung zuordnen können.
+
+FOP 2.11 lehnt Attribute aus Namespaces ohne eigenes Element Mapping in der
+Standardeinstellung als ungültige Eigenschaft ab und bricht ab („Invalid
+property encountered on fo:root: pdx:id“). Mit gelockerter Prüfung (`fop -r`
+oder `<strict-validation>false</strict-validation>` in der Konfiguration)
+gibt FOP nur Warnungen aus und setzt das Dokument. Eine Konfiguration, die
+nur einen Namespace ignoriert, bietet FOP nicht an, nur die Java-API
+(`FopFactoryBuilder.ignoreNamespace`). Der FOP-Vergleich der Musterrechnung
+läuft deshalb mit `-r`.

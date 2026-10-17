@@ -105,6 +105,17 @@ type FOPResult struct {
 // RunFOP setzt eine FO-Datei mit FOP. Das Verzeichnis der Datei wird nur
 // lesend eingebunden, damit relative Bilder gefunden werden.
 func RunFOP(ctx context.Context, foFile string) (*FOPResult, error) {
+	return runFOP(ctx, foFile, "")
+}
+
+// RunFOPRelaxed setzt wie RunFOP, aber mit gelockerter Prüfung (fop -r).
+// FOP lehnt Attribute fremder Namespaces wie pdx:id sonst als ungültige
+// Eigenschaft ab, obwohl XSL 1.1 sie erlaubt (siehe DEVIATIONS.md).
+func RunFOPRelaxed(ctx context.Context, foFile string) (*FOPResult, error) {
+	return runFOP(ctx, foFile, "-r ")
+}
+
+func runFOP(ctx context.Context, foFile, flags string) (*FOPResult, error) {
 	if err := EnsureImages(ctx); err != nil {
 		return nil, err
 	}
@@ -125,8 +136,8 @@ func RunFOP(ctx context.Context, foFile string) (*FOPResult, error) {
 		return nil, err
 	}
 	defer os.RemoveAll(out)
-	script := fmt.Sprintf("fop -c /etc/fop/fop.xconf -fo %q -pdf /out/a.pdf && fop -c /etc/fop/fop.xconf -fo %q -at application/pdf /out/a.at.xml",
-		filepath.ToSlash(rel), filepath.ToSlash(rel))
+	script := fmt.Sprintf("fop %s-c /etc/fop/fop.xconf -fo %q -pdf /out/a.pdf && fop %s-c /etc/fop/fop.xconf -fo %q -at application/pdf /out/a.at.xml",
+		flags, filepath.ToSlash(rel), flags, filepath.ToSlash(rel))
 	logOut, err := docker(ctx, "run", "--rm", "--network", "none",
 		"-v", root+":/work:ro", "-v", out+":/out", "--entrypoint", "sh", FOPImage, "-c", script+" 2>&1")
 	if err != nil {

@@ -38,6 +38,9 @@ type frame struct {
 	stacks  bool    // Kinder werden übereinander gestapelt
 	space   float64 // space-before einer Zeile (halber Durchschuss)
 	base    float64 // Grundlinie relativ zur Zeilenoberkante, -1 wenn unbekannt
+	// positioned ist bei absolut oder fest positionierten Bereichen gesetzt.
+	// Sie sind der Bezug für absolut positionierte Nachfahren.
+	positioned bool
 }
 
 func attrF(a []xml.Attr, name string) (float64, bool) {
@@ -143,14 +146,25 @@ func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 					top = tp
 					bpda = 0
 				case "absolute":
-					// Mit top-position (block-container) relativ zur Region,
-					// ohne (etwa Label und Body einer Liste) über dem Elternbereich.
+					// Mit top-position (block-container) relativ zum nächsten
+					// positionierten Vorfahren, sonst zur Region (XSL 1.1
+					// 7.6.1), ohne (etwa Label und Body einer Liste) über dem
+					// Elternbereich.
 					if tp, ok := attrF(t.Attr, "top-position"); ok {
 						top = regionTop + tp
+						for i := len(stack) - 1; i >= 0; i-- {
+							if stack[i].positioned {
+								top = stack[i].top + tp
+								break
+							}
+						}
 					} else if parent != nil {
 						top = parent.top
 					}
 					bpda = 0
+				}
+				if _, ok := attrF(t.Attr, "top-position"); ok {
+					f.positioned = attrS(t.Attr, "positioning") != ""
 				}
 				sb, _ := attrF(t.Attr, "space-before")
 				f.advance = bpda

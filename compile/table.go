@@ -259,7 +259,7 @@ func (c *compiler) carryMarkers() {
 		c.w.start("fo:marker", "marker-class-name", cell.ID())
 		c.w.start("xsl:if", "test", first)
 		c.w.start("xsl:for-each", "select", "$"+tc.ctx)
-		c.cellContent(cell)
+		c.labelContent(cell)
 		c.w.end()
 		c.w.end()
 		c.w.end()
@@ -325,12 +325,41 @@ func (c *compiler) cell(cell *node, first bool, markers func()) {
 		markers()
 	}
 	if c.isLabel(cell) {
+		// Der Block um fo:retrieve-table-marker ist nötig, weil Apache FOP
+		// 2.11 den Marker als direktes Kind der Zelle mit einer
+		// NullPointerException abbricht.
+		c.w.start("fo:block", "pdx:id", cell.ID())
 		c.w.empty("fo:retrieve-table-marker", "pdx:id", cell.ID(), "retrieve-class-name", cell.ID(),
 			"retrieve-position-within-table", "first-starting", "retrieve-boundary-within-table", "table-fragment")
+		c.w.end()
 	} else {
 		c.cellContent(cell)
 	}
 	c.w.end()
+}
+
+// labelContent schreibt den Inhalt einer Zelle in einer Übertragszeile als
+// Inline-Inhalt. Er wird in einen Block der Kopfzeile eingesetzt, FOP
+// verlangt dort Inline-Inhalt. Erlaubt sind daher nur text und field.
+func (c *compiler) labelContent(cell *node) {
+	for _, k := range cell.Elements("") {
+		i := c.w.enter(k.ID())
+		c.presence(k, func() {
+			switch k.Name {
+			case "text":
+				c.w.start("fo:inline", append([]string{"pdx:id", k.ID()}, c.style(k)...)...)
+				c.textContent(k)
+				c.w.end()
+			case "field":
+				c.w.start("fo:inline", append([]string{"pdx:id", k.ID()}, c.style(k)...)...)
+				c.w.empty("xsl:value-of", "select", c.fieldExpr(k))
+				c.w.end()
+			default:
+				c.errorf(k, "in einer Übertragszeile sind neben carryOver nur text und field erlaubt")
+			}
+		})
+		c.w.leave(i)
+	}
 }
 
 func (c *compiler) isLabel(cell *node) bool {
