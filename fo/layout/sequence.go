@@ -367,7 +367,8 @@ func (s *sequence) needsBlank(count, last int) (bool, error) {
 }
 
 // nextInitial liefert eine feste initial-page-number der nächsten
-// fo:page-sequence oder 0.
+// fo:page-sequence oder 0. Bei auto-odd und auto-even ist es 1 oder 2, es
+// zählt nur die Parität.
 func (s *sequence) nextInitial() int {
 	sib := s.node.Parent.Children
 	for i, c := range sib {
@@ -376,8 +377,16 @@ func (s *sequence) nextInitial() int {
 		}
 		for _, n := range sib[i+1:] {
 			if n.IsFO("page-sequence") {
-				v, _ := strconv.Atoi(attrOr(n, "initial-page-number", ""))
-				return v
+				// Bei auto-odd und auto-even steht die Parität fest (7.27.7).
+				switch v := attrOr(n, "initial-page-number", ""); v {
+				case "auto-odd":
+					return 1
+				case "auto-even":
+					return 2
+				default:
+					k, _ := strconv.Atoi(v)
+					return k
+				}
 			}
 		}
 	}

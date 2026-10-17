@@ -39,7 +39,6 @@ fop/page-number-citation_border_padding: begründet, anderer Zeilenumbruch bei g
 fop/page-number-citation_bugzilla44794: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "inline: 1 to 1."
 fop/page-number-citation_list: offen, erste Abweichung: Seite 3: Zeile nur in pdx: "1"
 fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-position only und first, den XSL 1.1 nicht regelt, pdx setzt eine Seite, FOP fügt leere Seiten an
-fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11, FOP 13
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-cell_display-align_page-break: begründet, eine Zeile ohne keep-together darf umbrochen werden (XSL 1.1 4.8, 7.20.3), FOP verschiebt Zeilen mit fester Höhe ganz
