@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -72,7 +73,7 @@ func (r *Registry) Add(f *Face, names ...string) {
 	defer r.mu.Unlock()
 	for _, n := range append([]string{f.Family}, names...) {
 		k := normalize(n)
-		if k == "" {
+		if k == "" || slices.Contains(r.families[k], f) {
 			continue
 		}
 		r.families[k] = append(r.families[k], f)

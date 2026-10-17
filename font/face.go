@@ -139,6 +139,13 @@ func (f *Face) PostScriptName() string { return f.PostScript }
 // Key identifiziert die Schriftdaten über einen Hash.
 func (f *Face) Key() string { return f.key }
 
+// Data liefert die Bytes der Schriftdatei, etwa um sie im Designer als
+// FontFace anzuzeigen. Der Aufrufer darf sie nicht verändern.
+func (f *Face) Data() []byte { return f.data }
+
+// Index ist die Nummer der Schrift in einer Sammlung (TTC), sonst 0.
+func (f *Face) Index() int { return f.index }
+
 // Upem liefert die Schrifteinheiten pro Geviert.
 func (f *Face) Upem() float64 { return f.upem }
 

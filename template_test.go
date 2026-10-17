@@ -211,3 +211,35 @@ func BenchmarkLayoutInvoice(b *testing.B) {
 		}
 	}
 }
+
+// TestPackageFonts prüft, dass Schriften unter assets/ eines Pakets ohne
+// weitere Angabe genutzt werden und ihre Bytes am Face hängen.
+func TestPackageFonts(t *testing.T) {
+	p, data := loadMuster(t)
+	ttf, err := os.ReadFile("testdata/fonts/source-serif-4/SourceSerif4-Regular.otf")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p.Files["assets/SourceSerif4-Regular.otf"] = ttf
+	p.Template.ByID("st-basis").SetAttr("fontFamily", "Source Serif 4")
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	reg := font.NewRegistry()
+	for range 2 { // ein zweiter Lauf auf derselben Registry registriert nicht doppelt
+		doc, err := tpl.Layout(data, TemplateOptions{Options: Options{Fonts: reg}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		found := false
+		for _, f := range doc.Fonts {
+			if face, ok := f.Source.(*font.Face); ok && bytes.Equal(face.Data(), ttf) {
+				found = true
+			}
+		}
+		if !found {
+			t.Fatal("Schrift aus assets/ wird nicht genutzt")
+		}
+	}
+}

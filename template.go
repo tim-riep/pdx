@@ -14,6 +14,7 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/compile"
 	"github.com/tim-riep/pdx/fo/tree"
+	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
 )
@@ -34,6 +35,7 @@ type Template struct {
 	Package  *pkg.Package
 	Compiled *compile.Result
 	lang     string
+	fonts    []*font.Face
 }
 
 // CompileTemplate kompiliert die Vorlage eines Pakets für eine Sprache (leer
@@ -43,7 +45,29 @@ func CompileTemplate(p *pkg.Package, lang string) (*Template, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Template{Package: p, Compiled: res, lang: lang}, nil
+	fonts, err := packageFonts(p)
+	if err != nil {
+		return nil, err
+	}
+	return &Template{Package: p, Compiled: res, lang: lang, fonts: fonts}, nil
+}
+
+// packageFonts lädt die Schriften unter assets/ eines Pakets.
+func packageFonts(p *pkg.Package) ([]*font.Face, error) {
+	var out []*font.Face
+	for _, name := range p.Names() {
+		ext := strings.ToLower(path.Ext(name))
+		if !strings.HasPrefix(name, "assets/") || ext != ".ttf" && ext != ".otf" && ext != ".ttc" {
+			continue
+		}
+		data, _ := p.File(name)
+		f, err := font.Load(data, 0)
+		if err != nil {
+			return nil, &template.Error{Msg: fmt.Sprintf("Schrift %s: %v", name, err)}
+		}
+		out = append(out, f)
+	}
+	return out, nil
 }
 
 // RenderTemplate kompiliert die Vorlage und setzt die Daten. Für viele
@@ -102,6 +126,16 @@ func (t *Template) prepare(data []byte, opts TemplateOptions) ([]byte, Options, 
 		return nil, Options{}, err
 	}
 	o := opts.Options
+	if len(t.fonts) > 0 {
+		// Schriften des Pakets haben Vorrang vor den eingebauten. Add
+		// registriert jede Schrift je Registry nur einmal.
+		if o.Fonts == nil {
+			o.Fonts = font.NewRegistry()
+		}
+		for _, f := range t.fonts {
+			o.Fonts.Add(f)
+		}
+	}
 	o.Resolver = packageResolver{t.Package}
 	o.BaseDir = ""
 	for _, a := range t.Compiled.Attachments {
