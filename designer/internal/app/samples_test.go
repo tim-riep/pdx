@@ -21,7 +21,9 @@ func TestSamples(t *testing.T) {
 	}
 
 	// Randfälle erzeugen: Datei im Paket, gewählt, rückgängig machbar.
-	for kind, want := range map[string]string{"minimal": "samples/rand-minimal.xml", "maximal": "samples/rand-maximal.xml", "lang": "samples/rand-lange-texte.xml"} {
+	// Feste Reihenfolge: Undo unten nimmt den letzten zurück.
+	for _, kw := range [][2]string{{"minimal", "samples/rand-minimal.xml"}, {"maximal", "samples/rand-maximal.xml"}, {"lang", "samples/rand-lange-texte.xml"}} {
+		kind, want := kw[0], kw[1]
 		if _, err := ss.Generate(kind); err != nil {
 			t.Fatalf("%s: %v", kind, err)
 		}
