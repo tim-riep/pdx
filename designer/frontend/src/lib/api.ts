@@ -7,9 +7,10 @@ export * as AppAPI from "../../bindings/github.com/tim-riep/pdx/designer/interna
 export * as ProjectAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/projectservice";
 export * as RenderAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/renderservice";
 export * as TemplateAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/templateservice";
+export * as ValidationAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/validationservice";
 export * as SchemaAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/schemaservice";
 export type { Schema as DataSchema, Node as DataNode } from "../../bindings/github.com/tim-riep/pdx/designer/internal/schema/models";
-export type { Drop, TableOp, Insert, XPathInfo, XPathQuery, Field as DataField } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
+export type { Drop, TableOp, Insert, XPathInfo, XPathQuery, Field as DataField, Report, Problem } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 export type { Completion, Item as Suggestion, Result as XPathResult } from "../../bindings/github.com/tim-riep/pdx/designer/internal/xpath/models";
 export type {
   Snapshot,
@@ -32,6 +33,7 @@ export const EVENT = {
   project: "project:changed",
   render: "render:pages",
   template: "template:changed",
+  problems: "problems:changed",
   closeRequest: "app:close-request",
 } as const;
 

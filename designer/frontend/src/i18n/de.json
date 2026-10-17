@@ -249,5 +249,15 @@
   "presence.exists": "Wenn vorhanden",
   "presence.filled": "Wenn nicht leer",
   "presence.custom": "Eigener Ausdruck",
-  "presence.field": "Datenknoten"
+  "presence.field": "Datenknoten",
+  "problems.count": "Probleme ({n})",
+  "problems.none": "Keine Probleme gefunden.",
+  "problems.errors": "{n} Fehler",
+  "problems.hints": "{n} Hinweise",
+  "problems.source.vorlage": "Vorlage",
+  "problems.source.beispiel": "Beispieldaten",
+  "problems.source.layout": "Satz",
+  "problems.document": "Dokument",
+  "problems.goto": "Zum Element",
+  "problems.missing": "Das Element gibt es nicht mehr."
 }

@@ -16,15 +16,17 @@ import * as model$0 from "../../../../tim-riep/pdx/designer/internal/model/model
 function configure() {
     Object.freeze(Object.assign($Create.Events, {
         "app:close-request": $$createType0,
+        "problems:changed": $$createType1,
         "project:changed": $$createType0,
-        "render:pages": $$createType1,
-        "template:changed": $$createType2,
+        "render:pages": $$createType2,
+        "template:changed": $$createType3,
     }));
 }
 
 // Private type creation functions
 const $$createType0 = app$0.ProjectState.createFrom;
-const $$createType1 = app$0.Manifest.createFrom;
-const $$createType2 = model$0.Patch.createFrom;
+const $$createType1 = app$0.Report.createFrom;
+const $$createType2 = app$0.Manifest.createFrom;
+const $$createType3 = model$0.Patch.createFrom;
 
 configure();

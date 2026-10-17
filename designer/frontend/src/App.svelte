@@ -7,6 +7,8 @@
   import Canvas from "./components/canvas/Canvas.svelte";
   import Tabs from "./components/Tabs.svelte";
   import XPathPanel from "./components/XPathPanel.svelte";
+  import ProblemsPanel from "./components/ProblemsPanel.svelte";
+  import { entries } from "./lib/problems.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
   import DataPanel from "./components/DataPanel.svelte";
@@ -20,6 +22,7 @@
   let leftTab = $state("hierarchy");
   let rightTab = $state("inspector");
   let bottomTab = $state("problems");
+  const problemCount = $derived(entries().length);
 
   AppAPI.Info().then((i) => (version = t("status.version", { version: i.version, engine: i.engine })));
 
@@ -128,11 +131,13 @@
     </Tabs>
   </aside>
   <section class="bottom">
-    <Tabs tabs={[["problems", t("panel.problems")], ["conformance", t("panel.conformance")], ["xpath", t("panel.xpath")]]} bind:active={bottomTab}>
+    <Tabs tabs={[["problems", problemCount ? t("problems.count", { n: problemCount }) : t("panel.problems")], ["conformance", t("panel.conformance")], ["xpath", t("panel.xpath")]]} bind:active={bottomTab}>
       {#if bottomTab === "xpath"}
         <XPathPanel />
+      {:else if bottomTab === "problems"}
+        <ProblemsPanel />
       {:else}
-        <p class="soon">{t(bottomTab === "problems" ? "panel.problems" : "panel.conformance")}</p>
+        <p class="soon">{t("panel.conformance")}</p>
       {/if}
     </Tabs>
   </section>

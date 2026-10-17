@@ -74,6 +74,7 @@ func (c *Core) scheduleLocked(delay time.Duration) {
 		c.r.timer.Stop()
 	}
 	c.r.timer = time.AfterFunc(delay, c.render)
+	c.validateLocked(max(delay, validateDelay))
 }
 
 // render setzt den aktuellen Stand und meldet das Ergebnis.

@@ -112,6 +112,7 @@ type Core struct {
 	// view ist die zuletzt gemeldete Projektion, Grundlage der Patches.
 	view   model.Snapshot
 	schema schemaCache
+	v      validator
 	// AutosaveDelay ist die Wartezeit nach einer Änderung bis zur
 	// automatischen Sicherung.
 	AutosaveDelay time.Duration

@@ -6,12 +6,14 @@ import * as ProjectService from "./projectservice.js";
 import * as RenderService from "./renderservice.js";
 import * as SchemaService from "./schemaservice.js";
 import * as TemplateService from "./templateservice.js";
+import * as ValidationService from "./validationservice.js";
 export {
     AppService,
     ProjectService,
     RenderService,
     SchemaService,
-    TemplateService
+    TemplateService,
+    ValidationService
 };
 
 export {
@@ -20,9 +22,11 @@ export {
     Info,
     Insert,
     Manifest,
+    Problem,
     ProjectState,
     RecentFile,
     Recovery,
+    Report,
     Result,
     TableOp,
     XPathInfo,
