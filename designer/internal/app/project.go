@@ -163,6 +163,8 @@ func (c *Core) setDoc(d *model.Document) ProjectState {
 		c.removeAutosave(c.session)
 	}
 	c.doc, c.session = d, newSession()
+	c.r.latest = Manifest{}
+	c.scheduleLocked(0)
 	st := c.stateLocked()
 	c.emit.Emit(EventProject, st)
 	return st
@@ -181,6 +183,7 @@ func (c *Core) changedLocked() {
 	if c.saver == nil {
 		c.saver = time.AfterFunc(c.AutosaveDelay, c.autosave)
 	}
+	c.scheduleLocked(renderDelay)
 	c.emit.Emit(EventProject, c.stateLocked())
 }
 

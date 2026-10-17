@@ -4,9 +4,8 @@
   import { newProject, openProject, project, save, saveAs, ui } from "./lib/project.svelte";
   import Modal from "./components/Modal.svelte";
   import StartScreen from "./components/StartScreen.svelte";
-
-  type View = "design" | "preview" | "pdf";
-  let view: View = $state("design");
+  import Canvas from "./components/canvas/Canvas.svelte";
+  import { render, setView, type View } from "./lib/render.svelte";
   let version = $state("");
   let theme: "light" | "dark" | null = $state(null);
   let pathValue = $state("");
@@ -67,7 +66,7 @@
     {/if}
     <div class="views" role="tablist">
       {#each [["design", "view.design"], ["preview", "view.preview"], ["pdf", "view.pdf"]] as [v, key]}
-        <button role="tab" aria-selected={view === v} class:active={view === v} onclick={() => (view = v as View)}>
+        <button role="tab" aria-selected={render.view === v} class:active={render.view === v} onclick={() => setView(v as View)}>
           {t(key as "view.design")}
         </button>
       {/each}
@@ -77,7 +76,7 @@
   <aside class="left"><h2>{t("panel.data")}</h2><h2>{t("panel.hierarchy")}</h2></aside>
   <main class="canvas" data-testid="canvas">
     {#if project.open}
-      <p>{t("canvas.empty")}</p>
+      <Canvas />
     {:else}
       <StartScreen />
     {/if}
@@ -194,10 +193,14 @@
   .canvas {
     grid-area: canvas;
     background: var(--canvas);
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
     color: var(--text-muted);
-    overflow: auto;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .canvas > :global([data-testid="start"]) {
+    margin: auto;
   }
   .status {
     grid-area: status;

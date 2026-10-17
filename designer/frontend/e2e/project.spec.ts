@@ -1,11 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const muster = resolve(here, "../../../testdata/templates/musterrechnung");
+import { join } from "node:path";
+import { muster } from "./helpers";
 
 test("Vorlage anlegen, speichern und wieder öffnen", async ({ page }) => {
   await page.goto("/");

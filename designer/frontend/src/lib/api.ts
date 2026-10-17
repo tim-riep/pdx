@@ -5,6 +5,7 @@ import { Events } from "@wailsio/runtime";
 
 export * as AppAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/appservice";
 export * as ProjectAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/projectservice";
+export * as RenderAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/renderservice";
 export type {
   ProjectState,
   RecentFile,
@@ -14,6 +15,7 @@ export type {
 // Namen der Ereignisse, wie in internal/app/app.go.
 export const EVENT = {
   project: "project:changed",
+  render: "render:pages",
   closeRequest: "app:close-request",
 } as const;
 

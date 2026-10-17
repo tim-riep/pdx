@@ -5,6 +5,10 @@
 // @ts-ignore: Unused imports
 import { Create as $Create } from "@wailsio/runtime";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as pipeline$0 from "../pipeline/models.js";
+
 /**
  * Info beschreibt die Anwendung für Titelleiste und „Über“.
  */
@@ -34,6 +38,75 @@ export class Info {
     static createFrom($$source: any = {}): Info {
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         return new Info($$parsedSource as Partial<Info>);
+    }
+}
+
+/**
+ * Manifest beschreibt die gesetzten Seiten eines Stands. Die Seiten selbst
+ * holt die Oberfläche über /pdx/page/<hash>, nur geänderte Hashes sind neu.
+ */
+export class Manifest {
+    "view": string;
+    "rev": number;
+    "sample": string;
+    "pages": pipeline$0.PageRef[];
+    "fonts": pipeline$0.FontRef[];
+    "problems": pipeline$0.Problem[];
+
+    /**
+     * Millis ist die Dauer des Laufs, Compiled meldet, ob kompiliert wurde.
+     */
+    "millis": number;
+    "compiled": boolean;
+
+    /** Creates a new Manifest instance. */
+    constructor($$source: Partial<Manifest> = {}) {
+        if (!("view" in $$source)) {
+            this["view"] = "";
+        }
+        if (!("rev" in $$source)) {
+            this["rev"] = 0;
+        }
+        if (!("sample" in $$source)) {
+            this["sample"] = "";
+        }
+        if (!("pages" in $$source)) {
+            this["pages"] = [];
+        }
+        if (!("fonts" in $$source)) {
+            this["fonts"] = [];
+        }
+        if (!("problems" in $$source)) {
+            this["problems"] = [];
+        }
+        if (!("millis" in $$source)) {
+            this["millis"] = 0;
+        }
+        if (!("compiled" in $$source)) {
+            this["compiled"] = false;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Manifest instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Manifest {
+        const $$createField3_0 = $$createType1;
+        const $$createField4_0 = $$createType3;
+        const $$createField5_0 = $$createType5;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("pages" in $$parsedSource) {
+            $$parsedSource["pages"] = $$createField3_0($$parsedSource["pages"]);
+        }
+        if ("fonts" in $$parsedSource) {
+            $$parsedSource["fonts"] = $$createField4_0($$parsedSource["fonts"]);
+        }
+        if ("problems" in $$parsedSource) {
+            $$parsedSource["problems"] = $$createField5_0($$parsedSource["problems"]);
+        }
+        return new Manifest($$parsedSource as Partial<Manifest>);
     }
 }
 
@@ -149,3 +222,11 @@ export class Recovery {
         return new Recovery($$parsedSource as Partial<Recovery>);
     }
 }
+
+// Private type creation functions
+const $$createType0 = pipeline$0.PageRef.createFrom;
+const $$createType1 = $Create.Array($$createType0);
+const $$createType2 = pipeline$0.FontRef.createFrom;
+const $$createType3 = $Create.Array($$createType2);
+const $$createType4 = pipeline$0.Problem.createFrom;
+const $$createType5 = $Create.Array($$createType4);

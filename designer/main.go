@@ -46,6 +46,9 @@ func main() {
 		Services: []application.Service{
 			application.NewService(appService),
 			application.NewService(app.NewProjectService(core)),
+			application.NewService(app.NewRenderService(core)),
+			// Seiten, Schriften und Bilder des Canvas über HTTP.
+			application.NewServiceWithOptions(app.NewAssets(core), application.ServiceOptions{Route: "/pdx"}),
 		},
 		Assets: application.AssetOptions{Handler: application.AssetFileServerFS(assets)},
 		Mac:    application.MacOptions{ApplicationShouldTerminateAfterLastWindowClosed: true},

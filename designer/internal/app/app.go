@@ -13,6 +13,7 @@ import (
 
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/designer/internal/model"
+	"github.com/tim-riep/pdx/designer/internal/pipeline"
 )
 
 // Emitter schickt Ereignisse an die Oberfläche.
@@ -98,6 +99,7 @@ type Core struct {
 	session string // Kennung der automatischen Sicherung des Dokuments
 	saver   *time.Timer
 	closing bool // Rückfrage beim Schließen ist beantwortet
+	r       renderer
 	// AutosaveDelay ist die Wartezeit nach einer Änderung bis zur
 	// automatischen Sicherung.
 	AutosaveDelay time.Duration
@@ -109,7 +111,8 @@ func NewCore(emit Emitter, dialogs Dialogs, dataDir string) *Core {
 	if emit == nil {
 		emit = nopEmitter{}
 	}
-	return &Core{emit: emit, dialogs: dialogs, dataDir: dataDir, AutosaveDelay: 30 * time.Second}
+	return &Core{emit: emit, dialogs: dialogs, dataDir: dataDir, AutosaveDelay: 30 * time.Second,
+		r: renderer{pipe: pipeline.New(), view: ViewDesign}}
 }
 
 // MayClose meldet, ob das Fenster ohne Rückfrage schließen darf. Sonst

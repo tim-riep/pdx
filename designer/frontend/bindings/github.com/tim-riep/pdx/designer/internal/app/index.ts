@@ -3,13 +3,16 @@
 
 import * as AppService from "./appservice.js";
 import * as ProjectService from "./projectservice.js";
+import * as RenderService from "./renderservice.js";
 export {
     AppService,
-    ProjectService
+    ProjectService,
+    RenderService
 };
 
 export {
     Info,
+    Manifest,
     ProjectState,
     RecentFile,
     Recovery

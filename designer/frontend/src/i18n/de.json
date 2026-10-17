@@ -33,5 +33,10 @@
   "path.title": "Pfad eingeben",
   "path.open": "Pfad des Vorlagenpakets (ZIP oder Ordner)",
   "path.save": "Speicherort (Endung .zip für eine ZIP-Datei, sonst ein Ordner)",
-  "error.title": "Fehler"
+  "error.title": "Fehler",
+  "canvas.zoomIn": "Vergrößern",
+  "canvas.zoomOut": "Verkleinern",
+  "canvas.fit": "Breite einpassen",
+  "canvas.info": "{pages} Seiten, gesetzt in {ms} ms",
+  "canvas.rendering": "Wird gesetzt"
 }

@@ -13,12 +13,34 @@ const muster = "../../../testdata/templates/musterrechnung"
 type recorder struct {
 	mu     sync.Mutex
 	events []string
+	last   map[string]any
 }
 
-func (r *recorder) Emit(name string, _ any) {
+func (r *recorder) Emit(name string, data any) {
 	r.mu.Lock()
 	r.events = append(r.events, name)
+	if r.last == nil {
+		r.last = map[string]any{}
+	}
+	r.last[name] = data
 	r.mu.Unlock()
+}
+
+// wait wartet auf ein Ereignis, das cond erfüllt, und liefert seine Daten.
+func (r *recorder) wait(t *testing.T, name string, cond func(any) bool) any {
+	t.Helper()
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		r.mu.Lock()
+		d, ok := r.last[name]
+		r.mu.Unlock()
+		if ok && cond(d) {
+			return d
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+	t.Fatalf("Ereignis %s nicht eingetroffen", name)
+	return nil
 }
 
 func (r *recorder) count(name string) int {
