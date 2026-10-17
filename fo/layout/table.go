@@ -679,7 +679,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	ctx.x = x0 - p.Padding[areatree.Left]
 	ctx.w = tw + p.Padding[areatree.Left] + p.Padding[areatree.Right]
 	g.push(ctx)
-	g.pending = max(g.pending, p.SpaceBefore)
+	g.spaceBefore(p)
 	edges := hasBox(p)
 	if edges {
 		h := p.BorderWidth(areatree.Top) + p.Padding[areatree.Top]
@@ -855,7 +855,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 	ctx.x = g.contentX(p) - p.Padding[areatree.Left]
 	ctx.w = g.contentW(p) + p.Padding[areatree.Left] + p.Padding[areatree.Right]
 	g.push(ctx)
-	g.pending = max(g.pending, p.SpaceBefore)
+	g.spaceBefore(p)
 	if hasBox(p) {
 		h := p.BorderWidth(areatree.Top) + p.Padding[areatree.Top]
 		g.box(item{h: h, path: g.path(), edge: edgeTop, ord: g.next()}, g.breakBefore(edgeTop))
@@ -872,7 +872,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 		ictx.x = g.contentX(ip) - ip.Padding[areatree.Left]
 		ictx.w = g.contentW(ip) + ip.Padding[areatree.Left] + ip.Padding[areatree.Right]
 		g.push(ictx)
-		g.pending = max(g.pending, ip.SpaceBefore)
+		g.spaceBefore(ip)
 		row := &rowLayout{node: it, keep: keepValue(it, "keep-together"), w: g.refW}
 		for _, part := range it.Children {
 			if !part.IsFO("list-item-label") && !part.IsFO("list-item-body") {

@@ -42,9 +42,13 @@ type Computed struct {
 
 	// Nicht vererbte Eigenschaften.
 	SpaceBefore, SpaceAfter Length
-	Padding                 [4]Length
-	Border                  [4]areatree.Border
-	Background              *areatree.Color
+	// SpaceBeforeRetain ist gesetzt, wenn space-before am Anfang einer Seite
+	// erhalten bleibt: bei .conditionality="retain" und immer, wenn der
+	// Abstand aus margin-top stammt (XSL 1.1 5.3.2).
+	SpaceBeforeRetain bool
+	Padding           [4]Length
+	Border            [4]areatree.Border
+	Background        *areatree.Color
 	// Absolute ist "absolute" oder "fixed" bei absoluter Positionierung.
 	Absolute                 string
 	Top, Left, Right, Bottom *Length
@@ -473,6 +477,7 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}
 	if margin[areatree.Top] != nil {
 		c.SpaceBefore = *margin[areatree.Top]
+		c.SpaceBeforeRetain = true
 	}
 	if margin[areatree.Bottom] != nil {
 		c.SpaceAfter = *margin[areatree.Bottom]
@@ -493,6 +498,12 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 			return err
 		}
 		*sp.dst = l
+		if sp.name == "space-before" {
+			c.SpaceBeforeRetain = false
+		}
+	}
+	if v, ok := a["space-before.conditionality"]; ok {
+		c.SpaceBeforeRetain = strings.TrimSpace(v) == "retain"
 	}
 
 	// Positionierung und Größe.

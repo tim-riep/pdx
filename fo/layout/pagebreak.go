@@ -37,6 +37,8 @@ func breakPage(items []item, start int, avail areatree.Length) int {
 		case itGlue:
 			if seenBox {
 				h += it.h
+			} else {
+				h += it.keep
 			}
 		case itPenalty:
 			if !seenBox {

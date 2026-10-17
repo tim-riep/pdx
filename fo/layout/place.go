@@ -66,8 +66,11 @@ func (pl *placer) place(items []item) error {
 		switch it.kind {
 		case itPenalty:
 		case itGlue:
+			// Am Seitenanfang bleibt nur der erhaltene Anteil (XSL 1.1 4.3.1).
 			if pl.started {
 				pl.y += it.h
+			} else {
+				pl.y += it.keep
 			}
 		case itBox:
 			if err := pl.box(it); err != nil {

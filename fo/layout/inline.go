@@ -1,6 +1,10 @@
 package layout
 
 import (
+	"unicode"
+
+	"sort"
+
 	"errors"
 	"strings"
 
@@ -23,6 +27,9 @@ const (
 	pNoBreak
 	// pHyphen ist eine Trennstelle in einem Wort.
 	pHyphen
+	// pBreakAfter ist eine Umbruchstelle nach einem vorhandenen Bindestrich.
+	// Beim Umbruch wird kein Zeichen eingefügt.
+	pBreakAfter
 	// pLeader ist ein fo:leader, ein dehnbarer Glue ohne Umbruchstelle.
 	pLeader
 )
@@ -429,20 +436,33 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 	if err != nil {
 		return tree.Errorf(n, "%v", err)
 	}
-	frags := [][]areatree.Glyph{gs}
+	// Umbruchstellen: nach vorhandenen Bindestrichen immer, Trennstellen
+	// aus den Mustern nur mit hyphenate="true".
+	explicit := explicitBreaks(w)
+	cuts := append([]int(nil), explicit...)
 	if p.Hyphenate && p.Lang != "" {
 		if pats, ok, err := hyph.ForLanguage(p.Lang); err != nil {
 			return tree.Errorf(n, "%v", err)
 		} else if ok {
 			if _, hasHyphen := st.hyphenGlyph(); hasHyphen {
-				frags = splitGlyphs(gs, pats.Hyphenate(w, p.HyphenRemain, p.HyphenPush))
+				for _, c := range pats.Hyphenate(w, p.HyphenRemain, p.HyphenPush) {
+					if !nearBreak(c, explicit) {
+						cuts = append(cuts, c)
+					}
+				}
 			}
 		}
 	}
+	sort.Ints(cuts)
+	frags, at := splitGlyphsAt(gs, cuts)
 	for i, f := range frags {
 		if i > 0 {
-			hg, _ := st.hyphenGlyph()
-			pa.pieces = append(pa.pieces, piece{kind: pHyphen, st: st, width: hg.Advance, glyph: hg})
+			if containsInt(explicit, at[i-1]) {
+				pa.pieces = append(pa.pieces, piece{kind: pBreakAfter, st: st})
+			} else {
+				hg, _ := st.hyphenGlyph()
+				pa.pieces = append(pa.pieces, piece{kind: pHyphen, st: st, width: hg.Advance, glyph: hg})
+			}
 		}
 		var width areatree.Length
 		for _, g := range f {
@@ -455,6 +475,70 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 
 // splitGlyphs teilt die Glyphen eines Wortes an Trennstellen (Zeichen vor
 // der Stelle). Stellen innerhalb eines Clusters, etwa einer Ligatur, entfallen.
+// explicitBreaks liefert die Zeichenpositionen nach Bindestrichen, an denen
+// umbrochen werden darf: nach U+002D, U+2010 und U+2013 zwischen einem
+// Buchstaben und einem Zeichen, das keine Ziffer ist, mit mindestens zwei
+// Zeichen davor und danach (wie die Klassen HY und
+// BA in UAX #14). XSL 1.1 legt den Umbruchalgorithmus nicht fest (1.1.2).
+func explicitBreaks(w string) []int {
+	rs := []rune(w)
+	var out []int
+	// Wie bei hyphenation-remain- und -push-character-count bleiben
+	// mindestens zwei Zeichen auf jeder Seite.
+	for i := 2; i+2 < len(rs); i++ {
+		switch rs[i] {
+		case '-', '\u2010', '\u2013':
+			if unicode.IsLetter(rs[i-1]) && !unicode.IsDigit(rs[i+1]) && !strings.ContainsRune("-\u2010\u2013", rs[i+1]) {
+				out = append(out, i+1)
+			}
+		}
+	}
+	return out
+}
+
+// nearBreak meldet eine Trennstelle direkt an einem Bindestrich.
+func nearBreak(c int, explicit []int) bool {
+	for _, e := range explicit {
+		if c >= e-1 && c <= e+1 {
+			return true
+		}
+	}
+	return false
+}
+
+func containsInt(v []int, x int) bool {
+	for _, y := range v {
+		if y == x {
+			return true
+		}
+	}
+	return false
+}
+
+// splitGlyphsAt teilt wie splitGlyphs und liefert zu jeder Grenze die
+// Zeichenposition, an der geteilt wurde.
+func splitGlyphsAt(gs []areatree.Glyph, cuts []int) ([][]areatree.Glyph, []int) {
+	starts := map[int]int{}
+	pos := 0
+	for i, g := range gs {
+		if g.Text != "" {
+			starts[pos] = i
+			pos += len([]rune(g.Text))
+		}
+	}
+	var out [][]areatree.Glyph
+	var at []int
+	last := 0
+	for _, c := range cuts {
+		if i, ok := starts[c]; ok && i > last {
+			out = append(out, gs[last:i])
+			at = append(at, c)
+			last = i
+		}
+	}
+	return append(out, gs[last:]), at
+}
+
 func splitGlyphs(gs []areatree.Glyph, cuts []int) [][]areatree.Glyph {
 	if len(cuts) == 0 {
 		return [][]areatree.Glyph{gs}
@@ -509,9 +593,23 @@ func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.ForcedBreak, Payload: i})
 		case pNoBreak:
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.Forbidden, Payload: i})
-		case pHyphen:
-			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: hyphenPenalty, Flagged: true,
-				Width: pc.width, Payload: i})
+		case pHyphen, pBreakAfter:
+			// Trennstelle mit Trennstrich (markiert, Strafwert 50) oder
+			// Umbruchstelle nach einem vorhandenen Bindestrich (ohne Strafwert,
+			// schon im ersten Durchgang). Im Flattersatz braucht die Zeile, die
+			// hier endet, dieselbe Dehnung wie an einem Wortzwischenraum.
+			pen := linebreak.Item{Kind: linebreak.Penalty, Payload: i}
+			if pc.kind == pHyphen {
+				pen.Penalty, pen.Flagged, pen.Width = hyphenPenalty, true, pc.width
+			}
+			if justify {
+				items = append(items, pen)
+			} else {
+				items = append(items,
+					linebreak.Item{Kind: linebreak.Glue, Stretch: R, Payload: -1},
+					pen,
+					linebreak.Item{Kind: linebreak.Glue, Stretch: -R, Payload: -1})
+			}
 		case pLeader:
 			l := pc.leader
 			items = append(items, linebreak.Item{Kind: linebreak.Glue, Width: pc.width,

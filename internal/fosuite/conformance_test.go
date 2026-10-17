@@ -140,6 +140,15 @@ func TestFOConformance(t *testing.T) {
 			}
 		}
 	}
+	// Alle Abweichungen je Fall für die Analyse.
+	var det strings.Builder
+	for _, id := range sortedDiffKeys(details) {
+		for _, d := range details[id] {
+			fmt.Fprintf(&det, "%s\t%s\n", id, stripPaths(string(d), root))
+		}
+	}
+	os.MkdirAll(filepath.Join(root, "out"), 0o755)
+	os.WriteFile(filepath.Join(root, "out", "fo-details.txt"), []byte(det.String()), 0o644)
 	report := b.String()
 	os.MkdirAll(filepath.Join(root, "out"), 0o755)
 	os.WriteFile(filepath.Join(root, "out", "fo-conformance.md"), []byte(report), 0o644)

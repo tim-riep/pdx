@@ -51,9 +51,12 @@ func (o ordinal) less(p ordinal) bool {
 
 // item ist ein Eintrag der Galley.
 type item struct {
-	ord     ordinal
-	kind    itemKind
-	h       areatree.Length
+	ord  ordinal
+	kind itemKind
+	h    areatree.Length
+	// keep ist bei Abständen der Anteil, der am Anfang einer Seite erhalten
+	// bleibt (Konditionalität retain).
+	keep    areatree.Length
 	penalty int
 	// path sind die umschließenden Blöcke von außen nach innen. Bei Kanten
 	// gehört der Block der Kante dazu.
@@ -126,8 +129,10 @@ type galley struct {
 	items   []item
 	stack   []*blockCtx
 	pending areatree.Length // angesammelter Abstand
-	major   int             // Zähler für ordinal
-	skip    ordinal         // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
+	// pendingKeep ist der Teil des Abstands, der am Seitenanfang bleibt.
+	pendingKeep areatree.Length
+	major       int     // Zähler für ordinal
+	skip        ordinal // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
 
 	// Für die nächste Penalty vorgemerkte Keeps und Umbrüche.
 	keepNext int
@@ -195,6 +200,15 @@ func noContent(n *tree.Node) bool {
 	return true
 }
 
+// spaceBefore sammelt space-before eines Blocks. Der erhaltene Anteil gilt
+// auch am Anfang einer Seite.
+func (g *galley) spaceBefore(p *props.Computed) {
+	g.pending = max(g.pending, p.SpaceBefore)
+	if p.SpaceBeforeRetain {
+		g.pendingKeep = max(g.pendingKeep, p.SpaceBefore)
+	}
+}
+
 // breakValue liest break-before oder break-after. column gilt wie page, weil
 // es in Phase 1 keine mehrspaltigen Regionen gibt.
 func breakValue(n *tree.Node, prop string) string {
@@ -236,7 +250,7 @@ func (g *galley) box(it item, before int) {
 	brk := g.brk
 	g.keepNext, g.keepPrev, g.brk = 0, 0, ""
 	if it.ord.less(g.skip) {
-		g.pending = 0
+		g.pending, g.pendingKeep = 0, 0
 		return
 	}
 	if brk != "" {
@@ -246,10 +260,10 @@ func (g *galley) box(it item, before int) {
 		g.items = append(g.items, item{kind: itPenalty, penalty: pen, brk: brk})
 	}
 	g.lastPath = it.path
-	if g.pending > 0 {
-		g.items = append(g.items, item{kind: itGlue, h: g.pending})
+	if g.pending > 0 || g.pendingKeep > 0 {
+		g.items = append(g.items, item{kind: itGlue, h: g.pending, keep: g.pendingKeep})
 	}
-	g.pending = 0
+	g.pending, g.pendingKeep = 0, 0
 	it.kind = itBox
 	it.seq = len(g.items)
 	for _, ctx := range it.path {
@@ -363,7 +377,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	ctx.x = g.contentX(p) - p.Padding[areatree.Left]
 	ctx.w = g.contentW(p) + p.Padding[areatree.Left] + p.Padding[areatree.Right]
 	g.push(ctx)
-	g.pending = max(g.pending, p.SpaceBefore)
+	g.spaceBefore(p)
 	edges := hasBox(p)
 	if edges {
 		h := p.BorderWidth(areatree.Top) + p.Padding[areatree.Top]
