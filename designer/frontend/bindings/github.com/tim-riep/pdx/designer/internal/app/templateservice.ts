@@ -13,6 +13,9 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as model$0 from "../model/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as xpath$0 from "../xpath/models.js";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -38,6 +41,25 @@ export function Catalog(): $CancellablePromise<model$0.Catalog> {
 }
 
 /**
+ * CheckXPath prüft einen Ausdruck: Pfade gegen das Daten-XSD, Syntax beim
+ * Übersetzen und Wert mit Beispieldaten im ersten Vorkommen des Kontexts.
+ */
+export function CheckXPath(q: $models.XPathQuery): $CancellablePromise<$models.XPathInfo> {
+    return $Call.ByID(532961152, q).then(($result: any) => {
+        return $$createType5($result);
+    });
+}
+
+/**
+ * CompleteXPath liefert Vorschläge für die Stelle Cursor.
+ */
+export function CompleteXPath(q: $models.XPathQuery): $CancellablePromise<xpath$0.Completion> {
+    return $Call.ByID(763352783, q).then(($result: any) => {
+        return $$createType6($result);
+    });
+}
+
+/**
  * Drop fügt für einen gezogenen Datenknoten das passende gebundene Element
  * ein: Datum als Datumsfeld mit Format, Dezimalzahl als Betragsfeld,
  * wiederholter Knoten als Tabelle mit Spalten aus den Kindknoten, optionaler
@@ -54,7 +76,7 @@ export function Drop(drop: $models.Drop): $CancellablePromise<$models.Result> {
  */
 export function History(): $CancellablePromise<model$0.History> {
     return $Call.ByID(2911507981).then(($result: any) => {
-        return $$createType5($result);
+        return $$createType7($result);
     });
 }
 
@@ -81,7 +103,7 @@ export function Redo(): $CancellablePromise<$models.Result> {
  */
 export function Snapshot(): $CancellablePromise<model$0.Snapshot> {
     return $Call.ByID(1917837331).then(($result: any) => {
-        return $$createType6($result);
+        return $$createType8($result);
     });
 }
 
@@ -103,6 +125,16 @@ export function Undo(): $CancellablePromise<$models.Result> {
     });
 }
 
+/**
+ * XPathFields listet die Datenknoten unter dem Kontext eines Elements mit
+ * relativem Pfad, etwa für die Auswahl bei Präsenzbedingungen.
+ */
+export function XPathFields(ref: string): $CancellablePromise<$models.Field[]> {
+    return $Call.ByID(2528131159, ref).then(($result: any) => {
+        return $$createType10($result);
+    });
+}
+
 // Private type creation functions
 const $$createType0 = $models.Result.createFrom;
 var $$createType1 = (function $$initCreateType1(...args: any[]): any {
@@ -114,5 +146,9 @@ var $$createType1 = (function $$initCreateType1(...args: any[]): any {
 const $$createType2 = model$0.ElementType.createFrom;
 const $$createType3 = $Create.Nullable($$createType2);
 const $$createType4 = $Create.Map($Create.Any, $$createType3);
-const $$createType5 = model$0.History.createFrom;
-const $$createType6 = model$0.Snapshot.createFrom;
+const $$createType5 = $models.XPathInfo.createFrom;
+const $$createType6 = xpath$0.Completion.createFrom;
+const $$createType7 = model$0.History.createFrom;
+const $$createType8 = model$0.Snapshot.createFrom;
+const $$createType9 = $models.Field.createFrom;
+const $$createType10 = $Create.Array($$createType9);

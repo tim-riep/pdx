@@ -11,6 +11,9 @@ import * as model$0 from "../model/models.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as pipeline$0 from "../pipeline/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as xpath$0 from "../xpath/models.js";
 
 /**
  * Drop beschreibt, wohin ein Datenknoten gezogen wurde.
@@ -65,6 +68,45 @@ export class Drop {
     static createFrom($$source: any = {}): Drop {
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         return new Drop($$parsedSource as Partial<Drop>);
+    }
+}
+
+/**
+ * Field ist ein Datenknoten, relativ zum Kontext eines Elements.
+ */
+export class Field {
+    /**
+     * relativer XPath
+     */
+    "path": string;
+    "type": string;
+    "repeated": boolean;
+    "optional": boolean;
+
+    /** Creates a new Field instance. */
+    constructor($$source: Partial<Field> = {}) {
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("type" in $$source)) {
+            this["type"] = "";
+        }
+        if (!("repeated" in $$source)) {
+            this["repeated"] = false;
+        }
+        if (!("optional" in $$source)) {
+            this["optional"] = false;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Field instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Field {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Field($$parsedSource as Partial<Field>);
     }
 }
 
@@ -427,6 +469,103 @@ export class TableOp {
     }
 }
 
+/**
+ * XPathInfo ist das Ergebnis der Prüfung eines Ausdrucks.
+ */
+export class XPathInfo {
+    /**
+     * Context ist der Datenkontext des Elements, leer ohne Datenwurzel.
+     */
+    "context": string;
+
+    /**
+     * Data nennt die Daten der Auswertung: den Pfad der Beispieldaten oder
+     * leer für Platzhalter.
+     */
+    "data": string;
+    "problems": xpath$0.Problem[];
+
+    /**
+     * Target ist der Datenknoten eines einfachen Pfads.
+     */
+    "target": Field | null;
+    "result": xpath$0.Result | null;
+
+    /** Creates a new XPathInfo instance. */
+    constructor($$source: Partial<XPathInfo> = {}) {
+        if (!("context" in $$source)) {
+            this["context"] = "";
+        }
+        if (!("data" in $$source)) {
+            this["data"] = "";
+        }
+        if (!("problems" in $$source)) {
+            this["problems"] = [];
+        }
+        if (!("target" in $$source)) {
+            this["target"] = null;
+        }
+        if (!("result" in $$source)) {
+            this["result"] = null;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new XPathInfo instance from a string or object.
+     */
+    static createFrom($$source: any = {}): XPathInfo {
+        const $$createField2_0 = $$createType8;
+        const $$createField3_0 = $$createType10;
+        const $$createField4_0 = $$createType12;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("problems" in $$parsedSource) {
+            $$parsedSource["problems"] = $$createField2_0($$parsedSource["problems"]);
+        }
+        if ("target" in $$parsedSource) {
+            $$parsedSource["target"] = $$createField3_0($$parsedSource["target"]);
+        }
+        if ("result" in $$parsedSource) {
+            $$parsedSource["result"] = $$createField4_0($$parsedSource["result"]);
+        }
+        return new XPathInfo($$parsedSource as Partial<XPathInfo>);
+    }
+}
+
+/**
+ * XPathQuery beschreibt einen Ausdruck an einem Vorlagenelement. Cursor ist
+ * die Stelle in Zeichen (UTF-16 wie im Browser) für die Vervollständigung.
+ */
+export class XPathQuery {
+    "ref": string;
+    "expr": string;
+    "cursor": number;
+
+    /** Creates a new XPathQuery instance. */
+    constructor($$source: Partial<XPathQuery> = {}) {
+        if (!("ref" in $$source)) {
+            this["ref"] = "";
+        }
+        if (!("expr" in $$source)) {
+            this["expr"] = "";
+        }
+        if (!("cursor" in $$source)) {
+            this["cursor"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new XPathQuery instance from a string or object.
+     */
+    static createFrom($$source: any = {}): XPathQuery {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new XPathQuery($$parsedSource as Partial<XPathQuery>);
+    }
+}
+
 // Private type creation functions
 const $$createType0 = pipeline$0.PageRef.createFrom;
 const $$createType1 = $Create.Array($$createType0);
@@ -435,3 +574,9 @@ const $$createType3 = $Create.Array($$createType2);
 const $$createType4 = pipeline$0.Problem.createFrom;
 const $$createType5 = $Create.Array($$createType4);
 const $$createType6 = model$0.History.createFrom;
+const $$createType7 = xpath$0.Problem.createFrom;
+const $$createType8 = $Create.Array($$createType7);
+const $$createType9 = Field.createFrom;
+const $$createType10 = $Create.Nullable($$createType9);
+const $$createType11 = xpath$0.Result.createFrom;
+const $$createType12 = $Create.Nullable($$createType11);

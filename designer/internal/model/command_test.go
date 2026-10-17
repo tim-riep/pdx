@@ -43,7 +43,10 @@ func TestCommands(t *testing.T) {
 		{"Mehrere", Command{Op: "batch", Cmds: []Command{
 			{Op: "setAttr", Ref: "gesamt", Name: "fontSize", Value: "12pt"},
 			{Op: "setAttr", Ref: "gesamt", Name: "color", Value: "#003366"},
-		}}, func() bool { n := d.Pkg.Template.ByID("gesamt"); return n.Get("fontSize", "") == "12pt" && n.Get("color", "") == "#003366" }},
+		}}, func() bool {
+			n := d.Pkg.Template.ByID("gesamt")
+			return n.Get("fontSize", "") == "12pt" && n.Get("color", "") == "#003366"
+		}},
 	}
 	var states [][]byte
 	for _, s := range steps {

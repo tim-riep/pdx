@@ -99,8 +99,8 @@ func (d *Document) Redo() (string, error) {
 
 // History beschreibt Undo und Redo für Menü und Werkzeugleiste.
 type History struct {
-	Undo string `json:"undo"`
-	Redo string `json:"redo"`
+	Undo string  `json:"undo"`
+	Redo string  `json:"redo"`
 	Can  [2]bool `json:"can"`
 }
 

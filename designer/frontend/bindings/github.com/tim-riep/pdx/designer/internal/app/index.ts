@@ -16,6 +16,7 @@ export {
 
 export {
     Drop,
+    Field,
     Info,
     Insert,
     Manifest,
@@ -23,5 +24,7 @@ export {
     RecentFile,
     Recovery,
     Result,
-    TableOp
+    TableOp,
+    XPathInfo,
+    XPathQuery
 } from "./models.js";
