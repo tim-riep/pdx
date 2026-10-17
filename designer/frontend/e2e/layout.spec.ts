@@ -58,21 +58,28 @@ test("Bausteine einfügen und fließend umsortieren", async ({ page }) => {
   await dragData(page, page.getByTestId("palette").locator('[data-kind="rect"]'), page.locator('[data-page="1"]'), { x: 260, y: 330 });
   await expect(page.getByTestId("inspector").locator("header strong")).toHaveText("Rechteck");
 
-  // Der Text wird per Ziehen vor die Tabelle sortiert.
-  await page.getByTestId("hierarchy").getByRole("button", { name: new RegExp(`Text\\s*${id}`) }).click();
+  // Der Text wird per Ziehen vor die Tabelle sortiert: Ziel ist der linke
+  // Rand knapp über der Tabelle, dort liegt nur der Inhalt selbst.
+  const tree = page.getByTestId("hierarchy");
+  await tree.getByRole("button", { name: /Tabelle\s*positionen/ }).click();
+  // Lage relativ zur Seite, weil die Auswahl den Canvas scrollt.
+  const tableTop = (await page.locator(".box.sel").boundingBox())!.y - (await page.locator('[data-page="1"]').boundingBox())!.y;
+  await tree.getByRole("button", { name: new RegExp(`Text\\s*${id}`) }).click();
   const sel = (await page.locator(".box.sel").boundingBox())!;
-  const table = (await page.locator('[data-page="1"]').boundingBox())!;
   await page.mouse.move(sel.x + 5, sel.y + sel.height / 2);
   await page.mouse.down();
   await page.mouse.move(sel.x + 20, sel.y + 20);
-  const [tx, ty] = await at(page, 100, 300);
-  await page.mouse.move(tx, ty);
+  const pageBox = (await page.locator('[data-page="1"]').boundingBox())!;
+  await page.mouse.move(pageBox.x + 6, pageBox.y + tableTop + 2);
   await expect(page.locator("[data-reorder]")).toBeVisible();
   await page.mouse.up();
   await expect(page.getByTestId("doc-title")).toContainText("geändert");
   await expect(page.getByRole("alert")).toHaveCount(0);
   // Der Text steht jetzt vor der Tabelle.
-  const order = await page.getByTestId("hierarchy").locator(".id").allTextContents();
-  expect(order.indexOf(id!)).toBeLessThan(order.indexOf("positionen"));
-  expect(table).toBeTruthy();
+  await expect
+    .poll(async () => {
+      const order = await page.getByTestId("hierarchy").locator(".id").allTextContents();
+      return order.indexOf(id!) < order.indexOf("positionen");
+    })
+    .toBe(true);
 });
