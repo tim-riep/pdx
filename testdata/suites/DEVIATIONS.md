@@ -180,3 +180,13 @@ Für px verlangt XSL 1.1 5.9.13.1 eine geräteabhängige Größe nach der
 „arc-span rule“ aus CSS2, also dem Referenzpixel. pdx nimmt wie CSS 2.1 1/96
 Zoll (0,75 pt), FOP 1/72 Zoll. Die Breiten thin, medium und thick sind nach
 7.8.24 Sache des Formatierers (pdx: 0,5 pt, 1 pt, 2 pt).
+
+## Leerzeichen an Inline-Grenzen
+
+XSL 1.1 7.16.12 fasst die Wirkung von white-space-collapse so zusammen:
+Nach der Verfeinerung wird jede verbleibende Folge aus zwei oder mehr
+Leerzeichen durch ein einzelnes ersetzt. Eine Grenze von fo:inline unterbricht
+die Folge nicht. pdx behält das erste Leerzeichen. FOP behält vor und nach
+der Grenze je eines, wenn das fo:inline einen Rahmen hat, und bricht dadurch
+anders um (Fälle nist-cbpbp-border-color-inline3 und
+nist-cbpbp-border-width-inline1).

@@ -98,7 +98,7 @@ w3c/nist-blrp-line-height7: begründet, px als Referenzpixel von CSS2 (1/96 in),
 w3c/nist-blrp-line-height8: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-blrp-line-height9: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-blrp-text-indent9: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
-w3c/nist-cbpbp-border-color-inline3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border-color \"purple"
+w3c/nist-cbpbp-border-color-inline3: begründet, Leerzeichen an der Grenze eines fo:inline werden nach XSL 1.1 7.16.12 zu einem zusammengefasst, FOP behält zwei, dadurch anderer Zeilenumbruch
 w3c/nist-cbpbp-border-left-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-left-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cbpbp-border-left-width-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
@@ -110,7 +110,7 @@ w3c/nist-cbpbp-border-top-width-inline1: begründet, px als Referenzpixel von CS
 w3c/nist-cbpbp-border-top-width-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-top-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-top1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-cbpbp-border-width-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a border-width of 25px and border-style of solid. However, it contains an inline element of border-"
+w3c/nist-cbpbp-border-width-inline1: begründet, Leerzeichen an der Grenze eines fo:inline werden nach XSL 1.1 7.16.12 zu einem zusammengefasst, FOP behält zwei, dadurch anderer Zeilenumbruch, dazu px als Referenzpixel (5.9.13.1)
 w3c/nist-cbpbp-border-width-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
@@ -119,7 +119,7 @@ w3c/nist-cbpbp-border7: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (
 w3c/nist-cbpbp-padding-left-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-padding-left-inline2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-cbpbp-padding-right-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-cbpbp-padding-right5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "to the width"
+w3c/nist-cbpbp-padding-right5: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-cbpbp-padding-top3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-padding3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font-family7: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
@@ -139,7 +139,7 @@ w3c/nist-keepandbreak13: begründet, anderer Zeilenumbruch bei gleichen Zeilenbr
 w3c/nist-keepandbreak14: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-keepandbreak15: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-keepandbreak16: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
-w3c/nist-keepandbreak17: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "All page sizes should be"
+w3c/nist-keepandbreak17: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-lbfomarginbottom2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-lbfospacebefore2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-lifoborderwidth6: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
