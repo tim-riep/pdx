@@ -4,7 +4,6 @@
 # "offen" sind noch nicht untersucht und Arbeit für die Engine.
 # PDX_SUITE_RECORD=1 trägt neue Abweichungen als offen ein und behobene aus.
 
-fop/basic-link_background-image: offen, erste Abweichung: Seite 1: "Why is FOP so cool?" verschoben um 0.00 pt waagerecht, 10.98 pt senkrecht
 fop/block-container_absolute-position: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "absolutely positioned"
 fop/block-container_absolute-position_border_padding: offen, erste Abweichung: Seite 1: "background-text." verschoben um -233.93 pt waagerecht, -0.00 pt senkrecht
 fop/block-container_absolute-position_no-height: offen, erste Abweichung: Seite 1: "absolutely positioned width, no height" verschoben um -10.00 pt waagerecht, -10.00 pt senkrecht
@@ -14,7 +13,7 @@ fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem 
 fop/block_break-before_bug44412: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "In olden times when wishing still helped one, there lived a king whose"
+fop/block_last-line-end-indent: begründet, anderer Zeilenumbruch im Blocksatz, Wortabstände sind nach XSL 1.1 7.17.8 Sache des Formatierers, die letzte Zeile mit last-line-end-indent="-20pt" reicht zulässig bis 360 pt
 fop/block_margin_shorthands: begründet, ein leerer fo:block mit Rahmen erzeugt einen Bereich mit dessen Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
 fop/block_space-before_space-after_bug38102: begründet, pdx nimmt das Optimum von Abständen, FOP staucht bis zum Minimum, XSL 1.1 4.3 lässt jeden Wert im Bereich zu
@@ -26,7 +25,7 @@ fop/flow_changing-ipd_5: offen, erste Abweichung: Seite 3: "beautiful, but the y
 fop/flow_changing-ipd_break-before: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/flow_changing-ipd_last-page: begründet, Zirkelschluss bei page-position last, pdx wählt die erste passende Alternative (XSL 1.1 6.4.11), beide Lösungen sind zulässig
 fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "After the big"
-fop/inline_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This demonstrates a long inline which stretches over multiple lines to show"
+fop/inline_background-color: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/inline_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item-with-ipd-change: offen, erste Abweichung: Seite 2: "b" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
@@ -72,7 +71,7 @@ w3c/fopc-hyphen: offen, erste Abweichung: Seite 1: "US English" verschoben um 0.
 w3c/fopc-leader: offen, erste Abweichung: Seite 1: "The dimensions of fo:leader are determined by the compound property leader-" verschoben um 0.00 pt waagerecht, 1.86 pt senkrecht
 w3c/fopc-newlinktest: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/fopc-pagelevel2: offen, erste Abweichung: Seite 4: Zeile nur in pdx: "The area tree is constrained to satisfy all break conditions imposed."
-w3c/fopc-pagelevel3: offen, erste Abweichung: Seite 4: "Keep conditions are imposed by the \"within-page\", \"within-column\", and" verschoben um 0.00 pt waagerecht, 4.34 pt senkrecht
+w3c/fopc-pagelevel3: offen, erste Abweichung: Seite 4: "Keep conditions are imposed by the \"within-page\", \"within-column\", and" verschoben um 0.00 pt waagerecht, 4.32 pt senkrecht
 w3c/fopc-simple: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-adp-height1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-height2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP

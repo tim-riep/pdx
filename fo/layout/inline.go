@@ -841,8 +841,11 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		x += avail - width
 	}
 
-	// Vertikale Maße.
-	above, below := strut.above(), strut.below()
+	// Vertikale Maße nach line-stacking-strategy="max-height" (XSL 1.1 4.5):
+	// Die Zeile umschließt das Rechteck des Blocks und die Zuordnungsrechtecke
+	// aller Inline-Bereiche, davor und danach steht der halbe Durchschuss des
+	// Blocks.
+	above, below := strut.asc, strut.desc
 	for _, it := range seg {
 		if it.Payload < 0 {
 			continue
@@ -850,13 +853,13 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		pc := pa.pieces[it.Payload]
 		switch pc.kind {
 		case pText, pSpace:
-			above, below = max(above, pc.st.above()), max(below, pc.st.below())
+			above, below = max(above, pc.st.asc), max(below, pc.st.desc)
 		case pGraphic:
-			// Wie bei Apache FOP erhält auch ein Bild den halben Durchschuss
-			// der Zeile über sich (Strut des Blocks).
-			above = max(above, pc.height+strut.halfLeading())
+			above = max(above, pc.height)
 		}
 	}
+	above += strut.above() - strut.asc
+	below += strut.below() - strut.desc
 	h := above + below
 	baseline := above
 	line := &lineBox{h: h, w: avail, x: x0}

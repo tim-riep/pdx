@@ -152,11 +152,11 @@ document title="Mehrseitiger Fließtext" author="pdx" subject="Korpus: Fließtex
           text 70.866,739.047 font=2 size=10.5 color=gray(0) asc=7.28 desc=2.266 "von Knuth und Plass später ohne Änderungen an den Aufrufern eingesetzt werden kann."
             glyphs 89:5.25 82:5.25 81:5.25 3:2.625 46:7.583 81:5.25 88:5.25 87:2.917 75:5.25 3:2.625 88:5.25 81:5.25 71:5.25 3:2.625 51:5.84 79:2.917 68:4.66 86:4.086 86:4.086 3:2.625 86:4.086 83:5.25 166:4.66 87:2.917 72:4.66 85:3.497 3:2.625 82:5.25 75:5.25 81:5.25 72:4.66 3:2.625 134:7.583 81:5.25 71:5.25 72:4.66 85:3.497 88:5.25 81:5.25 74:5.25 72:4.66 81:5.25 3:2.625 68:4.66 81:5.25 3:2.625 71:5.25 72:4.66 81:5.25 3:2.625 36:7.583 88:5.25 73:3.497 85:3.497 88:5.25 73:3.497 72:4.66 85:3.497 81:5.25 3:2.625 72:4.66 76:2.917 81:5.25 74:5.25 72:4.66 86:4.086 72:4.66 87:2.917 93:4.66 87:2.917 3:2.625 90:7.583 72:4.66 85:3.497 71:5.25 72:4.66 81:5.25 3:2.625 78:5.25 68:4.66 81:5.25 81:5.25 17:2.625
     region 70.866,42.52 467.717x28.346 src=fo:region-before@7:7
-      block 70.866,42.52 467.717x12.439 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
-        line 70.866,42.52 467.717x9.604
-          text 70.866,49.234 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
+      block 70.866,42.52 467.717x12.443 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
+        line 70.866,42.52 467.717x9.608
+          text 70.866,49.238 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
             glyphs 83:4 71:4 91:4 3:2 46:5.777 82:4 85:2.664 83:4 88:4 86:3.113 3:2
-          text 110.42,49.234 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
+          text 110.42,49.238 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
             glyphs 41:4.887 79:2.223 76:2.223 72:3.551 161:4 87:2.223 72:3.551 91:3.551 87:2.223
     region 70.866,771.024 467.717x28.346 src=fo:region-after@8:7
       block 70.866,771.024 467.717x9.6 src=fo:block@19:7
@@ -310,11 +310,11 @@ document title="Mehrseitiger Fließtext" author="pdx" subject="Korpus: Fließtex
           text 70.866,709.447 font=2 size=10.5 color=gray(0) asc=7.28 desc=2.266 "auf reproduzierbare Ausgabe und auf Konformität zu PDF/A."
             glyphs 68:4.66 88:5.25 73:3.497 3:2.625 85:3.497 72:4.66 83:5.25 85:3.497 82:5.25 71:5.25 88:5.25 93:4.66 76:2.917 72:4.66 85:3.497 69:5.25 68:4.66 85:3.497 72:4.66 3:2.625 36:7.583 88:5.25 86:4.086 74:5.25 68:4.66 69:5.25 72:4.66 3:2.625 88:5.25 81:5.25 71:5.25 3:2.625 68:4.66 88:5.25 73:3.497 3:2.625 46:7.583 82:5.25 81:5.25 73:3.497 82:5.25 85:3.497 80:8.167 76:2.917 87:2.917 166:4.66 87:2.917 3:2.625 93:4.66 88:5.25 3:2.625 51:5.84 39:7.583 41:5.84 18:2.917 36:7.583 17:2.625
     region 70.866,42.52 467.717x28.346 src=fo:region-before@7:7
-      block 70.866,42.52 467.717x12.439 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
-        line 70.866,42.52 467.717x9.604
-          text 70.866,49.234 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
+      block 70.866,42.52 467.717x12.443 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
+        line 70.866,42.52 467.717x9.608
+          text 70.866,49.238 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
             glyphs 83:4 71:4 91:4 3:2 46:5.777 82:4 85:2.664 83:4 88:4 86:3.113 3:2
-          text 110.42,49.234 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
+          text 110.42,49.238 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
             glyphs 41:4.887 79:2.223 76:2.223 72:3.551 161:4 87:2.223 72:3.551 91:3.551 87:2.223
     region 70.866,771.024 467.717x28.346 src=fo:region-after@8:7
       block 70.866,771.024 467.717x9.6 src=fo:block@19:7
@@ -474,11 +474,11 @@ document title="Mehrseitiger Fließtext" author="pdx" subject="Korpus: Fließtex
           text 70.866,731.647 font=2 size=10.5 color=gray(0) asc=7.28 desc=2.266 "beheben."
             glyphs 69:5.25 72:4.66 75:5.25 72:4.66 69:5.25 72:4.66 81:5.25 17:2.625
     region 70.866,42.52 467.717x28.346 src=fo:region-before@7:7
-      block 70.866,42.52 467.717x12.439 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
-        line 70.866,42.52 467.717x9.604
-          text 70.866,49.234 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
+      block 70.866,42.52 467.717x12.443 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
+        line 70.866,42.52 467.717x9.608
+          text 70.866,49.238 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
             glyphs 83:4 71:4 91:4 3:2 46:5.777 82:4 85:2.664 83:4 88:4 86:3.113 3:2
-          text 110.42,49.234 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
+          text 110.42,49.238 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
             glyphs 41:4.887 79:2.223 76:2.223 72:3.551 161:4 87:2.223 72:3.551 91:3.551 87:2.223
     region 70.866,771.024 467.717x28.346 src=fo:region-after@8:7
       block 70.866,771.024 467.717x9.6 src=fo:block@19:7
@@ -498,11 +498,11 @@ document title="Mehrseitiger Fließtext" author="pdx" subject="Korpus: Fließtex
           text 205.871,93.852 font=3 size=10.5 color=gray(0) asc=7.291 desc=2.266 "."
             glyphs 17:2.625
     region 70.866,42.52 467.717x28.346 src=fo:region-before@7:7
-      block 70.866,42.52 467.717x12.439 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
-        line 70.866,42.52 467.717x9.604
-          text 70.866,49.234 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
+      block 70.866,42.52 467.717x12.443 bottom=0.5/solid/gray(0.6) src=fo:block@16:7
+        line 70.866,42.52 467.717x9.608
+          text 70.866,49.238 font=2 size=8 color=gray(0.4) asc=5.547 desc=1.727 "pdx Korpus "
             glyphs 83:4 71:4 91:4 3:2 46:5.777 82:4 85:2.664 83:4 88:4 86:3.113 3:2
-          text 110.42,49.234 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
+          text 110.42,49.238 font=3 size=8 color=gray(0.4) asc=5.555 desc=1.727 "Fließtext"
             glyphs 41:4.887 79:2.223 76:2.223 72:3.551 161:4 87:2.223 72:3.551 91:3.551 87:2.223
     region 70.866,771.024 467.717x28.346 src=fo:region-after@8:7
       block 70.866,771.024 467.717x9.6 src=fo:block@19:7
