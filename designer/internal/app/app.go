@@ -100,6 +100,8 @@ type Core struct {
 	saver   *time.Timer
 	closing bool // Rückfrage beim Schließen ist beantwortet
 	r       renderer
+	// view ist die zuletzt gemeldete Projektion, Grundlage der Patches.
+	view model.Snapshot
 	// AutosaveDelay ist die Wartezeit nach einer Änderung bis zur
 	// automatischen Sicherung.
 	AutosaveDelay time.Duration

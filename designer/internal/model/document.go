@@ -31,7 +31,12 @@ type Document struct {
 	Path   string // leer bei einer neuen, noch nicht gespeicherten Vorlage
 	Format Format
 
-	rev, savedRev uint64
+	// rev steigt mit jeder Änderung, auch durch Undo, und dient Caches.
+	rev uint64
+	// state kennzeichnet den Inhalt. Undo kehrt zu einer früheren Kennung
+	// zurück, savedState ist die des gespeicherten Stands.
+	state, savedState, nextState uint64
+	undo, redo                   []entry
 }
 
 // newTemplate ist die Vorlage für „Neu“: eine A4-Seite und ein leerer Rumpf.
@@ -99,11 +104,17 @@ func (d *Document) Name() string {
 // Rev ist die Revision, sie steigt mit jeder Änderung.
 func (d *Document) Rev() uint64 { return d.rev }
 
-// Touch vermerkt eine Änderung.
-func (d *Document) Touch() { d.rev++ }
+// Touch vermerkt eine Änderung außerhalb des Befehlsmodells.
+func (d *Document) Touch() { d.touchState() }
+
+func (d *Document) touchState() {
+	d.rev++
+	d.nextState++
+	d.state = d.nextState
+}
 
 // Dirty meldet ungespeicherte Änderungen.
-func (d *Document) Dirty() bool { return d.rev != d.savedRev || d.Path == "" && d.rev > 0 }
+func (d *Document) Dirty() bool { return d.state != d.savedState || d.Path == "" && d.state != 0 }
 
 // Save schreibt das Paket an seinen Pfad im bisherigen Format.
 func (d *Document) Save() error {
@@ -135,7 +146,7 @@ func (d *Document) SaveAs(path string) error {
 	} else if err := d.Pkg.WriteDir(abs); err != nil {
 		return err
 	}
-	d.Path, d.Format, d.savedRev = abs, f, d.rev
+	d.Path, d.Format, d.savedState = abs, f, d.state
 	return nil
 }
 

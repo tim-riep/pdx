@@ -52,6 +52,51 @@ export class Child {
 }
 
 /**
+ * Command ist eine Änderung an der Vorlage. Die Oberfläche schickt Befehle
+ * als JSON, das Backend wendet sie an und merkt sich das Inverse für Undo.
+ * 
+ * 	setAttr  Ref, Name, Value  Attribut setzen, leerer Value entfernt es
+ * 	insert   Parent, Index, XML  Elemente einfügen (XML im Vorlagenformat)
+ * 	remove   Ref               Element entfernen
+ * 	move     Ref, Parent, Index  Element verschieben
+ * 	batch    Cmds              mehrere Befehle als ein Schritt
+ * 
+ * Index zählt die Kinder des Elternelements, bei gemischtem Inhalt
+ * einschließlich der Texte. -1 hängt an.
+ */
+export class Command {
+    "op": string;
+    "ref"?: string;
+    "name"?: string;
+    "value"?: string;
+    "parent"?: string;
+    "index"?: number;
+    "xml"?: string;
+    "cmds"?: Command[];
+
+    /** Creates a new Command instance. */
+    constructor($$source: Partial<Command> = {}) {
+        if (!("op" in $$source)) {
+            this["op"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Command instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Command {
+        const $$createField7_0 = $$createType1;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("cmds" in $$parsedSource) {
+            $$parsedSource["cmds"] = $$createField7_0($$parsedSource["cmds"]);
+        }
+        return new Command($$parsedSource as Partial<Command>);
+    }
+}
+
+/**
  * ElementType beschreibt ein Element des Vorlagenformats.
  */
 export class ElementType {
@@ -86,8 +131,8 @@ export class ElementType {
      * Creates a new ElementType instance from a string or object.
      */
     static createFrom($$source: any = {}): ElementType {
-        const $$createField2_0 = $$createType1;
-        const $$createField3_0 = $$createType3;
+        const $$createField2_0 = $$createType3;
+        const $$createField3_0 = $$createType5;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("properties" in $$parsedSource) {
             $$parsedSource["properties"] = $$createField2_0($$parsedSource["properties"]);
@@ -96,6 +141,38 @@ export class ElementType {
             $$parsedSource["children"] = $$createField3_0($$parsedSource["children"]);
         }
         return new ElementType($$parsedSource as Partial<ElementType>);
+    }
+}
+
+/**
+ * History beschreibt Undo und Redo für Menü und Werkzeugleiste.
+ */
+export class History {
+    "undo": string;
+    "redo": string;
+    "can": boolean[];
+
+    /** Creates a new History instance. */
+    constructor($$source: Partial<History> = {}) {
+        if (!("undo" in $$source)) {
+            this["undo"] = "";
+        }
+        if (!("redo" in $$source)) {
+            this["redo"] = "";
+        }
+        if (!("can" in $$source)) {
+            this["can"] = Array.from({ length: 2 }, () => false);
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new History instance from a string or object.
+     */
+    static createFrom($$source: any = {}): History {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new History($$parsedSource as Partial<History>);
     }
 }
 
@@ -119,6 +196,54 @@ export class Item {
     static createFrom($$source: any = {}): Item {
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         return new Item($$parsedSource as Partial<Item>);
+    }
+}
+
+/**
+ * Patch sind die Änderungen der Projektion von einer Revision zur nächsten.
+ */
+export class Patch {
+    "from": number;
+    "rev": number;
+    "root": string;
+    "set": ViewNode[];
+    "removed": string[];
+
+    /** Creates a new Patch instance. */
+    constructor($$source: Partial<Patch> = {}) {
+        if (!("from" in $$source)) {
+            this["from"] = 0;
+        }
+        if (!("rev" in $$source)) {
+            this["rev"] = 0;
+        }
+        if (!("root" in $$source)) {
+            this["root"] = "";
+        }
+        if (!("set" in $$source)) {
+            this["set"] = [];
+        }
+        if (!("removed" in $$source)) {
+            this["removed"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Patch instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Patch {
+        const $$createField3_0 = $$createType7;
+        const $$createField4_0 = $$createType8;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("set" in $$parsedSource) {
+            $$parsedSource["set"] = $$createField3_0($$parsedSource["set"]);
+        }
+        if ("removed" in $$parsedSource) {
+            $$parsedSource["removed"] = $$createField4_0($$parsedSource["removed"]);
+        }
+        return new Patch($$parsedSource as Partial<Patch>);
     }
 }
 
@@ -163,7 +288,7 @@ export class Property {
      * Creates a new Property instance from a string or object.
      */
     static createFrom($$source: any = {}): Property {
-        const $$createField3_0 = $$createType4;
+        const $$createField3_0 = $$createType8;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("enum" in $$parsedSource) {
             $$parsedSource["enum"] = $$createField3_0($$parsedSource["enum"]);
@@ -199,7 +324,7 @@ export class Snapshot {
      * Creates a new Snapshot instance from a string or object.
      */
     static createFrom($$source: any = {}): Snapshot {
-        const $$createField2_0 = $$createType6;
+        const $$createField2_0 = $$createType9;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("nodes" in $$parsedSource) {
             $$parsedSource["nodes"] = $$createField2_0($$parsedSource["nodes"]);
@@ -248,8 +373,8 @@ export class ViewNode {
      * Creates a new ViewNode instance from a string or object.
      */
     static createFrom($$source: any = {}): ViewNode {
-        const $$createField4_0 = $$createType7;
-        const $$createField5_0 = $$createType9;
+        const $$createField4_0 = $$createType10;
+        const $$createField5_0 = $$createType12;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("attrs" in $$parsedSource) {
             $$parsedSource["attrs"] = $$createField4_0($$parsedSource["attrs"]);
@@ -262,13 +387,16 @@ export class ViewNode {
 }
 
 // Private type creation functions
-const $$createType0 = Property.createFrom;
+const $$createType0 = Command.createFrom;
 const $$createType1 = $Create.Array($$createType0);
-const $$createType2 = Child.createFrom;
+const $$createType2 = Property.createFrom;
 const $$createType3 = $Create.Array($$createType2);
-const $$createType4 = $Create.Array($Create.Any);
-const $$createType5 = ViewNode.createFrom;
-const $$createType6 = $Create.Map($Create.Any, $$createType5);
-const $$createType7 = $Create.Map($Create.Any, $Create.Any);
-const $$createType8 = Item.createFrom;
-const $$createType9 = $Create.Array($$createType8);
+const $$createType4 = Child.createFrom;
+const $$createType5 = $Create.Array($$createType4);
+const $$createType6 = ViewNode.createFrom;
+const $$createType7 = $Create.Array($$createType6);
+const $$createType8 = $Create.Array($Create.Any);
+const $$createType9 = $Create.Map($Create.Any, $$createType6);
+const $$createType10 = $Create.Map($Create.Any, $Create.Any);
+const $$createType11 = Item.createFrom;
+const $$createType12 = $Create.Array($$createType11);

@@ -8,7 +8,9 @@
   import Tabs from "./components/Tabs.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
-  import { clearSelection } from "./lib/selection.svelte";
+  import { clearSelection, selection } from "./lib/selection.svelte";
+  import { apply, node, redo, tpl, undo } from "./lib/template.svelte";
+  import { label } from "./lib/i18n";
   import { render, setView, type View } from "./lib/render.svelte";
   let version = $state("");
   let theme: "light" | "dark" | null = $state(null);
@@ -30,19 +32,38 @@
     document.documentElement.dataset.theme = theme;
   }
 
+  // In Eingabefeldern gelten deren eigene Tasten (Text rückgängig, Löschen).
+  const editing = (e: KeyboardEvent) =>
+    e.target instanceof HTMLElement && (e.target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName));
+
+  function removeSelection() {
+    const n = node(selection.ref);
+    if (!n) return;
+    apply(t("cmd.remove", { el: label(n.type, n.name) }), { op: "remove", ref: n.ref });
+    clearSelection();
+  }
+
   function keydown(e: KeyboardEvent) {
-    if (e.key === "Escape" && !ui.pathPrompt && !ui.closeRequest) clearSelection();
-    if (!(e.metaKey || e.ctrlKey) || ui.pathPrompt || ui.closeRequest) return;
+    if (ui.pathPrompt || ui.closeRequest) return;
+    if (e.key === "Escape") clearSelection();
+    if ((e.key === "Delete" || e.key === "Backspace") && !editing(e) && selection.ref) {
+      e.preventDefault();
+      removeSelection();
+      return;
+    }
+    if (!(e.metaKey || e.ctrlKey)) return;
     const k = e.key.toLowerCase();
     const act: Record<string, () => unknown> = {
       s: () => (e.shiftKey ? saveAs() : save()),
       o: () => openProject(false),
       n: () => newProject(),
+      z: () => (e.shiftKey ? redo() : undo()),
+      y: () => redo(),
     };
-    if (act[k] && (k === "s" ? project.open : true)) {
-      e.preventDefault();
-      act[k]();
-    }
+    if (!act[k] || (k === "z" || k === "y") && editing(e)) return;
+    if ((k === "s" || k === "z" || k === "y") && !project.open) return;
+    e.preventDefault();
+    act[k]();
   }
 
   function answerPath(value: string | null) {
@@ -68,6 +89,12 @@
       <button onclick={() => newProject()}>{t("action.new")}</button>
       <button onclick={() => openProject(false)}>{t("action.open")}</button>
       <button disabled={!project.open} onclick={() => save()}>{t("action.save")}</button>
+    </div>
+    <div class="group">
+      <button disabled={!tpl.history.can[0]} aria-label={t("action.undo")}
+        title={tpl.history.undo ? t("action.undoLabel", { label: tpl.history.undo }) : t("action.undo")} onclick={() => undo()}>↶</button>
+      <button disabled={!tpl.history.can[1]} aria-label={t("action.redo")}
+        title={tpl.history.redo ? t("action.redoLabel", { label: tpl.history.redo }) : t("action.redo")} onclick={() => redo()}>↷</button>
     </div>
     {#if project.open}
       <span class="doc" data-testid="doc-title">{title}{#if project.dirty}<em> ({t("project.dirty")})</em>{/if}</span>

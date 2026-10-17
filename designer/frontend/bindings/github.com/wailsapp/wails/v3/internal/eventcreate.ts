@@ -6,4 +6,25 @@
 // @ts-ignore: Unused imports
 import { Create as $Create } from "@wailsio/runtime";
 
-Object.freeze($Create.Events);
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as app$0 from "../../../../tim-riep/pdx/designer/internal/app/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as model$0 from "../../../../tim-riep/pdx/designer/internal/model/models.js";
+
+function configure() {
+    Object.freeze(Object.assign($Create.Events, {
+        "app:close-request": $$createType0,
+        "project:changed": $$createType0,
+        "render:pages": $$createType1,
+        "template:changed": $$createType2,
+    }));
+}
+
+// Private type creation functions
+const $$createType0 = app$0.ProjectState.createFrom;
+const $$createType1 = app$0.Manifest.createFrom;
+const $$createType2 = model$0.Patch.createFrom;
+
+configure();

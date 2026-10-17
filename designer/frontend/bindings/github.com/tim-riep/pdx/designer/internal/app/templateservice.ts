@@ -14,11 +14,43 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 // @ts-ignore: Unused imports
 import * as model$0 from "../model/models.js";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as $models from "./models.js";
+
+/**
+ * Apply wendet einen Befehl an. label erscheint in der Historie, etwa
+ * „Breite ändern“. Ungültige Befehle ändern nichts und liefern den Fehler.
+ */
+export function Apply(label: string, cmd: model$0.Command): $CancellablePromise<$models.Result> {
+    return $Call.ByID(3545846053, label, cmd).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
 /**
  * Catalog liefert die Elementtypen mit ihren Eigenschaften für den Inspektor.
  */
 export function Catalog(): $CancellablePromise<model$0.Catalog> {
     return $Call.ByID(3842830590).then(($result: any) => {
+        return $$createType1($result);
+    });
+}
+
+/**
+ * History liefert die Beschriftungen für Undo und Redo.
+ */
+export function History(): $CancellablePromise<model$0.History> {
+    return $Call.ByID(2911507981).then(($result: any) => {
+        return $$createType5($result);
+    });
+}
+
+/**
+ * Redo wiederholt den zuletzt zurückgenommenen Schritt.
+ */
+export function Redo(): $CancellablePromise<$models.Result> {
+    return $Call.ByID(808833735).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -28,18 +60,29 @@ export function Catalog(): $CancellablePromise<model$0.Catalog> {
  */
 export function Snapshot(): $CancellablePromise<model$0.Snapshot> {
     return $Call.ByID(1917837331).then(($result: any) => {
-        return $$createType4($result);
+        return $$createType6($result);
+    });
+}
+
+/**
+ * Undo nimmt den letzten Schritt zurück.
+ */
+export function Undo(): $CancellablePromise<$models.Result> {
+    return $Call.ByID(96323181).then(($result: any) => {
+        return $$createType0($result);
     });
 }
 
 // Private type creation functions
-var $$createType0 = (function $$initCreateType0(...args: any[]): any {
-    if ($$createType0 === $$initCreateType0) {
-        $$createType0 = $$createType3;
+const $$createType0 = $models.Result.createFrom;
+var $$createType1 = (function $$initCreateType1(...args: any[]): any {
+    if ($$createType1 === $$initCreateType1) {
+        $$createType1 = $$createType4;
     }
-    return $$createType0(...args);
+    return $$createType1(...args);
 });
-const $$createType1 = model$0.ElementType.createFrom;
-const $$createType2 = $Create.Nullable($$createType1);
-const $$createType3 = $Create.Map($Create.Any, $$createType2);
-const $$createType4 = model$0.Snapshot.createFrom;
+const $$createType2 = model$0.ElementType.createFrom;
+const $$createType3 = $Create.Nullable($$createType2);
+const $$createType4 = $Create.Map($Create.Any, $$createType3);
+const $$createType5 = model$0.History.createFrom;
+const $$createType6 = model$0.Snapshot.createFrom;

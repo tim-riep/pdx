@@ -4,7 +4,7 @@
 import { EVENT, ProjectAPI, message, on, type ProjectState } from "./api";
 import { t } from "./i18n";
 
-export const project: ProjectState = $state({ open: false, path: "", name: "", format: "", dirty: false, rev: 0 });
+export const project: ProjectState = $state({ open: false, path: "", name: "", format: "", dirty: false, rev: 0, doc: "" });
 
 export const ui = $state({
   error: "",

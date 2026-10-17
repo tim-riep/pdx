@@ -2,6 +2,9 @@ package model
 
 import (
 	"fmt"
+	"maps"
+	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -111,4 +114,36 @@ func view(n *template.Node, cat Catalog) ViewNode {
 		}
 	}
 	return vn
+}
+
+// Patch sind die Änderungen der Projektion von einer Revision zur nächsten.
+type Patch struct {
+	From    uint64     `json:"from"`
+	Rev     uint64     `json:"rev"`
+	Root    string     `json:"root"`
+	Set     []ViewNode `json:"set"`
+	Removed []string   `json:"removed"`
+}
+
+// Diff vergleicht zwei Projektionen.
+func Diff(old, cur Snapshot) Patch {
+	p := Patch{From: old.Rev, Rev: cur.Rev, Root: cur.Root, Set: []ViewNode{}, Removed: []string{}}
+	for ref, n := range cur.Nodes {
+		if o, ok := old.Nodes[ref]; !ok || !sameNode(o, n) {
+			p.Set = append(p.Set, n)
+		}
+	}
+	for ref := range old.Nodes {
+		if _, ok := cur.Nodes[ref]; !ok {
+			p.Removed = append(p.Removed, ref)
+		}
+	}
+	sort.Slice(p.Set, func(i, j int) bool { return p.Set[i].Ref < p.Set[j].Ref })
+	sort.Strings(p.Removed)
+	return p
+}
+
+func sameNode(a, b ViewNode) bool {
+	return a.Name == b.Name && a.Type == b.Type && a.Parent == b.Parent &&
+		maps.Equal(a.Attrs, b.Attrs) && slices.Equal(a.Children, b.Children)
 }

@@ -14,12 +14,21 @@ import (
 	"time"
 
 	"github.com/tim-riep/pdx/designer/internal/app"
+	"github.com/tim-riep/pdx/designer/internal/model"
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
+
+// Ereignisse mit ihren Datentypen, damit die Bindungen sie typisiert kennen.
+func init() {
+	application.RegisterEvent[app.ProjectState](app.EventProject)
+	application.RegisterEvent[app.ProjectState](app.EventCloseRequest)
+	application.RegisterEvent[model.Patch](app.EventTemplateChanged)
+	application.RegisterEvent[app.Manifest](app.EventRenderPages)
+}
 
 func main() {
 	smoke := flag.Bool("smoke", false, "starten, kurz warten und beenden (Test der Builds)")

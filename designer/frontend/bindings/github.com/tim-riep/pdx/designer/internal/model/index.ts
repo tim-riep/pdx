@@ -3,8 +3,11 @@
 
 export {
     Child,
+    Command,
     ElementType,
+    History,
     Item,
+    Patch,
     Property,
     Snapshot,
     ViewNode

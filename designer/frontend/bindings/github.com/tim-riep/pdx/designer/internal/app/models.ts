@@ -7,6 +7,9 @@ import { Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
+import * as model$0 from "../model/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
 import * as pipeline$0 from "../pipeline/models.js";
 
 /**
@@ -121,6 +124,12 @@ export class ProjectState {
     "dirty": boolean;
     "rev": number;
 
+    /**
+     * Doc kennzeichnet das geöffnete Dokument. Wechselt es, ist jeder
+     * Lesecache der Oberfläche veraltet.
+     */
+    "doc": string;
+
     /** Creates a new ProjectState instance. */
     constructor($$source: Partial<ProjectState> = {}) {
         if (!("open" in $$source)) {
@@ -140,6 +149,9 @@ export class ProjectState {
         }
         if (!("rev" in $$source)) {
             this["rev"] = 0;
+        }
+        if (!("doc" in $$source)) {
+            this["doc"] = "";
         }
 
         Object.assign(this, $$source);
@@ -223,6 +235,43 @@ export class Recovery {
     }
 }
 
+/**
+ * Result ist die Antwort auf einen Befehl. Select schlägt das Element vor,
+ * das die Oberfläche danach auswählt, etwa ein eingefügtes.
+ */
+export class Result {
+    "rev": number;
+    "select": string;
+    "history": model$0.History;
+
+    /** Creates a new Result instance. */
+    constructor($$source: Partial<Result> = {}) {
+        if (!("rev" in $$source)) {
+            this["rev"] = 0;
+        }
+        if (!("select" in $$source)) {
+            this["select"] = "";
+        }
+        if (!("history" in $$source)) {
+            this["history"] = (new model$0.History());
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Result instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Result {
+        const $$createField2_0 = $$createType6;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("history" in $$parsedSource) {
+            $$parsedSource["history"] = $$createField2_0($$parsedSource["history"]);
+        }
+        return new Result($$parsedSource as Partial<Result>);
+    }
+}
+
 // Private type creation functions
 const $$createType0 = pipeline$0.PageRef.createFrom;
 const $$createType1 = $Create.Array($$createType0);
@@ -230,3 +279,4 @@ const $$createType2 = pipeline$0.FontRef.createFrom;
 const $$createType3 = $Create.Array($$createType2);
 const $$createType4 = pipeline$0.Problem.createFrom;
 const $$createType5 = $Create.Array($$createType4);
+const $$createType6 = model$0.History.createFrom;

@@ -24,6 +24,9 @@ type ProjectState struct {
 	Format string `json:"format"`
 	Dirty  bool   `json:"dirty"`
 	Rev    uint64 `json:"rev"`
+	// Doc kennzeichnet das geöffnete Dokument. Wechselt es, ist jeder
+	// Lesecache der Oberfläche veraltet.
+	Doc string `json:"doc"`
 }
 
 // RecentFile ist ein zuletzt geöffnetes Paket.
@@ -62,7 +65,7 @@ func (c *Core) stateLocked() ProjectState {
 		return ProjectState{}
 	}
 	return ProjectState{Open: true, Path: c.doc.Path, Name: c.doc.Name(), Format: string(c.doc.Format),
-		Dirty: c.doc.Dirty(), Rev: c.doc.Rev()}
+		Dirty: c.doc.Dirty(), Rev: c.doc.Rev(), Doc: c.session}
 }
 
 // New legt eine neue Vorlage an.
@@ -163,6 +166,7 @@ func (c *Core) setDoc(d *model.Document) ProjectState {
 		c.removeAutosave(c.session)
 	}
 	c.doc, c.session = d, newSession()
+	c.view = model.Snapshot{}
 	c.r.latest = Manifest{}
 	c.scheduleLocked(0)
 	st := c.stateLocked()
@@ -180,6 +184,12 @@ func newSession() string {
 // Sicherung. Aufruf mit gehaltener Sperre.
 func (c *Core) changedLocked() {
 	c.doc.Touch()
+	c.afterChangeLocked()
+}
+
+// afterChangeLocked plant Sicherung und Setzen nach einer Änderung und
+// meldet den neuen Zustand. Aufruf mit gehaltener Sperre.
+func (c *Core) afterChangeLocked() {
 	if c.saver == nil {
 		c.saver = time.AfterFunc(c.AutosaveDelay, c.autosave)
 	}

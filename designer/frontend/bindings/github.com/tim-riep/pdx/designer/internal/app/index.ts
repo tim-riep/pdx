@@ -17,5 +17,6 @@ export {
     Manifest,
     ProjectState,
     RecentFile,
-    Recovery
+    Recovery,
+    Result
 } from "./models.js";

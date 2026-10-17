@@ -1,12 +1,33 @@
 <script lang="ts">
   import type { Property } from "../lib/api";
   import { t, label, propLabel } from "../lib/i18n";
-  import { node, typeOf } from "../lib/template.svelte";
+  import { apply, node, typeOf } from "../lib/template.svelte";
   import { selection } from "../lib/selection.svelte";
 
   let query = $state("");
   const n = $derived(node(selection.ref));
   const type = $derived(typeOf(n));
+
+  // commit schickt die Änderung als Befehl. Scheitert er, zeigt das Feld
+  // wieder den Wert aus dem Modell.
+  async function commit(p: Property, el: HTMLInputElement | HTMLSelectElement, value: string) {
+    if (!n || (n.attrs[p.name] ?? "") === value) return;
+    const ok = await apply(t("cmd.setAttr", { prop: propLabel(p.name) }), { op: "setAttr", ref: n.ref, name: p.name, value });
+    if (!ok) {
+      if (el instanceof HTMLInputElement && el.type === "checkbox") el.checked = (n.attrs[p.name] ?? p.default) === "true";
+      else el.value = n.attrs[p.name] ?? "";
+    }
+  }
+
+  function key(p: Property, e: KeyboardEvent) {
+    const el = e.currentTarget as HTMLInputElement;
+    if (e.key === "Enter") el.blur();
+    if (e.key === "Escape") {
+      el.value = n?.attrs[p.name] ?? "";
+      el.blur();
+      e.stopPropagation();
+    }
+  }
 
   const groups = $derived.by(() => {
     const q = query.trim().toLowerCase();
@@ -35,14 +56,17 @@
           <label class="prop" data-prop={p.name}>
             <span class="label" title={p.name}>{propLabel(p.name)}{#if p.required}<sup>*</sup>{/if}</span>
             {#if p.kind === "enum"}
-              <select disabled value={n.attrs[p.name] ?? ""}>
+              <select value={n.attrs[p.name] ?? ""} onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value)}>
                 <option value="">{p.default ? t("inspector.default", { value: p.default }) : ""}</option>
                 {#each p.enum ?? [] as v}<option value={v}>{v}</option>{/each}
               </select>
             {:else if p.kind === "bool"}
-              <input type="checkbox" disabled checked={(n.attrs[p.name] ?? p.default) === "true"} />
+              <input type="checkbox" checked={(n.attrs[p.name] ?? p.default) === "true"}
+                onchange={(e) => commit(p, e.currentTarget, e.currentTarget.checked ? "true" : "false")} />
             {:else}
-              <input readonly value={n.attrs[p.name] ?? ""} placeholder={p.default ?? ""} class:mono={p.kind === "xpath" || p.kind === "id" || p.kind === "ref"} />
+              <input value={n.attrs[p.name] ?? ""} placeholder={p.default ?? ""} spellcheck="false"
+                class:mono={p.kind === "xpath" || p.kind === "id" || p.kind === "ref"}
+                onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value.trim())} onkeydown={(e) => key(p, e)} />
             {/if}
           </label>
         {/each}

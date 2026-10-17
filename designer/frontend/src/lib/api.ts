@@ -13,6 +13,9 @@ export type {
   ElementType,
   Property,
   Item,
+  Command,
+  Patch,
+  History,
 } from "../../bindings/github.com/tim-riep/pdx/designer/internal/model/models";
 export type {
   ProjectState,
@@ -24,6 +27,7 @@ export type {
 export const EVENT = {
   project: "project:changed",
   render: "render:pages",
+  template: "template:changed",
   closeRequest: "app:close-request",
 } as const;
 

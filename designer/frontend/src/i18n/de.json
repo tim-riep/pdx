@@ -174,5 +174,11 @@
   "inspector.search": "Eigenschaft suchen",
   "inspector.none": "Nichts ausgewählt",
   "inspector.default": "Vorgabe {value}",
-  "panel.styles": "Stile"
+  "panel.styles": "Stile",
+  "cmd.setAttr": "{prop} ändern",
+  "cmd.remove": "{el} entfernen",
+  "action.undo": "Rückgängig",
+  "action.redo": "Wiederholen",
+  "action.undoLabel": "Rückgängig: {label}",
+  "action.redoLabel": "Wiederholen: {label}"
 }
