@@ -10,10 +10,12 @@ import (
 	"flag"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/tim-riep/pdx/designer/internal/app"
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wailsapp/wails/v3/pkg/events"
 )
 
 //go:embed all:frontend/dist
@@ -25,19 +27,32 @@ func main() {
 
 	var wails *application.App
 	emit := emitter{app: func() *application.App { return wails }}
-	core := app.NewCore(emit, dialogs{app: func() *application.App { return wails }})
-	_ = core
+	// PDX_DESIGNER_DATA ersetzt das Datenverzeichnis, etwa in Tests.
+	dataDir := os.Getenv("PDX_DESIGNER_DATA")
+	if dataDir == "" {
+		dataDir = app.DefaultDataDir()
+	}
+	core := app.NewCore(emit, dialogs{app: func() *application.App { return wails }}, dataDir)
+	var window *application.WebviewWindow
+	appService := app.NewAppService(core, func() {
+		if window != nil {
+			window.Close()
+		}
+	})
 
 	wails = application.New(application.Options{
 		Name:        "pdx Designer",
 		Description: "Dokumente gegen ein XSD gestalten",
 		Services: []application.Service{
-			application.NewService(&app.AppService{}),
+			application.NewService(appService),
+			application.NewService(app.NewProjectService(core)),
 		},
 		Assets: application.AssetOptions{Handler: application.AssetFileServerFS(assets)},
 		Mac:    application.MacOptions{ApplicationShouldTerminateAfterLastWindowClosed: true},
+		// Vor dem Beenden die anstehende automatische Sicherung schreiben.
+		OnShutdown: core.Flush,
 	})
-	wails.Window.NewWithOptions(application.WebviewWindowOptions{
+	window = wails.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title:     "pdx Designer",
 		Width:     1440,
 		Height:    900,
@@ -45,6 +60,14 @@ func main() {
 		MinHeight: 600,
 		URL:       "/",
 	})
+	if window != nil {
+		// Ungespeicherte Änderungen: erst die Oberfläche fragen.
+		window.RegisterHook(events.Common.WindowClosing, func(e *application.WindowEvent) {
+			if !core.MayClose() {
+				e.Cancel()
+			}
+		})
+	}
 	if *smoke {
 		go func() {
 			time.Sleep(3 * time.Second)
@@ -69,12 +92,20 @@ func (e emitter) Emit(name string, data any) {
 // dialogs öffnet native Dateidialoge über Wails.
 type dialogs struct{ app func() *application.App }
 
+// noDialogs übersetzt den Fehler fehlender Dialoge (Servermodus).
+func noDialogs(path string, err error) (string, error) {
+	if err != nil && strings.Contains(err.Error(), "not available") {
+		return "", app.ErrNoDialogs
+	}
+	return path, err
+}
+
 func (d dialogs) OpenFile(title string, filters []app.Filter, dirs bool) (string, error) {
 	dlg := d.app().Dialog.OpenFile().SetTitle(title).CanChooseFiles(!dirs).CanChooseDirectories(dirs)
 	for _, f := range filters {
 		dlg = dlg.AddFilter(f.Name, f.Pattern)
 	}
-	return dlg.PromptForSingleSelection()
+	return noDialogs(dlg.PromptForSingleSelection())
 }
 
 func (d dialogs) SaveFile(title, name string, filters []app.Filter) (string, error) {
@@ -83,5 +114,5 @@ func (d dialogs) SaveFile(title, name string, filters []app.Filter) (string, err
 		dlg = dlg.AddFilter(f.Name, f.Pattern)
 	}
 	_ = title
-	return dlg.PromptForSingleSelection()
+	return noDialogs(dlg.PromptForSingleSelection())
 }

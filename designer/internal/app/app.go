@@ -5,9 +5,14 @@
 package app
 
 import (
+	"errors"
+	"os"
+	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/tim-riep/pdx"
+	"github.com/tim-riep/pdx/designer/internal/model"
 )
 
 // Emitter schickt Ereignisse an die Oberfläche.
@@ -20,6 +25,10 @@ type Filter struct {
 	Name    string
 	Pattern string
 }
+
+// ErrNoDialogs meldet, dass es keine nativen Dateidialoge gibt, etwa im
+// Server-Build. Die Oberfläche fragt dann selbst nach dem Pfad.
+var ErrNoDialogs = errors.New("Dateidialoge sind hier nicht verfügbar")
 
 // Dialogs öffnet native Dateidialoge. Im Server-Build gibt es keine, dann
 // liefern die Methoden einen Fehler.
@@ -34,6 +43,9 @@ const (
 	EventRenderPages     = "render:pages"
 	EventProblems        = "problems:changed"
 	EventProject         = "project:changed"
+	// EventCloseRequest fragt die Oberfläche, ob ungespeicherte Änderungen
+	// gesichert werden sollen, bevor das Fenster schließt.
+	EventCloseRequest = "app:close-request"
 )
 
 // Info beschreibt die Anwendung für Titelleiste und „Über“.
@@ -43,11 +55,30 @@ type Info struct {
 	Engine  string `json:"engine"`
 }
 
-// AppService liefert allgemeine Angaben zur Anwendung.
-type AppService struct{}
+// AppService liefert allgemeine Angaben zur Anwendung und steuert das
+// Beenden.
+type AppService struct {
+	c *Core
+	// Close schließt das Fenster ohne weitere Rückfrage. Gesetzt von main.
+	Close func()
+}
+
+// NewAppService liefert den Service. close darf nil sein.
+func NewAppService(c *Core, close func()) *AppService { return &AppService{c: c, Close: close} }
+
+// ConfirmClose schließt das Fenster nach der Rückfrage der Oberfläche,
+// auch mit ungespeicherten Änderungen.
+func (a *AppService) ConfirmClose() {
+	a.c.mu.Lock()
+	a.c.closing = true
+	a.c.mu.Unlock()
+	if a.Close != nil {
+		a.Close()
+	}
+}
 
 // Info liefert Name und Versionen.
-func (AppService) Info() Info {
+func (*AppService) Info() Info {
 	return Info{Name: "pdx Designer", Version: Version, Engine: pdx.Version}
 }
 
@@ -61,14 +92,45 @@ type Core struct {
 	mu      sync.Mutex
 	emit    Emitter
 	dialogs Dialogs
+	dataDir string
+
+	doc     *model.Document
+	session string // Kennung der automatischen Sicherung des Dokuments
+	saver   *time.Timer
+	closing bool // Rückfrage beim Schließen ist beantwortet
+	// AutosaveDelay ist die Wartezeit nach einer Änderung bis zur
+	// automatischen Sicherung.
+	AutosaveDelay time.Duration
 }
 
-// NewCore legt den Zustand an. emit und dialogs dürfen nil sein (Tests).
-func NewCore(emit Emitter, dialogs Dialogs) *Core {
+// NewCore legt den Zustand an. dataDir nimmt Einstellungen und automatische
+// Sicherungen auf. emit und dialogs dürfen nil sein (Tests).
+func NewCore(emit Emitter, dialogs Dialogs, dataDir string) *Core {
 	if emit == nil {
 		emit = nopEmitter{}
 	}
-	return &Core{emit: emit, dialogs: dialogs}
+	return &Core{emit: emit, dialogs: dialogs, dataDir: dataDir, AutosaveDelay: 30 * time.Second}
+}
+
+// MayClose meldet, ob das Fenster ohne Rückfrage schließen darf. Sonst
+// schickt es die Rückfrage an die Oberfläche.
+func (c *Core) MayClose() bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.closing || c.doc == nil || !c.doc.Dirty() {
+		return true
+	}
+	c.emit.Emit(EventCloseRequest, c.stateLocked())
+	return false
+}
+
+// DefaultDataDir ist das Verzeichnis für Einstellungen im Benutzerprofil.
+func DefaultDataDir() string {
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		dir = os.TempDir()
+	}
+	return filepath.Join(dir, "pdx-designer")
 }
 
 type nopEmitter struct{}

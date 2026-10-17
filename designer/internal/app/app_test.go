@@ -7,7 +7,7 @@ import (
 )
 
 func TestInfo(t *testing.T) {
-	i := AppService{}.Info()
+	i := (&AppService{}).Info()
 	if i.Version != Version || i.Engine != pdx.Version || i.Name == "" {
 		t.Errorf("Info: %+v", i)
 	}

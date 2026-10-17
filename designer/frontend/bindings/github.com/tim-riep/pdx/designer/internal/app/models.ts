@@ -36,3 +36,116 @@ export class Info {
         return new Info($$parsedSource as Partial<Info>);
     }
 }
+
+/**
+ * ProjectState beschreibt das geöffnete Projekt für die Oberfläche.
+ */
+export class ProjectState {
+    "open": boolean;
+    "path": string;
+    "name": string;
+    "format": string;
+    "dirty": boolean;
+    "rev": number;
+
+    /** Creates a new ProjectState instance. */
+    constructor($$source: Partial<ProjectState> = {}) {
+        if (!("open" in $$source)) {
+            this["open"] = false;
+        }
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("name" in $$source)) {
+            this["name"] = "";
+        }
+        if (!("format" in $$source)) {
+            this["format"] = "";
+        }
+        if (!("dirty" in $$source)) {
+            this["dirty"] = false;
+        }
+        if (!("rev" in $$source)) {
+            this["rev"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ProjectState instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ProjectState {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new ProjectState($$parsedSource as Partial<ProjectState>);
+    }
+}
+
+/**
+ * RecentFile ist ein zuletzt geöffnetes Paket.
+ */
+export class RecentFile {
+    "path": string;
+    "name": string;
+    "opened": string;
+
+    /** Creates a new RecentFile instance. */
+    constructor($$source: Partial<RecentFile> = {}) {
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("name" in $$source)) {
+            this["name"] = "";
+        }
+        if (!("opened" in $$source)) {
+            this["opened"] = "0001-01-01T00:00:00.000Z";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new RecentFile instance from a string or object.
+     */
+    static createFrom($$source: any = {}): RecentFile {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new RecentFile($$parsedSource as Partial<RecentFile>);
+    }
+}
+
+/**
+ * Recovery ist eine automatische Sicherung, die nach einem Absturz übrig
+ * geblieben ist.
+ */
+export class Recovery {
+    "id": string;
+    "path": string;
+    "name": string;
+    "saved": string;
+
+    /** Creates a new Recovery instance. */
+    constructor($$source: Partial<Recovery> = {}) {
+        if (!("id" in $$source)) {
+            this["id"] = "";
+        }
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("name" in $$source)) {
+            this["name"] = "";
+        }
+        if (!("saved" in $$source)) {
+            this["saved"] = "0001-01-01T00:00:00.000Z";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Recovery instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Recovery {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Recovery($$parsedSource as Partial<Recovery>);
+    }
+}
