@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
@@ -17,6 +18,7 @@ import (
 //	insert   Parent, Index, XML  Elemente einfügen (XML im Vorlagenformat)
 //	remove   Ref               Element entfernen
 //	move     Ref, Parent, Index  Element verschieben
+//	content  Ref, XML          gemischten Inhalt (Text und Elemente) ersetzen
 //	batch    Cmds              mehrere Befehle als ein Schritt
 //	setFile  Name              Datei im Paket setzen oder entfernen (nur
 //	                           im Backend, die Daten trägt Data)
@@ -259,6 +261,24 @@ func exec(t *template.Template, files map[string][]byte, c Command) (Command, er
 		}
 		target.InsertChild(i, n)
 		return Command{Op: "move", Ref: Ref(n), Parent: refAfterMove(from, fromRef, target, n), Index: oldIndex}, nil
+	case "content":
+		// Gemischten Inhalt ersetzen: Text und eingebettete Elemente.
+		n, err := Resolve(t, c.Ref)
+		if err != nil {
+			return Command{}, err
+		}
+		nodes, err := parseContent(c.XML)
+		if err != nil {
+			return Command{}, err
+		}
+		old := contentXML(n)
+		for len(n.Children) > 0 {
+			n.RemoveChild(n.Children[0])
+		}
+		for _, x := range nodes {
+			n.InsertChild(-1, x)
+		}
+		return Command{Op: "content", Ref: Ref(n), XML: old}, nil
 	case "batch":
 		var inv []Command
 		for _, sub := range c.Cmds {
@@ -296,6 +316,41 @@ func refAfterMove(from *template.Node, fromRef string, _ *template.Node, _ *temp
 }
 
 // parseFragment liest Elemente im Vorlagenformat ohne Wurzel.
+// parseContent liest gemischten Inhalt. Die innere Hülle ist text, damit
+// der Parser Leerraum und Text so behält, wie er steht.
+func parseContent(xml string) ([]*template.Node, error) {
+	t, err := template.ParseTree([]byte(`<template xmlns="` + template.NS + `"><text>` + xml + `</text></template>`))
+	if err != nil {
+		return nil, fmt.Errorf("Inhalt: %v", err)
+	}
+	wrap := t.Root.First("text")
+	out := slices.Clone(wrap.Children)
+	for _, c := range out {
+		wrap.RemoveChild(c)
+	}
+	return out, nil
+}
+
+// contentXML schreibt den Inhalt eines Elements als Fragment, so wie
+// parseContent ihn liest.
+func contentXML(n *template.Node) string {
+	wrap := template.NewElement("text")
+	for _, c := range n.Children {
+		wrap.InsertChild(-1, c.Clone())
+	}
+	out := string(template.Write(&template.Template{Root: wrap}))
+	start := strings.Index(out, "<text")
+	if start < 0 {
+		return ""
+	}
+	open := out[start:]
+	if strings.HasPrefix(open[strings.Index(open, ">")-1:], "/>") {
+		return "" // leer
+	}
+	body := open[strings.Index(open, ">")+1:]
+	return body[:strings.LastIndex(body, "</text>")]
+}
+
 func parseFragment(xml string) ([]*template.Node, error) {
 	var b bytes.Buffer
 	b.WriteString(`<template xmlns="` + template.NS + `">`)

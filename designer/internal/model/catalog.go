@@ -38,6 +38,8 @@ type ElementType struct {
 	Properties []Property `json:"properties"`
 	Children   []Child    `json:"children"`
 	Mixed      bool       `json:"mixed"`
+	// Text meldet Textinhalt: gemischt oder nur Text (etwa string).
+	Text bool `json:"text"`
 }
 
 // Catalog sind alle Elementtypen. Schlüssel ist bei globalen Elementen der
@@ -100,6 +102,7 @@ func buildCatalog() (Catalog, error) {
 			return
 		}
 		et.Mixed = ct.Mixed()
+		et.Text = et.Mixed || ct.ContentKind() == xsd.ContentSimple
 		for _, a := range ct.Attributes() {
 			if a.Use == xsd.UseProhibited {
 				continue

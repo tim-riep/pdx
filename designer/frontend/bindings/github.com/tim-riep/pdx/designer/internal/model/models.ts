@@ -59,6 +59,7 @@ export class Child {
  * 	insert   Parent, Index, XML  Elemente einfügen (XML im Vorlagenformat)
  * 	remove   Ref               Element entfernen
  * 	move     Ref, Parent, Index  Element verschieben
+ * 	content  Ref, XML          gemischten Inhalt (Text und Elemente) ersetzen
  * 	batch    Cmds              mehrere Befehle als ein Schritt
  * 	setFile  Name              Datei im Paket setzen oder entfernen (nur
  * 	                           im Backend, die Daten trägt Data)
@@ -108,6 +109,11 @@ export class ElementType {
     "children": Child[];
     "mixed": boolean;
 
+    /**
+     * Text meldet Textinhalt: gemischt oder nur Text (etwa string).
+     */
+    "text": boolean;
+
     /** Creates a new ElementType instance. */
     constructor($$source: Partial<ElementType> = {}) {
         if (!("key" in $$source)) {
@@ -124,6 +130,9 @@ export class ElementType {
         }
         if (!("mixed" in $$source)) {
             this["mixed"] = false;
+        }
+        if (!("text" in $$source)) {
+            this["text"] = false;
         }
 
         Object.assign(this, $$source);

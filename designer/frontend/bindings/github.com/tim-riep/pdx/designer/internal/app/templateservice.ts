@@ -148,6 +148,16 @@ export function Redo(): $CancellablePromise<$models.Result> {
 }
 
 /**
+ * SetContent ersetzt Text und eingebettete Elemente als ein Schritt.
+ * Eingebettete Elemente, die nicht mehr vorkommen, entfallen.
+ */
+export function SetContent(ce: $models.ContentEdit): $CancellablePromise<$models.Result> {
+    return $Call.ByID(2029862710, ce).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * Snapshot liefert die vollständige Projektion der aktuellen Revision.
  */
 export function Snapshot(): $CancellablePromise<model$0.Snapshot> {

@@ -238,6 +238,38 @@ export class ConformanceItem {
 }
 
 /**
+ * ContentEdit ersetzt den Inhalt eines Elements mit gemischtem Inhalt.
+ */
+export class ContentEdit {
+    "ref": string;
+    "segments": Segment[];
+
+    /** Creates a new ContentEdit instance. */
+    constructor($$source: Partial<ContentEdit> = {}) {
+        if (!("ref" in $$source)) {
+            this["ref"] = "";
+        }
+        if (!("segments" in $$source)) {
+            this["segments"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ContentEdit instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ContentEdit {
+        const $$createField1_0 = $$createType8;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("segments" in $$parsedSource) {
+            $$parsedSource["segments"] = $$createField1_0($$parsedSource["segments"]);
+        }
+        return new ContentEdit($$parsedSource as Partial<ContentEdit>);
+    }
+}
+
+/**
  * Drop beschreibt, wohin ein Datenknoten gezogen wurde.
  */
 export class Drop {
@@ -468,8 +500,8 @@ export class Manifest {
      * Creates a new Manifest instance from a string or object.
      */
     static createFrom($$source: any = {}): Manifest {
-        const $$createField3_0 = $$createType8;
-        const $$createField4_0 = $$createType10;
+        const $$createField3_0 = $$createType10;
+        const $$createField4_0 = $$createType12;
         const $$createField5_0 = $$createType3;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("pages" in $$parsedSource) {
@@ -690,7 +722,7 @@ export class Report {
      * Creates a new Report instance from a string or object.
      */
     static createFrom($$source: any = {}): Report {
-        const $$createField1_0 = $$createType12;
+        const $$createField1_0 = $$createType14;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField1_0($$parsedSource["problems"]);
@@ -727,12 +759,46 @@ export class Result {
      * Creates a new Result instance from a string or object.
      */
     static createFrom($$source: any = {}): Result {
-        const $$createField2_0 = $$createType13;
+        const $$createField2_0 = $$createType15;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("history" in $$parsedSource) {
             $$parsedSource["history"] = $$createField2_0($$parsedSource["history"]);
         }
         return new Result($$parsedSource as Partial<Result>);
+    }
+}
+
+/**
+ * Segment ist ein Stück gemischten Inhalts: Text (ein Zeilenumbruch wird zu
+ * br), ein vorhandenes eingebettetes Element (Ref) oder ein neues Feld
+ * (Bind, relativ zum Kontext des Elements).
+ */
+export class Segment {
+    "text": string;
+    "ref": string;
+    "bind": string;
+
+    /** Creates a new Segment instance. */
+    constructor($$source: Partial<Segment> = {}) {
+        if (!("text" in $$source)) {
+            this["text"] = "";
+        }
+        if (!("ref" in $$source)) {
+            this["ref"] = "";
+        }
+        if (!("bind" in $$source)) {
+            this["bind"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Segment instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Segment {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Segment($$parsedSource as Partial<Segment>);
     }
 }
 
@@ -870,9 +936,9 @@ export class XPathInfo {
      * Creates a new XPathInfo instance from a string or object.
      */
     static createFrom($$source: any = {}): XPathInfo {
-        const $$createField2_0 = $$createType15;
-        const $$createField3_0 = $$createType17;
-        const $$createField4_0 = $$createType19;
+        const $$createField2_0 = $$createType17;
+        const $$createField3_0 = $$createType19;
+        const $$createField4_0 = $$createType21;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField2_0($$parsedSource["problems"]);
@@ -928,16 +994,18 @@ const $$createType3 = $Create.Array($$createType2);
 const $$createType4 = $Create.Array($Create.Any);
 const $$createType5 = ConformanceItem.createFrom;
 const $$createType6 = $Create.Array($$createType5);
-const $$createType7 = pipeline$0.PageRef.createFrom;
+const $$createType7 = Segment.createFrom;
 const $$createType8 = $Create.Array($$createType7);
-const $$createType9 = pipeline$0.FontRef.createFrom;
+const $$createType9 = pipeline$0.PageRef.createFrom;
 const $$createType10 = $Create.Array($$createType9);
-const $$createType11 = Problem.createFrom;
+const $$createType11 = pipeline$0.FontRef.createFrom;
 const $$createType12 = $Create.Array($$createType11);
-const $$createType13 = model$0.History.createFrom;
-const $$createType14 = xpath$0.Problem.createFrom;
-const $$createType15 = $Create.Array($$createType14);
-const $$createType16 = Field.createFrom;
-const $$createType17 = $Create.Nullable($$createType16);
-const $$createType18 = xpath$0.Result.createFrom;
+const $$createType13 = Problem.createFrom;
+const $$createType14 = $Create.Array($$createType13);
+const $$createType15 = model$0.History.createFrom;
+const $$createType16 = xpath$0.Problem.createFrom;
+const $$createType17 = $Create.Array($$createType16);
+const $$createType18 = Field.createFrom;
 const $$createType19 = $Create.Nullable($$createType18);
+const $$createType20 = xpath$0.Result.createFrom;
+const $$createType21 = $Create.Nullable($$createType20);
