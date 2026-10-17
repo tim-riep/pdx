@@ -85,3 +85,13 @@ XSL 1.1 6.11.2 erlaubt an `fo:bookmark` neben `internal-destination` auch
 URI-Aktion. FOP 2.11 bricht dabei mit „DestinationData must contain a ID
 reference“ ab. Der Korpusfall verweise nutzt deshalb nur interne Ziele,
 externe Lesezeichen prüft ein eigener Test (pdf/render).
+
+## Barcodes in fo:instream-foreign-object
+
+pdx setzt `pdx:barcode` in `fo:instream-foreign-object`, dem Ort, den XSL
+1.1 6.6.6 für Inhalte fremder Namespaces vorsieht. FOP 2.11 kennt das
+Element nicht: Das PDF entsteht ohne den Barcode, FOP meldet „The intrinsic
+dimensions of an instream-foreign-object could not be determined“ (SEVERE),
+der Export des Area Tree (`-at`) bricht ab. Der Fall barcodes wird nicht mit
+FOP verglichen. Stattdessen dekodiert ein Test die gerasterten Barcodes mit
+zbar (QR-Code und Code 128) und prüft ihren Inhalt.

@@ -20,7 +20,7 @@ const (
 	// FOPImage ist das lokal gebaute FOP-Image (testdata/docker/fop).
 	FOPImage = "pdx-test/fop:2.11"
 	// PopplerImage ist das lokal gebaute Poppler-Image (testdata/docker/poppler).
-	PopplerImage = "pdx-test/poppler:1"
+	PopplerImage = "pdx-test/poppler:2"
 	// EnvEnable schaltet die Vergleichstests ein.
 	EnvEnable = "PDX_FOP"
 )

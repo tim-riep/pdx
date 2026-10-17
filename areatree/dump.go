@@ -109,6 +109,12 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 		case *Line:
 			fmt.Fprintf(b, "line %s,%s %s,%s %s\n", v.From.X, v.From.Y, v.To.X, v.To.Y,
 				border(Border{Width: v.Width, Style: v.Style, Color: v.Color}))
+		case *Path:
+			fmt.Fprintf(b, "path %s fill=%s rects=%d", rect(v.Rect), color(v.Fill), len(v.Rects))
+			if v.Source != "" {
+				fmt.Fprintf(b, " src=%s", strconv.Quote(v.Source))
+			}
+			b.WriteByte('\n')
 		case *Link:
 			target := "dest=" + strconv.Quote(v.Dest)
 			if v.URI != "" {

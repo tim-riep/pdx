@@ -68,6 +68,8 @@ func (pc *pageCtx) area(a areatree.Area) error {
 		return pc.boxArea(v)
 	case *areatree.Link:
 		return pc.link(v)
+	case *areatree.Path:
+		return pc.path(v)
 	}
 	return fmt.Errorf("unbekannter Bereich %T", a)
 }
@@ -223,5 +225,22 @@ func (pc *pageCtx) boxArea(b *areatree.Box) error {
 		pc.c.Stroke()
 		pc.c.Restore()
 	}
+	return nil
+}
+
+// path füllt alle Rechtecke eines Pfads in einem Zug.
+func (pc *pageCtx) path(p *areatree.Path) error {
+	if len(p.Rects) == 0 {
+		return nil
+	}
+	pc.c.Save()
+	if err := pc.fill(p.Fill); err != nil {
+		return err
+	}
+	for _, r := range p.Rects {
+		pc.rect(r)
+	}
+	pc.c.Fill()
+	pc.c.Restore()
 	return nil
 }

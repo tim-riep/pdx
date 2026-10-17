@@ -1,0 +1,207 @@
+// Package barcode erzeugt Barcodes als Modulmatrix für die vektorielle
+// Ausgabe: QR-Code, DataMatrix (ECC 200), Code 128 und GiroCode (EPC-QR).
+// Die Kodierung übernimmt github.com/boombuler/barcode (MIT), dieses Paket
+// liefert die Module samt Ruhezone und prüft die Eingaben.
+package barcode
+
+import (
+	"fmt"
+	"math/big"
+	"strconv"
+	"strings"
+	"unicode/utf8"
+
+	bc "github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/code128"
+	"github.com/boombuler/barcode/datamatrix"
+	"github.com/boombuler/barcode/qr"
+)
+
+// Matrix ist ein Barcode als Raster dunkler Module. Bei Code 128 ist Rows 1,
+// jede Spalte ist dann ein Balken über die ganze Höhe.
+type Matrix struct {
+	Cols, Rows int
+	// Quiet ist die Ruhezone in Modulen auf jeder Seite (bei Code 128 nur
+	// links und rechts).
+	Quiet  int
+	dark   []bool
+	Linear bool
+}
+
+// Dark meldet, ob das Modul in Spalte x und Zeile y dunkel ist.
+func (m *Matrix) Dark(x, y int) bool { return m.dark[y*m.Cols+x] }
+
+func fromImage(b bc.Barcode, quiet int, linear bool) *Matrix {
+	r := b.Bounds()
+	m := &Matrix{Cols: r.Dx(), Rows: r.Dy(), Quiet: quiet, Linear: linear}
+	if linear {
+		m.Rows = 1
+	}
+	m.dark = make([]bool, m.Cols*m.Rows)
+	for y := 0; y < m.Rows; y++ {
+		for x := 0; x < m.Cols; x++ {
+			c, _, _, _ := b.At(r.Min.X+x, r.Min.Y+y).RGBA()
+			m.dark[y*m.Cols+x] = c < 0x8000
+		}
+	}
+	return m
+}
+
+// Spec beschreibt einen Barcode.
+type Spec struct {
+	// Type ist qr, datamatrix, code128 oder girocode.
+	Type string
+	// Value ist der Inhalt bei qr, datamatrix und code128.
+	Value string
+	// ECC ist bei qr die Fehlerkorrektur L, M, Q oder H (Vorgabe M).
+	ECC string
+	// GiroCode beschreibt eine SEPA-Überweisung für type="girocode".
+	Giro Giro
+}
+
+// Giro sind die Felder eines GiroCodes nach EPC069-12, Version 002.
+type Giro struct {
+	Name      string // Empfänger, höchstens 70 Zeichen
+	IBAN      string
+	BIC       string // optional ab Version 002
+	Amount    string // Betrag in Euro, etwa "1190.00", optional
+	Purpose   string // Zweckcode, 4 Zeichen, optional
+	Reference string // strukturierte Referenz (RF), optional
+	Text      string // Verwendungszweck, höchstens 140 Zeichen
+}
+
+// Generate erzeugt die Modulmatrix.
+func Generate(s Spec) (*Matrix, error) {
+	switch s.Type {
+	case "qr":
+		if s.Value == "" {
+			return nil, fmt.Errorf("QR-Code ohne Inhalt")
+		}
+		lvl, err := eccLevel(s.ECC)
+		if err != nil {
+			return nil, err
+		}
+		b, err := qr.Encode(s.Value, lvl, qr.Unicode)
+		if err != nil {
+			return nil, fmt.Errorf("QR-Code: %v", err)
+		}
+		return fromImage(b, 4, false), nil
+	case "girocode":
+		payload, err := s.Giro.Payload()
+		if err != nil {
+			return nil, err
+		}
+		b, err := qr.Encode(payload, qr.M, qr.Unicode)
+		if err != nil {
+			return nil, fmt.Errorf("GiroCode: %v", err)
+		}
+		return fromImage(b, 4, false), nil
+	case "datamatrix":
+		if s.Value == "" {
+			return nil, fmt.Errorf("DataMatrix ohne Inhalt")
+		}
+		b, err := datamatrix.Encode(s.Value)
+		if err != nil {
+			return nil, fmt.Errorf("DataMatrix: %v", err)
+		}
+		return fromImage(b, 1, false), nil
+	case "code128":
+		if s.Value == "" {
+			return nil, fmt.Errorf("Code 128 ohne Inhalt")
+		}
+		b, err := code128.Encode(s.Value)
+		if err != nil {
+			return nil, fmt.Errorf("Code 128: %v", err)
+		}
+		return fromImage(b, 10, true), nil
+	}
+	return nil, fmt.Errorf("Barcodetyp %q unbekannt, erlaubt sind qr, datamatrix, code128 und girocode", s.Type)
+}
+
+func eccLevel(s string) (qr.ErrorCorrectionLevel, error) {
+	switch strings.ToUpper(s) {
+	case "L":
+		return qr.L, nil
+	case "", "M":
+		return qr.M, nil
+	case "Q":
+		return qr.Q, nil
+	case "H":
+		return qr.H, nil
+	}
+	return qr.M, fmt.Errorf("Fehlerkorrektur %q unbekannt, erlaubt sind L, M, Q und H", s)
+}
+
+// Payload baut die Nutzlast eines GiroCodes nach EPC069-12 Version 002
+// (Zeichensatz UTF-8, Kennung SCT) und prüft IBAN und Betrag.
+func (g Giro) Payload() (string, error) {
+	iban := strings.ToUpper(strings.ReplaceAll(g.IBAN, " ", ""))
+	if !validIBAN(iban) {
+		return "", fmt.Errorf("GiroCode: IBAN %q ist ungültig", g.IBAN)
+	}
+	if g.Name == "" || utf8.RuneCountInString(g.Name) > 70 {
+		return "", fmt.Errorf("GiroCode: Empfängername fehlt oder ist länger als 70 Zeichen")
+	}
+	amount := ""
+	if g.Amount != "" {
+		v, err := strconv.ParseFloat(g.Amount, 64)
+		if err != nil || v < 0.01 || v > 999999999.99 || strings.Contains(g.Amount, ",") {
+			return "", fmt.Errorf("GiroCode: Betrag %q ist ungültig, erwartet etwa 1190.00", g.Amount)
+		}
+		amount = "EUR" + strconv.FormatFloat(v, 'f', 2, 64)
+	}
+	if g.Reference != "" && g.Text != "" {
+		return "", fmt.Errorf("GiroCode: Referenz und Verwendungszweck schließen sich aus")
+	}
+	if utf8.RuneCountInString(g.Text) > 140 {
+		return "", fmt.Errorf("GiroCode: Verwendungszweck ist länger als 140 Zeichen")
+	}
+	lines := []string{"BCD", "002", "1", "SCT", strings.ToUpper(strings.ReplaceAll(g.BIC, " ", "")),
+		g.Name, iban, amount, g.Purpose, g.Reference, g.Text}
+	p := strings.TrimRight(strings.Join(lines, "\n"), "\n")
+	if len(p) > 331 {
+		return "", fmt.Errorf("GiroCode: Nutzlast mit %d Bytes ist länger als 331", len(p))
+	}
+	return p, nil
+}
+
+// validIBAN prüft Form und Prüfziffern (ISO 13616, Modulo 97).
+func validIBAN(iban string) bool {
+	if len(iban) < 15 || len(iban) > 34 {
+		return false
+	}
+	var digits strings.Builder
+	for _, r := range iban[4:] + iban[:4] {
+		switch {
+		case r >= '0' && r <= '9':
+			digits.WriteRune(r)
+		case r >= 'A' && r <= 'Z':
+			digits.WriteString(strconv.Itoa(int(r-'A') + 10))
+		default:
+			return false
+		}
+	}
+	n, ok := new(big.Int).SetString(digits.String(), 10)
+	return ok && new(big.Int).Mod(n, big.NewInt(97)).Int64() == 1
+}
+
+// Rects fasst die dunklen Module zeilenweise zu Rechtecken zusammen.
+// Koordinaten in Modulen ohne Ruhezone, Ursprung oben links.
+func (m *Matrix) Rects() [][4]int {
+	var out [][4]int
+	for y := 0; y < m.Rows; y++ {
+		x := 0
+		for x < m.Cols {
+			if !m.Dark(x, y) {
+				x++
+				continue
+			}
+			start := x
+			for x < m.Cols && m.Dark(x, y) {
+				x++
+			}
+			out = append(out, [4]int{start, y, x - start, 1})
+		}
+	}
+	return out
+}

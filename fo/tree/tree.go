@@ -105,6 +105,7 @@ var allowed = map[string][]string{
 	"bookmark-title":                      {"#text"},
 	"leader":                              {"#inline", "#text"},
 	"basic-link":                          {"#inline", "#text"},
+	"instream-foreign-object":             {},
 	"layout-master-set":                   {"simple-page-master", "page-sequence-master"},
 	"page-sequence-master":                {"single-page-master-reference", "repeatable-page-master-reference", "repeatable-page-master-alternatives"},
 	"single-page-master-reference":        {},
@@ -146,7 +147,7 @@ var blockLevel = map[string]bool{"block": true, "block-container": true, "table"
 	"retrieve-marker": true, "retrieve-table-marker": true}
 var inlineLevel = map[string]bool{"inline": true, "external-graphic": true, "page-number": true,
 	"page-number-citation": true, "page-number-citation-last": true,
-	"retrieve-marker": true, "retrieve-table-marker": true, "leader": true, "basic-link": true}
+	"retrieve-marker": true, "retrieve-table-marker": true, "leader": true, "basic-link": true, "instream-foreign-object": true}
 
 // markerParents dürfen fo:marker als Kinder haben.
 var markerParents = map[string]bool{"block": true, "block-container": true, "inline": true, "table-row": true,
@@ -224,7 +225,7 @@ func ParseBytes(data []byte) (*Node, error) {
 			}
 			if n.Space != NSFO {
 				// Fremde Elemente: in fo:declarations übernehmen, sonst ignorieren.
-				if parent.IsFO("declarations") || (parent.Space != NSFO && parent.Space != "") {
+				if parent.IsFO("declarations") || parent.IsFO("instream-foreign-object") || (parent.Space != NSFO && parent.Space != "") {
 					n.Parent = parent
 					parent.Children = append(parent.Children, n)
 					stack = append(stack, n)

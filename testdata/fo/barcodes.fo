@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Barcodes als Vektorpfade: QR-Code, GiroCode (EPC-QR), DataMatrix und
+     Code 128 über pdx:barcode in fo:instream-foreign-object. -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm">
+      <fo:region-body/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Barcodes" subject="Korpus: Barcodes als Vektorpfade"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4" font-family="Helvetica" font-size="10pt">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block font-size="16pt" font-weight="bold" space-after="6mm">Barcodes</fo:block>
+      <fo:block space-after="2mm">QR-Code mit Adresse (natürliche Größe, Modul 0,5 mm):</fo:block>
+      <fo:block space-after="6mm"><fo:instream-foreign-object><pdx:barcode type="qr" value="https://pdx.example/rechnung/RE-2026-0001"/></fo:instream-foreign-object></fo:block>
+      <fo:block space-after="2mm">GiroCode über 1.190,00 € (35 mm breit):</fo:block>
+      <fo:block space-after="6mm"><fo:instream-foreign-object content-width="35mm"><pdx:barcode type="girocode" name="Beispiel GmbH" iban="DE02 1203 0000 0000 2020 51" bic="BYLADEM1001" amount="1190.00" text="RE-2026-0001"/></fo:instream-foreign-object></fo:block>
+      <fo:block space-after="2mm">DataMatrix und Code 128 in einer Zeile, blau:</fo:block>
+      <fo:block color="#1f4e79"><fo:instream-foreign-object content-width="20mm"><pdx:barcode type="datamatrix">RE-2026-0001</pdx:barcode></fo:instream-foreign-object>   <fo:instream-foreign-object><pdx:barcode type="code128" value="RE-2026-0001" bar-height="12mm"/></fo:instream-foreign-object></fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

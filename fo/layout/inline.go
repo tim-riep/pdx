@@ -109,6 +109,8 @@ type piece struct {
 	link *linkRef
 	// leader beschreibt einen fo:leader.
 	leader *leaderSpec
+	// code ist bei Barcodes gesetzt (pGraphic ohne Bild).
+	code *codeArt
 }
 
 // paragraph sammelt die Stücke eines Absatzes.
@@ -223,6 +225,8 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 		return nil
 	case n.IsFO("leader"):
 		return pa.leader(n, p)
+	case n.IsFO("instream-foreign-object"):
+		return pa.foreign(n, p)
 	case n.IsFO("page-number-citation"), n.IsFO("page-number-citation-last"):
 		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
 		if err != nil {
@@ -700,6 +704,11 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			x += w
 		case pGraphic:
 			run = nil
+			if pc.code != nil {
+				line.areas = append(line.areas, pc.code.path(x, baseline-pc.height, pc.width, pc.height))
+				x += pc.width
+				continue
+			}
 			line.areas = append(line.areas, &areatree.Image{
 				Rect:  areatree.Rect{X: x, Y: baseline - pc.height, W: pc.width, H: pc.height},
 				Image: pc.img,

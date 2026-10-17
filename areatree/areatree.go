@@ -361,6 +361,18 @@ type Link struct {
 
 func (*Link) isArea() {}
 
+// Path ist eine Menge gefüllter Rechtecke in einer Farbe, etwa die Module
+// eines Barcodes. Die Rechtecke sind absolut auf der Seite.
+type Path struct {
+	Rect
+	Fill  Color
+	Rects []Rect
+	// Source beschreibt den Inhalt für Dump und Designer, etwa "qr:…".
+	Source string
+}
+
+func (*Path) isArea() {}
+
 func (*Container) isArea() {}
 func (*GlyphRun) isArea()  {}
 func (*Image) isArea()     {}
