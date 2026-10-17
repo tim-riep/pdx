@@ -9,4 +9,4 @@ require (
 	github.com/tim-riep/go-xslt v0.0.8
 )
 
-require golang.org/x/text v0.38.0 // indirect
+require golang.org/x/text v0.38.0

@@ -1,6 +1,7 @@
 package props
 
 import (
+	"math"
 	"testing"
 
 	"github.com/tim-riep/pdx/areatree"
@@ -104,5 +105,19 @@ func TestEvalLength(t *testing.T) {
 	}
 	if f, _, err := EvalColumnWidth("25%", 10000, 200000); err != nil || f != 50000 {
 		t.Errorf("column-width 25%%: %v %v", f, err)
+	}
+}
+
+func TestNamedColorsAndExpressions(t *testing.T) {
+	for _, name := range []string{"lightgray", "PaleGoldenrod", "cyan", "lightgrey"} {
+		if _, ok, err := ParseColor(name); err != nil || !ok {
+			t.Errorf("%s: %v", name, err)
+		}
+	}
+	for s, want := range map[string]float64{"0.5in + 1mm": 36 + 72/25.4, "1in - -4pc": 120, "12pt * 1.2 * 2": 28.8} {
+		l, err := ParseLength(s, 12*areatree.Pt, -1)
+		if err != nil || math.Abs(l.Pt()-want) > 0.01 {
+			t.Errorf("%s: %v %v, erwartet %v", s, l.Pt(), err, want)
+		}
 	}
 }

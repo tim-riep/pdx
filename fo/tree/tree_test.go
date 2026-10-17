@@ -76,3 +76,49 @@ func FuzzParse(f *testing.F) {
 		}
 	})
 }
+
+func TestInherit(t *testing.T) {
+	root, err := Parse(strings.NewReader(`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="a"><fo:flow flow-name="xsl-region-body"><fo:block margin-left="1cm"><fo:block margin-left="inherit" space-before="inherit">x</fo:block></fo:block></fo:flow></fo:page-sequence></fo:root>`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var inner *Node
+	var walk func(n *Node)
+	walk = func(n *Node) {
+		if n.IsFO("block") && len(n.Children) > 0 && n.Children[0].Kind == Text {
+			inner = n
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(root)
+	if v, _ := inner.Attr("margin-left"); v != "1cm" {
+		t.Errorf("margin-left %q, erwartet 1cm", v)
+	}
+	if _, ok := inner.Attr("space-before"); ok {
+		t.Error("inherit ohne Wert am Vorfahren bleibt stehen")
+	}
+}
+
+func TestLatin1(t *testing.T) {
+	src := "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<fo:root xmlns:fo=\"http://www.w3.org/1999/XSL/Format\"><fo:layout-master-set><fo:simple-page-master master-name=\"a\"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference=\"a\"><fo:flow flow-name=\"xsl-region-body\"><fo:block>Gr\xfc\xdfe</fo:block></fo:flow></fo:page-sequence></fo:root>"
+	root, err := Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var text string
+	var walk func(n *Node)
+	walk = func(n *Node) {
+		if n.Kind == Text {
+			text += n.Data
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(root)
+	if text != "Grüße" {
+		t.Fatalf("Text %q", text)
+	}
+}

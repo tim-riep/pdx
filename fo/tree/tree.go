@@ -9,6 +9,8 @@
 package tree
 
 import (
+	"golang.org/x/text/encoding/charmap"
+
 	"bytes"
 	"encoding/xml"
 	"errors"
@@ -172,6 +174,7 @@ func Parse(r io.Reader) (*Node, error) {
 func ParseBytes(data []byte) (*Node, error) {
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	dec.Strict = true
+	dec.CharsetReader = charsetReader
 	var root *Node
 	var stack []*Node
 	nodes := 0
@@ -276,7 +279,46 @@ func ParseBytes(data []byte) (*Node, error) {
 	if root == nil {
 		return nil, &Error{Line: 1, Col: 1, Msg: "Dokument ist leer"}
 	}
+	resolveInherit(root)
 	return root, nil
+}
+
+// charsetReader liest Dokumente in ISO-8859-1 und windows-1252. UTF-8 und
+// UTF-16 erkennt encoding/xml selbst, weitere Kodierungen verlangt XML nicht.
+func charsetReader(label string, in io.Reader) (io.Reader, error) {
+	switch strings.ToLower(label) {
+	case "iso-8859-1", "latin1", "iso_8859-1", "l1":
+		return charmap.ISO8859_1.NewDecoder().Reader(in), nil
+	case "windows-1252", "cp1252":
+		return charmap.Windows1252.NewDecoder().Reader(in), nil
+	case "us-ascii", "ascii":
+		return in, nil
+	}
+	return nil, fmt.Errorf("Zeichenkodierung %q wird nicht unterstützt, erlaubt sind UTF-8, UTF-16, ISO-8859-1 und windows-1252", label)
+}
+
+// resolveInherit ersetzt den Wert inherit, der nach XSL 1.1 5.1.4 bei jeder
+// Eigenschaft erlaubt ist, durch den Wert desselben Attributs am nächsten
+// Vorfahren. Hat kein Vorfahr das Attribut, entfällt es und der Anfangswert
+// gilt.
+func resolveInherit(n *Node) {
+	for name, v := range n.Attrs {
+		if strings.TrimSpace(v) != "inherit" {
+			continue
+		}
+		delete(n.Attrs, name)
+		for p := n.Parent; p != nil; p = p.Parent {
+			if pv, ok := p.Attrs[name]; ok {
+				n.Attrs[name] = pv
+				break
+			}
+		}
+	}
+	for _, c := range n.Children {
+		if c.Kind == Element {
+			resolveInherit(c)
+		}
+	}
 }
 
 func acceptsText(name string) bool {

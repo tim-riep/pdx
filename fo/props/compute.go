@@ -213,8 +213,8 @@ func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Comput
 	}{{"widows", &c.Widows}, {"orphans", &c.Orphans},
 		{"hyphenation-push-character-count", &c.HyphenPush}, {"hyphenation-remain-character-count", &c.HyphenRemain}} {
 		if v, ok := a[wo.name]; ok {
-			k, err := strconv.Atoi(v)
-			if err != nil || k < 1 {
+			k, err := strconv.Atoi(strings.TrimSpace(v))
+			if err != nil || k < 0 {
 				return nil, fail(wo.name, fmt.Errorf("ungültiger Wert %q", v))
 			}
 			*wo.dst = k
