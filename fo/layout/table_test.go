@@ -93,3 +93,42 @@ func TestHeaderRepeats(t *testing.T) {
 		}
 	}
 }
+
+// TestRowResumeAfterWidthChange prüft, dass ein Listenpunkt, der beim
+// Wechsel zu einer breiteren Seite umbricht, keinen Text verliert und keinen
+// doppelt setzt.
+func TestRowResumeAfterWidthChange(t *testing.T) {
+	var words []string
+	for i := 1; i <= 80; i++ {
+		words = append(words, "w"+itoa(i))
+	}
+	fo := `<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<fo:layout-master-set>
+<fo:simple-page-master master-name="schmal" page-width="150pt" page-height="72pt"><fo:region-body/></fo:simple-page-master>
+<fo:simple-page-master master-name="breit" page-width="300pt" page-height="72pt"><fo:region-body/></fo:simple-page-master>
+<fo:page-sequence-master master-name="folge"><fo:single-page-master-reference master-reference="schmal"/>
+<fo:repeatable-page-master-reference master-reference="breit"/></fo:page-sequence-master>
+</fo:layout-master-set>
+<fo:page-sequence master-reference="folge"><fo:flow flow-name="xsl-region-body" font-size="10pt" line-height="12pt">
+<fo:list-block provisional-distance-between-starts="20pt"><fo:list-item>
+<fo:list-item-label end-indent="label-end()"><fo:block>*</fo:block></fo:list-item-label>
+<fo:list-item-body start-indent="body-start()"><fo:block>` + strings.Join(words, " ") + `</fo:block></fo:list-item-body>
+</fo:list-item></fo:list-block></fo:flow></fo:page-sequence></fo:root>`
+	doc := layoutFO(t, fo)
+	if len(doc.Pages) < 2 {
+		t.Fatalf("%d Seiten, erwartet mindestens 2", len(doc.Pages))
+	}
+	var got []string
+	for _, lines := range pageTexts(doc) {
+		for _, l := range lines {
+			for _, w := range strings.Fields(l) {
+				if strings.HasPrefix(w, "w") {
+					got = append(got, w)
+				}
+			}
+		}
+	}
+	if strings.Join(got, " ") != strings.Join(words, " ") {
+		t.Errorf("Wörter nach dem Breitenwechsel:\n%s", strings.Join(got, " "))
+	}
+}
