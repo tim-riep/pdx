@@ -68,3 +68,12 @@ fehlende Zeile im Kopf bei FOP nicht als Fehler (Korpus: uebertrag).
 Marker müssen bei FOP in `fo:table-cell` stehen. XSL erlaubt sie auch
 direkt in `fo:table-row`, pdx unterstützt beides. Marker an `fo:inline`
 setzt pdx noch nicht um.
+
+## Silbentrennung
+
+pdx bringt Trennmuster für Deutsch (de-1996) und amerikanisches Englisch
+(en-us) aus hyph-utf8 mit. FOP 2.11 liefert aus Lizenzgründen keine Muster
+mit (das Projekt OFFO wird getrennt verteilt), ohne sie trennt FOP nicht.
+Fälle mit `hyphenate="true"` werden deshalb nicht mit FOP verglichen
+(Korpus: silbentrennung). Wie FOP versucht pdx zuerst einen Umbruch ohne
+Trennstellen und gibt Trennstellen den Strafwert 50.

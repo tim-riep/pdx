@@ -13,6 +13,13 @@ Enthaltene Fremdbestandteile:
   Copyright 2014 - 2023 Adobe
   SIL Open Font License 1.1, siehe testdata/fonts/source-serif-4/LICENSE.md
 
+* Trennmuster aus hyph-utf8 (hyph/patterns), unverändert übernommen:
+  de-1996: Copyright (c) 2013-2024 Stephan Hennig, Werner Lemberg,
+  Günter Milde, Sander van Geloven, Georg Pfeiffer, Gisbert W. Selke,
+  Tobias Wendorf, Keno Wehr, MIT-Lizenz.
+  en-us: Copyright (C) 1990, 2004, 2005 Gerard D.C. Kuiken, Weitergabe mit
+  diesem Hinweis erlaubt. Volltexte in hyph/patterns/README.md.
+
 * Das sRGB-ICC-Profil wird zur Laufzeit von icc/ aus den Parametern der
   Norm IEC 61966-2-1 berechnet und steht unter der Lizenz dieses Projekts.
 

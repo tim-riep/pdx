@@ -9,6 +9,7 @@ import (
 	"github.com/tim-riep/pdx/fo/props"
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/font"
+	"github.com/tim-riep/pdx/hyph"
 )
 
 type pieceKind uint8
@@ -20,7 +21,13 @@ const (
 	pBreak
 	// pNoBreak verbietet den Umbruch am folgenden Leerraum (U+00A0).
 	pNoBreak
+	// pHyphen ist eine Trennstelle in einem Wort.
+	pHyphen
 )
+
+// hyphenPenalty ist der Strafwert einer Trennstelle wie bei Apache FOP
+// (KnuthPenalty.FLAGGED_PENALTY).
+const hyphenPenalty = 50
 
 // style ist ein Textstil mit aufgelöster Schrift.
 type style struct {
@@ -33,6 +40,23 @@ type style struct {
 	hasSpace bool
 	nbsp     areatree.Glyph
 	hasNbsp  bool
+	hyphen   *areatree.Glyph // Trennstrich, nil solange nicht gebraucht
+}
+
+// hyphenGlyph liefert den Trennstrich des Stils. hyphenation-character ist
+// nach XSL 1.1 7.10.3 anfangs U+2010, fehlt die Glyphe, gilt U+002D.
+func (s *style) hyphenGlyph() (areatree.Glyph, bool) {
+	if s.hyphen != nil {
+		return *s.hyphen, true
+	}
+	for _, h := range []string{s.p.HyphenChar, "-"} {
+		if gs, err := s.face.Shape(h, s.p.FontSize, font.ShapeOptions{}); err == nil && len(gs) == 1 {
+			g := gs[0]
+			s.hyphen = &g
+			return g, true
+		}
+	}
+	return areatree.Glyph{}, false
 }
 
 // above und below liefern die Ausdehnung über und unter der Grundlinie
@@ -283,12 +307,53 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 	if err != nil {
 		return tree.Errorf(n, "%v", err)
 	}
-	var width areatree.Length
-	for _, g := range gs {
-		width += g.Advance
+	frags := [][]areatree.Glyph{gs}
+	if p.Hyphenate && p.Lang != "" {
+		if pats, ok, err := hyph.ForLanguage(p.Lang); err != nil {
+			return tree.Errorf(n, "%v", err)
+		} else if ok {
+			if _, hasHyphen := st.hyphenGlyph(); hasHyphen {
+				frags = splitGlyphs(gs, pats.Hyphenate(w, p.HyphenRemain, p.HyphenPush))
+			}
+		}
 	}
-	pa.pieces = append(pa.pieces, piece{kind: pText, st: st, glyphs: gs, width: width})
+	for i, f := range frags {
+		if i > 0 {
+			hg, _ := st.hyphenGlyph()
+			pa.pieces = append(pa.pieces, piece{kind: pHyphen, st: st, width: hg.Advance, glyph: hg})
+		}
+		var width areatree.Length
+		for _, g := range f {
+			width += g.Advance
+		}
+		pa.pieces = append(pa.pieces, piece{kind: pText, st: st, glyphs: f, width: width})
+	}
 	return nil
+}
+
+// splitGlyphs teilt die Glyphen eines Wortes an Trennstellen (Zeichen vor
+// der Stelle). Stellen innerhalb eines Clusters, etwa einer Ligatur, entfallen.
+func splitGlyphs(gs []areatree.Glyph, cuts []int) [][]areatree.Glyph {
+	if len(cuts) == 0 {
+		return [][]areatree.Glyph{gs}
+	}
+	starts := map[int]int{} // Zeichenposition zu Glyphenindex am Clusteranfang
+	pos := 0
+	for i, g := range gs {
+		if g.Text != "" {
+			starts[pos] = i
+			pos += len([]rune(g.Text))
+		}
+	}
+	var out [][]areatree.Glyph
+	last := 0
+	for _, c := range cuts {
+		if i, ok := starts[c]; ok && i > last {
+			out = append(out, gs[last:i])
+			last = i
+		}
+	}
+	return append(out, gs[last:])
 }
 
 // items übersetzt die Stücke in das Box-Glue-Penalty-Modell. Im Blocksatz
@@ -322,6 +387,9 @@ func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.ForcedBreak, Payload: i})
 		case pNoBreak:
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.Forbidden, Payload: i})
+		case pHyphen:
+			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: hyphenPenalty, Flagged: true,
+				Width: pc.width, Payload: i})
 		}
 	}
 	return items
@@ -391,7 +459,11 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 		if li > 0 && (li < p.Orphans || len(breaks)-li < p.Widows) {
 			pen = penaltyInf
 		}
-		if err := g.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last, lo, pen); err != nil {
+		var hy *piece
+		if end < len(items) && items[end].Kind == linebreak.Penalty && items[end].Flagged && items[end].Payload >= 0 {
+			hy = &pa.pieces[items[end].Payload]
+		}
+		if err := g.setLine(pa, items[s:e], strut, lx, lineW, br.Ratio, last, lo, pen, hy); err != nil {
 			return err
 		}
 		start = end + 1
@@ -399,7 +471,7 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	return nil
 }
 
-func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool, ord ordinal, pen int) error {
+func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, avail areatree.Length, ratio float64, last bool, ord ordinal, pen int, hy *piece) error {
 	p := pa.p
 	align := p.TextAlign
 	if last {
@@ -434,6 +506,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	var width areatree.Length
 	for _, it := range seg {
 		width += adjust(it)
+	}
+	if hy != nil {
+		width += hy.width
 	}
 	x := x0
 	switch align {
@@ -500,6 +575,15 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			})
 			x += pc.width
 		}
+	}
+	if hy != nil {
+		// Trennstrich am Zeilenende, im Stil des getrennten Wortes.
+		if run == nil || runStyle != hy.st {
+			run = &areatree.GlyphRun{Origin: areatree.Point{X: x, Y: baseline}, Font: hy.st.fontID,
+				Size: hy.st.p.FontSize, Color: hy.st.p.Color, Ascent: hy.st.asc, Descent: hy.st.desc}
+			line.areas = append(line.areas, run)
+		}
+		run.Glyphs = append(run.Glyphs, hy.glyph)
 	}
 	for _, it := range seg {
 		if it.Payload >= 0 {

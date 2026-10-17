@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Silbentrennung nach Liang mit den Mustern aus hyph-utf8 (de-1996, en-us)
+     in schmalen Spalten im Blocksatz. -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm">
+      <fo:region-body/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Silbentrennung" subject="Korpus: Silbentrennung Deutsch und Englisch"/>
+  </fo:declarations>
+  <fo:page-sequence master-reference="A4" font-family="serif" font-size="11pt" line-height="1.35">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block font-family="sans-serif" font-size="14pt" font-weight="bold" space-after="4mm">Silbentrennung</fo:block>
+      <fo:block-container width="60mm" space-after="6mm">
+        <fo:block font-size="8pt" font-family="sans-serif" color="#666666" space-after="1mm">Ohne Trennung</fo:block>
+        <fo:block text-align="justify">Die Rechnungsstellung für Dienstleistungsunternehmen erfordert eine nachvollziehbare Dokumentation sämtlicher Leistungspositionen, Zwischensummen und Umsatzsteuerbeträge.</fo:block>
+      </fo:block-container>
+      <fo:block-container width="60mm" space-after="6mm">
+        <fo:block font-size="8pt" font-family="sans-serif" color="#666666" space-after="1mm">Mit Trennung (Deutsch, de-1996)</fo:block>
+        <fo:block text-align="justify" hyphenate="true">Die Rechnungsstellung für Dienstleistungsunternehmen erfordert eine nachvollziehbare Dokumentation sämtlicher Leistungspositionen, Zwischensummen und Umsatzsteuerbeträge.</fo:block>
+      </fo:block-container>
+      <fo:block-container width="60mm" space-after="6mm">
+        <fo:block font-size="8pt" font-family="sans-serif" color="#666666" space-after="1mm">Mit Trennung, Bindestrich und Mindestlängen 3 und 3</fo:block>
+        <fo:block text-align="justify" hyphenate="true" hyphenation-character="-" hyphenation-remain-character-count="3" hyphenation-push-character-count="3">Geschäftsführungsentscheidungen über Investitionsvorhaben werden quartalsweise im Aufsichtsratsgremium protokolliert.</fo:block>
+      </fo:block-container>
+      <fo:block-container width="60mm">
+        <fo:block font-size="8pt" font-family="sans-serif" color="#666666" space-after="1mm">English (en-us), ragged right</fo:block>
+        <fo:block xml:lang="en-US" hyphenate="true">Hyphenation algorithms traditionally rely on patterns derived from large dictionaries, enabling typesetting systems to break incomprehensibly long words automatically.</fo:block>
+      </fo:block-container>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

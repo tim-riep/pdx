@@ -29,6 +29,10 @@ type Computed struct {
 	TextIndent       Length
 	LinefeedPreserve bool
 	Widows           int
+	Hyphenate        bool
+	HyphenChar       string
+	HyphenPush       int
+	HyphenRemain     int
 	Orphans          int
 	Lang             string
 
@@ -57,6 +61,9 @@ func Root() *Computed {
 		LineHeight:       areatree.Points(14.4),
 		Widows:           2,
 		Orphans:          2,
+		HyphenChar:       "\u2010",
+		HyphenPush:       2,
+		HyphenRemain:     2,
 	}
 }
 
@@ -68,6 +75,7 @@ func (c *Computed) inherit() *Computed {
 		LineHeightFactor: c.LineHeightFactor, LineHeight: c.LineHeight,
 		StartIndent: c.StartIndent, EndIndent: c.EndIndent, TextIndent: c.TextIndent,
 		LinefeedPreserve: c.LinefeedPreserve, Lang: c.Lang, Widows: c.Widows, Orphans: c.Orphans,
+		Hyphenate: c.Hyphenate, HyphenChar: c.HyphenChar, HyphenPush: c.HyphenPush, HyphenRemain: c.HyphenRemain,
 	}
 }
 
@@ -186,10 +194,24 @@ func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Comput
 	if c.LineHeightFactor > 0 {
 		c.LineHeight = Length(float64(fs) * c.LineHeightFactor)
 	}
+	if v, ok := a["hyphenate"]; ok {
+		switch v {
+		case "true":
+			c.Hyphenate = true
+		case "false":
+			c.Hyphenate = false
+		default:
+			return nil, fail("hyphenate", fmt.Errorf("ungültiger Wert %q", v))
+		}
+	}
+	if v, ok := a["hyphenation-character"]; ok && v != "" {
+		c.HyphenChar = v
+	}
 	for _, wo := range []struct {
 		name string
 		dst  *int
-	}{{"widows", &c.Widows}, {"orphans", &c.Orphans}} {
+	}{{"widows", &c.Widows}, {"orphans", &c.Orphans},
+		{"hyphenation-push-character-count", &c.HyphenPush}, {"hyphenation-remain-character-count", &c.HyphenRemain}} {
 		if v, ok := a[wo.name]; ok {
 			k, err := strconv.Atoi(v)
 			if err != nil || k < 1 {

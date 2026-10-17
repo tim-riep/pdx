@@ -51,15 +51,28 @@ func (k KnuthPlass) Break(items []Item, width LineWidth) ([]Break, error) {
 	if len(tols) == 0 {
 		tols = []float64{1, 5, 20}
 	}
+	// Wie FOP zuerst ohne Trennstellen (geflaggte Penalties), dann mit.
+	flagged := false
+	for _, it := range items {
+		if it.Kind == Penalty && it.Flagged {
+			flagged = true
+			break
+		}
+	}
+	if flagged {
+		if bs, ok := k.run(items, width, tols[0], false, false); ok {
+			return bs, nil
+		}
+	}
 	for i, tol := range tols {
-		if bs, ok := k.run(items, width, tol, i == len(tols)-1); ok {
+		if bs, ok := k.run(items, width, tol, i == len(tols)-1, true); ok {
 			return bs, nil
 		}
 	}
 	return Greedy{}.Break(items, width)
 }
 
-func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force bool) ([]Break, bool) {
+func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allowFlagged bool) ([]Break, bool) {
 	fitDem := k.FitnessDemerit
 	if fitDem == 0 {
 		fitDem = 50
@@ -106,7 +119,7 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force bool) 
 		it := items[i]
 		switch it.Kind {
 		case Penalty:
-			return it.Penalty < Forbidden
+			return it.Penalty < Forbidden && (allowFlagged || !it.Flagged)
 		case Glue:
 			return i > 0 && items[i-1].Kind == Box
 		}
