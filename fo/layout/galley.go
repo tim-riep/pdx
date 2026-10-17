@@ -45,6 +45,17 @@ type ordinal struct {
 	major, minor int
 }
 
+// resumePoint ist die Stelle im Inhalt einer Zelle, an der eine umbrochene
+// Zeile nach einem Breitenwechsel weitergeht: das Ordinal der ersten Box in
+// der Galley der Zelle und, ist diese Box selbst eine Zeile, deren Stellen.
+type resumePoint struct {
+	ord   ordinal
+	cells []resumePoint
+}
+
+// doneOrd steht für eine Zelle, deren Inhalt schon vollständig gesetzt ist.
+var doneOrd = ordinal{major: 1 << 30}
+
 func (o ordinal) less(p ordinal) bool {
 	return o.major < p.major || o.major == p.major && o.minor < p.minor
 }
@@ -71,9 +82,11 @@ type item struct {
 	seq    int
 	line   *lineBox
 	anchor *absAnchor
-	// row und slice sind bei Scheiben von Tabellenzeilen und Listenpunkten gesetzt.
-	row   *rowLayout
-	slice int
+	// row und slice sind bei Scheiben von Tabellenzeilen und Listenpunkten
+	// gesetzt, resume bei Scheiben nach der ersten.
+	row    *rowLayout
+	slice  int
+	resume []resumePoint
 }
 
 // blockCtx beschreibt einen Block unabhängig von der Seite. x und w sind die
@@ -145,6 +158,9 @@ type galley struct {
 	spaces []spaceSpec
 	major  int     // Zähler für ordinal
 	skip   ordinal // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
+	// resume gibt beim Neuaufbau für die Zeile bei skip je Zelle die Stelle
+	// an, ab der ihr Inhalt neu gesetzt wird.
+	resume []resumePoint
 
 	// Für die nächste Penalty vorgemerkte Keeps und Umbrüche.
 	keepNext int

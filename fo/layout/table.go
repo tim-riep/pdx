@@ -72,6 +72,9 @@ type rowLayout struct {
 	// sliceKeep sind Keeps an Scheibengrenzen nach dem Inhaltsende einer
 	// Zelle mit keep-with-next.
 	sliceKeep map[int]int
+	// base ist die Nummer der ersten Scheibe, wenn die Zeile nach einem
+	// Breitenwechsel ab einer späteren Scheibe neu gesetzt wurde.
+	base int
 	// skip ist je Scheibe der Abstand an ihrem Anfang, der nach einem
 	// Umbruch entfällt. Zwischen zwei Scheiben steht er als Glue.
 	skip map[int]areatree.Length
@@ -201,11 +204,20 @@ func (c *cellLayout) breakable(off areatree.Length, top areatree.Length) bool {
 // layoutCell setzt den Inhalt einer Zelle in einer eigenen Galley. Die Zelle
 // ist ein Referenzbereich, Einzüge beginnen darin bei 0.
 func (g *galley) layoutCell(c *cellLayout, content *tree.Node, tbl *tableCtx) error {
+	return g.layoutCellAt(c, content, tbl, nil)
+}
+
+// layoutCellAt setzt den Inhalt einer Zelle ab der Stelle rp, ohne rp von
+// Anfang an.
+func (g *galley) layoutCellAt(c *cellLayout, content *tree.Node, tbl *tableCtx, rp *resumePoint) error {
 	w := max(c.w-c.inset[areatree.Left]-c.inset[areatree.Right], 0)
 	inside := *c.p
 	inside.StartIndent, inside.EndIndent = 0, 0
 	sg := newGalley(g.e, w, g.pageNo)
 	sg.tbl = tbl
+	if rp != nil {
+		sg.skip, sg.resume = rp.ord, rp.cells
+	}
 	if err := sg.blocks(content, &inside); err != nil {
 		return err
 	}
@@ -333,6 +345,26 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 	}
 }
 
+// rowResume liefert je Zelle die Stelle, an der ihr Inhalt in Scheibe k
+// beginnt.
+func rowResume(r *rowLayout, k int) []resumePoint {
+	out := make([]resumePoint, len(r.cells))
+	for i, c := range r.cells {
+		out[i].ord = doneOrd
+		a := r.slices[k] + r.skip[k] - r.sepV - c.inset[areatree.Top]
+		if c.rowSpan != 1 || a >= c.contentH {
+			continue
+		}
+		for _, it := range c.cellRange(max(a, 0), c.contentH) {
+			if it.kind == itBox {
+				out[i] = resumePoint{ord: it.ord, cells: it.resume}
+				break
+			}
+		}
+	}
+	return out
+}
+
 // rowSkip liefert den Abstand, der bei einem Umbruch an off in allen Zellen
 // mit weiterem Inhalt entfällt.
 func rowSkip(r *rowLayout, off areatree.Length) areatree.Length {
@@ -364,7 +396,7 @@ func sortLengths(v []areatree.Length) {
 }
 
 // emitRow hängt die Scheiben einer Zeile an die Galley.
-func (g *galley) emitRow(r *rowLayout, before int) {
+func (g *galley) emitRow(r *rowLayout, before int) error {
 	if r.node.IsFO("table-row") {
 		g.keepPrev = max(g.keepPrev, keepValue(r.node, "keep-with-previous"))
 		if b := breakValue(r.node, "break-before"); b != "" && !r.skipBreakBefore {
@@ -376,6 +408,20 @@ func (g *galley) emitRow(r *rowLayout, before int) {
 				g.brk = b
 			}
 		}()
+	}
+	if g.resume != nil && g.major+1 == g.skip.major {
+		// Neuaufbau nach Breitenwechsel mitten in dieser Zeile: Die Zellen
+		// werden ab der Stelle der neuen Seite mit der neuen Breite gesetzt.
+		for i, c := range r.cells {
+			if i < len(g.resume) && c.rowSpan == 1 {
+				if err := g.layoutCellAt(c, c.node, r.tbl, &g.resume[i]); err != nil {
+					return err
+				}
+			}
+		}
+		finishRow(r, 0, false)
+		r.base = g.skip.minor
+		g.resume = nil
 	}
 	ord := g.next()
 	if r.leadBrk != "" {
@@ -391,18 +437,23 @@ func (g *galley) emitRow(r *rowLayout, before int) {
 			}
 		}
 		o := ord
-		o.minor = k
+		o.minor = r.base + k
 		h := r.slices[k+1] - r.slices[k]
 		if sk := r.skip[k]; sk > 0 {
 			g.spaces = append(g.spaces, spaceSpec{v: sk, min: sk})
 			h -= sk
 		}
-		g.box(item{h: h, path: g.path(), ord: o, row: r, slice: k}, pen)
+		var rs []resumePoint
+		if k > 0 {
+			rs = rowResume(r, k)
+		}
+		g.box(item{h: h, path: g.path(), ord: o, row: r, slice: k, resume: rs}, pen)
 	}
 	if r.trailBrk != "" {
 		g.brk = r.trailBrk
 	}
 	g.keepNext = max(g.keepNext, r.trailKeep)
+	return nil
 }
 
 // keepValue übersetzt einen keep-Wert in eine Penalty.
@@ -980,7 +1031,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	}
 	keepRows := keepValue(n, "keep-together")
 	glueNext := false // Zeilen eines Überspannungsbereichs bleiben zusammen
-	emit := func(rs []*rowLayout, sec section) {
+	emit := func(rs []*rowLayout, sec section) error {
 		for i, r := range rs {
 			before := keepRows
 			if sec != secBody || glueNext || i == 0 && sec == secBody && len(header) > 0 {
@@ -990,9 +1041,12 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				before = penaltyInf
 			}
 			before = max(before, g.breakBefore(edgeNone))
-			g.emitRow(r, before)
+			if err := g.emitRow(r, before); err != nil {
+				return err
+			}
 			glueNext = hasSpanStart(r) || spansInto(layouts, r)
 		}
+		return nil
 	}
 	// Ein erzwungener Umbruch am Ende der letzten Rumpfzeile wirkt nach der
 	// Tabelle, sonst stünde der Fuß allein auf der nächsten Seite.
@@ -1007,9 +1061,14 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 			last.skipBreakAfter = true
 		}
 	}
-	emit(header, secHeader)
-	emit(body, secBody)
-	emit(footer, secFooter)
+	for _, part := range []struct {
+		rs  []*rowLayout
+		sec section
+	}{{header, secHeader}, {body, secBody}, {footer, secFooter}} {
+		if err := emit(part.rs, part.sec); err != nil {
+			return err
+		}
+	}
 	if edges {
 		h := p.Padding[areatree.Bottom] + p.BorderWidth(areatree.Bottom)
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, penaltyInf)
@@ -1261,7 +1320,9 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 			return tree.Errorf(it, "fo:list-item braucht fo:list-item-label und fo:list-item-body")
 		}
 		finishRow(row, 0, false)
-		g.emitRow(row, g.breakBefore(edgeNone))
+		if err := g.emitRow(row, g.breakBefore(edgeNone)); err != nil {
+			return err
+		}
 		if itemEdges {
 			h := ip.Padding[areatree.Bottom] + ip.BorderWidth(areatree.Bottom)
 			g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))

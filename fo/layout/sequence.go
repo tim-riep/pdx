@@ -78,7 +78,7 @@ func (e *engine) pageSequence(ps *tree.Node, rootProps *props.Computed) error {
 // galleyFor erzeugt die Galley für eine Body-Breite. skip lässt alle Boxen
 // vor dieser Stelle aus, damit nach einem Wechsel der Breite ab dem Umbruch
 // neu gesetzt werden kann.
-func (s *sequence) galleyFor(m *master, skip ordinal) ([]item, error) {
+func (s *sequence) galleyFor(m *master, skip ordinal, resume []resumePoint) ([]item, error) {
 	if name, _ := s.flow.Attr("flow-name"); name != m.bodyName {
 		return nil, tree.Errorf(s.flow, "flow-name %q passt nicht zur Region %q", name, m.bodyName)
 	}
@@ -87,21 +87,21 @@ func (s *sequence) galleyFor(m *master, skip ordinal) ([]item, error) {
 		return nil, err
 	}
 	g := newGalley(s.e, m.body.W, 0)
-	g.skip = skip
+	g.skip, g.resume = skip, resume
 	if err := g.blocks(s.flow, fp); err != nil {
 		return nil, err
 	}
 	return g.items, nil
 }
 
-// nextOrd liefert die Stelle der ersten Box ab pos.
-func nextOrd(items []item, pos int) (ordinal, bool) {
+// nextBox liefert die erste Box ab pos.
+func nextBox(items []item, pos int) (*item, bool) {
 	for i := pos; i < len(items); i++ {
 		if items[i].kind == itBox {
-			return items[i].ord, true
+			return &items[i], true
 		}
 	}
-	return ordinal{}, false
+	return nil, false
 }
 
 // paginate verteilt den Fluss auf Seiten. Je Seite wird die Vorlage gewählt.
@@ -253,15 +253,16 @@ func (s *sequence) adapt(m *master, items []item, pos int, width *areatree.Lengt
 		return items, pos, nil
 	}
 	skip := ordinal{}
+	var resume []resumePoint
 	if items != nil {
-		o, ok := nextOrd(items, pos)
+		b, ok := nextBox(items, pos)
 		if !ok {
 			*width = m.body.W
 			return nil, 0, nil
 		}
-		skip = o
+		skip, resume = b.ord, b.resume
 	}
-	ni, err := s.galleyFor(m, skip)
+	ni, err := s.galleyFor(m, skip, resume)
 	if err != nil {
 		return nil, 0, err
 	}
