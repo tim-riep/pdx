@@ -285,6 +285,8 @@ func (pl *placer) absolute(a *absAnchor) error {
 	bt := p.BorderWidth(areatree.Top)
 	padL, padR := p.Padding[areatree.Left], p.Padding[areatree.Right]
 	padT, padB := p.Padding[areatree.Top], p.Padding[areatree.Bottom]
+	// left, right und top messen bis zur Randkante (CSS2 10.3.7).
+	ml, mr, mt := p.Margin[areatree.Left], p.Margin[areatree.Right], p.Margin[areatree.Top]
 	var contentW areatree.Length
 	switch {
 	case p.Width != nil:
@@ -294,10 +296,10 @@ func (pl *placer) absolute(a *absAnchor) error {
 		if p.Right != nil {
 			right = *p.Right
 		}
-		contentW = ref.W - left - right - bl - br - padL - padR
+		contentW = ref.W - left - right - ml - mr - bl - br - padL - padR
 	}
 	contentW = max(contentW, 0)
-	inner := areatree.Rect{X: ref.X + left + bl + padL, Y: ref.Y + top + bt + padT, W: contentW}
+	inner := areatree.Rect{X: ref.X + left + ml + bl + padL, Y: ref.Y + top + mt + bt + padT, W: contentW}
 	kind := areatree.KindBlock
 	if v, _ := a.node.Attr("overflow"); v == "hidden" || v == "error-if-overflow" {
 		kind = areatree.KindViewport
@@ -307,12 +309,12 @@ func (pl *placer) absolute(a *absAnchor) error {
 	cont.W = contentW + padL + padR
 	pl.page.Areas = append(pl.page.Areas, cont)
 
-	// Der Container ist ein neuer Referenzbereich, Einzüge beginnen bei 0.
-	inside := *p
-	inside.StartIndent, inside.EndIndent = 0, 0
+	// Der Container ist ein neuer Referenzbereich. Die Kinder erben seine
+	// berechneten Einzüge (start-indent und end-indent sind vererbt) und
+	// messen sie ab seinem Inhaltsrechteck.
 	g := newGalley(pl.e, contentW, pl.page.Number)
 	g.page = a.page
-	if err := g.blocks(a.node, &inside); err != nil {
+	if err := g.blocks(a.node, p); err != nil {
 		return err
 	}
 	sub := newPlacer(pl.e, pl.page, inner, cont)

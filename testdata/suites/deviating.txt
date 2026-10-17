@@ -4,8 +4,8 @@
 # "offen" sind noch nicht untersucht und Arbeit für die Engine.
 # PDX_SUITE_RECORD=1 trägt neue Abweichungen als offen ein und behobene aus.
 
-fop/block-container_absolute-position: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "absolutely positioned"
-fop/block-container_absolute-position_border_padding: offen, erste Abweichung: Seite 1: "background-text." verschoben um -233.93 pt waagerecht, -0.00 pt senkrecht
+fop/block-container_absolute-position: begründet, FOP bricht nach dem Schrägstrich um, XSL 1.1 legt Umbruchstellen nicht fest (1.1.2), gleiche Breite und ohne Überlauf
+fop/block-container_absolute-position_border_padding: begründet, left und top messen nach CSS2 9.3.2 und 10.3.7 bis zur Randkante, FOP setzt die Inhaltskante auf left und lässt margin-top weg (DEVIATIONS.md, left und top bei absoluter Positionierung)
 fop/block-container_absolute-position_overflow: begründet, left und top beziehen sich auf die Randkante (DEVIATIONS.md, left und top bei absoluter Positionierung)
 fop/block-container_overconstrained_ipd: begründet, überbestimmte Geometrie (XSL 1.1 5.3.4), pdx setzt die Inhaltsbreite auf 0, FOP verteilt die Wörter regellos
 fop/block_break-before_bug44412: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest

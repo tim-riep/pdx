@@ -21,7 +21,11 @@ Containern mit Rahmen oder Padding liegen waagerecht um Rahmen plus Padding
 verschoben (Korpus: adressblock).
 
 `width` und `height` beziehen sich bei beiden Engines auf das
-Inhaltsrechteck (XSL 1.1 7.15.14, `inline-progression-dimension`).
+Inhaltsrechteck (XSL 1.1 7.15.14, `inline-progression-dimension`). Ohne
+`width` ergibt sich die Breite nach CSS2 10.3.7 aus `left`, `right`, Rändern,
+Rahmen und Padding. Ränder verschieben die Box bei pdx in beiden Richtungen,
+FOP lässt margin-top senkrecht weg (Fall
+block-container_absolute-position_border_padding).
 
 ## Ligaturen
 
