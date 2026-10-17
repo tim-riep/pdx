@@ -496,7 +496,9 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 				used += it.h
 			}
 		}
-		if *p.Height > used {
+		// Fehlende Höhe wird aufgefüllt, überschüssiger Inhalt läuft über
+		// (7.21.2), der folgende Inhalt beginnt nach der festen Höhe.
+		if *p.Height != used {
 			g.box(item{h: *p.Height - used, path: g.path(), ord: g.next()}, g.breakBefore(edgeNone))
 		}
 	}

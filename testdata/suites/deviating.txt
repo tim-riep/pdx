@@ -98,7 +98,7 @@ w3c/nist-bcfobordercolor2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "
 w3c/nist-blockarea2: begründet, ein leerer fo:block mit Rahmen und Padding erzeugt einen Bereich mit deren Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 w3c/nist-blockarea3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should increase in size from"
 w3c/nist-blockarea4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should decrease in size from"
-w3c/nist-blockarea5: offen, erste Abweichung: Seite 1: "Should have two child areas" verschoben um 0.00 pt waagerecht, 40.32 pt senkrecht
+w3c/nist-blockarea5: begründet, ein leerer fo:block mit Rahmen und Padding erzeugt einen Bereich mit deren Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 w3c/nist-blrp-heightoflines1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-blrp-heightoflines2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-blrp-line-height1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
@@ -149,8 +149,6 @@ w3c/nist-cmpb-margin-left3: begründet, px als Referenzpixel von CSS2 (1/96 in),
 w3c/nist-cmpb-margin-right3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cmpi-margin-top-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "25px and background-color of red, giving it a red background and a 25px top margin. Margins on inline elements"
 w3c/nist-crp-color-units8: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-w3c/nist-egfocontentheightstf: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"content-height\" of this \"external-"
-w3c/nist-egfocontentwidthstf: offen, erste Abweichung: Seite 1: "The \"content-width\" of this \"external-graphic\" is set to" verschoben um 0.00 pt waagerecht, -23.40 pt senkrecht
 w3c/nist-inl-inline-elem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-keepandbreak13: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a leading area in P (there should be no areas before"
 w3c/nist-keepandbreak14: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a trailing area in P (there should be no areas other"
@@ -170,4 +168,3 @@ w3c/nist-misc-parsing3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (
 w3c/nist-misc-replelem1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-replelem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-replelem5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-recarea9: offen, erste Abweichung: Seite 1: "This block contains a block-progression-dimension of 0.5 inches and an" verschoben um 0.00 pt waagerecht, 28.80 pt senkrecht

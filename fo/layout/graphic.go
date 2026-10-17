@@ -38,11 +38,23 @@ func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
 	if err != nil {
 		return err
 	}
+	// width und height legen den Viewport fest (XSL 1.1 6.6.5), der Inhalt
+	// liegt darin oben am Anfang (display-align und text-align auto).
+	vw, vh := w, h
+	if p.Width != nil {
+		vw = *p.Width
+	}
+	if p.Height != nil {
+		vh = *p.Height
+	}
 	// Rahmen und Padding gehören zum Inline-Bereich des Bildes (XSL 1.1
 	// 4.2.2). Die Unterkante der Rahmenbox liegt auf der Grundlinie.
-	pc := piece{kind: pGraphic, img: id, width: w, height: h}
+	pc := piece{kind: pGraphic, img: id, width: vw, height: vh}
+	if vw != w || vh != h {
+		pc.box = &graphicBox{p: p, n: n, imgW: w, imgH: h}
+	}
 	if hasDeco(p) {
-		pc.box = &graphicBox{p: p, n: n, start: edgeWidth(p, areatree.Left), before: edgeWidth(p, areatree.Top)}
+		pc.box = &graphicBox{p: p, n: n, start: edgeWidth(p, areatree.Left), before: edgeWidth(p, areatree.Top), imgW: w, imgH: h}
 		pc.width += edgeWidth(p, areatree.Left) + edgeWidth(p, areatree.Right)
 		pc.height += edgeWidth(p, areatree.Top) + edgeWidth(p, areatree.Bottom)
 	}
@@ -55,6 +67,8 @@ type graphicBox struct {
 	p             *props.Computed
 	n             *tree.Node
 	start, before areatree.Length
+	// imgW und imgH sind die Größe des Bildes im Viewport.
+	imgW, imgH areatree.Length
 }
 
 // graphicSize bestimmt die Größe nach content-width, content-height und
