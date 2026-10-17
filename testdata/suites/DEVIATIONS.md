@@ -200,3 +200,11 @@ optimum und staucht nur, wenn ein fo:block-container mit fester Höhe sonst
 überliefe. FOP staucht Abstände auch, um Seiten zu füllen (Fälle fopc-hyphen,
 fopc-leader, fopc-pagelevel2 und fopc-pagelevel3). Ist nur .optimum
 angegeben, bleibt .minimum beim Anfangswert 0pt (7.11.5).
+
+## page-position="rest"
+
+XSL 1.1 7.27.14: „This master is eligible for selection if this is not the
+first page nor the last page in the page-sequence.“ Eine Vorlage mit rest
+gilt also nicht für die letzte Seite. Passt keine Alternative, nimmt pdx die
+zuletzt genutzte Vorlage. FOP wendet rest auch auf die letzte Seite an (Fall
+list-item-with-ipd-change).

@@ -117,10 +117,13 @@ func (s *sequence) paginate() error {
 		if err != nil {
 			return err
 		}
-		// In eine Region ohne Fläche passt kein Inhalt. Die Seite bleibt
-		// leer, der Inhalt läuft auf der nächsten weiter. Nach einigen leeren
-		// Seiten in Folge wird gesetzt, damit die Folge endet.
-		if (m.body.H <= 0 || m.body.W <= 0) && empty < maxEmptyPages {
+		// In eine Region ohne Fläche passt kein Inhalt, ebenso wenig in eine
+		// Seite ohne Region mit dem Namen des Flusses (XSL 1.1 7.27.5). Die
+		// Seite bleibt leer, der Inhalt läuft auf der nächsten weiter. Nach
+		// einigen leeren Seiten in Folge wird gesetzt, damit die Folge endet.
+		name, _ := s.flow.Attr("flow-name")
+		unmapped := name != m.bodyName
+		if (m.body.H <= 0 || m.body.W <= 0 || unmapped) && empty < maxEmptyPages {
 			if _, err := s.sel.pick(cond, true); err != nil {
 				return err
 			}
@@ -130,6 +133,9 @@ func (s *sequence) paginate() error {
 			}
 			empty++
 			continue
+		}
+		if unmapped {
+			return tree.Errorf(s.flow, "flow-name %q passt nicht zur Region %q", name, m.bodyName)
 		}
 		if items, pos, err = s.adapt(m, items, pos, &width); err != nil {
 			return err

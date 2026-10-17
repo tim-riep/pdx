@@ -27,7 +27,7 @@ fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seite 2: Zeile nur in p
 fop/inline_background-color: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/inline_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
-fop/list-item-with-ipd-change: offen, erste Abweichung: Seite 2: "b" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
+fop/list-item-with-ipd-change: begründet, page-position="rest" gilt nach XSL 1.1 7.27.14 nicht für die letzte Seite, ohne passende Alternative nimmt pdx die zuletzt genutzte Vorlage, FOP wählt PageRest
 fop/list-item_padding_percentages: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item_space-before_space-after_2: begründet, FOP staucht Abstände unter das Optimum, um Seiten zu füllen, pdx nimmt das Optimum, beides liegt im Bereich nach XSL 1.1 4.3
 fop/marker_page-number-citation_bugzilla45295: offen, erste Abweichung: Seite 4: "[marker content]" verschoben um 0.00 pt waagerecht, 28.34 pt senkrecht
@@ -40,7 +40,6 @@ fop/page-number-citation_bugzilla44794: offen, erste Abweichung: Seite 1: Zeile 
 fop/page-number-citation_list: offen, erste Abweichung: Seite 3: Zeile nur in pdx: "1"
 fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-position only und first, den XSL 1.1 nicht regelt, pdx setzt eine Seite, FOP fügt leere Seiten an
 fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11, FOP 13
-fop/simple-page-master_unmapped_flow-name: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-cell_display-align_page-break: begründet, eine Zeile ohne keep-together darf umbrochen werden (XSL 1.1 4.8, 7.20.3), FOP verschiebt Zeilen mit fester Höhe ganz
