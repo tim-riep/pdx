@@ -9,13 +9,11 @@ fop/block-container_absolute-position: offen, erste Abweichung: Seite 1: Zeile n
 fop/block-container_absolute-position_border_padding: offen, erste Abweichung: Seite 1: "background-text." verschoben um -233.93 pt waagerecht, -0.00 pt senkrecht
 fop/block-container_absolute-position_no-height: offen, erste Abweichung: Seite 1: "absolutely positioned width, no height" verschoben um -10.00 pt waagerecht, -10.00 pt senkrecht
 fop/block-container_absolute-position_overflow: offen, erste Abweichung: Seite 1: "auto overflow" verschoben um 10.00 pt waagerecht, -0.00 pt senkrecht
-fop/block-container_bugzilla50965: offen, erste Abweichung: Seite 1: "A" verschoben um -113.38 pt waagerecht, -0.00 pt senkrecht
-fop/block-container_content_size_percentage: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "50% nested"
-fop/block-container_overconstrained_ipd: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "5.3.4 Overconstrained Geometry"
-fop/block-container_padding_percentages: offen, erste Abweichung: Seite 1: "margin=\"0pt\"" verschoben um -18.00 pt waagerecht, -28.80 pt senkrecht
+fop/block-container_content_size_percentage: offen, erste Abweichung: Seite 1: "50%" verschoben um -150.00 pt waagerecht, -71.20 pt senkrecht
+fop/block-container_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 196.00 pt waagerecht, -10.00 pt senkrecht
+fop/block-container_padding_percentages: offen, erste Abweichung: Seite 1: "margin=\"0pt\"" verschoben um 0.00 pt waagerecht, -28.80 pt senkrecht
 fop/block-container_page-breaking: offen, erste Abweichung: Seiten: pdx 1, FOP 3
 fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit." verschoben um 0.00 pt waagerecht, 31.20 pt senkrecht
-fop/block-container_start-indent: offen, erste Abweichung: Seite 1: "fo:block|fo:block-container|fo:block" verschoben um -10.00 pt waagerecht, -0.00 pt senkrecht
 fop/block-container_width_height: offen, erste Abweichung: Seite 1: "inline-progression-dimension=\"4in\" specified" verschoben um 71.89 pt waagerecht, -0.00 pt senkrecht
 fop/block_border_bug43917: offen, erste Abweichung: Seiten: pdx 3, FOP 2
 fop/block_break-before_bug44412: offen, erste Abweichung: Seite 2: "The break-before set on this block causes the parent block" verschoben um 0.00 pt waagerecht, -4.00 pt senkrecht
@@ -25,7 +23,7 @@ fop/block_keep-together_integers_1: offen, erste Abweichung: Seiten: pdx 7, FOP 
 fop/block_keep-together_overflow_1: offen, erste Abweichung: Seiten: pdx 5, FOP 6
 fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished whenever it shone in her face." verschoben um 19.85 pt waagerecht, -0.00 pt senkrecht
 fop/block_linefeed-treatment_2: offen, erste Abweichung: Seite 1: "Leasing a ..." verschoben um -0.05 pt waagerecht, 14.40 pt senkrecht
-fop/block_margin_percentages: offen, erste Abweichung: Seite 1: "margin=\"5%\" - should have the slightly smaller margin" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
+fop/block_margin_inherit: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "margin=\"inherit\" - should have the same margin as the"
 fop/block_margin_shorthands: offen, erste Abweichung: Seite 1: "left/right" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
 fop/block_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
 fop/block_space-before_space-after_1: offen, erste Abweichung: Seite 1: "normal block1" verschoben um 0.00 pt waagerecht, 8.00 pt senkrecht
@@ -57,7 +55,6 @@ fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, 
 fop/list-item_padding_percentages: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "body 1: We should have 5% padding around this"
 fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
 fop/list-item_two_pages: offen, erste Abweichung: Seite 2: "13" verschoben um 0.00 pt waagerecht, 12.00 pt senkrecht
-fop/list_provisional-label-separation_percentage: offen, erste Abweichung: Seite 1: "list item 1" verschoben um 30.00 pt waagerecht, -0.00 pt senkrecht
 fop/marker_percentage-resolution: offen, erste Abweichung: Seite 1: "Test" verschoben um 89.99 pt waagerecht, -0.00 pt senkrecht
 fop/markers_1: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/markers_3: offen, erste Abweichung: Seite 2: "[PS] [DOC]" verschoben um 3.24 pt waagerecht, -0.00 pt senkrecht
@@ -163,7 +160,6 @@ w3c/nist-blrp-line-height6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: 
 w3c/nist-blrp-line-height7: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a line-"
 w3c/nist-blrp-line-height8: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
 w3c/nist-blrp-line-height9: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
-w3c/nist-blrp-text-indent8: offen, erste Abweichung: Seite 1: "The" verschoben um 270.00 pt waagerecht, -0.00 pt senkrecht
 w3c/nist-blrp-text-indent9: offen, erste Abweichung: Seite 1: "The first line of this sentence should be indented 25 pixels, but the rest of it should be flush with the normal left" verschoben um -6.25 pt waagerec…
 w3c/nist-cbpbp-border-color-inline3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border-color \"purple"
 w3c/nist-cbpbp-border-left-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph has a background color of gray and a 20-pixel left margin, and it contains an inline element of"
@@ -188,7 +184,6 @@ w3c/nist-cbpbp-padding-left-inline2: offen, erste Abweichung: Seite 1: Zeile nur
 w3c/nist-cbpbp-padding-right-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "right 25px and background-color of red, which should result in 25-pixel right padding (which should also be red)"
 w3c/nist-cbpbp-padding-right5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "to the width"
 w3c/nist-cbpbp-padding-top3: offen, erste Abweichung: Seite 1: "This element should have a top padding of 25 pixels, which will require extra text in order to test. Both the content" verschoben um 0.00 pt waagerech…
-w3c/nist-cbpbp-padding-top5: offen, erste Abweichung: Seite 1: "This element" verschoben um 0.00 pt waagerecht, 135.00 pt senkrecht
 w3c/nist-cbpbp-padding3: offen, erste Abweichung: Seite 1: "This element should have an overall padding of 25 pixels, which will require extra text in order to test. Both the" verschoben um 0.00 pt waagerecht, …
 w3c/nist-cfp-font-family6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "These sentences should be in a sans-serif font, not fantasy, if fantasy is not supported. Fantasy is the first one in the list, but …
 w3c/nist-cfp-font-family7: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "These sentences should be in a monospace font, not serif, if monospace (the first"
@@ -240,9 +235,6 @@ w3c/nist-misc-hformatting9: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.
 w3c/nist-misc-len-units10: offen, erste Abweichung: Seite 1: "This element should have a left margin of 3 picas (the plus sign in the style should make no difference)." verschoben um 36.00 pt waagerecht, -0.00 pt…
 w3c/nist-misc-len-units11: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a font-size of 40px and a"
 w3c/nist-misc-parsing3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-w3c/nist-misc-perc-units1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be"
-w3c/nist-misc-perc-units2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be"
-w3c/nist-misc-perc-units3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a left margin of 25% (.25in) of its conatining"
 w3c/nist-misc-replelem1: offen, erste Abweichung: Seite 1: "The above image should be a 50px(width) square." verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
 w3c/nist-misc-replelem2: offen, erste Abweichung: Seite 1: "The above image should be a 50px (width=\"50px\" height=\"auto\") square." verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
 w3c/nist-misc-replelem5: offen, erste Abweichung: Seite 1: "The content-height of this image was set 50px." verschoben um -12.50 pt waagerecht, -12.50 pt senkrecht

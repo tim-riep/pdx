@@ -300,7 +300,7 @@ func keepValue(n *tree.Node, prop string) int {
 
 // table erzeugt die Galley-Einträge einer fo:table.
 func (g *galley) table(n *tree.Node, parent *props.Computed) error {
-	p, err := props.Compute(parent, n, g.refW)
+	p, err := props.Compute(parent, n, g.percentBase(parent))
 	if err != nil {
 		return err
 	}
@@ -831,7 +831,7 @@ func winner(cands []areatree.Border) areatree.Border {
 // eine Zeile mit den Zellen Label und Body, ihre Lage ergibt sich aus den
 // Einzügen, typischerweise über label-end() und body-start().
 func (g *galley) list(n *tree.Node, parent *props.Computed) error {
-	p, err := props.Compute(parent, n, g.refW)
+	p, err := props.Compute(parent, n, g.percentBase(parent))
 	if err != nil {
 		return err
 	}
@@ -864,7 +864,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 		if !it.IsFO("list-item") {
 			continue
 		}
-		ip, err := props.Compute(p, it, g.refW)
+		ip, err := props.Compute(p, it, g.contentW(p))
 		if err != nil {
 			return err
 		}
@@ -884,7 +884,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 			if !part.IsFO("list-item-label") && !part.IsFO("list-item-body") {
 				continue
 			}
-			pp, err := props.ComputeEnv(ip, part, g.refW, env)
+			pp, err := props.ComputeEnv(ip, part, g.contentW(ip), env)
 			if err != nil {
 				return err
 			}

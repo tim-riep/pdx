@@ -123,12 +123,16 @@ type absAnchor struct {
 
 // galley erzeugt die Einträge für einen Referenzbereich der Breite refW.
 type galley struct {
-	e       *engine
-	refW    areatree.Length
-	pageNo  int // 0, solange die Seite nicht feststeht (Fluss)
-	items   []item
-	stack   []*blockCtx
-	pending areatree.Length // angesammelter Abstand
+	e    *engine
+	refW areatree.Length
+	// refX ist der Inhaltsanfang der Referenzfläche, refProps ihre
+	// Eigenschaften, solange ein fo:block-container im Fluss gesetzt wird.
+	refX     areatree.Length
+	refProps *props.Computed
+	pageNo   int // 0, solange die Seite nicht feststeht (Fluss)
+	items    []item
+	stack    []*blockCtx
+	pending  areatree.Length // angesammelter Abstand
 	// pendingKeep ist der Teil des Abstands, der am Seitenanfang bleibt.
 	pendingKeep areatree.Length
 	major       int     // Zähler für ordinal
@@ -235,7 +239,20 @@ func newGalley(e *engine, refW areatree.Length, pageNo int) *galley {
 	return &galley{e: e, refW: refW, pageNo: pageNo}
 }
 
-func (g *galley) contentX(p *props.Computed) areatree.Length { return p.StartIndent }
+// contentX liefert den Inhaltsanfang eines Blocks. start-indent bezieht
+// sich auf die nächste umgebende Referenzfläche (XSL 1.1 5.3.2), deren
+// Inhaltsanfang refX ist.
+func (g *galley) contentX(p *props.Computed) areatree.Length { return g.refX + p.StartIndent }
+
+// percentBase liefert die Bezugsbreite für Prozentangaben eines Kindes: die
+// Inhaltsbreite des umgebenden Blocks, bei der Referenzfläche selbst deren
+// Breite.
+func (g *galley) percentBase(parent *props.Computed) areatree.Length {
+	if parent == g.refProps {
+		return g.refW
+	}
+	return g.contentW(parent)
+}
 func (g *galley) contentW(p *props.Computed) areatree.Length {
 	return max(g.refW-p.StartIndent-p.EndIndent, 0)
 }
@@ -360,17 +377,24 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	case n.IsFO("list-block"):
 		return g.list(n, parent)
 	}
-	p, err := props.Compute(parent, n, g.refW)
+	// Prozentangaben beziehen sich auf den umgebenden Blockbereich.
+	p, err := props.Compute(parent, n, g.percentBase(parent))
 	if err != nil {
 		return err
 	}
+	childParent := p
 	if n.IsFO("block-container") {
 		if p.Absolute != "" {
 			g.box(item{path: g.path(), anchor: &absAnchor{node: n, p: p}, ord: g.next()}, g.breakBefore(edgeNone))
 			return nil
 		}
 		if p.Width != nil {
+			// Die Breite legt das Inhaltsrechteck fest, end-indent wird
+			// angepasst (Überbestimmung, XSL 1.1 5.3.4). Die Kinder erben den
+			// berechneten Wert der Eigenschaft, nicht die Anpassung.
+			inherited := *p
 			p.EndIndent = max(g.refW-p.StartIndent-*p.Width, 0)
+			childParent = &inherited
 		}
 	}
 	ctx := &blockCtx{node: n, p: p}
@@ -385,7 +409,12 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	}
 
 	if n.IsFO("block-container") {
-		err = g.blocks(n, p)
+		// fo:block-container ist eine Referenzfläche (XSL 1.1 6.5.3): Die
+		// Einzüge der Kinder zählen ab ihrem Inhaltsrechteck.
+		saveX, saveW, saveP := g.refX, g.refW, g.refProps
+		g.refX, g.refW, g.refProps = g.contentX(p), g.contentW(p), childParent
+		err = g.blocks(n, childParent)
+		g.refX, g.refW, g.refProps = saveX, saveW, saveP
 	} else {
 		err = g.mixed(n, p)
 	}
