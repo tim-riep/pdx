@@ -10,7 +10,8 @@
     "e2e": "playwright test"
   },
   "dependencies": {
-    "@wailsio/runtime": "3.0.0-beta.30"
+    "@wailsio/runtime": "3.0.0-beta.30",
+    "pdfjs-dist": "6.4.299"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

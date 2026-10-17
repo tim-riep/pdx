@@ -314,5 +314,10 @@
   "content.fields": "Felder",
   "content.chip": "{el}, Entf löscht",
   "prop.font": "Schrift-Token",
-  "prop.family": "Familie"
+  "prop.family": "Familie",
+  "pdf.loading": "PDF wird erzeugt",
+  "pdf.pages": "{n} Seiten, PDF/A-3b",
+  "pdf.page": "1 Seite, PDF/A-3b",
+  "pdf.error": "Das PDF ließ sich nicht erzeugen",
+  "pdf.open": "PDF in neuem Fenster"
 }

@@ -141,6 +141,12 @@ func (a *Assets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	pipe := a.c.r.pipe
+	if kind == "pdf" {
+		// Das PDF des aktuellen Stands für die Ansicht PDF. key ist die
+		// Revision und dient nur dazu, alte Antworten nicht zu cachen.
+		a.servePDF(w, r)
+		return
+	}
 	var body []byte
 	var mime string
 	switch kind {
@@ -162,4 +168,39 @@ func (a *Assets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", mime)
 	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 	w.Write(body)
+}
+
+// servePDF erzeugt das PDF/A-3b des aktuellen Stands mit den Daten der
+// Vorschau. Fehler beim Erzeugen kommen als Text mit Status 422.
+func (a *Assets) servePDF(w http.ResponseWriter, r *http.Request) {
+	c := a.c
+	c.mu.Lock()
+	if c.doc == nil {
+		c.mu.Unlock()
+		http.Error(w, "keine Vorlage geöffnet", http.StatusNotFound)
+		return
+	}
+	data, _ := c.previewDataLocked()
+	in := pipeline.Input{Canon: template.Write(c.doc.Pkg.Template), Files: maps.Clone(c.doc.Pkg.Files), Data: data}
+	c.mu.Unlock()
+	pdf, probs, err := c.r.pipe.PDF(r.Context(), in, time.Now().UTC().Truncate(time.Second), nil)
+	if err != nil {
+		return // abgebrochen
+	}
+	if len(probs) > 0 {
+		var b strings.Builder
+		for _, p := range probs {
+			if p.ID != "" {
+				b.WriteString("[" + p.ID + "] ")
+			}
+			b.WriteString(p.Msg + "\n")
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.Write([]byte(b.String()))
+		return
+	}
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Cache-Control", "no-store")
+	w.Write(pdf)
 }

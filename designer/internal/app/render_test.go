@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
+	"github.com/tim-riep/pdx/designer/internal/model"
 	"github.com/tim-riep/pdx/designer/internal/pipeline"
 )
 
@@ -69,5 +71,35 @@ func TestSnapshot(t *testing.T) {
 	cat, err := ts.Catalog()
 	if err != nil || cat["table"] == nil {
 		t.Fatalf("Catalog: %v", err)
+	}
+}
+
+func TestServePDF(t *testing.T) {
+	c := NewCore(nil, nil, t.TempDir())
+	h := NewAssets(c)
+	w := httptest.NewRecorder()
+	h.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/pdx/pdf/0", nil))
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("ohne Vorlage: %d", w.Code)
+	}
+	if _, err := NewProjectService(c).Open(muster); err != nil {
+		t.Fatal(err)
+	}
+	w = httptest.NewRecorder()
+	h.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/pdx/pdf/1", nil))
+	if w.Code != http.StatusOK || w.Header().Get("Content-Type") != "application/pdf" || !strings.HasPrefix(w.Body.String(), "%PDF-") {
+		t.Fatalf("PDF: %d %s", w.Code, w.Header().Get("Content-Type"))
+	}
+	// Fehler beim Erzeugen kommen als Text mit Vorlagen-ID.
+	if _, err := NewTemplateService(c).Apply("Stil", model.Command{Op: "setAttr", Ref: "titel", Name: "style", Value: "st-basis"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := NewTemplateService(c).Apply("Farbe", model.Command{Op: "setAttr", Ref: "titel", Name: "color", Value: "$fehlt"}); err != nil {
+		t.Fatal(err)
+	}
+	w = httptest.NewRecorder()
+	h.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/pdx/pdf/3", nil))
+	if w.Code != http.StatusUnprocessableEntity || !strings.Contains(w.Body.String(), "[titel]") {
+		t.Fatalf("Fehler: %d %q", w.Code, w.Body.String())
 	}
 }

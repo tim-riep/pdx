@@ -9,6 +9,7 @@
   import XPathPanel from "./components/XPathPanel.svelte";
   import ProblemsPanel from "./components/ProblemsPanel.svelte";
   import ContextMenu from "./components/ContextMenu.svelte";
+  import PdfView from "./components/PdfView.svelte";
   import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
   import ConformancePanel from "./components/ConformancePanel.svelte";
@@ -129,7 +130,9 @@
     </Tabs>
   </aside>
   <main class="canvas" data-testid="canvas">
-    {#if project.open}
+    {#if project.open && render.view === "pdf"}
+      <PdfView />
+    {:else if project.open}
       <Canvas />
     {:else}
       <StartScreen />
