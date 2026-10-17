@@ -30,10 +30,6 @@ fop/flow_changing-ipd_last-page: begründet, Zirkelschluss bei page-position las
 fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "After the big"
 fop/inline_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This demonstrates a long inline which stretches over multiple lines to show"
 fop/inline_border_padding: offen, erste Abweichung: Seite 1: "This demonstrates correct line breaking of a fo:inline because it does fit" verschoben um 0.00 pt waagerecht, -12.00 pt senkrecht
-fop/leader_background-color: offen, erste Abweichung: Seite 1: ".... dots yellow background" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
-fop/leader_border_padding: offen, erste Abweichung: Seite 1: ".... dots solid 1pt red border" verschoben um -1.00 pt waagerecht, 5.41 pt senkrecht
-fop/leader_leader-pattern_dots: offen, erste Abweichung: Seite 1: "... Default dots pattern" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
-fop/leader_text-align: offen, erste Abweichung: Seite 1: "... dots" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item-with-ipd-change: offen, erste Abweichung: Seite 2: "b" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
 fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, FOP 3

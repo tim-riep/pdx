@@ -269,12 +269,15 @@ fop/knuth_element-null_position: nicht im Teilumfang von pdx: nutzt FOP-Erweiter
 fop/leader-alignment: in FOP 2.11 deaktiviert: Leader-alignment is not yet implemented.
 fop/leader-alignment_writing-mode_rl: nicht im Teilumfang von pdx: 10:13: fo:bidi-override wird noch nicht unterstützt
 fop/leader_alignment-baseline: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="baseline"
+fop/leader_background-color: nicht im Teilumfang von pdx: Eigenschaft leader-pattern="use-content"
+fop/leader_border_padding: nicht im Teilumfang von pdx: Eigenschaft leader-pattern="use-content"
 fop/leader_leader-pattern_dots_writing-mode_rl: nicht im Teilumfang von pdx: 11:13: fo:bidi-override wird noch nicht unterstützt
 fop/leader_leader-pattern_rule_writing-system_rl: nicht im Teilumfang von pdx: 11:16: fo:bidi-override wird noch nicht unterstützt
 fop/leader_leader-pattern_space_writing-mode_rl: nicht im Teilumfang von pdx: 11:16: fo:bidi-override wird noch nicht unterstützt
 fop/leader_leader-pattern_use-content: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg, unterstützt ist nur pdx:barcode
 fop/leader_leader-pattern_use-content_bug: in FOP 2.11 deaktiviert: Line height is not correctly calculated for use-content leaders whose height is larger than the rest of the line.
 fop/leader_leader-pattern_use-content_writing-mode_rl: nicht im Teilumfang von pdx: 10:13: fo:bidi-override wird noch nicht unterstützt
+fop/leader_text-align: nicht im Teilumfang von pdx: Eigenschaft leader-pattern="use-content"
 fop/linearea_nonempty_1: nicht im Teilumfang von pdx: Eigenschaft line-height-shift-adjustment="disregard-shifts"
 fop/linefeed-treatment_preserve: nicht im Teilumfang von pdx: Eigenschaft wrap-option="no-wrap"
 fop/list-2-columns: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)

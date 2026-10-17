@@ -41,6 +41,8 @@ type frame struct {
 	stacks  bool    // Kinder werden übereinander gestapelt
 	space   float64 // space-before einer Zeile (halber Durchschuss)
 	base    float64 // Grundlinie relativ zur Zeilenoberkante, -1 wenn unbekannt
+	// inlineOff ist der Versatz einer Inline-Fläche zu ihrer Elternfläche.
+	inlineOff float64
 	// positioned ist bei absolut oder fest positionierten Bereichen gesetzt.
 	// Sie sind der Bezug für absolut positionierte Nachfahren.
 	positioned bool
@@ -188,17 +190,22 @@ func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 			if name == "block" {
 				f.block = &Block{Page: page, Top: -1}
 			}
-			if name == "text" || name == "inlineparent" || name == "viewport" {
+			if name == "text" || name == "inlineparent" || name == "viewport" || name == "inlineblockparent" {
+				off, _ := attrF(t.Attr, "offset")
+				f.inlineOff = off
 				// Die erste Inline-Fläche mit baseline legt die Grundlinie fest.
+				// Versätze umschließender Inline-Flächen (etwa eines Leaders)
+				// zählen mit.
 				if bl, ok := attrF(t.Attr, "baseline"); ok {
-					off, _ := attrF(t.Attr, "offset")
+					outer := 0.0
 					for i := len(stack) - 1; i >= 0; i-- {
 						if stack[i].line != nil {
 							if stack[i].base < 0 {
-								stack[i].base = stack[i].space + off + bl
+								stack[i].base = stack[i].space + outer + off + bl
 							}
 							break
 						}
+						outer += stack[i].inlineOff
 					}
 				}
 			}

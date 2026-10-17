@@ -944,10 +944,9 @@ func drawLeader(pc piece, x, w, baseline areatree.Length) []areatree.Area {
 			return nil
 		}
 		dot := gs[0]
-		pw := l.patternW
-		if pw <= 0 {
-			pw = dot.Advance
-		}
+		// Die Musterbreite ist Glyphe plus Leerraum (XSL 1.1 7.22.3), sie ist
+		// daher mindestens so breit wie der Punkt.
+		pw := max(l.patternW, dot.Advance)
 		if pw <= 0 {
 			return nil
 		}
