@@ -131,7 +131,6 @@ func (s *sequence) paginate() error {
 			empty++
 			continue
 		}
-		empty = 0
 		if items, pos, err = s.adapt(m, items, pos, &width); err != nil {
 			return err
 		}
@@ -180,11 +179,26 @@ func (s *sequence) paginate() error {
 		if _, err := s.sel.pick(cond, true); err != nil {
 			return err
 		}
-		region := s.newPage(m)
 		end := breakPage(items, pos, m.body.H)
+		// Läuft die Seite über, weil ein Keep nicht gebrochen werden darf, und
+		// hat die nächste Seite mehr Platz, bleibt diese Seite leer. So erfüllt
+		// der Keep ohne Überlauf (XSL 1.1 4.8 lässt beides zu).
+		if empty < maxEmptyPages && overflows(items, pos, end, m.body.H) && !last {
+			next := pageCond{number: s.e.pageNo + 2}
+			if nm, err := s.sel.pick(next, false); err == nil && nm != nil && nm.body.H > m.body.H {
+				s.newPage(m)
+				if err := s.finishPage(); err != nil {
+					return err
+				}
+				empty++
+				continue
+			}
+		}
+		region := s.newPage(m)
 		if err := newPlacer(s.e, s.page, m.body, region).place(items[pos:end]); err != nil {
 			return err
 		}
+		empty = 0
 		if err := s.finishPage(); err != nil {
 			return err
 		}
@@ -201,6 +215,26 @@ func (s *sequence) paginate() error {
 		}
 		pos = end + 1
 	}
+}
+
+// overflows meldet, ob der Inhalt items[pos:end] höher ist als avail.
+func overflows(items []item, pos, end int, avail areatree.Length) bool {
+	var h areatree.Length
+	seen := false
+	for _, it := range items[pos:min(end, len(items))] {
+		switch it.kind {
+		case itBox:
+			h += it.h
+			seen = true
+		case itGlue:
+			if seen {
+				h += it.h
+			} else {
+				h += it.keep
+			}
+		}
+	}
+	return h > avail
 }
 
 // maxEmptyPages begrenzt leere Seiten in Folge bei Regionen ohne Fläche.

@@ -15,11 +15,10 @@ fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem 
 fop/block_break-before_bug44412: offen, erste Abweichung: Seite 2: "The break-before set on this block causes the parent block" verschoben um 0.00 pt waagerecht, -4.00 pt senkrecht
 fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/block_keep-together_overflow_1: offen, erste Abweichung: Seiten: pdx 5, FOP 6
 fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished whenever it shone in her face." verschoben um 19.85 pt waagerecht, -0.00 pt senkrecht
 fop/block_margin_shorthands: offen, erste Abweichung: Seite 1: "left/right" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
-fop/block_space-before_space-after_bug38102: offen, erste Abweichung: Seiten: pdx 5, FOP 3
+fop/block_space-before_space-after_bug38102: begründet, pdx nimmt das Optimum von Abständen, FOP staucht bis zum Minimum, XSL 1.1 4.3 lässt jeden Wert im Bereich zu
 fop/block_text-align_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi" verschoben um -14.14 pt waagerecht, -43.20 pt senkrecht
 fop/block_uax14_explicit-breaks: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 fop/block_uax14_linebreaking: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
@@ -27,8 +26,7 @@ fop/block_white-space_nbsp_1: offen, erste Abweichung: Seite 1: "single nbsp aro
 fop/empty_table: begründet, leeres fo:table-body verletzt das Inhaltsmodell aus XSL 1.1 6.7.6 (table-row+|table-cell+)
 fop/flow_changing-ipd_5: offen, erste Abweichung: Seite 3: "beautiful, but the youngest was so beautiful that the sun itself, which has seen so much," verschoben um 0.00 pt waagerecht, -43.20 pt senkrecht
 fop/flow_changing-ipd_break-before: offen, erste Abweichung: Seite 1: "In olden times when wishing still helped one, there lived a" verschoben um 0.00 pt waagerecht, -1.60 pt senkrecht
-fop/flow_changing-ipd_last-page: offen, erste Abweichung: Seiten: pdx 1, FOP 2
-fop/flow_changing-ipd_last-page_7: offen, erste Abweichung: Seiten: pdx 2, FOP 5
+fop/flow_changing-ipd_last-page: begründet, Zirkelschluss bei page-position last, pdx wählt die erste passende Alternative (XSL 1.1 6.4.11), beide Lösungen sind zulässig
 fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "After the big"
 fop/inline_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This demonstrates a long inline which stretches over multiple lines to show"
 fop/inline_border_padding: offen, erste Abweichung: Seite 1: "This demonstrates correct line breaking of a fo:inline because it does fit" verschoben um 0.00 pt waagerecht, -12.00 pt senkrecht
@@ -46,19 +44,17 @@ fop/marker_page-number-citation_bugzilla45295: offen, erste Abweichung: Seite 4:
 fop/markers_3: offen, erste Abweichung: Seite 2: "[PS] [DOC]" verschoben um 3.24 pt waagerecht, -0.00 pt senkrecht
 fop/markers_6a: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
 fop/markers_6b: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
-fop/page-breaking_5: offen, erste Abweichung: Seiten: pdx 3, FOP 4
 fop/page-number-citation-last_complex: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "table-header= 1"
 fop/page-number-citation_border_padding: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Page number citation 1 with border and"
 fop/page-number-citation_bugzilla44794: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "inline: 1 to 1."
 fop/page-number-citation_list: offen, erste Abweichung: Seite 3: Zeile nur in pdx: "1"
-fop/page-position-last_break-before_bugzilla46489: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-position only und first, den XSL 1.1 nicht regelt, pdx setzt eine Seite, FOP fügt leere Seiten an
 fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11, FOP 13
 fop/simple-page-master_unmapped_flow-name: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-border-separate3: offen, erste Abweichung: Seite 1: "cell6" verschoben um 0.00 pt waagerecht, 5.00 pt senkrecht
 fop/table-cell_block_keep-with-next: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "line1"
-fop/table-cell_break-before_first-row: offen, erste Abweichung: Seite 2: "Cell 1.1" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
+fop/table-cell_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-cell_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 4
 fop/table-cell_display-align_page-break: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "cell3"
 fop/table-cell_height: offen, erste Abweichung: Seite 1: "cell10a" verschoben um 0.00 pt waagerecht, -6.00 pt senkrecht
@@ -73,7 +69,7 @@ fop/table-column_column-width_proportional-column-width: begründet, ungültiger
 fop/table-header_in_list_bug: offen, erste Abweichung: Seite 1: "Header" verschoben um -12.01 pt waagerecht, -0.00 pt senkrecht
 fop/table-header_table-footer_4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "content content content"
 fop/table-row_break-before_break-after_2: offen, erste Abweichung: Seite 3: "cell1" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
-fop/table-row_break-before_first-row: offen, erste Abweichung: Seite 2: "Cell 1.1" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
+fop/table-row_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-row_break-before_row-span: offen, erste Abweichung: Seite 2: "Cell 1.1" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
 fop/table-row_break-inside-span: offen, erste Abweichung: Seiten: pdx 2, FOP 1
 fop/table-row_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
@@ -92,7 +88,6 @@ fop/table_border-collapse_collapse_spans_2_no-col: offen, erste Abweichung: Seit
 fop/table_break-before_break-after: begründet, der erste Bereich einer Tabelle behält border-before (Konditionalität discard gilt nur für Folgebereiche, XSL 1.1 7.8.12), FOP lässt ihn nach break-before weg
 fop/table_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table_keep-together_row-span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "Before the table"
-fop/table_layout_change_ipd: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
 w3c/fopc-fonts: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 w3c/fopc-hyphen: offen, erste Abweichung: Seite 1: "US English" verschoben um 0.00 pt waagerecht, 2.79 pt senkrecht

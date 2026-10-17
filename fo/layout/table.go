@@ -343,7 +343,16 @@ func keepValue(n *tree.Node, prop string) int {
 		v, ok = n.Attr(prop + ".within-page")
 	}
 	if !ok {
-		v, _ = n.Attr(prop + ".within-column")
+		v, ok = n.Attr(prop + ".within-column")
+	}
+	if !ok {
+		// Kurzformen aus CSS2: page-break-inside, page-break-before und
+		// page-break-after mit avoid (XSL 1.1 7.31.16 bis 7.31.18).
+		short := map[string]string{"keep-together": "page-break-inside",
+			"keep-with-previous": "page-break-before", "keep-with-next": "page-break-after"}[prop]
+		if sv, _ := n.Attr(short); sv == "avoid" {
+			v = "always"
+		}
 	}
 	switch v {
 	case "", "auto":

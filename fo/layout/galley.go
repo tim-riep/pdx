@@ -222,6 +222,16 @@ func breakValue(n *tree.Node, prop string) string {
 	case "odd-page", "even-page":
 		return v
 	}
+	// Kurzformen aus CSS2 (XSL 1.1 7.31.16 und 7.31.17).
+	short := map[string]string{"break-before": "page-break-before", "break-after": "page-break-after"}[prop]
+	switch v, _ := n.Attr(short); v {
+	case "always":
+		return "page"
+	case "left":
+		return "even-page"
+	case "right":
+		return "odd-page"
+	}
 	return ""
 }
 
