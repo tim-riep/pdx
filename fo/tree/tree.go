@@ -306,6 +306,11 @@ func resolveInherit(n *Node) {
 		if strings.TrimSpace(v) != "inherit" {
 			continue
 		}
+		// Ränder und Padding können Prozentangaben haben. inherit übernimmt
+		// dort den berechneten Wert, das löst fo/props auf.
+		if strings.HasPrefix(name, "margin") || strings.HasPrefix(name, "padding") {
+			continue
+		}
 		delete(n.Attrs, name)
 		for p := n.Parent; p != nil; p = p.Parent {
 			if pv, ok := p.Attrs[name]; ok {

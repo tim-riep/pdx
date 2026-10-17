@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tim-riep/pdx/fo/props"
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
@@ -22,6 +23,10 @@ func TestShow(t *testing.T) {
 	for _, c := range cases {
 		if c.ID() != id {
 			continue
+		}
+		if os.Getenv("PDX_SUITE_PX") == "1" {
+			props.SetPixelSize(1)
+			defer props.SetPixelSize(0.75)
 		}
 		o := Render(c, 30*time.Second)
 		if o.Err != nil {

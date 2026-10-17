@@ -47,6 +47,8 @@ type Computed struct {
 	// Abstand aus margin-top stammt (XSL 1.1 5.3.2).
 	SpaceBeforeRetain bool
 	Padding           [4]Length
+	// Margin sind die berechneten Ränder, für inherit an Kindern.
+	Margin [4]Length
 	Border            [4]areatree.Border
 	Background        *areatree.Color
 	// Absolute ist "absolute" oder "fixed" bei absoluter Positionierung.
@@ -313,6 +315,10 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 			return fail("padding", err)
 		}
 		for i, s := range vs {
+			if s == "inherit" {
+				c.Padding[i] = parent.Padding[i]
+				continue
+			}
 			if c.Padding[i], err = length("padding", s); err != nil {
 				return err
 			}
@@ -320,6 +326,12 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}
 	for side := 0; side < 4; side++ {
 		if v, ok := lookupSide(a, "padding", side, ""); ok {
+			// inherit übernimmt den berechneten Wert des Elternelements
+			// (XSL 1.1 5.1.4), Prozentangaben sind dort schon aufgelöst.
+			if strings.TrimSpace(v) == "inherit" {
+				c.Padding[side] = parent.Padding[side]
+				continue
+			}
 			l, err := length("padding", v)
 			if err != nil {
 				return err
@@ -413,9 +425,12 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	// 5.3.2).
 	// auto ergibt bei Blöcken 0pt (XSL 1.1 5.3.2 und CSS2 10.3.3 bei
 	// automatischer Breite).
-	marginLen := func(name, s string) (Length, error) {
-		if strings.TrimSpace(s) == "auto" {
+	marginLen := func(name, s string, side int) (Length, error) {
+		switch strings.TrimSpace(s) {
+		case "auto":
 			return 0, nil
+		case "inherit":
+			return parent.Margin[side], nil
 		}
 		return length(name, s)
 	}
@@ -426,7 +441,7 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 			return fail("margin", err)
 		}
 		for i, s := range vs {
-			l, err := marginLen("margin", s)
+			l, err := marginLen("margin", s, i)
 			if err != nil {
 				return err
 			}
@@ -435,11 +450,16 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}
 	for side, name := range []string{"margin-top", "margin-right", "margin-bottom", "margin-left"} {
 		if v, ok := a[name]; ok {
-			l, err := marginLen(name, v)
+			l, err := marginLen(name, v, side)
 			if err != nil {
 				return err
 			}
 			margin[side] = &l
+		}
+	}
+	for side, m := range margin {
+		if m != nil {
+			c.Margin[side] = *m
 		}
 	}
 	bwid := func(side int) Length {

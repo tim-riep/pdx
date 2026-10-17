@@ -78,7 +78,7 @@ func FuzzParse(f *testing.F) {
 }
 
 func TestInherit(t *testing.T) {
-	root, err := Parse(strings.NewReader(`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="a"><fo:flow flow-name="xsl-region-body"><fo:block margin-left="1cm"><fo:block margin-left="inherit" space-before="inherit">x</fo:block></fo:block></fo:flow></fo:page-sequence></fo:root>`))
+	root, err := Parse(strings.NewReader(`<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format"><fo:layout-master-set><fo:simple-page-master master-name="a"><fo:region-body/></fo:simple-page-master></fo:layout-master-set><fo:page-sequence master-reference="a"><fo:flow flow-name="xsl-region-body"><fo:block font-family="Times"><fo:block font-family="inherit" space-before="inherit" margin-left="inherit">x</fo:block></fo:block></fo:flow></fo:page-sequence></fo:root>`))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,8 +93,12 @@ func TestInherit(t *testing.T) {
 		}
 	}
 	walk(root)
-	if v, _ := inner.Attr("margin-left"); v != "1cm" {
-		t.Errorf("margin-left %q, erwartet 1cm", v)
+	if v, _ := inner.Attr("font-family"); v != "Times" {
+		t.Errorf("font-family %q, erwartet Times", v)
+	}
+	// Ränder löst fo/props mit dem berechneten Wert auf.
+	if v, _ := inner.Attr("margin-left"); v != "inherit" {
+		t.Errorf("margin-left %q, erwartet inherit", v)
 	}
 	if _, ok := inner.Attr("space-before"); ok {
 		t.Error("inherit ohne Wert am Vorfahren bleibt stehen")

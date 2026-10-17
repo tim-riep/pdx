@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tim-riep/pdx"
+	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/fo/props"
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
@@ -42,6 +44,12 @@ func TestAnalyze(t *testing.T) {
 			continue
 		}
 		class := classify(o, fl, fpages)
+		if strings.HasPrefix(class, "Zeilenumbruch") {
+			if over := overflow(c); over != "" {
+				class += ", Überlauf"
+				classes["Überlauf: "+c.ID()] = append(classes["Überlauf: "+c.ID()], over)
+			}
+		}
 		// Abweichungen nur wegen der Pixelgröße: mit 1 px = 1 pt wie bei FOP
 		// gleich mit der Erwartung.
 		if src, err := os.ReadFile(c.File); err == nil && strings.Contains(string(src), "px") {
@@ -99,7 +107,28 @@ func classify(o Outcome, fl []fopcompare.ATLine, fpages int) string {
 			fl2 = append(fl2, l)
 		}
 	}
-	sameText := stream(pl) == stream(fl2)
+	// Gleicher Text je Seite: nur die Zeilenumbrüche unterscheiden sich.
+	pageStream := func(ls []fopcompare.ATLine) map[int]string {
+		m := map[int][]fopcompare.ATLine{}
+		for _, l := range ls {
+			m[l.Page] = append(m[l.Page], l)
+		}
+		out := map[int]string{}
+		for p, v := range m {
+			out[p] = stream(v)
+		}
+		return out
+	}
+	ps, fs := pageStream(pl), pageStream(fl2)
+	sameText := len(ps) == len(fs)
+	for p, v := range ps {
+		if fs[p] != v {
+			sameText = false
+		}
+	}
+	if !sameText && stream(pl) == stream(fl2) {
+		return "Seitenverteilung anders"
+	}
 	sameLines := len(pl) == len(fl2)
 	if sameLines {
 		for i := range pl {
@@ -131,4 +160,39 @@ func classify(o Outcome, fl []fopcompare.ATLine, fpages int) string {
 		return "Text und Seitenzahl anders"
 	}
 	return "Text anders"
+}
+
+// overflow meldet die erste Zeile von pdx, deren Glyphen über die Zeile
+// hinausragen.
+func overflow(c Case) string {
+	res, err := pdx.RenderFile(c.File, pdx.Options{Profile: "pdf-1.7", CreationDate: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)})
+	if err != nil {
+		return ""
+	}
+	for _, p := range res.Tree.Pages {
+		var found string
+		areatree.Walk(p.Areas, func(a areatree.Area) bool {
+			l, ok := a.(*areatree.Container)
+			if !ok || l.Kind != areatree.KindLine || found != "" {
+				return true
+			}
+			areatree.Walk(l.Children, func(x areatree.Area) bool {
+				if g, ok := x.(*areatree.GlyphRun); ok {
+					end := g.Origin.X
+					for _, gl := range g.Glyphs {
+						end += gl.Advance
+					}
+					if end > l.X+l.W+500 {
+						found = fmt.Sprintf("Zeile endet bei %.1f pt, Breite %.1f pt", end.Pt(), (l.X + l.W).Pt())
+					}
+				}
+				return true
+			})
+			return false
+		})
+		if found != "" {
+			return found
+		}
+	}
+	return ""
 }

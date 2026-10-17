@@ -17,7 +17,6 @@ fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"lar
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/block_keep-together_overflow_1: offen, erste Abweichung: Seiten: pdx 5, FOP 6
 fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished whenever it shone in her face." verschoben um 19.85 pt waagerecht, -0.00 pt senkrecht
-fop/block_margin_inherit: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "margin=\"inherit\" - should have the same margin as the"
 fop/block_margin_shorthands: offen, erste Abweichung: Seite 1: "left/right" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
 fop/block_space-before_space-after_bug38102: offen, erste Abweichung: Seiten: pdx 6, FOP 3
