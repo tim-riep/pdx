@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<template xmlns="https://pdx.example/ns/template/0" id="musterrechnung" dataRoot="rsm:CrossIndustryInvoice" lang="de-DE" schema="schema/cii.xsd" title="Musterrechnung" version="0">
+<template xmlns="https://pdx.example/ns/template/0" id="musterrechnung" dataRoot="inv:invoice" lang="de-DE" schema="schema/invoice.xsd" title="Musterrechnung" version="0">
   <namespaces>
-    <ns prefix="rsm" uri="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"/>
-    <ns prefix="ram" uri="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"/>
-    <ns prefix="udt" uri="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"/>
+    <ns prefix="inv" uri="https://pdx.example/ns/invoice/1"/>
   </namespaces>
   <styles>
     <style id="st-basis" fontFamily="Helvetica" fontSize="9.5pt" lineHeight="1.3"/>
@@ -36,18 +34,18 @@
   <pageSet id="seiten">
     <pageMaster id="erste" margin="15mm 20mm 15mm 25mm" use="first">
       <header id="erste-kopf" height="85mm">
-        <text id="briefkopf-firma" color="#1f4e79" style="st-titel" textAlign="end" w="165mm" x="0mm" y="0mm"><field id="briefkopf-firma-name" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name"/></text>
+        <text id="briefkopf-firma" color="#1f4e79" style="st-titel" textAlign="end" w="165mm" x="0mm" y="0mm"><field id="briefkopf-firma-name" bind="inv:seller/inv:name"/></text>
         <subform id="adressfenster" anchor="page" h="45mm" layout="positioned" w="85mm" x="20mm" y="45mm">
-          <text id="absenderzeile" style="st-klein" w="85mm" x="0mm" y="5mm"><field id="absender-name" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name"/> · <field id="absender-strasse" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:LineOne"/></text>
-          <subform id="empfaenger" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty" layout="flowed" w="85mm" x="0mm" y="12mm">
-            <field id="empfaenger-name" bind="ram:Name"/>
-            <field id="empfaenger-strasse" bind="ram:PostalTradeAddress/ram:LineOne"/>
-            <text id="empfaenger-ort"><field id="empfaenger-plz" bind="ram:PostalTradeAddress/ram:PostcodeCode"/> <field id="empfaenger-stadt" bind="ram:PostalTradeAddress/ram:CityName"/></text>
+          <text id="absenderzeile" style="st-klein" w="85mm" x="0mm" y="5mm"><field id="absender-name" bind="inv:seller/inv:name"/> · <field id="absender-strasse" bind="inv:seller/inv:street"/></text>
+          <subform id="empfaenger" bind="inv:buyer" layout="flowed" w="85mm" x="0mm" y="12mm">
+            <field id="empfaenger-name" bind="inv:name"/>
+            <field id="empfaenger-strasse" bind="inv:street"/>
+            <text id="empfaenger-ort"><field id="empfaenger-plz" bind="inv:postcode"/> <field id="empfaenger-stadt" bind="inv:city"/></text>
           </subform>
         </subform>
         <subform id="rechnungsdaten" anchor="page" layout="flowed" w="60mm" x="125mm" y="50mm">
-          <text id="rechnungsnummer">Rechnungsnummer: <field id="rechnungsnummer-wert" bind="rsm:ExchangedDocument/ram:ID" fontWeight="bold"/></text>
-          <text id="rechnungsdatum">Rechnungsdatum: <field id="rechnungsdatum-wert" bind="rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString" format="datum"/></text>
+          <text id="rechnungsnummer">Rechnungsnummer: <field id="rechnungsnummer-wert" bind="inv:number" fontWeight="bold"/></text>
+          <text id="rechnungsdatum">Rechnungsdatum: <field id="rechnungsdatum-wert" bind="inv:issueDate" format="datum"/></text>
         </subform>
       </header>
       <footer id="erste-fuss" height="12mm">
@@ -56,7 +54,7 @@
     </pageMaster>
     <pageMaster id="folge" margin="15mm 20mm 15mm 25mm" use="rest">
       <header id="folge-kopf" height="10mm">
-        <text id="folge-titel" style="st-klein" w="165mm" x="0mm" y="0mm"><field id="folge-firma" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name"/> · Rechnung <field id="folge-nummer" bind="rsm:ExchangedDocument/ram:ID"/></text>
+        <text id="folge-titel" style="st-klein" w="165mm" x="0mm" y="0mm"><field id="folge-firma" bind="inv:seller/inv:name"/> · Rechnung <field id="folge-nummer" bind="inv:number"/></text>
       </header>
       <footer id="folge-fuss" height="12mm">
         <pageNumber id="folge-seitenzahl" pattern="Seite {current} von {total}" style="st-klein" textAlign="center" w="165mm" x="0mm" y="4mm"/>
@@ -65,7 +63,7 @@
   </pageSet>
   <body id="inhalt" style="st-basis">
     <text id="titel" ref="rechnung" role="H1" spaceAfter="4mm" style="st-titel"/>
-    <table id="positionen" bind="rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem" role="Table">
+    <table id="positionen" bind="inv:items/inv:item" role="Table">
       <column id="sp-pos" width="12mm"/>
       <column id="sp-leistung" width="1*"/>
       <column id="sp-menge" width="22mm"/>
@@ -94,26 +92,26 @@
             <text id="u-label-t" ref="uebertrag"/>
           </cell>
           <cell id="u-wert" style="st-betrag">
-            <carryOver id="u-carry" format="betrag" of="ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount"/>
+            <carryOver id="u-carry" format="betrag" of="inv:amount"/>
           </cell>
         </row>
       </header>
       <rows id="positionen-zeilen">
         <row id="position">
           <cell id="z-pos" style="st-betrag">
-            <field id="z-pos-f" bind="ram:AssociatedDocumentLineDocument/ram:LineID"/>
+            <field id="z-pos-f" bind="inv:position"/>
           </cell>
           <cell id="z-leistung" style="st-zelle">
-            <field id="z-leistung-f" bind="ram:SpecifiedTradeProduct/ram:Name"/>
+            <field id="z-leistung-f" bind="inv:description"/>
           </cell>
           <cell id="z-menge" style="st-betrag">
-            <field id="z-menge-f" bind="ram:SpecifiedLineTradeDelivery/ram:BilledQuantity" format="menge"/>
+            <field id="z-menge-f" bind="inv:quantity" format="menge"/>
           </cell>
           <cell id="z-preis" style="st-betrag">
-            <field id="z-preis-f" bind="ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:ChargeAmount" format="betrag"/>
+            <field id="z-preis-f" bind="inv:unitPrice" format="betrag"/>
           </cell>
           <cell id="z-betrag" style="st-betrag">
-            <field id="z-betrag-f" bind="ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount" format="betrag"/>
+            <field id="z-betrag-f" bind="inv:amount" format="betrag"/>
           </cell>
         </row>
       </rows>
@@ -123,24 +121,24 @@
             <text id="zs-label-t" ref="zwischensumme"/>
           </cell>
           <cell id="zs-wert" style="st-summe">
-            <subtotal id="zs-sub" format="betrag" of="ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount"/>
+            <subtotal id="zs-sub" format="betrag" of="inv:amount"/>
           </cell>
         </row>
       </footer>
     </table>
     <subform id="summen" keepTogether="always" layout="flowed" spaceBefore="4mm">
-      <text id="netto">Nettobetrag: <field id="netto-wert" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TaxBasisTotalAmount" format="betrag"/> €</text>
-      <text id="steuer">Umsatzsteuer: <field id="steuer-wert" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TaxTotalAmount" format="betrag"/> €</text>
-      <text id="brutto" fontWeight="bold">Gesamtbetrag: <field id="brutto-wert" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:GrandTotalAmount" format="betrag"/> €</text>
+      <text id="netto">Nettobetrag: <field id="netto-wert" bind="inv:totals/inv:net" format="betrag"/> €</text>
+      <text id="steuer">Umsatzsteuer: <field id="steuer-wert" bind="inv:totals/inv:tax" format="betrag"/> €</text>
+      <text id="brutto" fontWeight="bold">Gesamtbetrag: <field id="brutto-wert" bind="inv:totals/inv:gross" format="betrag"/> €</text>
       <barcode id="girocode" type="girocode" w="30mm">
-        <data id="gc-name" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name" name="name"/>
-        <data id="gc-iban" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:IBANID" name="iban"/>
-        <data id="gc-betrag" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:DuePayableAmount" name="amount"/>
-        <data id="gc-text" bind="rsm:ExchangedDocument/ram:ID" name="text"/>
+        <data id="gc-name" bind="inv:seller/inv:name" name="name"/>
+        <data id="gc-iban" bind="inv:seller/inv:iban" name="iban"/>
+        <data id="gc-betrag" bind="inv:totals/inv:gross" name="amount"/>
+        <data id="gc-text" bind="inv:number" name="text"/>
       </barcode>
     </subform>
   </body>
   <attachments>
-    <attachment id="factur-x" description="Rechnungsdaten im Format Factur-X" mimeType="text/xml" name="factur-x.xml" relationship="Alternative" source="data"/>
+    <attachment id="anhang-daten" description="Rechnungsdaten (eigenes Format von pdx)" mimeType="application/xml" name="rechnung.xml" relationship="Alternative" source="data"/>
   </attachments>
 </template>

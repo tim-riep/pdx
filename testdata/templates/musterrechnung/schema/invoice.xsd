@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Datenschema der Musterrechnung von pdx. Eigenes, bewusst schlankes Format
+  für Tests und Beispiele, kein E-Rechnungsstandard. Die Domain pdx.example im
+  Namespace ist ein Platzhalter (RFC 2606).
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="https://pdx.example/ns/invoice/1"
+           targetNamespace="https://pdx.example/ns/invoice/1"
+           elementFormDefault="qualified">
+
+  <xs:element name="invoice">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="number" type="xs:string"/>
+        <xs:element name="issueDate" type="xs:date"/>
+        <xs:element name="dueDate" type="xs:date" minOccurs="0"/>
+        <xs:element name="currency" type="Currency"/>
+        <xs:element name="seller" type="Party"/>
+        <xs:element name="buyer" type="Party"/>
+        <xs:element name="items">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" type="Item" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="totals">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="net" type="Amount"/>
+              <xs:element name="taxRate" type="xs:decimal"/>
+              <xs:element name="tax" type="Amount"/>
+              <xs:element name="gross" type="Amount"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="paymentTerms" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Party">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="street" type="xs:string"/>
+      <xs:element name="postcode" type="xs:string"/>
+      <xs:element name="city" type="xs:string"/>
+      <xs:element name="country" type="xs:string" minOccurs="0"/>
+      <xs:element name="vatId" type="xs:string" minOccurs="0"/>
+      <xs:element name="iban" type="xs:string" minOccurs="0"/>
+      <xs:element name="bic" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Item">
+    <xs:sequence>
+      <xs:element name="position" type="xs:positiveInteger"/>
+      <xs:element name="description" type="xs:string"/>
+      <xs:element name="quantity">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:decimal">
+              <xs:attribute name="unit" type="xs:string" use="required"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="unitPrice" type="Amount"/>
+      <xs:element name="amount" type="Amount"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="Amount">
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Currency">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z]{3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

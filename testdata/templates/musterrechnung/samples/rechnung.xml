@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invoice xmlns="https://pdx.example/ns/invoice/1">
+  <number>RE-2026-0001</number>
+  <issueDate>2026-01-15</issueDate>
+  <dueDate>2026-01-29</dueDate>
+  <currency>EUR</currency>
+  <seller>
+    <name>Beispiel GmbH</name>
+    <street>Hauptstraße 1</street>
+    <postcode>50667</postcode>
+    <city>Köln</city>
+    <country>DE</country>
+    <vatId>DE000000000</vatId>
+    <iban>DE02120300000000202051</iban>
+    <bic>BYLADEM1001</bic>
+  </seller>
+  <buyer>
+    <name>Muster AG</name>
+    <street>Industriestraße 99</street>
+    <postcode>70173</postcode>
+    <city>Stuttgart</city>
+    <country>DE</country>
+  </buyer>
+  <items>
+    <item>
+      <position>1</position>
+      <description>Workshop vor Ort 1</description>
+      <quantity unit="DAY">8</quantity>
+      <unitPrice>64.37</unitPrice>
+      <amount>514.96</amount>
+    </item>
+    <item>
+      <position>2</position>
+      <description>Implementierung Modul 2</description>
+      <quantity unit="C62">6</quantity>
+      <unitPrice>83.74</unitPrice>
+      <amount>502.44</amount>
+    </item>
+    <item>
+      <position>3</position>
+      <description>Test und Abnahme 3</description>
+      <quantity unit="HUR">4</quantity>
+      <unitPrice>103.11</unitPrice>
+      <amount>412.44</amount>
+    </item>
+    <item>
+      <position>4</position>
+      <description>Schulung Anwender 4</description>
+      <quantity unit="DAY">2</quantity>
+      <unitPrice>122.48</unitPrice>
+      <amount>244.96</amount>
+    </item>
+    <item>
+      <position>5</position>
+      <description>Dokumentation 5</description>
+      <quantity unit="HUR">9</quantity>
+      <unitPrice>141.85</unitPrice>
+      <amount>1276.65</amount>
+    </item>
+    <item>
+      <position>6</position>
+      <description>Reisekosten pauschal 6</description>
+      <quantity unit="C62">7</quantity>
+      <unitPrice>161.22</unitPrice>
+      <amount>1128.54</amount>
+    </item>
+    <item>
+      <position>7</position>
+      <description>Lizenz Dokumentdesigner 7</description>
+      <quantity unit="C62">5</quantity>
+      <unitPrice>180.59</unitPrice>
+      <amount>902.95</amount>
+    </item>
+    <item>
+      <position>8</position>
+      <description>Wartung pro Monat 8</description>
+      <quantity unit="MON">3</quantity>
+      <unitPrice>199.96</unitPrice>
+      <amount>599.88</amount>
+    </item>
+    <item>
+      <position>9</position>
+      <description>Datenmigration 9</description>
+      <quantity unit="HUR">1</quantity>
+      <unitPrice>219.33</unitPrice>
+      <amount>219.33</amount>
+    </item>
+    <item>
+      <position>10</position>
+      <description>Beratung Konzeptphase 10</description>
+      <quantity unit="HUR">8</quantity>
+      <unitPrice>238.70</unitPrice>
+      <amount>1909.60</amount>
+    </item>
+    <item>
+      <position>11</position>
+      <description>Workshop vor Ort 11</description>
+      <quantity unit="DAY">6</quantity>
+      <unitPrice>258.07</unitPrice>
+      <amount>1548.42</amount>
+    </item>
+    <item>
+      <position>12</position>
+      <description>Implementierung Modul 12</description>
+      <quantity unit="C62">4</quantity>
+      <unitPrice>277.44</unitPrice>
+      <amount>1109.76</amount>
+    </item>
+    <item>
+      <position>13</position>
+      <description>Test und Abnahme 13</description>
+      <quantity unit="HUR">2</quantity>
+      <unitPrice>296.81</unitPrice>
+      <amount>593.62</amount>
+    </item>
+    <item>
+      <position>14</position>
+      <description>Schulung Anwender 14</description>
+      <quantity unit="DAY">9</quantity>
+      <unitPrice>316.18</unitPrice>
+      <amount>2845.62</amount>
+    </item>
+    <item>
+      <position>15</position>
+      <description>Dokumentation 15</description>
+      <quantity unit="HUR">7</quantity>
+      <unitPrice>335.55</unitPrice>
+      <amount>2348.85</amount>
+    </item>
+    <item>
+      <position>16</position>
+      <description>Reisekosten pauschal 16</description>
+      <quantity unit="C62">5</quantity>
+      <unitPrice>354.92</unitPrice>
+      <amount>1774.60</amount>
+    </item>
+    <item>
+      <position>17</position>
+      <description>Lizenz Dokumentdesigner 17</description>
+      <quantity unit="C62">3</quantity>
+      <unitPrice>374.29</unitPrice>
+      <amount>1122.87</amount>
+    </item>
+    <item>
+      <position>18</position>
+      <description>Wartung pro Monat 18</description>
+      <quantity unit="MON">1</quantity>
+      <unitPrice>393.66</unitPrice>
+      <amount>393.66</amount>
+    </item>
+    <item>
+      <position>19</position>
+      <description>Datenmigration 19</description>
+      <quantity unit="HUR">8</quantity>
+      <unitPrice>413.03</unitPrice>
+      <amount>3304.24</amount>
+    </item>
+    <item>
+      <position>20</position>
+      <description>Beratung Konzeptphase 20</description>
+      <quantity unit="HUR">6</quantity>
+      <unitPrice>52.40</unitPrice>
+      <amount>314.40</amount>
+    </item>
+    <item>
+      <position>21</position>
+      <description>Workshop vor Ort 21</description>
+      <quantity unit="DAY">4</quantity>
+      <unitPrice>71.77</unitPrice>
+      <amount>287.08</amount>
+    </item>
+    <item>
+      <position>22</position>
+      <description>Implementierung Modul 22</description>
+      <quantity unit="C62">2</quantity>
+      <unitPrice>91.14</unitPrice>
+      <amount>182.28</amount>
+    </item>
+    <item>
+      <position>23</position>
+      <description>Test und Abnahme 23</description>
+      <quantity unit="HUR">9</quantity>
+      <unitPrice>110.51</unitPrice>
+      <amount>994.59</amount>
+    </item>
+    <item>
+      <position>24</position>
+      <description>Schulung Anwender 24</description>
+      <quantity unit="DAY">7</quantity>
+      <unitPrice>129.88</unitPrice>
+      <amount>909.16</amount>
+    </item>
+    <item>
+      <position>25</position>
+      <description>Dokumentation 25</description>
+      <quantity unit="HUR">5</quantity>
+      <unitPrice>149.25</unitPrice>
+      <amount>746.25</amount>
+    </item>
+    <item>
+      <position>26</position>
+      <description>Reisekosten pauschal 26</description>
+      <quantity unit="C62">3</quantity>
+      <unitPrice>168.62</unitPrice>
+      <amount>505.86</amount>
+    </item>
+    <item>
+      <position>27</position>
+      <description>Lizenz Dokumentdesigner 27</description>
+      <quantity unit="C62">1</quantity>
+      <unitPrice>187.99</unitPrice>
+      <amount>187.99</amount>
+    </item>
+    <item>
+      <position>28</position>
+      <description>Wartung pro Monat 28</description>
+      <quantity unit="MON">8</quantity>
+      <unitPrice>207.36</unitPrice>
+      <amount>1658.88</amount>
+    </item>
+    <item>
+      <position>29</position>
+      <description>Datenmigration 29</description>
+      <quantity unit="HUR">6</quantity>
+      <unitPrice>226.73</unitPrice>
+      <amount>1360.38</amount>
+    </item>
+    <item>
+      <position>30</position>
+      <description>Beratung Konzeptphase 30</description>
+      <quantity unit="HUR">4</quantity>
+      <unitPrice>246.10</unitPrice>
+      <amount>984.40</amount>
+    </item>
+    <item>
+      <position>31</position>
+      <description>Workshop vor Ort 31</description>
+      <quantity unit="DAY">2</quantity>
+      <unitPrice>265.47</unitPrice>
+      <amount>530.94</amount>
+    </item>
+    <item>
+      <position>32</position>
+      <description>Implementierung Modul 32</description>
+      <quantity unit="C62">9</quantity>
+      <unitPrice>284.84</unitPrice>
+      <amount>2563.56</amount>
+    </item>
+    <item>
+      <position>33</position>
+      <description>Test und Abnahme 33</description>
+      <quantity unit="HUR">7</quantity>
+      <unitPrice>304.21</unitPrice>
+      <amount>2129.47</amount>
+    </item>
+    <item>
+      <position>34</position>
+      <description>Schulung Anwender 34</description>
+      <quantity unit="DAY">5</quantity>
+      <unitPrice>323.58</unitPrice>
+      <amount>1617.90</amount>
+    </item>
+    <item>
+      <position>35</position>
+      <description>Dokumentation 35</description>
+      <quantity unit="HUR">3</quantity>
+      <unitPrice>342.95</unitPrice>
+      <amount>1028.85</amount>
+    </item>
+    <item>
+      <position>36</position>
+      <description>Reisekosten pauschal 36</description>
+      <quantity unit="C62">1</quantity>
+      <unitPrice>362.32</unitPrice>
+      <amount>362.32</amount>
+    </item>
+    <item>
+      <position>37</position>
+      <description>Lizenz Dokumentdesigner 37</description>
+      <quantity unit="C62">8</quantity>
+      <unitPrice>381.69</unitPrice>
+      <amount>3053.52</amount>
+    </item>
+    <item>
+      <position>38</position>
+      <description>Wartung pro Monat 38</description>
+      <quantity unit="MON">6</quantity>
+      <unitPrice>401.06</unitPrice>
+      <amount>2406.36</amount>
+    </item>
+    <item>
+      <position>39</position>
+      <description>Datenmigration 39</description>
+      <quantity unit="HUR">4</quantity>
+      <unitPrice>420.43</unitPrice>
+      <amount>1681.72</amount>
+    </item>
+    <item>
+      <position>40</position>
+      <description>Beratung Konzeptphase 40</description>
+      <quantity unit="HUR">2</quantity>
+      <unitPrice>59.80</unitPrice>
+      <amount>119.60</amount>
+    </item>
+    <item>
+      <position>41</position>
+      <description>Workshop vor Ort 41</description>
+      <quantity unit="DAY">9</quantity>
+      <unitPrice>79.17</unitPrice>
+      <amount>712.53</amount>
+    </item>
+    <item>
+      <position>42</position>
+      <description>Implementierung Modul 42</description>
+      <quantity unit="C62">7</quantity>
+      <unitPrice>98.54</unitPrice>
+      <amount>689.78</amount>
+    </item>
+    <item>
+      <position>43</position>
+      <description>Test und Abnahme 43</description>
+      <quantity unit="HUR">5</quantity>
+      <unitPrice>117.91</unitPrice>
+      <amount>589.55</amount>
+    </item>
+    <item>
+      <position>44</position>
+      <description>Schulung Anwender 44</description>
+      <quantity unit="DAY">3</quantity>
+      <unitPrice>137.28</unitPrice>
+      <amount>411.84</amount>
+    </item>
+    <item>
+      <position>45</position>
+      <description>Dokumentation 45</description>
+      <quantity unit="HUR">1</quantity>
+      <unitPrice>156.65</unitPrice>
+      <amount>156.65</amount>
+    </item>
+    <item>
+      <position>46</position>
+      <description>Reisekosten pauschal 46</description>
+      <quantity unit="C62">8</quantity>
+      <unitPrice>176.02</unitPrice>
+      <amount>1408.16</amount>
+    </item>
+    <item>
+      <position>47</position>
+      <description>Lizenz Dokumentdesigner 47</description>
+      <quantity unit="C62">6</quantity>
+      <unitPrice>195.39</unitPrice>
+      <amount>1172.34</amount>
+    </item>
+    <item>
+      <position>48</position>
+      <description>Wartung pro Monat 48</description>
+      <quantity unit="MON">4</quantity>
+      <unitPrice>214.76</unitPrice>
+      <amount>859.04</amount>
+    </item>
+    <item>
+      <position>49</position>
+      <description>Datenmigration 49</description>
+      <quantity unit="HUR">2</quantity>
+      <unitPrice>234.13</unitPrice>
+      <amount>468.26</amount>
+    </item>
+    <item>
+      <position>50</position>
+      <description>Beratung Konzeptphase 50</description>
+      <quantity unit="HUR">9</quantity>
+      <unitPrice>253.50</unitPrice>
+      <amount>2281.50</amount>
+    </item>
+    <item>
+      <position>51</position>
+      <description>Workshop vor Ort 51</description>
+      <quantity unit="DAY">7</quantity>
+      <unitPrice>272.87</unitPrice>
+      <amount>1910.09</amount>
+    </item>
+    <item>
+      <position>52</position>
+      <description>Implementierung Modul 52</description>
+      <quantity unit="C62">5</quantity>
+      <unitPrice>292.24</unitPrice>
+      <amount>1461.20</amount>
+    </item>
+    <item>
+      <position>53</position>
+      <description>Test und Abnahme 53</description>
+      <quantity unit="HUR">3</quantity>
+      <unitPrice>311.61</unitPrice>
+      <amount>934.83</amount>
+    </item>
+    <item>
+      <position>54</position>
+      <description>Schulung Anwender 54</description>
+      <quantity unit="DAY">1</quantity>
+      <unitPrice>330.98</unitPrice>
+      <amount>330.98</amount>
+    </item>
+    <item>
+      <position>55</position>
+      <description>Dokumentation 55</description>
+      <quantity unit="HUR">8</quantity>
+      <unitPrice>350.35</unitPrice>
+      <amount>2802.80</amount>
+    </item>
+    <item>
+      <position>56</position>
+      <description>Reisekosten pauschal 56</description>
+      <quantity unit="C62">6</quantity>
+      <unitPrice>369.72</unitPrice>
+      <amount>2218.32</amount>
+    </item>
+    <item>
+      <position>57</position>
+      <description>Lizenz Dokumentdesigner 57</description>
+      <quantity unit="C62">4</quantity>
+      <unitPrice>389.09</unitPrice>
+      <amount>1556.36</amount>
+    </item>
+    <item>
+      <position>58</position>
+      <description>Wartung pro Monat 58</description>
+      <quantity unit="MON">2</quantity>
+      <unitPrice>408.46</unitPrice>
+      <amount>816.92</amount>
+    </item>
+    <item>
+      <position>59</position>
+      <description>Datenmigration 59</description>
+      <quantity unit="HUR">9</quantity>
+      <unitPrice>47.83</unitPrice>
+      <amount>430.47</amount>
+    </item>
+    <item>
+      <position>60</position>
+      <description>Beratung Konzeptphase 60</description>
+      <quantity unit="HUR">7</quantity>
+      <unitPrice>67.20</unitPrice>
+      <amount>470.40</amount>
+    </item>
+  </items>
+  <totals>
+    <net>68060.92</net>
+    <taxRate>19</taxRate>
+    <tax>12931.57</tax>
+    <gross>80992.49</gross>
+  </totals>
+  <paymentTerms>Zahlbar innerhalb von 14 Tagen ohne Abzug.</paymentTerms>
+</invoice>

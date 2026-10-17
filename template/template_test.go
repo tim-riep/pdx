@@ -23,7 +23,7 @@ func TestParseSample(t *testing.T) {
 		t.Error("Tabelle nicht gefunden")
 	}
 	f := tpl.ByID("rechnungsnummer-wert")
-	if f == nil || f.Get("bind", "") != "rsm:ExchangedDocument/ram:ID" {
+	if f == nil || f.Get("bind", "") != "inv:number" {
 		t.Errorf("Feld: %+v", f)
 	}
 	// Gemischter Inhalt bleibt erhalten.
@@ -56,7 +56,7 @@ func TestCanonicalRoundTrip(t *testing.T) {
 
 func TestSchemaErrorsCarryID(t *testing.T) {
 	data, _ := os.ReadFile(sample)
-	bad := strings.Replace(string(data), `<field id="z-menge-f" bind="ram:SpecifiedLineTradeDelivery/ram:BilledQuantity" format="menge"/>`,
+	bad := strings.Replace(string(data), `<field id="z-menge-f" bind="inv:quantity" format="menge"/>`,
 		`<field id="z-menge-f" format="menge"/>`, 1)
 	_, err := Parse([]byte(bad))
 	var errs Errors
