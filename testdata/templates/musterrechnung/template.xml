@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template xmlns="https://pdx.example/ns/template/0" id="musterrechnung" dataRoot="rsm:CrossIndustryInvoice" lang="de-DE" schema="schema/cii.xsd" title="Musterrechnung" version="0">
+  <namespaces>
+    <ns prefix="rsm" uri="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"/>
+    <ns prefix="ram" uri="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"/>
+    <ns prefix="udt" uri="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"/>
+  </namespaces>
+  <styles>
+    <style id="st-basis" fontFamily="Helvetica" fontSize="9.5pt" lineHeight="1.3"/>
+    <style id="st-klein" color="#555555" fontSize="7.5pt" parent="st-basis"/>
+    <style id="st-titel" fontSize="16pt" fontWeight="bold" parent="st-basis"/>
+    <style id="st-kopfzeile" backgroundColor="#1f4e79" color="#ffffff" fontWeight="bold" padding="2pt 3pt" parent="st-basis"/>
+    <style id="st-zelle" borderBottom="0.25pt solid #cccccc" padding="2pt 3pt" parent="st-basis"/>
+    <style id="st-betrag" parent="st-zelle" textAlign="end"/>
+    <style id="st-summe" fontWeight="bold" parent="st-betrag"/>
+  </styles>
+  <formats>
+    <locale id="fmt-de" decimalSeparator="," groupingSeparator="." lang="de-DE">
+      <pattern id="fmt-de-betrag" kind="number" name="betrag" picture="#.##0,00"/>
+      <pattern id="fmt-de-menge" kind="number" name="menge" picture="#.##0,###"/>
+      <pattern id="fmt-de-datum" kind="date" name="datum" picture="[D01].[M01].[Y0001]"/>
+    </locale>
+  </formats>
+  <texts>
+    <lang id="txt-de" lang="de">
+      <string id="txt-de-rechnung" key="rechnung">Rechnung</string>
+      <string id="txt-de-uebertrag" key="uebertrag">Übertrag</string>
+      <string id="txt-de-zwischensumme" key="zwischensumme">Zwischensumme</string>
+    </lang>
+    <lang id="txt-en" lang="en">
+      <string id="txt-en-rechnung" key="rechnung">Invoice</string>
+      <string id="txt-en-uebertrag" key="uebertrag">Carried forward</string>
+      <string id="txt-en-zwischensumme" key="zwischensumme">Subtotal</string>
+    </lang>
+  </texts>
+  <pageSet id="seiten">
+    <pageMaster id="erste" margin="15mm 20mm 15mm 25mm" use="first">
+      <header id="erste-kopf" height="85mm">
+        <text id="briefkopf-firma" color="#1f4e79" style="st-titel" textAlign="end" w="165mm" x="0mm" y="0mm"><field id="briefkopf-firma-name" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name"/></text>
+        <subform id="adressfenster" anchor="page" h="45mm" layout="positioned" w="85mm" x="20mm" y="45mm">
+          <text id="absenderzeile" style="st-klein" w="85mm" x="0mm" y="5mm"><field id="absender-name" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name"/> · <field id="absender-strasse" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:LineOne"/></text>
+          <subform id="empfaenger" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty" layout="flowed" w="85mm" x="0mm" y="12mm">
+            <field id="empfaenger-name" bind="ram:Name"/>
+            <field id="empfaenger-strasse" bind="ram:PostalTradeAddress/ram:LineOne"/>
+            <text id="empfaenger-ort"><field id="empfaenger-plz" bind="ram:PostalTradeAddress/ram:PostcodeCode"/> <field id="empfaenger-stadt" bind="ram:PostalTradeAddress/ram:CityName"/></text>
+          </subform>
+        </subform>
+        <subform id="rechnungsdaten" anchor="page" layout="flowed" w="60mm" x="125mm" y="50mm">
+          <text id="rechnungsnummer">Rechnungsnummer: <field id="rechnungsnummer-wert" bind="rsm:ExchangedDocument/ram:ID" fontWeight="bold"/></text>
+          <text id="rechnungsdatum">Rechnungsdatum: <field id="rechnungsdatum-wert" bind="rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString" format="datum"/></text>
+        </subform>
+      </header>
+      <footer id="erste-fuss" height="12mm">
+        <pageNumber id="erste-seitenzahl" pattern="Seite {current} von {total}" style="st-klein" textAlign="center" w="165mm" x="0mm" y="4mm"/>
+      </footer>
+    </pageMaster>
+    <pageMaster id="folge" margin="15mm 20mm 15mm 25mm" use="rest">
+      <header id="folge-kopf" height="10mm">
+        <text id="folge-titel" style="st-klein" w="165mm" x="0mm" y="0mm"><field id="folge-firma" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name"/> · Rechnung <field id="folge-nummer" bind="rsm:ExchangedDocument/ram:ID"/></text>
+      </header>
+      <footer id="folge-fuss" height="12mm">
+        <pageNumber id="folge-seitenzahl" pattern="Seite {current} von {total}" style="st-klein" textAlign="center" w="165mm" x="0mm" y="4mm"/>
+      </footer>
+    </pageMaster>
+  </pageSet>
+  <body id="inhalt" style="st-basis">
+    <text id="titel" ref="rechnung" role="H1" spaceAfter="4mm" style="st-titel"/>
+    <table id="positionen" bind="rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem" role="Table">
+      <column id="sp-pos" width="12mm"/>
+      <column id="sp-leistung" width="1*"/>
+      <column id="sp-menge" width="22mm"/>
+      <column id="sp-preis" width="25mm"/>
+      <column id="sp-betrag" width="28mm"/>
+      <header id="positionen-kopf" repeat="true">
+        <row id="positionen-kopfzeile">
+          <cell id="k-pos" style="st-kopfzeile" textAlign="end">
+            <text id="k-pos-t">Pos.</text>
+          </cell>
+          <cell id="k-leistung" style="st-kopfzeile">
+            <text id="k-leistung-t">Leistung</text>
+          </cell>
+          <cell id="k-menge" style="st-kopfzeile" textAlign="end">
+            <text id="k-menge-t">Menge</text>
+          </cell>
+          <cell id="k-preis" style="st-kopfzeile" textAlign="end">
+            <text id="k-preis-t">Einzelpreis</text>
+          </cell>
+          <cell id="k-betrag" style="st-kopfzeile" textAlign="end">
+            <text id="k-betrag-t">Betrag</text>
+          </cell>
+        </row>
+        <row id="uebertragszeile">
+          <cell id="u-label" colspan="4" style="st-betrag">
+            <text id="u-label-t" ref="uebertrag"/>
+          </cell>
+          <cell id="u-wert" style="st-betrag">
+            <carryOver id="u-carry" format="betrag" of="ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount"/>
+          </cell>
+        </row>
+      </header>
+      <rows id="positionen-zeilen">
+        <row id="position">
+          <cell id="z-pos" style="st-betrag">
+            <field id="z-pos-f" bind="ram:AssociatedDocumentLineDocument/ram:LineID"/>
+          </cell>
+          <cell id="z-leistung" style="st-zelle">
+            <field id="z-leistung-f" bind="ram:SpecifiedTradeProduct/ram:Name"/>
+          </cell>
+          <cell id="z-menge" style="st-betrag">
+            <field id="z-menge-f" bind="ram:SpecifiedLineTradeDelivery/ram:BilledQuantity" format="menge"/>
+          </cell>
+          <cell id="z-preis" style="st-betrag">
+            <field id="z-preis-f" bind="ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:ChargeAmount" format="betrag"/>
+          </cell>
+          <cell id="z-betrag" style="st-betrag">
+            <field id="z-betrag-f" bind="ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount" format="betrag"/>
+          </cell>
+        </row>
+      </rows>
+      <footer id="positionen-fuss" repeat="true">
+        <row id="zwischensummenzeile">
+          <cell id="zs-label" colspan="4" style="st-summe">
+            <text id="zs-label-t" ref="zwischensumme"/>
+          </cell>
+          <cell id="zs-wert" style="st-summe">
+            <subtotal id="zs-sub" format="betrag" of="ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount"/>
+          </cell>
+        </row>
+      </footer>
+    </table>
+    <subform id="summen" keepTogether="always" layout="flowed" spaceBefore="4mm">
+      <text id="netto">Nettobetrag: <field id="netto-wert" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TaxBasisTotalAmount" format="betrag"/> €</text>
+      <text id="steuer">Umsatzsteuer: <field id="steuer-wert" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TaxTotalAmount" format="betrag"/> €</text>
+      <text id="brutto" fontWeight="bold">Gesamtbetrag: <field id="brutto-wert" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:GrandTotalAmount" format="betrag"/> €</text>
+      <barcode id="girocode" type="girocode" w="30mm">
+        <data id="gc-name" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name" name="name"/>
+        <data id="gc-iban" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:IBANID" name="iban"/>
+        <data id="gc-betrag" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:DuePayableAmount" name="amount"/>
+        <data id="gc-text" bind="rsm:ExchangedDocument/ram:ID" name="text"/>
+      </barcode>
+    </subform>
+  </body>
+  <attachments>
+    <attachment id="factur-x" description="Rechnungsdaten im Format Factur-X" mimeType="text/xml" name="factur-x.xml" relationship="Alternative" source="data"/>
+  </attachments>
+</template>

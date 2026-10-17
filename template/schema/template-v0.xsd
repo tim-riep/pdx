@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Vorlagenformat v0 von pdx (template.xml).
+
+  Eine Vorlage beschreibt ein Dokument unabhängig von den Daten: Seitenvorlagen,
+  Teilformulare, Felder mit Bindungen an das Daten-XSD, Tabellen mit Kopf, Fuß,
+  Zwischensummen und Überträgen, Stile, Formatmuster je Gebietsschema und
+  Textressourcen je Sprache. Der Compiler übersetzt sie in XSLT 3.0, das XSL-FO
+  erzeugt.
+
+  Jedes Element trägt eine stabile ID. Der Designer und Fehlermeldungen beziehen
+  sich darauf. Bindungen sind XPath-Ausdrücke relativ zum Kontext des umgebenden
+  Elements (am Anfang die Wurzel der Daten).
+
+  Die Domain pdx.example im Namespace ist ein Platzhalter (RFC 2606).
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="https://pdx.example/ns/template/0"
+           targetNamespace="https://pdx.example/ns/template/0"
+           elementFormDefault="qualified">
+
+  <!-- Einfache Typen -->
+
+  <xs:simpleType name="Length">
+    <xs:annotation><xs:documentation>Länge mit Einheit, etwa 12pt, 20mm, 50%.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)"/>
+      <xs:pattern value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Lengths">
+    <xs:annotation><xs:documentation>Eine bis vier Längen wie bei CSS (oben, rechts, unten, links).</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?)( -?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?){0,3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ColumnWidth">
+    <xs:annotation><xs:documentation>Feste Länge oder Anteil, etwa 25mm oder 2*.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%|\*)"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Color">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?"/>
+      <xs:pattern value="[a-z]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="XPath">
+    <xs:annotation><xs:documentation>XPath-3.1-Ausdruck, relativ zum aktuellen Kontext.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string"><xs:minLength value="1"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Keep">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="auto|always|[1-9][0-9]{0,2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Break">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="auto"/>
+      <xs:enumeration value="page"/>
+      <xs:enumeration value="oddPage"/>
+      <xs:enumeration value="evenPage"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Role">
+    <xs:annotation><xs:documentation>Semantische Rolle für spätere Tagged PDFs (PDF/UA).</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="H1"/><xs:enumeration value="H2"/><xs:enumeration value="H3"/>
+      <xs:enumeration value="P"/><xs:enumeration value="Table"/><xs:enumeration value="Figure"/>
+      <xs:enumeration value="List"/><xs:enumeration value="Note"/><xs:enumeration value="Artifact"/>
+      <xs:enumeration value="Section"/><xs:enumeration value="Caption"/><xs:enumeration value="Link"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Attributgruppen -->
+
+  <xs:attributeGroup name="common">
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="style" type="xs:IDREF"/>
+    <xs:attribute name="presence" type="XPath">
+      <xs:annotation><xs:documentation>Das Element erscheint nur, wenn der Ausdruck wahr ist.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="role" type="Role"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="placement">
+    <xs:annotation><xs:documentation>Lage in einem Teilformular mit layout="positioned".</xs:documentation></xs:annotation>
+    <xs:attribute name="x" type="Length"/>
+    <xs:attribute name="y" type="Length"/>
+    <xs:attribute name="w" type="Length"/>
+    <xs:attribute name="h" type="Length"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="breaks">
+    <xs:attribute name="breakBefore" type="Break"/>
+    <xs:attribute name="breakAfter" type="Break"/>
+    <xs:attribute name="keepTogether" type="Keep"/>
+    <xs:attribute name="keepWithNext" type="Keep"/>
+    <xs:attribute name="keepWithPrevious" type="Keep"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="styleAttrs">
+    <xs:attribute name="fontFamily" type="xs:string"/>
+    <xs:attribute name="fontSize" type="Length"/>
+    <xs:attribute name="fontWeight">
+      <xs:simpleType><xs:restriction base="xs:token">
+        <xs:enumeration value="normal"/><xs:enumeration value="bold"/>
+      </xs:restriction></xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="fontStyle">
+      <xs:simpleType><xs:restriction base="xs:token">
+        <xs:enumeration value="normal"/><xs:enumeration value="italic"/>
+      </xs:restriction></xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="color" type="Color"/>
+    <xs:attribute name="backgroundColor" type="Color"/>
+    <xs:attribute name="textAlign">
+      <xs:simpleType><xs:restriction base="xs:token">
+        <xs:enumeration value="start"/><xs:enumeration value="center"/>
+        <xs:enumeration value="end"/><xs:enumeration value="justify"/>
+      </xs:restriction></xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="lineHeight" type="xs:string"/>
+    <xs:attribute name="spaceBefore" type="Length"/>
+    <xs:attribute name="spaceAfter" type="Length"/>
+    <xs:attribute name="padding" type="Lengths"/>
+    <xs:attribute name="border" type="xs:string"/>
+    <xs:attribute name="borderTop" type="xs:string"/>
+    <xs:attribute name="borderBottom" type="xs:string"/>
+    <xs:attribute name="borderLeft" type="xs:string"/>
+    <xs:attribute name="borderRight" type="xs:string"/>
+    <xs:attribute name="hyphenate" type="xs:boolean"/>
+  </xs:attributeGroup>
+
+  <!-- Wurzel -->
+
+  <xs:element name="template">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="namespaces" minOccurs="0"/>
+        <xs:element ref="styles" minOccurs="0"/>
+        <xs:element ref="formats" minOccurs="0"/>
+        <xs:element ref="texts" minOccurs="0"/>
+        <xs:element ref="pageSet"/>
+        <xs:element ref="body"/>
+        <xs:element ref="attachments" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required"/>
+      <xs:attribute name="version" type="xs:string" use="required" fixed="0"/>
+      <xs:attribute name="lang" type="xs:language" use="required"/>
+      <xs:attribute name="schema" type="xs:string">
+        <xs:annotation><xs:documentation>Pfad des Daten-XSD im Vorlagenpaket, etwa schema/cii.xsd.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="dataRoot">
+        <xs:annotation><xs:documentation>Wurzelelement der Daten mit Präfix aus namespaces. Kein xs:QName, weil die Präfixe der Daten nicht im XML der Vorlage gebunden sind.</xs:documentation></xs:annotation>
+        <xs:simpleType><xs:restriction base="xs:string">
+          <xs:pattern value="([A-Za-z_][A-Za-z0-9_.\-]*:)?[A-Za-z_][A-Za-z0-9_.\-]*"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="title" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="namespaces">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ns" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="prefix" type="xs:NCName" use="required"/>
+            <xs:attribute name="uri" type="xs:anyURI" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Ressourcen -->
+
+  <xs:element name="styles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="style" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="parent" type="xs:IDREF"/>
+            <xs:attributeGroup ref="styleAttrs"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="formats">
+    <xs:annotation><xs:documentation>Formatmuster je Gebietsschema für format-number und format-date.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="locale" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="pattern" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="id" type="xs:ID" use="required"/>
+                  <xs:attribute name="name" type="xs:NCName" use="required"/>
+                  <xs:attribute name="kind" use="required">
+                    <xs:simpleType><xs:restriction base="xs:token">
+                      <xs:enumeration value="number"/><xs:enumeration value="date"/><xs:enumeration value="dateTime"/>
+                    </xs:restriction></xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="picture" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="lang" type="xs:language" use="required"/>
+            <xs:attribute name="decimalSeparator" type="xs:string" default="."/>
+            <xs:attribute name="groupingSeparator" type="xs:string" default=","/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="texts">
+    <xs:annotation><xs:documentation>Textressourcen je Sprache, angesprochen über text/@ref.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="lang" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="string" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="id" type="xs:ID" use="required"/>
+                      <xs:attribute name="key" type="xs:NCName" use="required"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="lang" type="xs:language" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Seitenvorlagen -->
+
+  <xs:element name="pageSet">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="pageMaster" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="pageMaster">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="header" type="Region" minOccurs="0"/>
+        <xs:element name="footer" type="Region" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required"/>
+      <xs:attribute name="use" default="any">
+        <xs:annotation><xs:documentation>Für welche Seiten die Vorlage gilt, in der Reihenfolge only, first, last, odd, even, rest, any geprüft.</xs:documentation></xs:annotation>
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="first"/><xs:enumeration value="rest"/><xs:enumeration value="last"/>
+          <xs:enumeration value="only"/><xs:enumeration value="odd"/><xs:enumeration value="even"/>
+          <xs:enumeration value="any"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="size" default="A4">
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="A4"/><xs:enumeration value="A5"/><xs:enumeration value="A3"/>
+          <xs:enumeration value="Letter"/><xs:enumeration value="Legal"/><xs:enumeration value="custom"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="orientation" default="portrait">
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="portrait"/><xs:enumeration value="landscape"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="width" type="Length"/>
+      <xs:attribute name="height" type="Length"/>
+      <xs:attribute name="margin" type="Lengths" default="20mm"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Region">
+    <xs:annotation><xs:documentation>Kopf oder Fuß einer Seitenvorlage. Inhalt ist positioniert, Lage relativ zur Region.</xs:documentation></xs:annotation>
+    <xs:group ref="content" minOccurs="0" maxOccurs="unbounded"/>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="height" type="Length" use="required"/>
+    <xs:attribute name="gap" type="Length" default="5mm"/>
+  </xs:complexType>
+
+  <!-- Inhalt -->
+
+  <xs:element name="body">
+    <xs:complexType>
+      <xs:group ref="content" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:attribute name="id" type="xs:ID" use="required"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attribute name="style" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:group name="content">
+    <xs:choice>
+      <xs:element ref="subform"/>
+      <xs:element ref="text"/>
+      <xs:element ref="field"/>
+      <xs:element ref="image"/>
+      <xs:element ref="line"/>
+      <xs:element ref="rect"/>
+      <xs:element ref="barcode"/>
+      <xs:element ref="pageNumber"/>
+      <xs:element ref="table"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:element name="subform">
+    <xs:annotation><xs:documentation>Teilformular. positioned: Kinder mit x und y. flowed: Kinder untereinander. Mit bind und repeat="true" wird es je Datenknoten wiederholt.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:group ref="content" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="breaks"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attribute name="layout" use="required">
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="positioned"/><xs:enumeration value="flowed"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="bind" type="XPath"/>
+      <xs:attribute name="repeat" type="xs:boolean" default="false"/>
+      <xs:attribute name="anchor" default="flow">
+        <xs:annotation><xs:documentation>page: x und y beziehen sich auf die Seite (etwa Adressfenster), flow: auf den Fluss.</xs:documentation></xs:annotation>
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="flow"/><xs:enumeration value="page"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="text">
+    <xs:annotation><xs:documentation>Text, statisch oder Rich Text mit span und eingebetteten Feldern. Alternativ ref auf eine Textressource.</xs:documentation></xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="span"/>
+        <xs:element ref="field"/>
+        <xs:element ref="pageNumber"/>
+        <xs:element name="br">
+          <xs:complexType><xs:attribute name="id" type="xs:ID" use="required"/></xs:complexType>
+        </xs:element>
+      </xs:choice>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="breaks"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attribute name="ref" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="span">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="span"/>
+        <xs:element ref="field"/>
+      </xs:choice>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attribute name="href" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="field">
+    <xs:annotation><xs:documentation>Gebundener Wert. format verweist auf ein Muster aus formats.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attribute name="bind" type="XPath" use="required"/>
+      <xs:attribute name="format" type="xs:NCName"/>
+      <xs:attribute name="default" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="image">
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attribute name="src" type="xs:string" use="required">
+        <xs:annotation><xs:documentation>Pfad im Vorlagenpaket, etwa assets/logo.png.</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="line">
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attribute name="thickness" type="Length" default="0.5pt"/>
+      <xs:attribute name="color" type="Color"/>
+      <xs:attribute name="lineStyle" default="solid">
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="solid"/><xs:enumeration value="dashed"/><xs:enumeration value="dotted"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="rect">
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attribute name="fill" type="Color"/>
+      <xs:attribute name="border" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="barcode">
+    <xs:annotation><xs:documentation>Barcode. Werte als Literal (value) oder Bindung (bind), beim GiroCode über data-Elemente.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="data" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="name" use="required">
+              <xs:simpleType><xs:restriction base="xs:token">
+                <xs:enumeration value="name"/><xs:enumeration value="iban"/><xs:enumeration value="bic"/>
+                <xs:enumeration value="amount"/><xs:enumeration value="purpose"/>
+                <xs:enumeration value="reference"/><xs:enumeration value="text"/>
+              </xs:restriction></xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="value" type="xs:string"/>
+            <xs:attribute name="bind" type="XPath"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attribute name="type" use="required">
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="qr"/><xs:enumeration value="datamatrix"/>
+          <xs:enumeration value="code128"/><xs:enumeration value="girocode"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="value" type="xs:string"/>
+      <xs:attribute name="bind" type="XPath"/>
+      <xs:attribute name="moduleWidth" type="Length"/>
+      <xs:attribute name="barHeight" type="Length"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="pageNumber">
+    <xs:annotation><xs:documentation>Seitenzähler. pattern mit Platzhaltern {current} und {total}, etwa "Seite {current} von {total}".</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attribute name="pattern" type="xs:string" default="{current}"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Tabellen -->
+
+  <xs:element name="table">
+    <xs:annotation><xs:documentation>Tabelle. Die Zeilen in rows werden je Datenknoten aus bind wiederholt. header und footer erscheinen mit repeat="true" auf jeder Seite.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="column" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="width" type="ColumnWidth" default="1*"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="header" type="TableSection" minOccurs="0"/>
+        <xs:element name="group" minOccurs="0">
+          <xs:annotation><xs:documentation>Gruppierung der Datenknoten nach by mit Kopf- und Fußzeilen je Gruppe.</xs:documentation></xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="header" type="TableSection" minOccurs="0"/>
+              <xs:element name="footer" type="TableSection" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="by" type="XPath" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="rows" type="TableSection"/>
+        <xs:element name="footer" type="TableSection" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="breaks"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attribute name="bind" type="XPath" use="required"/>
+      <xs:attribute name="width" type="Length"/>
+      <xs:attribute name="borders" default="collapse">
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="collapse"/><xs:enumeration value="separate"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="TableSection">
+    <xs:sequence>
+      <xs:element name="row" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="cell" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:group ref="content"/>
+                  <xs:element ref="subtotal"/>
+                  <xs:element ref="carryOver"/>
+                  <xs:element ref="total"/>
+                </xs:choice>
+                <xs:attributeGroup ref="common"/>
+                <xs:attributeGroup ref="styleAttrs"/>
+                <xs:attribute name="colspan" type="xs:positiveInteger" default="1"/>
+                <xs:attribute name="rowspan" type="xs:positiveInteger" default="1"/>
+                <xs:attribute name="verticalAlign" default="top">
+                  <xs:simpleType><xs:restriction base="xs:token">
+                    <xs:enumeration value="top"/><xs:enumeration value="middle"/><xs:enumeration value="bottom"/>
+                  </xs:restriction></xs:simpleType>
+                </xs:attribute>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attributeGroup ref="common"/>
+          <xs:attributeGroup ref="breaks"/>
+          <xs:attributeGroup ref="styleAttrs"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="repeat" type="xs:boolean" default="true"/>
+  </xs:complexType>
+
+  <xs:attributeGroup name="sum">
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="of" type="XPath" use="required">
+      <xs:annotation><xs:documentation>Betrag je Datenknoten der Tabelle, relativ zum Knoten.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="format" type="xs:NCName"/>
+    <xs:attribute name="style" type="xs:IDREF"/>
+  </xs:attributeGroup>
+
+  <xs:element name="subtotal">
+    <xs:annotation><xs:documentation>Zwischensumme bis zur letzten Zeile der Seite (im Tabellenfuß).</xs:documentation></xs:annotation>
+    <xs:complexType><xs:attributeGroup ref="sum"/></xs:complexType>
+  </xs:element>
+
+  <xs:element name="carryOver">
+    <xs:annotation><xs:documentation>Übertrag aus den vorigen Seiten (im Tabellenkopf).</xs:documentation></xs:annotation>
+    <xs:complexType><xs:attributeGroup ref="sum"/></xs:complexType>
+  </xs:element>
+
+  <xs:element name="total">
+    <xs:annotation><xs:documentation>Summe über alle Datenknoten der Tabelle.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:attributeGroup ref="sum"/></xs:complexType>
+  </xs:element>
+
+  <!-- Anhänge -->
+
+  <xs:element name="attachments">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="attachment" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="source" use="required">
+              <xs:annotation><xs:documentation>data: die Eingabedaten selbst (etwa factur-x.xml), sonst Pfad im Vorlagenpaket.</xs:documentation></xs:annotation>
+              <xs:simpleType><xs:restriction base="xs:string"/></xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="mimeType" type="xs:string" use="required"/>
+            <xs:attribute name="relationship" default="Unspecified">
+              <xs:simpleType><xs:restriction base="xs:token">
+                <xs:enumeration value="Source"/><xs:enumeration value="Data"/><xs:enumeration value="Alternative"/>
+                <xs:enumeration value="Supplement"/><xs:enumeration value="Unspecified"/>
+              </xs:restriction></xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="description" type="xs:string"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
