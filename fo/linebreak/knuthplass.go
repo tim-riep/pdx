@@ -149,6 +149,11 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 		var deactD float64
 		keep := active[:0]
 		for _, a := range active {
+			if !forced && after(a.pos) >= i {
+				// Ohne Box dazwischen wäre die Zeile leer.
+				keep = append(keep, a)
+				continue
+			}
 			avail := float64(width(a.line))
 			L := W[i] - a.w + penW
 			st := Y[i] - a.y
