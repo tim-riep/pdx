@@ -32,7 +32,8 @@ func (pl *placer) flushRow() error {
 		}
 		r = nr
 	}
-	return pl.drawRow(r, r.slices[f.s0], r.slices[f.s1], f.y)
+	// Der Abstand am Anfang der ersten Scheibe steht als Glue davor.
+	return pl.drawRow(r, r.slices[f.s0]+r.skip[f.s0], r.slices[f.s1], f.y)
 }
 
 // drawRows zeichnet ganze Zeilen ab der aktuellen Position, etwa einen

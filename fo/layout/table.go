@@ -72,6 +72,9 @@ type rowLayout struct {
 	// sliceKeep sind Keeps an Scheibengrenzen nach dem Inhaltsende einer
 	// Zelle mit keep-with-next.
 	sliceKeep map[int]int
+	// skip ist je Scheibe der Abstand an ihrem Anfang, der nach einem
+	// Umbruch entfällt. Zwischen zwei Scheiben steht er als Glue.
+	skip map[int]areatree.Length
 	// skipBreakBefore ist gesetzt, wenn break-before der ersten Rumpfzeile
 	// schon vor der Tabelle wirkt.
 	skipBreakBefore bool
@@ -112,6 +115,8 @@ type bound struct {
 	off   areatree.Length // Abstand vom Inhaltsanfang
 	index int             // Index der Penalty in items
 	brk   string          // bei erzwungenen Umbrüchen page, odd-page oder even-page
+	// skip ist der Abstand nach der Umbruchstelle, der am Seitenanfang entfällt.
+	skip areatree.Length
 }
 
 // measure berechnet die Inhaltshöhe und die erlaubten Umbruchstellen einer
@@ -132,6 +137,12 @@ func measure(items []item) (areatree.Length, []bound) {
 		case itPenalty:
 			if it.penalty < penaltyInf && started {
 				b := bound{off: y, index: i}
+				for _, nx := range items[i+1:] {
+					if nx.kind != itGlue {
+						break
+					}
+					b.skip += nx.h - nx.keep
+				}
 				if it.penalty <= penaltyForced {
 					b.brk = it.brk
 					if b.brk == "" {
@@ -278,6 +289,12 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 			}
 			if ok {
 				r.slices = append(r.slices, off)
+				if sk := rowSkip(r, off); sk > 0 {
+					if r.skip == nil {
+						r.skip = map[int]areatree.Length{}
+					}
+					r.skip[len(r.slices)-1] = sk
+				}
 				for _, c := range r.cells {
 					top := r.sepV + c.inset[areatree.Top]
 					for _, bd := range c.bounds {
@@ -314,6 +331,28 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 			}
 		}
 	}
+}
+
+// rowSkip liefert den Abstand, der bei einem Umbruch an off in allen Zellen
+// mit weiterem Inhalt entfällt.
+func rowSkip(r *rowLayout, off areatree.Length) areatree.Length {
+	skip, found := areatree.Length(0), false
+	for _, c := range r.cells {
+		top := r.sepV + c.inset[areatree.Top]
+		if off >= top+c.contentH {
+			continue
+		}
+		s := areatree.Length(0)
+		for _, bd := range c.bounds {
+			if top+bd.off == off {
+				s = bd.skip
+			}
+		}
+		if !found || s < skip {
+			skip, found = s, true
+		}
+	}
+	return skip
 }
 
 func sortLengths(v []areatree.Length) {
@@ -353,7 +392,12 @@ func (g *galley) emitRow(r *rowLayout, before int) {
 		}
 		o := ord
 		o.minor = k
-		g.box(item{h: r.slices[k+1] - r.slices[k], path: g.path(), ord: o, row: r, slice: k}, pen)
+		h := r.slices[k+1] - r.slices[k]
+		if sk := r.skip[k]; sk > 0 {
+			g.spaces = append(g.spaces, spaceSpec{v: sk, min: sk})
+			h -= sk
+		}
+		g.box(item{h: h, path: g.path(), ord: o, row: r, slice: k}, pen)
 	}
 	if r.trailBrk != "" {
 		g.brk = r.trailBrk

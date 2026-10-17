@@ -29,8 +29,7 @@ fop/inline_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilen
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item-with-ipd-change: offen, erste Abweichung: Seite 2: "b" verschoben um 1.80 pt waagerecht, -0.00 pt senkrecht
 fop/list-item_padding_percentages: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
-fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
-fop/list-item_two_pages: offen, erste Abweichung: Seite 2: "13" verschoben um 0.00 pt waagerecht, 12.00 pt senkrecht
+fop/list-item_space-before_space-after_2: begründet, FOP staucht Abstände unter das Optimum, um Seiten zu füllen, pdx nimmt das Optimum, beides liegt im Bereich nach XSL 1.1 4.3
 fop/marker_page-number-citation_bugzilla45295: offen, erste Abweichung: Seite 4: "[marker content]" verschoben um 0.00 pt waagerecht, 28.34 pt senkrecht
 fop/markers_3: offen, erste Abweichung: Seite 2: "[PS] [DOC]" verschoben um 3.24 pt waagerecht, -0.00 pt senkrecht
 fop/markers_6a: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
