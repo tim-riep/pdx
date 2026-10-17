@@ -1,8 +1,12 @@
-// Command pdx erzeugt PDF-Dateien aus XSL-FO und prüft sie mit veraPDF.
+// Command pdx erzeugt PDF-Dateien aus XSL-FO oder Vorlagen und prüft sie mit
+// veraPDF.
 //
 //	pdx render eingabe.fo -o ausgabe.pdf --profile pdfa-3b \
 //	    --attach factur-x.xml:Alternative:text/xml \
 //	    --creation-date 2026-01-01T00:00:00Z
+//	pdx render --template vorlage.zip daten.xml -o ausgabe.pdf --strict
+//	pdx compile vorlage.zip -o vorlage.xsl
+//	pdx check vorlage.zip
 //	pdx verify ausgabe.pdf --profile pdfa-3b
 //
 // Exit-Codes: 0 Erfolg, 1 Prüfung fehlgeschlagen oder Fehler beim Rendern,
@@ -33,13 +37,21 @@ func main() {
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
 }
 
-const usage = `pdx %s: XSL-FO zu PDF bis PDF/A-3
+const usage = `pdx %s: XSL-FO und Vorlagen zu PDF bis PDF/A-3
 
 Aufruf:
   pdx render <eingabe.fo> [-o ausgabe.pdf] [--profile NAME] [--attach DATEI:BEZIEHUNG:MIME]...
              [--creation-date RFC3339] [--font DATEI]... [--area-tree DATEI]
+  pdx render --template <vorlage> <daten.xml> [-o ausgabe.pdf] [--strict] [--lang SPRACHE]
+             [--fo DATEI] und die übrigen Optionen von render
+  pdx compile <vorlage> [-o vorlage.xsl] [--lang SPRACHE] [--source-map DATEI]
+  pdx check <vorlage> [--format text|json]
+  pdx fmt [-w] <template.xml>
+  pdx pack <verzeichnis> [-o vorlage.zip]
   pdx verify <datei.pdf> [--profile NAME] [--format text|json]
   pdx version
+
+Eine Vorlage ist ein ZIP-Paket oder ein Verzeichnis mit template.xml.
 
 Profile: %s
 `
@@ -54,6 +66,14 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdRender(args[1:], stdout, stderr)
 	case "verify":
 		return cmdVerify(args[1:], stdout, stderr)
+	case "compile":
+		return cmdCompile(args[1:], stdout, stderr)
+	case "check":
+		return cmdCheck(args[1:], stdout, stderr)
+	case "fmt":
+		return cmdFmt(args[1:], stdout, stderr)
+	case "pack":
+		return cmdPack(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintf(stdout, "pdx %s (veraPDF %s)\n", pdx.Version, verapdf.Version)
 		return 0
@@ -94,6 +114,10 @@ func cmdRender(args []string, stdout, stderr io.Writer) int {
 	prof := fs.String("profile", pdx.DefaultProfile, "Konformitätsprofil")
 	date := fs.String("creation-date", "", "Erstellungsdatum RFC 3339 (Vorgabe: SOURCE_DATE_EPOCH oder jetzt)")
 	tree := fs.String("area-tree", "", "Area Tree zusätzlich als Text in diese Datei schreiben")
+	tpl := fs.String("template", "", "Vorlage (ZIP oder Verzeichnis), die Eingabe sind dann Daten")
+	strict := fs.Bool("strict", false, "Daten vor dem Setzen gegen das Daten-XSD der Vorlage prüfen")
+	lang := fs.String("lang", "", "Sprache der Texte und Formate einer Vorlage")
+	foOut := fs.String("fo", "", "erzeugtes FO einer Vorlage zusätzlich in diese Datei schreiben")
 	var attach, fonts multi
 	fs.Var(&attach, "attach", "Anhang DATEI:BEZIEHUNG:MIME, wiederholbar")
 	fs.Var(&fonts, "font", "zusätzliche Schriftdatei, wiederholbar")
@@ -131,6 +155,13 @@ func cmdRender(args []string, stdout, stderr io.Writer) int {
 				return 1
 			}
 		}
+	}
+	if *tpl != "" {
+		return renderTemplate(*tpl, in, *out, pdx.TemplateOptions{Options: opts, Lang: *lang, Strict: *strict}, *foOut, *tree, stdout, stderr)
+	}
+	if *strict || *lang != "" || *foOut != "" {
+		fmt.Fprintln(stderr, "pdx render: --strict, --lang und --fo gelten nur mit --template")
+		return 2
 	}
 	res, err := pdx.RenderFile(in, opts)
 	if err != nil {

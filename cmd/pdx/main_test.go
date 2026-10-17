@@ -49,6 +49,12 @@ func TestUsageErrors(t *testing.T) {
 		{"verify"},
 		{"verify", "a.pdf", "--profile", "pdf-1.7"},
 		{"verify", "a.pdf", "--format", "xml"},
+		{"render", "a.fo", "--strict"},
+		{"compile"},
+		{"check"},
+		{"check", "a", "--format", "xml"},
+		{"fmt"},
+		{"pack"},
 	}
 	for _, c := range cases {
 		var so, se bytes.Buffer
