@@ -1,6 +1,6 @@
 # Bewusste Abweichungen von Apache FOP
 
-pdx folgt der XSL-1.1-Spezifikation. Weicht Apache FOP davon ab oder lässt
+Maßstab ist die XSL-1.1-Spezifikation des W3C, nicht Apache FOP. pdx folgt der XSL-1.1-Spezifikation. Weicht Apache FOP davon ab oder lässt
 die Spezifikation einen Spielraum, den beide Engines verschieden nutzen,
 steht der Fall hier mit Begründung. Der FOP-Vergleich wertet diese Fälle
 nicht als Fehler.
@@ -124,3 +124,32 @@ gibt FOP nur Warnungen aus und setzt das Dokument. Eine Konfiguration, die
 nur einen Namespace ignoriert, bietet FOP nicht an, nur die Java-API
 (`FopFactoryBuilder.ignoreNamespace`). Der FOP-Vergleich der Musterrechnung
 läuft deshalb mit `-r`.
+
+## Ungültige Eigenschaftswerte
+
+XSL 1.1 legt für ungültige Werte keine Ersatzregel fest. Nach 5.9.6 ist eine
+Länge ohne Einheit eine Zahl mit der Potenz null, verlangt die Eigenschaft
+eine Länge (Potenz eins), heißt es: „If any other power is specified, the
+value is an error.“ Die zulässigen Einheiten stehen in 5.9.13 (cm, mm, in,
+pt, pc, px, em). pdx meldet solche Fehler mit Position und bricht ab, statt
+still einen Ersatzwert zu nehmen. FOP setzt dagegen fort, etwa mit dem
+Anfangswert oder mit Millipunkt für Zahlen ohne Einheit. Betroffen sind
+Testfälle mit Werten wie `space-after="100"`, `height="8400mpt"`,
+`font-style="obscure"`, `color="invalidvalue"` oder `padding="auto"`.
+
+Attribute aus fremden Namespaces muss ein Prozessor dagegen ohne Fehler
+ignorieren (XSL 1.1 1.2: „must ignore such attributes without giving an
+error if it does not recognize the namespace URI“). pdx tut das, FOP 2.11
+verletzt diese Regel ohne `-r` (siehe Attribute fremder Namespaces).
+
+## Fehlende Zeichen
+
+Hat keine Schrift eine Glyphe für ein Zeichen, empfiehlt XSL 1.1 7.9.3 ein
+sichtbares Ersatzzeichen: „the User Agent should provide a visual indication
+that a character is not being displayed (for example, using the 'missing
+character' glyph)“. PDF/A verbietet Verweise auf die .notdef-Glyphe
+(ISO 19005-2 6.2.11.8). pdx meldet fehlende Zeichen deshalb als Fehler mit
+Position, statt eine nicht konforme Datei zu erzeugen. Betroffen sind
+Testfälle mit U+0085, U+007F und U+3000, für die die eingebauten
+Liberation-Schriften keine Glyphe haben. U+3000 ist nach 7.17.7 kein
+Wortzwischenraum, sondern ein gewöhnliches Zeichen.

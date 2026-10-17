@@ -110,13 +110,28 @@ func nextOrd(items []item, pos int) (ordinal, bool) {
 func (s *sequence) paginate() error {
 	var items []item
 	var width areatree.Length = -1
-	pos := 0
+	pos, empty := 0, 0
 	for {
 		cond := pageCond{number: s.e.pageNo + 1, first: s.count == 0}
 		m, err := s.sel.pick(cond, false)
 		if err != nil {
 			return err
 		}
+		// In eine Region ohne Fläche passt kein Inhalt. Die Seite bleibt
+		// leer, der Inhalt läuft auf der nächsten weiter. Nach einigen leeren
+		// Seiten in Folge wird gesetzt, damit die Folge endet.
+		if (m.body.H <= 0 || m.body.W <= 0) && empty < maxEmptyPages {
+			if _, err := s.sel.pick(cond, true); err != nil {
+				return err
+			}
+			s.newPage(m)
+			if err := s.finishPage(); err != nil {
+				return err
+			}
+			empty++
+			continue
+		}
+		empty = 0
 		if items, pos, err = s.adapt(m, items, pos, &width); err != nil {
 			return err
 		}
@@ -176,6 +191,9 @@ func (s *sequence) paginate() error {
 	}
 }
 
+// maxEmptyPages begrenzt leere Seiten in Folge bei Regionen ohne Fläche.
+const maxEmptyPages = 8
+
 // adapt liefert die Galley für die Breite der Vorlage. Ändert sich die
 // Breite, wird ab der aktuellen Stelle neu erzeugt.
 func (s *sequence) adapt(m *master, items []item, pos int, width *areatree.Length) ([]item, int, error) {
@@ -206,9 +224,13 @@ func (s *sequence) newPage(m *master) *areatree.Container {
 	s.m = m
 	s.page = &areatree.Page{Number: s.e.pageNo, Width: m.width, Height: m.height}
 	s.e.doc.Pages = append(s.e.doc.Pages, s.page)
-	if id, ok := s.node.Attr("id"); ok {
-		s.e.recordID(id, formatNumber(s.page.Number, s.e.format))
-		s.e.recordDest(id, s.page, areatree.Point{})
+	// Die Seiten gehören zur Seitenfolge und zu ihren Vorfahren bis fo:root,
+	// die nach XSL 1.1 6.4.2 ebenfalls eine id tragen dürfen.
+	for n := s.node; n != nil; n = n.Parent {
+		if id, ok := n.Attr("id"); ok && id != "" {
+			s.e.recordID(id, formatNumber(s.page.Number, s.e.format))
+			s.e.recordDest(id, s.page, areatree.Point{})
+		}
 	}
 	region := &areatree.Container{Kind: areatree.KindRegion, Rect: m.body, Source: m.bodyNode.Label()}
 	s.page.Areas = append(s.page.Areas, region)

@@ -399,9 +399,32 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	}
 
 	// Spaltenbreiten.
-	ncols := 0
+	// Spaltenzahl aus den fo:table-column, auch mit column-number (XSL 1.1
+	// 7.28.8: Anfangswert ist die Nummer der vorigen Spalte plus 1).
+	ncols, next := 0, 1
 	for _, c := range columns {
-		ncols += repeated(c)
+		k := next
+		if num, ok := c.Attr("column-number"); ok {
+			if v, err := strconv.Atoi(strings.TrimSpace(num)); err == nil && v >= 1 {
+				k = v
+			}
+		}
+		next = k + repeated(c)
+		ncols = max(ncols, next-1)
+	}
+	for _, r := range rows {
+		n := 0
+		for _, c := range r.cells {
+			if num, ok := c.Attr("column-number"); ok {
+				if v, err := strconv.Atoi(strings.TrimSpace(num)); err == nil && v-1 > n {
+					n = v - 1
+				}
+			}
+			n += spanAttr(c, "number-columns-spanned")
+		}
+		if len(columns) > 0 {
+			ncols = max(ncols, n)
+		}
 	}
 	if ncols == 0 {
 		for _, r := range rows {
@@ -420,6 +443,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	avail := tw
 	widths := make([]areatree.Length, ncols)
 	fracs := make([]float64, ncols)
+	set := make([]bool, ncols)
 	ci := 0
 	for _, c := range columns {
 		v := attrOr(c, "column-width", "proportional-column-width(1)")
@@ -433,12 +457,16 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 			}
 		}
 		for k := 0; k < repeated(c) && ci < ncols; k++ {
-			widths[ci], fracs[ci] = fixed, prop
+			widths[ci], fracs[ci], set[ci] = fixed, prop, true
 			ci++
 		}
 	}
-	for ; ci < ncols; ci++ {
-		fracs[ci] = 1
+	// Spalten ohne fo:table-column erhalten einen Anteil. XSL 1.1 7.28.9
+	// verlangt column-width für jede Spalte, pdx ist hier nachsichtig.
+	for i := range set {
+		if !set[i] {
+			fracs[i] = 1
+		}
 	}
 	var fixedSum areatree.Length
 	var propSum float64
@@ -450,7 +478,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		unit := float64(max(avail-fixedSum, 0)) / propSum
 		for i := range widths {
 			if fracs[i] > 0 {
-				widths[i] = areatree.Length(unit * fracs[i])
+				widths[i] += areatree.Length(unit * fracs[i])
 			}
 		}
 	}
@@ -807,11 +835,13 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 	if err != nil {
 		return err
 	}
-	pdbs, err := listLength(n, "provisional-distance-between-starts", "24pt", p.FontSize)
+	// Prozentangaben beziehen sich auf die Breite des nächsten umgebenden
+	// Blockbereichs (XSL 1.1 7.30.11 und 7.30.12).
+	pdbs, err := listLength(n, "provisional-distance-between-starts", "24pt", p.FontSize, g.refW)
 	if err != nil {
 		return err
 	}
-	pls, err := listLength(n, "provisional-label-separation", "6pt", p.FontSize)
+	pls, err := listLength(n, "provisional-label-separation", "6pt", p.FontSize, g.refW)
 	if err != nil {
 		return err
 	}
@@ -878,7 +908,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 
 // listLength liest eine geerbte Listeneigenschaft vom Element oder seinen
 // Vorfahren.
-func listLength(n *tree.Node, name, def string, fs areatree.Length) (areatree.Length, error) {
+func listLength(n *tree.Node, name, def string, fs, base areatree.Length) (areatree.Length, error) {
 	v := def
 	for a := n; a != nil; a = a.Parent {
 		if x, ok := a.Attr(name); ok {
@@ -886,7 +916,7 @@ func listLength(n *tree.Node, name, def string, fs areatree.Length) (areatree.Le
 			break
 		}
 	}
-	l, err := props.EvalLength(v, fs, -1, nil)
+	l, err := props.EvalLength(v, fs, base, nil)
 	if err != nil {
 		return 0, tree.Errorf(n, "%s: %v", name, err)
 	}

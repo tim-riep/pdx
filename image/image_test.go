@@ -1,6 +1,10 @@
 package image
 
 import (
+	"bytes"
+	goimage "image"
+	"image/color"
+	"image/gif"
 	"os"
 	"testing"
 )
@@ -47,5 +51,22 @@ func TestRejects(t *testing.T) {
 		if _, err := Load(data); err == nil {
 			t.Errorf("Load(%q) ohne Fehler", data)
 		}
+	}
+}
+
+func TestGIF(t *testing.T) {
+	pal := color.Palette{color.Transparent, color.RGBA{255, 0, 0, 255}}
+	src := goimage.NewPaletted(goimage.Rect(0, 0, 2, 1), pal)
+	src.SetColorIndex(1, 0, 1)
+	var b bytes.Buffer
+	if err := gif.Encode(&b, src, nil); err != nil {
+		t.Fatal(err)
+	}
+	im, err := Load(b.Bytes())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if im.Format != PNG || im.Space != RGB || im.Width != 2 || len(im.Alpha) != 2 || im.Alpha[0] != 0 || im.Alpha[1] != 255 {
+		t.Fatalf("%+v", im)
 	}
 }

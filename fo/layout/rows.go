@@ -1,6 +1,9 @@
 package layout
 
-import "github.com/tim-riep/pdx/areatree"
+import (
+	"github.com/tim-riep/pdx/areatree"
+	"github.com/tim-riep/pdx/fo/tree"
+)
 
 // rowFrag ist der auf einer Seite liegende Teil einer Zeile: die Scheiben
 // s0 bis s1 (ausschließlich), oben bei y.
@@ -68,6 +71,9 @@ func (pl *placer) drawRow(r *rowLayout, a, b, y areatree.Length) error {
 // drawRowIn zeichnet in einen bestimmten Container.
 func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y areatree.Length) error {
 	whole := a == 0 && b == r.h
+	if a == 0 {
+		pl.rowIDs(r, y)
+	}
 	if r.bg != nil {
 		bg := *r.bg
 		parent.Children = append(parent.Children, &areatree.Box{
@@ -162,4 +168,23 @@ func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y ar
 	}
 	parent.Children = append(parent.Children, lines...)
 	return nil
+}
+
+// rowIDs vermerkt die IDs einer Zeile beim Zeichnen ihres ersten Fragments:
+// Zeile oder Listenpunkt, die Zellen (auch Label und Rumpf eines
+// Listenpunkts) und die Abschnitte der Tabelle bis zur Tabelle selbst.
+func (pl *placer) rowIDs(r *rowLayout, y areatree.Length) {
+	folio := formatNumber(pl.page.Number, pl.e.format)
+	mark := func(n *tree.Node, x areatree.Length) {
+		if id, ok := n.Attr("id"); ok && id != "" {
+			pl.e.recordID(id, folio)
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + x, Y: y})
+		}
+	}
+	for n := r.node; n != nil && !n.IsFO("table") && !n.IsFO("list-block"); n = n.Parent {
+		mark(n, r.x)
+	}
+	for _, c := range r.cells {
+		mark(c.node, c.x)
+	}
 }

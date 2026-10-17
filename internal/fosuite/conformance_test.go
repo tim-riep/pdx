@@ -146,13 +146,22 @@ func TestFOConformance(t *testing.T) {
 	t.Log("\n" + report[:strings.Index(report+"\n## ", "\n## ")])
 	if os.Getenv("PDX_SUITE_RECORD") == "1" {
 		// Neue Abweichungen als offen vermerken, behobene austragen.
+		// Offene Einträge zeigen die aktuelle erste Abweichung, begründete
+		// bleiben unverändert.
 		for id, diffs := range details {
-			if _, ok := deviating[id]; !ok {
+			if why, ok := deviating[id]; !ok || strings.HasPrefix(why, ReasonOpen) {
 				deviating[id] = ReasonOpen + oneLine(stripPaths(string(diffs[0]), root))
 			}
 		}
 		for _, id := range fixed {
 			delete(deviating, id)
+		}
+		for id := range deviating {
+			if !seen[id] {
+				delete(deviating, id)
+			} else if _, off := disabled[id]; off {
+				delete(deviating, id)
+			}
 		}
 		if err := WriteList(filepath.Join(DataDir(root), "deviating.txt"), deviatingHeader, deviating); err != nil {
 			t.Fatal(err)

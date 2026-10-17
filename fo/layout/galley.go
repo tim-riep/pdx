@@ -1,6 +1,8 @@
 package layout
 
 import (
+	"strings"
+
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/fo/props"
 	"github.com/tim-riep/pdx/fo/tree"
@@ -80,6 +82,9 @@ type blockCtx struct {
 	// seiner ersten und letzten Box in der Galley.
 	markers     markerSet
 	first, last int
+	// ids sind IDs leerer Inline-Elemente im Block. Sie gelten für die Seite,
+	// auf der der Block beginnt.
+	ids []string
 }
 
 // lineBox ist eine gesetzte Zeile. Die Bereiche haben x relativ zum linken
@@ -154,11 +159,40 @@ func (g *galley) push(ctx *blockCtx) {
 // auf die nächste Penalty.
 func (g *galley) pop() {
 	ctx := g.stack[len(g.stack)-1]
+	if noContent(ctx.node) {
+		// Ein Block ohne Inhalt erzeugt keine Box. Trägt er eine ID, Marker
+		// oder IDs leerer Inline-Elemente, hält eine Box der Höhe 0 seine
+		// Lage fest, damit Verweise auf ihn aufgelöst werden.
+		if id, _ := ctx.node.Attr("id"); id != "" || len(ctx.markers) > 0 || len(ctx.ids) > 0 {
+			g.box(item{path: g.path(), ord: g.next()}, g.breakBefore(edgeNone))
+		}
+	}
 	g.stack = g.stack[:len(g.stack)-1]
 	g.keepNext = max(g.keepNext, keepValue(ctx.node, "keep-with-next"))
 	if b := breakValue(ctx.node, "break-after"); b != "" {
 		g.brk = b
 	}
+}
+
+// noContent meldet einen Block ohne Text und ohne Elemente außer leeren
+// Inline-Elementen und Markern. Er erzeugt keine Zeile.
+func noContent(n *tree.Node) bool {
+	for _, c := range n.Children {
+		switch {
+		case c.Kind == tree.Text:
+			if strings.TrimSpace(c.Data) != "" {
+				return false
+			}
+		case c.IsFO("marker"):
+		case c.IsFO("inline") || c.IsFO("wrapper"):
+			if !noContent(c) {
+				return false
+			}
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 // breakValue liest break-before oder break-after. column gilt wie page, weil

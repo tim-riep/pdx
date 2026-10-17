@@ -21,6 +21,22 @@ type Env struct {
 type value struct {
 	kind valueKind
 	num  float64 // Zahl, Länge in Millipunkt oder Anteil
+	// prop ist ein proportionaler Anteil zusätzlich zu einer Länge, etwa
+	// bei "2pt + proportional-column-width(1)" (XSL 1.1 5.10.4).
+	prop float64
+}
+
+// parts zerlegt einen Wert in festen und proportionalen Anteil.
+func (v value) parts() (fixed, prop float64, ok bool) {
+	switch v.kind {
+	case vProportional:
+		return 0, v.num, true
+	case vLength:
+		return v.num, v.prop, true
+	case vNumber:
+		return 0, 0, v.num == 0
+	}
+	return 0, 0, false
 }
 
 type valueKind uint8
@@ -68,7 +84,7 @@ func EvalColumnWidth(s string, fontSize, tableWidth Length) (fixed Length, prop 
 	case vProportional:
 		return 0, v.num, nil
 	case vLength:
-		return Length(math.Round(v.num)), 0, nil
+		return Length(math.Round(v.num)), v.prop, nil
 	}
 	return 0, 0, fmt.Errorf("column-width %q ist keine Länge", s)
 }
@@ -174,6 +190,22 @@ func (p *parser) additive() (value, error) {
 		if err != nil {
 			return l, err
 		}
+		if l.kind == vProportional || r.kind == vProportional || l.prop != 0 || r.prop != 0 {
+			lf, lp, ok1 := l.parts()
+			rf, rp, ok2 := r.parts()
+			if !ok1 || !ok2 {
+				return l, fmt.Errorf("Addition von Zahl und Anteil in %q", strings.TrimSpace(p.s))
+			}
+			if op == "-" {
+				rf, rp = -rf, -rp
+			}
+			if lf+rf == 0 {
+				l = value{kind: vProportional, num: lp + rp}
+			} else {
+				l = value{kind: vLength, num: lf + rf, prop: lp + rp}
+			}
+			continue
+		}
 		if l.kind != r.kind && !(l.kind == vNumber && l.num == 0) && !(r.kind == vNumber && r.num == 0) {
 			return l, fmt.Errorf("Addition von Zahl und Länge in %q", strings.TrimSpace(p.s))
 		}
@@ -182,9 +214,9 @@ func (p *parser) additive() (value, error) {
 			kind = r.kind
 		}
 		if op == "+" {
-			l = value{kind, l.num + r.num}
+			l = value{kind: kind, num: l.num + r.num}
 		} else {
-			l = value{kind, l.num - r.num}
+			l = value{kind: kind, num: l.num - r.num}
 		}
 	}
 	return l, nil
@@ -206,9 +238,9 @@ func (p *parser) multiplicative() (value, error) {
 		case "*":
 			switch {
 			case l.kind == vNumber:
-				l = value{r.kind, l.num * r.num}
+				l = value{kind: r.kind, num: l.num * r.num}
 			case r.kind == vNumber:
-				l = value{l.kind, l.num * r.num}
+				l = value{kind: l.kind, num: l.num * r.num}
 			default:
 				return l, fmt.Errorf("Produkt zweier Längen in %q", strings.TrimSpace(p.s))
 			}
@@ -223,9 +255,9 @@ func (p *parser) multiplicative() (value, error) {
 				return l, fmt.Errorf("Zahl geteilt durch Länge in %q", strings.TrimSpace(p.s))
 			}
 			if op == "div" {
-				l = value{kind, l.num / r.num}
+				l = value{kind: kind, num: l.num / r.num}
 			} else {
-				l = value{kind, math.Mod(l.num, r.num)}
+				l = value{kind: kind, num: math.Mod(l.num, r.num)}
 			}
 		}
 	}
@@ -252,13 +284,13 @@ func (p *parser) primary() (value, error) {
 		p.next()
 		if strings.HasSuffix(text, "%") || strings.IndexFunc(text, func(r rune) bool { return r >= 'a' && r <= 'z' }) >= 0 {
 			l, err := ParseLength(text, p.fs, p.pct)
-			return value{vLength, float64(l)}, err
+			return value{kind: vLength, num: float64(l)}, err
 		}
 		f, err := strconv.ParseFloat(text, 64)
 		if err != nil {
 			return value{}, fmt.Errorf("ungültige Zahl %q", text)
 		}
-		return value{vNumber, f}, nil
+		return value{kind: vNumber, num: f}, nil
 	case tLParen:
 		p.next()
 		v, err := p.additive()
@@ -321,7 +353,7 @@ func (p *parser) call(name string, args []value) (value, error) {
 			return value{}, fmt.Errorf("%s() ist nur innerhalb von fo:list-item erlaubt", name)
 		}
 		l, err := f()
-		return value{vLength, float64(l)}, err
+		return value{kind: vLength, num: float64(l)}, err
 	case "proportional-column-width":
 		if err := need(1); err != nil {
 			return value{}, err
@@ -329,7 +361,7 @@ func (p *parser) call(name string, args []value) (value, error) {
 		if args[0].kind != vNumber || args[0].num <= 0 {
 			return value{}, fmt.Errorf("proportional-column-width erwartet eine positive Zahl")
 		}
-		return value{vProportional, args[0].num}, nil
+		return value{kind: vProportional, num: args[0].num}, nil
 	case "abs", "floor", "ceiling", "round":
 		if err := need(1); err != nil {
 			return value{}, err

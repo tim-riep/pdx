@@ -36,7 +36,15 @@ var builtinAliases = map[string]string{
 	"courier":         "liberation mono",
 	"courier new":     "liberation mono",
 	"monospace":       "liberation mono",
+	// cursive und fantasy sind generische Familien aus CSS2, die XSL 1.1
+	// 7.9.2 übernimmt. Mangels eigener Schriften gilt eine Serifenschrift.
+	"cursive": "liberation serif",
+	"fantasy": "liberation serif",
 }
+
+// fallbackFamily ist die Ersatzfamilie, wenn keine Familie der Liste
+// vorhanden ist (XSL 1.1 7.9.3).
+const fallbackFamily = "liberation sans"
 
 // NewRegistry legt eine Registry mit den eingebetteten Schriften an.
 func NewRegistry() *Registry {
@@ -105,6 +113,13 @@ func (r *Registry) Lookup(family string, weight int, italic bool) (*Face, error)
 		if faces := r.families[k]; len(faces) > 0 {
 			return pick(faces, weight, italic), nil
 		}
+	}
+	// XSL 1.1 7.9.3: Passt keine Schrift, wird systemabhängig ersetzt.
+	if err := r.loadLazy(fallbackFamily); err != nil {
+		return nil, err
+	}
+	if faces := r.families[fallbackFamily]; len(faces) > 0 {
+		return pick(faces, weight, italic), nil
 	}
 	return nil, fmt.Errorf("Schriftfamilie %q nicht gefunden", strings.TrimSpace(family))
 }

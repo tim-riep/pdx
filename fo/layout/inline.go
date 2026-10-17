@@ -333,6 +333,11 @@ func (pa *paragraph) markID(n *tree.Node, from int) {
 			return
 		}
 	}
+	// Ein leeres Inline-Element hat kein Stück. Seine ID gilt dann für den
+	// umschließenden Block.
+	if st := pa.g.stack; len(st) > 0 {
+		st[len(st)-1].ids = append(st[len(st)-1].ids, id)
+	}
 }
 
 // text zerlegt Text in Wörter und Leerräume. Leerraum wird nach den

@@ -4,6 +4,9 @@
 package image
 
 import (
+	goimage "image"
+	"image/gif"
+
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
@@ -93,8 +96,32 @@ func Load(data []byte) (*Image, error) {
 		}
 		im.key = key
 		return im, nil
+	case bytes.HasPrefix(data, []byte("GIF87a")) || bytes.HasPrefix(data, []byte("GIF89a")):
+		im, err := loadGIF(data)
+		if err != nil {
+			return nil, err
+		}
+		im.key = key
+		return im, nil
 	}
-	return nil, errors.New("Bildformat nicht unterstützt, erwartet JPEG oder PNG")
+	return nil, errors.New("Bildformat nicht unterstützt, erwartet JPEG, PNG oder GIF")
+}
+
+// loadGIF dekodiert das erste Bild einer GIF-Datei. Es wird wie ein PNG
+// verlustfrei mit Flate geschrieben, Transparenz wird zur Alphamaske.
+func loadGIF(data []byte) (*Image, error) {
+	cfg, err := gif.DecodeConfig(bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("GIF: %w", err)
+	}
+	if cfg.Width*cfg.Height > 100_000_000 {
+		return nil, fmt.Errorf("GIF: %dx%d Pixel sind zu groß", cfg.Width, cfg.Height)
+	}
+	src, err := gif.Decode(bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("GIF: %w", err)
+	}
+	return raster(src, 0, 0), nil
 }
 
 // loadJPEG liest Größe, Komponenten und Auflösung aus den Markern.
@@ -182,10 +209,17 @@ func loadPNG(data []byte) (*Image, error) {
 	if err != nil {
 		return nil, fmt.Errorf("PNG: %w", err)
 	}
+	dx, dy := pngDPI(data)
+	return raster(src, dx, dy), nil
+}
+
+// raster wandelt ein dekodiertes Bild in 8 Bit Grau oder RGB plus optionalem
+// Alpha. Es wird mit Flate geschrieben (Format PNG).
+func raster(src goimage.Image, dpiX, dpiY float64) *Image {
 	b := src.Bounds()
 	w, h := b.Dx(), b.Dy()
 	im := &Image{Format: PNG, Width: w, Height: h, BitsPerComponent: 8}
-	im.DPIX, im.DPIY = pngDPI(data)
+	im.DPIX, im.DPIY = dpiX, dpiY
 
 	gray := isGrayModel(src.ColorModel())
 	if gray {
@@ -215,7 +249,7 @@ func loadPNG(data []byte) (*Image, error) {
 	if !opaque {
 		im.Alpha = alpha
 	}
-	return im, nil
+	return im
 }
 
 func isGrayModel(m color.Model) bool {

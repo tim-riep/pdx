@@ -12,6 +12,10 @@ import (
 // Computed sind die aufgelösten Eigenschaften eines FO-Elements. Längen sind
 // absolut. Die ersten Felder werden vererbt, die übrigen nicht.
 type Computed struct {
+	// env ist der Kontext für body-start() und label-end(). Er gilt für den
+	// Listenpunkt und alle Nachfahren (XSL 1.1 5.10.4).
+	env *Env
+
 	// Vererbte Eigenschaften.
 	FontFamily    string
 	FontSize      Length
@@ -70,6 +74,7 @@ func Root() *Computed {
 // inherit kopiert die vererbten Eigenschaften.
 func (c *Computed) inherit() *Computed {
 	return &Computed{
+		env:        c.env,
 		FontFamily: c.FontFamily, FontSize: c.FontSize, FontWeight: c.FontWeight, Italic: c.Italic,
 		Color: c.Color, TextAlign: c.TextAlign, TextAlignLast: c.TextAlignLast,
 		LineHeightFactor: c.LineHeightFactor, LineHeight: c.LineHeight,
@@ -91,7 +96,11 @@ func Compute(parent *Computed, n *tree.Node, width Length) (*Computed, error) {
 
 // ComputeEnv ist Compute mit Kontextfunktionen wie body-start().
 func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Computed, error) {
+	if env == nil {
+		env = parent.env
+	}
 	c := parent.inherit()
+	c.env = env
 	a := n.Attrs
 	fail := func(prop string, err error) error {
 		return tree.Errorf(n, "%s: %v", prop, err)
@@ -398,6 +407,14 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	// Ränder. margin-top und margin-bottom wirken wie space-before und
 	// space-after, margin-left und margin-right setzen die Einzüge (XSL 1.1
 	// 5.3.2).
+	// auto ergibt bei Blöcken 0pt (XSL 1.1 5.3.2 und CSS2 10.3.3 bei
+	// automatischer Breite).
+	marginLen := func(name, s string) (Length, error) {
+		if strings.TrimSpace(s) == "auto" {
+			return 0, nil
+		}
+		return length(name, s)
+	}
 	var margin [4]*Length
 	if v, ok := a["margin"]; ok {
 		vs, err := expand4(splitValues(v))
@@ -405,7 +422,7 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 			return fail("margin", err)
 		}
 		for i, s := range vs {
-			l, err := length("margin", s)
+			l, err := marginLen("margin", s)
 			if err != nil {
 				return err
 			}
@@ -414,7 +431,7 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}
 	for side, name := range []string{"margin-top", "margin-right", "margin-bottom", "margin-left"} {
 		if v, ok := a[name]; ok {
-			l, err := length(name, v)
+			l, err := marginLen(name, v)
 			if err != nil {
 				return err
 			}

@@ -45,8 +45,12 @@ func TestRegistryStandardFonts(t *testing.T) {
 			t.Errorf("Lookup(%q, %d, %v) = %s, erwartet %s", c.family, c.weight, c.italic, f.PostScript, c.want)
 		}
 	}
-	if _, err := r.Lookup("Symbol", 400, false); err == nil {
-		t.Error("Symbol sollte nicht gefunden werden")
+	// Unbekannte Familien fallen nach XSL 1.1 7.9.3 auf die Ersatzfamilie.
+	if f, err := r.Lookup("Symbol", 700, false); err != nil || f.PostScript != "LiberationSans-Bold" {
+		t.Errorf("Ersatz für Symbol: %v %v", f, err)
+	}
+	if f, err := r.Lookup("cursive", 400, false); err != nil || f.PostScript != "LiberationSerif" {
+		t.Errorf("cursive: %v %v", f, err)
 	}
 }
 

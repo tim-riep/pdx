@@ -358,8 +358,10 @@ func (e *engine) readMasters(lms *tree.Node) error {
 		if mm.bodyNode == nil {
 			return tree.Errorf(m, "fo:region-body fehlt")
 		}
-		if mm.body.W <= 0 || mm.body.H <= 0 {
-			return tree.Errorf(mm.bodyNode, "fo:region-body hat keine Fläche, Ränder zu groß")
+		// Eine Region der Größe 0 ist zulässig, Inhalt passt dort nicht und
+		// läuft auf die nächste Seite. Negative Größen sind ein Fehler.
+		if mm.body.W < 0 || mm.body.H < 0 {
+			return tree.Errorf(mm.bodyNode, "fo:region-body hat eine negative Größe, Ränder zu groß")
 		}
 		e.masters[name] = mm
 	}

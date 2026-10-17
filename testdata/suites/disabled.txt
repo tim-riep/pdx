@@ -10,8 +10,9 @@ fop/balanced-columns_4: nicht im Teilumfang von pdx: Eigenschaft column-count="2
 fop/balanced-columns_5: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
 fop/balanced-columns_6: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
 fop/basic-link_background-image_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_external-destination_2: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
 fop/basic-link_external-destination_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
-fop/basic-link_external-destination_writing-mode_rl_2: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_external-destination_writing-mode_rl_2: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
 fop/basic-link_height: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="12pt"
 fop/basic-link_height_baseline-shift: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="-5pt"
 fop/basic-link_height_baseline-shift_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
@@ -49,6 +50,7 @@ fop/block-inline-break-before: nicht im Teilumfang von pdx: 12:15: fo:block ist 
 fop/block-inline-empty-character: nicht im Teilumfang von pdx: 9:50: fo:character wird noch nicht unterstützt
 fop/block-inline-inline-break-before: nicht im Teilumfang von pdx: 13:17: fo:block ist in fo:inline nicht erlaubt
 fop/block_basic_2: nicht im Teilumfang von pdx: 12:21: fo:wrapper wird noch nicht unterstützt
+fop/block_bidi_jira2258: arabische Schrift und BIDI (XSL 1.1 5.8) sind noch nicht umgesetzt
 fop/block_bidi_jira2303: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
 fop/block_break-before_bug46240: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
 fop/block_bug39414: nicht im Teilumfang von pdx: Eigenschaft white-space="pre"
@@ -251,9 +253,12 @@ fop/inline_vertical-align_2: braucht Dateien aus dem Testverzeichnis: ../resourc
 fop/inline_white-space-treatment_bugzilla45097: nicht im Teilumfang von pdx: Eigenschaft text-decoration="underline"
 fop/inline_word-spacing: in FOP 2.11 deaktiviert: Word-spacing may not work as expected within fo:inline.
 fop/inline_word-spacing_text-align_justify: in FOP 2.11 deaktiviert: inline word-spacing text-align justify
-fop/instream-foreign-object_basic_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
-fop/instream-foreign-object_border_padding_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
-fop/instream-foreign-object_display-align_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/instream-foreign-object_basic: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
+fop/instream-foreign-object_basic_writing-mode_rl: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
+fop/instream-foreign-object_border_padding: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
+fop/instream-foreign-object_border_padding_writing-mode_rl: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
+fop/instream-foreign-object_display-align: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
+fop/instream-foreign-object_display-align_writing-mode_rl: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
 fop/keep-together_overflow-recovery_bug49835: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
 fop/keep_within-column_basic: nicht im Teilumfang von pdx: Eigenschaft column-count="5"
 fop/keep_within-page_multi-column_overflow: in FOP 2.11 deaktiviert: The block should cause overflow in the last column on the page, rather than be broken.
@@ -266,7 +271,7 @@ fop/leader_alignment-baseline: nicht im Teilumfang von pdx: Eigenschaft alignmen
 fop/leader_leader-pattern_dots_writing-mode_rl: nicht im Teilumfang von pdx: 11:13: fo:bidi-override wird noch nicht unterstützt
 fop/leader_leader-pattern_rule_writing-system_rl: nicht im Teilumfang von pdx: 11:16: fo:bidi-override wird noch nicht unterstützt
 fop/leader_leader-pattern_space_writing-mode_rl: nicht im Teilumfang von pdx: 11:16: fo:bidi-override wird noch nicht unterstützt
-fop/leader_leader-pattern_use-content: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="middle"
+fop/leader_leader-pattern_use-content: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg, unterstützt ist nur pdx:barcode
 fop/leader_leader-pattern_use-content_bug: in FOP 2.11 deaktiviert: Line height is not correctly calculated for use-content leaders whose height is larger than the rest of the line.
 fop/leader_leader-pattern_use-content_writing-mode_rl: nicht im Teilumfang von pdx: 10:13: fo:bidi-override wird noch nicht unterstützt
 fop/linearea_nonempty_1: nicht im Teilumfang von pdx: Eigenschaft line-height-shift-adjustment="disregard-shifts"
@@ -280,6 +285,8 @@ fop/list-block_space-before_space-after_1: nicht im Teilumfang von pdx: Eigensch
 fop/list-block_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
 fop/list-item-body_break-before_multicolumn: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
 fop/list-item_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/marker_inline_white-space: Blöcke innerhalb von Inline-Folgen sind noch nicht umgesetzt
+fop/marker_instream-foreign-object: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg, unterstützt ist nur pdx:barcode
 fop/marker_white-space-collapse: nicht im Teilumfang von pdx: Eigenschaft white-space-collapse="false"
 fop/marker_white-space-treatment_bug42703: braucht Dateien aus dem Testverzeichnis: ../resources/images/img.svg
 fop/marker_white-space_npe: nicht im Teilumfang von pdx: 6:11: fo:region-end wird noch nicht unterstützt
@@ -462,6 +469,7 @@ w3c/fopc-giro: braucht Dateien aus dem Testverzeichnis: file:graphics/fop.jpg
 w3c/fopc-headfoot: nicht im Teilumfang von pdx: Eigenschaft vertical-align="middle"
 w3c/fopc-images: braucht Dateien aus dem Testverzeichnis: file:graphics/xml_feather.gif
 w3c/fopc-inhprop: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-inhprop.fo:50:3: Element "fo:page-sequence-master" is missing required prope…
+w3c/fopc-instream: nicht im Teilumfang von pdx: fo:instream-foreign-object mit svg:svg, unterstützt ist nur pdx:barcode
 w3c/fopc-keep: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-keep.fo:12:39: For "fo:simple-page-master", "fo:region-body" must be declare…
 w3c/fopc-link: braucht Dateien aus dem Testverzeichnis: normal.pdf
 w3c/fopc-list: braucht Dateien aus dem Testverzeichnis: file:graphics/listgeometry.gif
@@ -523,6 +531,7 @@ w3c/nist-recarea4: nicht im Teilumfang von pdx: 11:11: fo:bidi-override wird noc
 w3c/nist-recarea5: nicht im Teilumfang von pdx: Eigenschaft writing-mode="tb-rl"
 w3c/nist-recarea6: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="before-edge"
 w3c/nist-recarea7: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="after-edge"
+w3c/nist-renderingmodel2: nicht im Teilumfang von pdx: Bild über das Netz, pdx lädt keine Daten nach
 w3c/nist-renderingmodel3: nicht im Teilumfang von pdx: 10:9: fo:character wird noch nicht unterstützt
 w3c/nist-renderingmodel5: nicht im Teilumfang von pdx: Eigenschaft visibility="hidden"
 w3c/nist-tafowritingm1: nicht im Teilumfang von pdx: Eigenschaft writing-mode="tb-rl"

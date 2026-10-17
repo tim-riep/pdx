@@ -100,6 +100,11 @@ var unsupportedProps = map[string][]string{
 
 var attrRe = regexp.MustCompile(`\s([a-z][a-z-]*)((?:\.[a-z-]+)*)="([^"]*)"`)
 
+var (
+	foreignContent = regexp.MustCompile(`<fo:instream-foreign-object[^>]*>\s*<([A-Za-z_][\w.-]*(?::[\w.-]+)?)`)
+	remoteSrc      = regexp.MustCompile(`src="\s*(?:url\()?\s*['"]?https?:`)
+)
+
 // nsFOX ist der Namespace der FOP-Erweiterungen.
 const nsFOX = "http://xmlgraphics.apache.org/fop/extensions"
 
@@ -108,6 +113,12 @@ const nsFOX = "http://xmlgraphics.apache.org/fop/extensions"
 func unsupported(fo string) string {
 	if strings.Contains(fo, nsFOX) {
 		return "nutzt FOP-Erweiterungen (fox)"
+	}
+	if m := foreignContent.FindStringSubmatch(fo); m != nil && m[1] != "pdx:barcode" {
+		return "fo:instream-foreign-object mit " + m[1] + ", unterstützt ist nur pdx:barcode"
+	}
+	if remoteSrc.MatchString(fo) {
+		return "Bild über das Netz, pdx lädt keine Daten nach"
 	}
 	for _, m := range attrRe.FindAllStringSubmatch(fo, -1) {
 		name, sub, v := m[1], m[2], strings.TrimSpace(m[3])

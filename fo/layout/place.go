@@ -135,6 +135,10 @@ func (pl *placer) box(it item) error {
 			pl.e.recordID(id, folio)
 			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + ctx.x, Y: pl.y})
 		}
+		for _, id := range ctx.ids {
+			pl.e.recordID(id, folio)
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + ctx.x, Y: pl.y})
+		}
 	}
 	if it.line != nil {
 		for _, id := range it.line.ids {
