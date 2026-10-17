@@ -38,8 +38,23 @@ func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
 	if err != nil {
 		return err
 	}
-	pa.pieces = append(pa.pieces, piece{kind: pGraphic, img: id, width: w, height: h})
+	// Rahmen und Padding gehören zum Inline-Bereich des Bildes (XSL 1.1
+	// 4.2.2). Die Unterkante der Rahmenbox liegt auf der Grundlinie.
+	pc := piece{kind: pGraphic, img: id, width: w, height: h}
+	if hasDeco(p) {
+		pc.box = &graphicBox{p: p, n: n, start: edgeWidth(p, areatree.Left), before: edgeWidth(p, areatree.Top)}
+		pc.width += edgeWidth(p, areatree.Left) + edgeWidth(p, areatree.Right)
+		pc.height += edgeWidth(p, areatree.Top) + edgeWidth(p, areatree.Bottom)
+	}
+	pa.pieces = append(pa.pieces, pc)
 	return nil
+}
+
+// graphicBox beschreibt Rahmen, Padding und Hintergrund eines Bildes.
+type graphicBox struct {
+	p             *props.Computed
+	n             *tree.Node
+	start, before areatree.Length
 }
 
 // graphicSize bestimmt die Größe nach content-width, content-height und

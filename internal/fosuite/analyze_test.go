@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tim-riep/pdx/fo/props"
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
@@ -41,6 +42,18 @@ func TestAnalyze(t *testing.T) {
 			continue
 		}
 		class := classify(o, fl, fpages)
+		// Abweichungen nur wegen der Pixelgröße: mit 1 px = 1 pt wie bei FOP
+		// gleich mit der Erwartung.
+		if src, err := os.ReadFile(c.File); err == nil && strings.Contains(string(src), "px") {
+			if e, err := ReadExpect(ExpectFile(root, c)); err == nil {
+				props.SetPixelSize(1)
+				d := Compare(c, Render(c, 30*time.Second), e, fopcompare.Default.Position)
+				props.SetPixelSize(0.75)
+				if len(d) == 0 {
+					class = "nur px"
+				}
+			}
+		}
 		classes[class] = append(classes[class], c.ID())
 	}
 	var b strings.Builder

@@ -22,8 +22,12 @@ var units = map[string]float64{
 	"cm": 72 / 2.54,
 	"in": 72,
 	"pc": 12,
-	"px": 0.75, // CSS-Pixel bei 96 dpi
+	"px": 0.75, // Referenzpixel von CSS2, 1/96 Zoll (XSL 1.1 5.9.13.1)
 }
+
+// SetPixelSize setzt die Größe von px in Punkt. Nur für Analysen in Tests,
+// die Vorgabe ist 0,75 (1/96 Zoll).
+func SetPixelSize(pt float64) { units["px"] = pt }
 
 // ParseLength liest eine Länge. em bezieht sich auf fontSize, Prozent auf
 // percentBase. Ist percentBase negativ, sind Prozentangaben nicht erlaubt.

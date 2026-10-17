@@ -125,6 +125,8 @@ type piece struct {
 	// das Element der Kante und start gibt an, ob es die Anfangskante ist.
 	decos []*inlineDeco
 	start bool
+	// box ist bei Bildern mit Rahmen, Padding oder Hintergrund gesetzt.
+	box *graphicBox
 }
 
 // inlineDeco ist ein Inline-Element mit Hintergrund, Rahmen oder Padding.
@@ -878,6 +880,20 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			run = nil
 			if pc.code != nil {
 				line.areas = append(line.areas, pc.code.path(x, baseline-pc.height, pc.width, pc.height))
+				x += pc.width
+				continue
+			}
+			if b := pc.box; b != nil {
+				p := b.p
+				line.areas = append(line.areas, &areatree.Container{Kind: areatree.KindInline,
+					Rect:       areatree.Rect{X: x, Y: baseline - pc.height, W: pc.width, H: pc.height},
+					Background: p.Background, Border: p.Border, Source: b.n.Label()})
+				iw := pc.width - b.start - edgeWidth(p, areatree.Right)
+				ih := pc.height - b.before - edgeWidth(p, areatree.Bottom)
+				line.areas = append(line.areas, &areatree.Image{
+					Rect:  areatree.Rect{X: x + b.start, Y: baseline - pc.height + b.before, W: iw, H: ih},
+					Image: pc.img,
+				})
 				x += pc.width
 				continue
 			}

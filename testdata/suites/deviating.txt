@@ -128,88 +128,71 @@ w3c/fopc-newlinktest: offen, erste Abweichung: Seite 1: "Apache FOP is the world
 w3c/fopc-pagelevel2: offen, erste Abweichung: Seite 4: Zeile nur in pdx: "The area tree is constrained to satisfy all break conditions imposed."
 w3c/fopc-pagelevel3: offen, erste Abweichung: Seite 4: "Keep conditions are imposed by the \"within-page\", \"within-column\", and" verschoben um 0.00 pt waagerecht, 4.34 pt senkrecht
 w3c/fopc-simple: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "and processed on the Web in the way that is now possible with HTML. XML has"
-w3c/nist-adp-height1: offen, erste Abweichung: Seite 1: "The square above should be 50 pixels tall" verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
-w3c/nist-adp-height2: offen, erste Abweichung: Seite 1: "The square above should be 100 pixels tall" verschoben um 0.00 pt waagerecht, -25.00 pt senkrecht
-w3c/nist-adp-height3: offen, erste Abweichung: Seite 1: "The square above should be 200 pixels tall" verschoben um 0.00 pt waagerecht, -50.00 pt senkrecht
+w3c/nist-adp-height1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-adp-height2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-adp-height3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-width1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph"
-w3c/nist-adp-width2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be"
-w3c/nist-adp-width3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be 400 pixels wide. This is extra"
+w3c/nist-adp-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-adp-width3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-width4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph"
 w3c/nist-bcfobordercolor2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "\"red\" (before),\"blue\""
 w3c/nist-blockarea2: offen, erste Abweichung: Seite 1: "Space before this area should be" verschoben um 0.00 pt waagerecht, 4.32 pt senkrecht
 w3c/nist-blockarea3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should increase in size from"
 w3c/nist-blockarea4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should decrease in size from"
 w3c/nist-blockarea5: offen, erste Abweichung: Seite 1: "Should have two child areas" verschoben um 0.00 pt waagerecht, 40.32 pt senkrecht
-w3c/nist-blrp-heightoflines1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a font size of 14px and a line height of 20px. This means that the lines of text within it should be"
-w3c/nist-blrp-heightoflines2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a font size of 14px and a line height of 20px. This means that the lines of text within it should be"
-w3c/nist-blrp-line-height1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a line-"
-w3c/nist-blrp-line-height10: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a"
-w3c/nist-blrp-line-height2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
-w3c/nist-blrp-line-height3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
-w3c/nist-blrp-line-height4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
-w3c/nist-blrp-line-height5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a line-"
-w3c/nist-blrp-line-height6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a line-"
-w3c/nist-blrp-line-height7: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a line-"
-w3c/nist-blrp-line-height8: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
-w3c/nist-blrp-line-height9: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-heightoflines1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-heightoflines2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height10: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height4: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height6: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height7: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height8: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-blrp-line-height9: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-blrp-text-indent9: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cbpbp-border-color-inline3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border-color \"purple"
-w3c/nist-cbpbp-border-left-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph has a background color of gray and a 20-pixel left margin, and it contains an inline element of"
+w3c/nist-cbpbp-border-left-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-left-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
-w3c/nist-cbpbp-border-left-width-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a background color of gray and margin-left of 20px. However, it contains an inline element of"
-w3c/nist-cbpbp-border-right-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "border-right purple double 10px, which should have a 10-pixel purple double right border. The line-height of the"
+w3c/nist-cbpbp-border-left-width-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-border-right-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-right-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph has a background color of gray and a 20-pixel right margin, and it contains an inline element of"
 w3c/nist-cbpbp-border-right-width5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should have a thin right border width, which will become more obvious if the element is more than"
 w3c/nist-cbpbp-border-style-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border-style groove"
-w3c/nist-cbpbp-border-top-width-inline1: offen, erste Abweichung: Seite 1: "This element has a border top width of 25px and border-style of solid. However, it contains an inline element of" verschoben um 0.00 pt waagerecht, -6…
-w3c/nist-cbpbp-border-top-width-inline2: offen, erste Abweichung: Seite 1: "This element has a border top width of 25px and border-style of solid. There is an inline element of border-top-" verschoben um 0.00 pt waagerecht, -6…
-w3c/nist-cbpbp-border-top-width2: offen, erste Abweichung: Seite 1: "This element should have a top border width of 25 pixels." verschoben um 0.00 pt waagerecht, -6.25 pt senkrecht
-w3c/nist-cbpbp-border-top1: offen, erste Abweichung: Seite 1: "This element should have a purple, double, 10-pixel top border. Individual properties are tested here." verschoben um 0.00 pt waagerecht, -2.50 pt sen…
+w3c/nist-cbpbp-border-top-width-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-border-top-width-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-border-top-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-border-top1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border-width-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a border-width of 25px and border-style of solid. However, it contains an inline element of border-"
-w3c/nist-cbpbp-border-width-inline2: offen, erste Abweichung: Seite 1: "This element has a border-width of 25px and border-style of solid. However, it contains an inline element of border-" verschoben um 0.00 pt waagerecht…
-w3c/nist-cbpbp-border-width2: offen, erste Abweichung: Seite 1: "This element should have an overall border width of 50 pixels. Individual properties are tested here." verschoben um 0.00 pt waagerecht, -12.50 pt sen…
-w3c/nist-cbpbp-border3: offen, erste Abweichung: Seite 1: "This element should have a ten-pixel wide teal outset border all the way around. Individual properties are tested" verschoben um 0.00 pt waagerecht, -…
-w3c/nist-cbpbp-border4: offen, erste Abweichung: Seite 1: "This element should have a ten-pixel wide olive inset border all the way around. Individual properties are tested" verschoben um 0.00 pt waagerecht, -…
+w3c/nist-cbpbp-border-width-inline2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-border-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-border3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-border4: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border7: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-w3c/nist-cbpbp-padding-left-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of padding-"
+w3c/nist-cbpbp-padding-left-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-padding-left-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "element of padding-left 40mm and background-color of red, which should result in 4omm left padding (which"
-w3c/nist-cbpbp-padding-right-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "right 25px and background-color of red, which should result in 25-pixel right padding (which should also be red)"
+w3c/nist-cbpbp-padding-right-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-padding-right5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "to the width"
-w3c/nist-cbpbp-padding-top3: offen, erste Abweichung: Seite 1: "This element should have a top padding of 25 pixels, which will require extra text in order to test. Both the content" verschoben um 0.00 pt waagerech…
-w3c/nist-cbpbp-padding3: offen, erste Abweichung: Seite 1: "This element should have an overall padding of 25 pixels, which will require extra text in order to test. Both the" verschoben um 0.00 pt waagerecht, …
+w3c/nist-cbpbp-padding-top3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cbpbp-padding3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font-family6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "These sentences should be in a sans-serif font, not fantasy, if fantasy is not supported. Fantasy is the first one in the list, but …
 w3c/nist-cfp-font-family7: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "These sentences should be in a monospace font, not serif, if monospace (the first"
-w3c/nist-cfp-font-size17: offen, erste Abweichung: Seite 1: "This sentence should be twenty-five pixels tall." verschoben um 0.00 pt waagerecht, -5.37 pt senkrecht
-w3c/nist-cfp-font-size18: offen, erste Abweichung: Seite 1: "This font size of this line is set to 10px." verschoben um 0.00 pt waagerecht, -2.15 pt senkrecht
-w3c/nist-cfp-font10: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in a sans-serif font, oblique and not small-caps, with a weight of 700."
-w3c/nist-cfp-font11: offen, erste Abweichung: Seiten: pdx 1, FOP 2
-w3c/nist-cfp-font3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in serif font. Its font-size should be 150%"
-w3c/nist-cfp-font4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in a sans-serif font. Its font-size should be 150% the containing block size, and its line-height"
+w3c/nist-cfp-font-size17: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cfp-font-size18: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cfp-font10: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cfp-font11: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cfp-font3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-cfp-font4: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cfp-font5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in a cursive font, 'small' in size, with a line-height of 20px. The actual value of the font-size may be UA-d…
 w3c/nist-cmpb-margin-left3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cmpb-margin-right3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cmpi-margin-top-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "25px and background-color of red, giving it a red background and a 25px top margin. Margins on inline elements"
 w3c/nist-crp-color-units8: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-w3c/nist-egfobordercolor1: offen, erste Abweichung: Seite 1: "The border color properties for image were set" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfobordercolor2: offen, erste Abweichung: Seite 1: "The border color properties for image were set" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle1: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle2: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle3: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle4: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle5: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle6: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle7: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderstyle8: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderwidth1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "width properties for image are set to \"0.3in\"."
-w3c/nist-egfoborderwidth2: begründet, thin, medium und thick sind nach XSL 1.1 7.8.24 Sache des Formatierers
-w3c/nist-egfoborderwidth3: offen, erste Abweichung: Seite 1: "width properties for image set to \"medium\"." verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
-w3c/nist-egfoborderwidth4: offen, erste Abweichung: Seite 1: "width properties set to \"thik\"." verschoben um -4.00 pt waagerecht, -4.00 pt senkrecht
-w3c/nist-egfoborderwidth5: begründet, thin, medium und thick sind nach XSL 1.1 7.8.24 Sache des Formatierers
 w3c/nist-egfocontentheightstf: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"content-height\" of this \"external-"
 w3c/nist-egfocontentwidthstf: offen, erste Abweichung: Seite 1: "The \"content-width\" of this \"external-graphic\" is set to" verschoben um 0.00 pt waagerecht, -23.40 pt senkrecht
-w3c/nist-egfopadding1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "the \"padding\" properties for image were set to"
-w3c/nist-egfopadding2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "the \"padding\" properties for image were set to"
-w3c/nist-inl-inline-elem2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a paragraph that has a very long span in it, and the span has a 12px border separated from the span by 2pt of left padding (…
+w3c/nist-inl-inline-elem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-keepandbreak10: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 w3c/nist-keepandbreak12: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This text should be on the second page. This"
 w3c/nist-keepandbreak13: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a leading area in P (there should be no areas before"
@@ -221,15 +204,15 @@ w3c/nist-lbfomarginbottom2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: 
 w3c/nist-lbfospacebefore2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"space-before\" on this \"block-list\" was set to \"inherit\""
 w3c/nist-lifoborderwidth6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The border width properties for this list item were set \"inherit\""
 w3c/nist-misc-comments2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-w3c/nist-misc-hformatting1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This text is inside an element. The border, padding, and margins for this paragraph should"
+w3c/nist-misc-hformatting1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-hformatting2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-misc-hformatting9: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 w3c/nist-misc-len-units10: begründet, pdx setzt margin-left="+3pc" wie der NIST-Test erwartet (3 Pica), FOP verwirft den Wert
-w3c/nist-misc-len-units11: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a font-size of 40px and a"
+w3c/nist-misc-len-units11: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-parsing3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-w3c/nist-misc-replelem1: offen, erste Abweichung: Seite 1: "The above image should be a 50px(width) square." verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
-w3c/nist-misc-replelem2: offen, erste Abweichung: Seite 1: "The above image should be a 50px (width=\"50px\" height=\"auto\") square." verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
-w3c/nist-misc-replelem5: offen, erste Abweichung: Seite 1: "The content-height of this image was set 50px." verschoben um -12.50 pt waagerecht, -12.50 pt senkrecht
+w3c/nist-misc-replelem1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-misc-replelem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
+w3c/nist-misc-replelem5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-recarea8: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This block contains an inline-progression-dimension of 2.0 inches and a"
 w3c/nist-recarea9: offen, erste Abweichung: Seite 1: "This block contains a block-progression-dimension of 0.5 inches and an" verschoben um 0.00 pt waagerecht, 28.80 pt senkrecht
 w3c/nist-space1: offen, erste Abweichung: Seite 1: "This is line 2, overlaps line 1." verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht
