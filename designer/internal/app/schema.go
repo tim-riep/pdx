@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/tim-riep/pdx/dataschema"
@@ -68,9 +69,29 @@ func (c *Core) schemaLocked() (*schema.Schema, error) {
 // xs:import und xs:include mit. root wählt die Datenwurzel, leer nimmt das
 // einzige globale Element. Der Schritt lässt sich rückgängig machen.
 func (s *SchemaService) Import(path, root string) (Result, error) {
+	x, err := readXSD(path, root)
+	if err != nil {
+		return Result{}, err
+	}
+	ts := NewTemplateService(s.c)
+	return ts.change(func(d *model.Document) (string, error) {
+		return "", d.Apply("Daten-XSD laden", model.Command{Op: "batch", Cmds: x.commands(d.Pkg.Template)})
+	})
+}
+
+// xsdImport ist ein gelesenes Daten-XSD mit gewählter Datenwurzel.
+type xsdImport struct {
+	main  string            // schema/<datei>.xsd
+	files map[string][]byte // alle XSD-Dateien unter schema/
+	root  *dataschema.Decl
+}
+
+// readXSD liest ein Daten-XSD und die XSD-Dateien im selben Ordner (für
+// xs:import und xs:include) und wählt die Datenwurzel.
+func readXSD(path, root string) (*xsdImport, error) {
 	main, err := os.ReadFile(path)
 	if err != nil {
-		return Result{}, fmt.Errorf("XSD %s nicht lesbar: %v", path, err)
+		return nil, fmt.Errorf("XSD %s nicht lesbar: %v", path, err)
 	}
 	files := map[string][]byte{"schema/" + filepath.Base(path): main}
 	others, _ := filepath.Glob(filepath.Join(filepath.Dir(path), "*.xsd"))
@@ -85,7 +106,7 @@ func (s *SchemaService) Import(path, root string) (Result, error) {
 	mainName := "schema/" + filepath.Base(path)
 	m, err := dataschema.FromXSD(mainName, files)
 	if err != nil {
-		return Result{}, err
+		return nil, err
 	}
 	roots := m.Roots()
 	var rootDecl *dataschema.Decl
@@ -99,29 +120,38 @@ func (s *SchemaService) Import(path, root string) (Result, error) {
 		for _, r := range roots {
 			names = append(names, r.Name.Local)
 		}
-		return Result{}, fmt.Errorf("Datenwurzel wählen: %s", strings.Join(names, ", "))
+		return nil, fmt.Errorf("Datenwurzel wählen: %s", strings.Join(names, ", "))
 	}
-	ts := NewTemplateService(s.c)
-	return ts.change(func(d *model.Document) (string, error) {
-		t := d.Pkg.Template
-		var cmds []model.Command
-		for name, b := range files {
-			cmds = append(cmds, model.Command{Op: "setFile", Name: name, Data: b})
-		}
-		prefix, nsCmd := ensurePrefix(t, rootDecl.Name.Space)
-		if nsCmd != nil {
-			cmds = append(cmds, *nsCmd)
-		}
-		rootName := rootDecl.Name.Local
-		if prefix != "" {
-			rootName = prefix + ":" + rootName
-		}
-		rootRef := model.Ref(t.Root)
-		cmds = append(cmds,
-			model.Command{Op: "setAttr", Ref: rootRef, Name: "schema", Value: mainName},
-			model.Command{Op: "setAttr", Ref: rootRef, Name: "dataRoot", Value: rootName})
-		return "", d.Apply("Daten-XSD laden", model.Command{Op: "batch", Cmds: cmds})
-	})
+	return &xsdImport{main: mainName, files: files, root: rootDecl}, nil
+}
+
+// commands liefert die Befehle, die das XSD ins Paket legen und als Schema
+// der Vorlage setzen.
+func (x *xsdImport) commands(t *template.Template) []model.Command {
+	var cmds []model.Command
+	names := make([]string, 0, len(x.files))
+	for name := range x.files {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		cmds = append(cmds, model.Command{Op: "setFile", Name: name, Data: x.files[name]})
+	}
+	prefix, nsCmd := ensurePrefix(t, x.root.Name.Space)
+	if nsCmd != nil {
+		cmds = append(cmds, *nsCmd)
+	}
+	rootRef := model.Ref(t.Root)
+	return append(cmds,
+		model.Command{Op: "setAttr", Ref: rootRef, Name: "schema", Value: x.main},
+		model.Command{Op: "setAttr", Ref: rootRef, Name: "dataRoot", Value: x.rootName(prefix)})
+}
+
+func (x *xsdImport) rootName(prefix string) string {
+	if prefix != "" {
+		return prefix + ":" + x.root.Name.Local
+	}
+	return x.root.Name.Local
 }
 
 // ensurePrefix liefert das Präfix eines Namespaces aus der Vorlage oder

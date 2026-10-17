@@ -190,3 +190,15 @@ func TestComplete(t *testing.T) {
 		t.Fatalf("absolut: %v", labels(c))
 	}
 }
+
+func TestTargets(t *testing.T) {
+	_, sc := load(t)
+	got := Targets(sc, inv, "sum(inv:items/inv:item/inv:amount) > 0 and exists(inv:paymentTerms) and inv:items/inv:item[inv:quantity > 1]")
+	want := []string{inv + "/inv:items/inv:item/inv:amount", inv + "/inv:paymentTerms", inv + "/inv:items/inv:item/inv:quantity", inv + "/inv:items/inv:item"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("Ziele %q", got)
+	}
+	if got := Targets(sc, inv, "$x/inv:egal or inv:gibtsnicht"); len(got) != 0 {
+		t.Fatalf("unbekannte Ziele %q", got)
+	}
+}

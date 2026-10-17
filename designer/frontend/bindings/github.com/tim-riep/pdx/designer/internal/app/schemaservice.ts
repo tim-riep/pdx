@@ -19,6 +19,17 @@ import * as schema$0 from "../schema/models.js";
 import * as $models from "./models.js";
 
 /**
+ * Diff liest ein neues Daten-XSD und vergleicht es mit dem der Vorlage,
+ * ohne etwas zu ändern. Für entfernte Knoten schlägt es Umbenennungen vor,
+ * wenn genau ein neuer Knoten gleicher Art passt.
+ */
+export function Diff(path: string): $CancellablePromise<$models.SchemaDiff> {
+    return $Call.ByID(4050984269, path).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * Import lädt ein Daten-XSD aus einer Datei in das Paket (schema/) und
  * setzt es als Schema der Vorlage. XSD-Dateien im selben Ordner kommen für
  * xs:import und xs:include mit. root wählt die Datenwurzel, leer nimmt das
@@ -26,7 +37,7 @@ import * as $models from "./models.js";
  */
 export function Import(path: string, root: string): $CancellablePromise<$models.Result> {
     return $Call.ByID(197913875, path, root).then(($result: any) => {
-        return $$createType0($result);
+        return $$createType1($result);
     });
 }
 
@@ -35,7 +46,18 @@ export function Import(path: string, root: string): $CancellablePromise<$models.
  */
 export function ImportDialog(root: string): $CancellablePromise<$models.Result> {
     return $Call.ByID(3622346655, root).then(($result: any) => {
-        return $$createType0($result);
+        return $$createType1($result);
+    });
+}
+
+/**
+ * Replace lädt ein neues Daten-XSD, entfernt alte XSD-Dateien und stellt
+ * einfache Bindungen auf umbenannte Knoten um, alles als ein Schritt.
+ * Ausdrücke, die mehr als ein Pfad sind, bleiben für die Aufgabenliste.
+ */
+export function Replace(path: string, renames: $models.Rename[]): $CancellablePromise<$models.Result> {
+    return $Call.ByID(1152359562, path, renames).then(($result: any) => {
+        return $$createType1($result);
     });
 }
 
@@ -44,11 +66,12 @@ export function ImportDialog(root: string): $CancellablePromise<$models.Result> 
  */
 export function Tree(): $CancellablePromise<schema$0.Schema | null> {
     return $Call.ByID(499956002).then(($result: any) => {
-        return $$createType2($result);
+        return $$createType3($result);
     });
 }
 
 // Private type creation functions
-const $$createType0 = $models.Result.createFrom;
-const $$createType1 = schema$0.Schema.createFrom;
-const $$createType2 = $Create.Nullable($$createType1);
+const $$createType0 = $models.SchemaDiff.createFrom;
+const $$createType1 = $models.Result.createFrom;
+const $$createType2 = schema$0.Schema.createFrom;
+const $$createType3 = $Create.Nullable($$createType2);

@@ -101,3 +101,12 @@ func TestProblemsOfSamples(t *testing.T) {
 		t.Fatalf("Befund zu Beispieldaten fehlt: %+v", ps)
 	}
 }
+
+// runChecksFor prüft den aktuellen Stand eines Dokuments.
+func runChecksFor(c *Core) []Problem {
+	c.mu.Lock()
+	canon := template.Write(c.doc.Pkg.Template)
+	files := maps.Clone(c.doc.Pkg.Files)
+	c.mu.Unlock()
+	return runChecks(canon, files)
+}

@@ -696,6 +696,34 @@ export class Recovery {
 }
 
 /**
+ * Rename stellt Bindungen von einem Datenknoten auf einen anderen um.
+ */
+export class Rename {
+    "from": string;
+    "to": string;
+
+    /** Creates a new Rename instance. */
+    constructor($$source: Partial<Rename> = {}) {
+        if (!("from" in $$source)) {
+            this["from"] = "";
+        }
+        if (!("to" in $$source)) {
+            this["to"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Rename instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Rename {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Rename($$parsedSource as Partial<Rename>);
+    }
+}
+
+/**
  * Report sind die Befunde zu einer Revision.
  */
 export class Report {
@@ -845,6 +873,106 @@ export class Samples {
             $$parsedSource["items"] = $$createField0_0($$parsedSource["items"]);
         }
         return new Samples($$parsedSource as Partial<Samples>);
+    }
+}
+
+/**
+ * SchemaChange ist eine Änderung zwischen altem und neuem Daten-XSD.
+ */
+export class SchemaChange {
+    /**
+     * Kind ist removed, added, changed oder renamed.
+     */
+    "kind": string;
+    "path": string;
+
+    /**
+     * To ist bei renamed der neue Pfad.
+     */
+    "to": string;
+
+    /**
+     * Detail beschreibt changed, etwa „Typ decimal statt string“.
+     */
+    "detail": string;
+
+    /**
+     * Required meldet bei added einen Pflichtknoten.
+     */
+    "required": boolean;
+
+    /**
+     * Refs sind die Vorlagenelemente, die den Knoten oder etwas darunter
+     * verwenden.
+     */
+    "refs": string[];
+
+    /** Creates a new SchemaChange instance. */
+    constructor($$source: Partial<SchemaChange> = {}) {
+        if (!("kind" in $$source)) {
+            this["kind"] = "";
+        }
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("to" in $$source)) {
+            this["to"] = "";
+        }
+        if (!("detail" in $$source)) {
+            this["detail"] = "";
+        }
+        if (!("required" in $$source)) {
+            this["required"] = false;
+        }
+        if (!("refs" in $$source)) {
+            this["refs"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new SchemaChange instance from a string or object.
+     */
+    static createFrom($$source: any = {}): SchemaChange {
+        const $$createField5_0 = $$createType4;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("refs" in $$parsedSource) {
+            $$parsedSource["refs"] = $$createField5_0($$parsedSource["refs"]);
+        }
+        return new SchemaChange($$parsedSource as Partial<SchemaChange>);
+    }
+}
+
+/**
+ * SchemaDiff vergleicht das Daten-XSD der Vorlage mit einem neuen.
+ */
+export class SchemaDiff {
+    "main": string;
+    "changes": SchemaChange[];
+
+    /** Creates a new SchemaDiff instance. */
+    constructor($$source: Partial<SchemaDiff> = {}) {
+        if (!("main" in $$source)) {
+            this["main"] = "";
+        }
+        if (!("changes" in $$source)) {
+            this["changes"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new SchemaDiff instance from a string or object.
+     */
+    static createFrom($$source: any = {}): SchemaDiff {
+        const $$createField1_0 = $$createType19;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("changes" in $$parsedSource) {
+            $$parsedSource["changes"] = $$createField1_0($$parsedSource["changes"]);
+        }
+        return new SchemaDiff($$parsedSource as Partial<SchemaDiff>);
     }
 }
 
@@ -1016,9 +1144,9 @@ export class XPathInfo {
      * Creates a new XPathInfo instance from a string or object.
      */
     static createFrom($$source: any = {}): XPathInfo {
-        const $$createField2_0 = $$createType19;
-        const $$createField3_0 = $$createType21;
-        const $$createField4_0 = $$createType23;
+        const $$createField2_0 = $$createType21;
+        const $$createField3_0 = $$createType23;
+        const $$createField4_0 = $$createType25;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField2_0($$parsedSource["problems"]);
@@ -1085,9 +1213,11 @@ const $$createType14 = $Create.Array($$createType13);
 const $$createType15 = model$0.History.createFrom;
 const $$createType16 = Sample.createFrom;
 const $$createType17 = $Create.Array($$createType16);
-const $$createType18 = xpath$0.Problem.createFrom;
+const $$createType18 = SchemaChange.createFrom;
 const $$createType19 = $Create.Array($$createType18);
-const $$createType20 = Field.createFrom;
-const $$createType21 = $Create.Nullable($$createType20);
-const $$createType22 = xpath$0.Result.createFrom;
+const $$createType20 = xpath$0.Problem.createFrom;
+const $$createType21 = $Create.Array($$createType20);
+const $$createType22 = Field.createFrom;
 const $$createType23 = $Create.Nullable($$createType22);
+const $$createType24 = xpath$0.Result.createFrom;
+const $$createType25 = $Create.Nullable($$createType24);

@@ -37,6 +37,8 @@ type checker struct {
 	sc   *schema.Schema
 	toks []token
 	out  []Problem
+	// targets sind alle aufgelösten Pfade im Ausdruck.
+	targets []string
 	// single ist das Ziel eines Pfads, der am ersten Token beginnt,
 	// singleEnd das Token danach.
 	single    string
@@ -267,7 +269,30 @@ func (c *checker) path(i, end int, ctx string) (int, string) {
 	if !known {
 		return i, ""
 	}
+	if cur != "" {
+		c.targets = append(c.targets, cur)
+	}
 	return i, cur
+}
+
+// Targets liefert die Datenknoten, auf die die Pfade eines Ausdrucks zeigen,
+// soweit sie sich auflösen lassen (auch Pfade in Funktionen und
+// Prädikaten), ohne Doppelte.
+func Targets(sc *schema.Schema, ctx, expr string) []string {
+	if sc == nil {
+		return nil
+	}
+	c := &checker{sc: sc, toks: lex(expr)}
+	c.expr(0, len(c.toks), ctx)
+	var out []string
+	seen := map[string]bool{}
+	for _, t := range c.targets {
+		if !seen[t] {
+			seen[t] = true
+			out = append(out, t)
+		}
+	}
+	return out
 }
 
 // open meldet einen Knoten, dessen Inhalt das Schema offen lässt.

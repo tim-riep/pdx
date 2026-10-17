@@ -216,3 +216,22 @@ func Relative(ctx, target string) string {
 	}
 	return strings.Join(out, "/")
 }
+
+// Join verbindet einen Kontext mit einem relativen Pfad und löst .. auf.
+func Join(ctx, rel string) string { return join(ctx, rel) }
+
+// Nodes liefert alle Knoten des Datenbaums in Dokumentreihenfolge.
+func (s *Schema) Nodes() []*Node {
+	var out []*Node
+	var walk func(n *Node)
+	walk = func(n *Node) {
+		out = append(out, n)
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	for _, r := range s.Roots {
+		walk(r)
+	}
+	return out
+}
