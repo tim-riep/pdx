@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8"><title>Canvas-Prototyp</title></head>
+<body style="font:14px system-ui;margin:12px">
+<p><a href="svelte.html">Svelte</a> · <a href="react.html">React</a> · <a href="index.html?suite=1">alle Messungen</a></p>
+<pre id="out" style="font:12px ui-monospace,monospace"></pre>
+<iframe id="frame" style="width:1300px;height:820px;border:1px solid #ccc"></iframe>
+<script type="module">
+  if (new URLSearchParams(location.search).has("suite")) import("./core/suite.ts");
+</script>
+</body>
+</html>

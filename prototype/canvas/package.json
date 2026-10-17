@@ -1,0 +1,22 @@
+{
+  "name": "pdx-canvas-prototyp",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "export": "cd ../.. && go run ./prototype/canvas/export",
+    "build": "vite build",
+    "preview": "vite preview --port 5180 --strictPort",
+    "check": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "svelte": "5.57.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.2"
+  }
+}

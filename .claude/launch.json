@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "canvas-prototyp",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "prototype/canvas", "run", "preview"],
+      "port": 5180
+    }
+  ]
+}
