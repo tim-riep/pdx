@@ -8,6 +8,7 @@
   import Tabs from "./components/Tabs.svelte";
   import XPathPanel from "./components/XPathPanel.svelte";
   import ProblemsPanel from "./components/ProblemsPanel.svelte";
+  import StylesPanel from "./components/StylesPanel.svelte";
   import ConformancePanel from "./components/ConformancePanel.svelte";
   import { entries } from "./lib/problems.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
@@ -128,7 +129,7 @@
   </main>
   <aside class="right">
     <Tabs tabs={[["inspector", t("panel.inspector")], ["styles", t("panel.styles")]]} bind:active={rightTab}>
-      {#if rightTab === "inspector"}<Inspector />{:else}<p class="soon">{t("panel.styles")}</p>{/if}
+      {#if rightTab === "inspector"}<Inspector />{:else}<StylesPanel onopen={() => (rightTab = "inspector")} />{/if}
     </Tabs>
   </aside>
   <section class="bottom">
@@ -231,10 +232,6 @@
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
-  }
-  .soon {
-    color: var(--text-muted);
-    padding: var(--space-3);
   }
   .left {
     grid-area: left;

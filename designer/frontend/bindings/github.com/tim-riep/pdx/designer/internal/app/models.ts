@@ -742,6 +742,46 @@ export class TableOp {
 }
 
 /**
+ * TokenOp ist eine Änderung an den Design-Tokens.
+ * 
+ * 	add     Kind color, length oder font, ID als Vorschlag (leer: nach Art)
+ * 	rename  ID, NewID  Verweise in der Vorlage ziehen mit
+ * 	remove  ID         nur ohne Verweise
+ */
+export class TokenOp {
+    "op": string;
+    "kind": string;
+    "id": string;
+    "newId": string;
+
+    /** Creates a new TokenOp instance. */
+    constructor($$source: Partial<TokenOp> = {}) {
+        if (!("op" in $$source)) {
+            this["op"] = "";
+        }
+        if (!("kind" in $$source)) {
+            this["kind"] = "";
+        }
+        if (!("id" in $$source)) {
+            this["id"] = "";
+        }
+        if (!("newId" in $$source)) {
+            this["newId"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new TokenOp instance from a string or object.
+     */
+    static createFrom($$source: any = {}): TokenOp {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new TokenOp($$parsedSource as Partial<TokenOp>);
+    }
+}
+
+/**
  * XPathInfo ist das Ergebnis der Prüfung eines Ausdrucks.
  */
 export class XPathInfo {

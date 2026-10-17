@@ -22,6 +22,16 @@ import * as xpath$0 from "../xpath/models.js";
 import * as $models from "./models.js";
 
 /**
+ * AddStyle legt einen Stil an, auf Wunsch mit einem Elternstil, und legt
+ * styles an, wenn es fehlt.
+ */
+export function AddStyle(parent: string): $CancellablePromise<$models.Result> {
+    return $Call.ByID(2832706747, parent).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * Apply wendet einen Befehl an. label erscheint in der Historie, etwa
  * „Breite ändern“. Ungültige Befehle ändern nichts und liefern den Fehler.
  */
@@ -117,6 +127,24 @@ export function Table(op: $models.TableOp): $CancellablePromise<$models.Result> 
 }
 
 /**
+ * TokenUsage zählt je Token die Verweise in der Vorlage.
+ */
+export function TokenUsage(): $CancellablePromise<{ [_ in string]?: number }> {
+    return $Call.ByID(583016375).then(($result: any) => {
+        return $$createType9($result);
+    });
+}
+
+/**
+ * Tokens ändert die Design-Tokens als ein Schritt.
+ */
+export function Tokens(op: $models.TokenOp): $CancellablePromise<$models.Result> {
+    return $Call.ByID(385806969, op).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * Undo nimmt den letzten Schritt zurück.
  */
 export function Undo(): $CancellablePromise<$models.Result> {
@@ -131,7 +159,7 @@ export function Undo(): $CancellablePromise<$models.Result> {
  */
 export function XPathFields(ref: string): $CancellablePromise<$models.Field[]> {
     return $Call.ByID(2528131159, ref).then(($result: any) => {
-        return $$createType10($result);
+        return $$createType11($result);
     });
 }
 
@@ -150,5 +178,6 @@ const $$createType5 = $models.XPathInfo.createFrom;
 const $$createType6 = xpath$0.Completion.createFrom;
 const $$createType7 = model$0.History.createFrom;
 const $$createType8 = model$0.Snapshot.createFrom;
-const $$createType9 = $models.Field.createFrom;
-const $$createType10 = $Create.Array($$createType9);
+const $$createType9 = $Create.Map($Create.Any, $Create.Any);
+const $$createType10 = $models.Field.createFrom;
+const $$createType11 = $Create.Array($$createType10);

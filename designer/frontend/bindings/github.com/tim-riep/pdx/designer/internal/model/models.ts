@@ -263,8 +263,8 @@ export class Property {
     "group": string;
 
     /**
-     * Kind wählt den Editor: id, ref, length, lengths, color, xpath, enum,
-     * bool, number oder text.
+     * Kind wählt den Editor: id, ref, length, lengths, color, font (Verweis
+     * auf ein Schrift-Token), xpath, enum, bool, number oder text.
      */
     "kind": string;
     "enum"?: string[];

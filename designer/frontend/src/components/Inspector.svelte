@@ -6,8 +6,11 @@
   import TableTools from "./TableTools.svelte";
   import XPathInput from "./XPathInput.svelte";
   import PresenceEditor from "./PresenceEditor.svelte";
+  import { resolveColor, tokens } from "../lib/tokens.svelte";
 
   let query = $state("");
+  const tokenList = $derived(tokens());
+  const listOf = (kind: string) => (kind === "color" ? "tok-color" : kind === "length" || kind === "lengths" ? "tok-length" : undefined);
   const n = $derived(node(selection.ref));
   const type = $derived(typeOf(n));
 
@@ -74,13 +77,23 @@
                 <option value="">{p.default ? t("inspector.default", { value: p.default }) : ""}</option>
                 {#each p.enum ?? [] as v}<option value={v}>{v}</option>{/each}
               </select>
+            {:else if p.kind === "font"}
+              <select value={n.attrs[p.name] ?? ""} onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value)}>
+                <option value="">{t("tokens.none")}</option>
+                {#each tokenList.filter((x) => x.kind === "font") as tok (tok.ref)}<option value={"$" + tok.id}>${tok.id}</option>{/each}
+              </select>
             {:else if p.kind === "bool"}
               <input type="checkbox" checked={(n.attrs[p.name] ?? p.default) === "true"}
                 onchange={(e) => commit(p, e.currentTarget, e.currentTarget.checked ? "true" : "false")} />
             {:else}
-              <input value={n.attrs[p.name] ?? ""} placeholder={p.default ?? ""} spellcheck="false"
-                class:mono={p.kind === "id" || p.kind === "ref"}
-                onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value.trim())} onkeydown={(e) => key(p, e)} />
+              <span class="with-swatch">
+                {#if p.kind === "color" && n.attrs[p.name]}
+                  <span class="swatch" style:background={resolveColor(n.attrs[p.name] ?? "", tokenList)} aria-hidden="true"></span>
+                {/if}
+                <input value={n.attrs[p.name] ?? ""} placeholder={p.default ?? ""} spellcheck="false" list={listOf(p.kind)}
+                  class:mono={p.kind === "id" || p.kind === "ref"}
+                  onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value.trim())} onkeydown={(e) => key(p, e)} />
+              </span>
             {/if}
           </label>
           {/if}
@@ -90,6 +103,9 @@
   {:else}
     <p class="muted">{t("inspector.none")}</p>
   {/if}
+  <!-- Vorschläge für Verweise auf Tokens -->
+  <datalist id="tok-color">{#each tokenList.filter((x) => x.kind === "color") as tok (tok.ref)}<option value={"$" + tok.id}>{tok.attrs.value}</option>{/each}</datalist>
+  <datalist id="tok-length">{#each tokenList.filter((x) => x.kind === "length") as tok (tok.ref)}<option value={"$" + tok.id}>{tok.attrs.value}</option>{/each}</datalist>
 </div>
 
 <style>
@@ -142,6 +158,22 @@
     width: 100%;
     box-sizing: border-box;
     min-width: 0;
+  }
+  .with-swatch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+  }
+  .with-swatch input {
+    flex: 1;
+  }
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    flex: none;
   }
   .mono {
     font-family: var(--font-mono);

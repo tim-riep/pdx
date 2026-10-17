@@ -15,8 +15,8 @@ type Property struct {
 	// Group ordnet die Eigenschaft im Inspektor ein: general, position,
 	// text, border, spacing, breaks, binding oder other.
 	Group string `json:"group"`
-	// Kind wählt den Editor: id, ref, length, lengths, color, xpath, enum,
-	// bool, number oder text.
+	// Kind wählt den Editor: id, ref, length, lengths, color, font (Verweis
+	// auf ein Schrift-Token), xpath, enum, bool, number oder text.
 	Kind     string   `json:"kind"`
 	Enum     []string `json:"enum,omitempty"`
 	Default  string   `json:"default,omitempty"`
@@ -165,6 +165,8 @@ func property(a *xsd.AttributeUse) Property {
 			p.Kind = "color"
 		case "XPath":
 			p.Kind = "xpath"
+		case "TokenRef":
+			p.Kind = "font"
 		default:
 			switch a.Type.BuiltinBase().Local {
 			case "ID":
@@ -196,7 +198,7 @@ var groups = map[string]string{
 	"layout": "position", "width": "position", "height": "position", "margin": "position",
 	"size": "position", "orientation": "position", "gap": "position", "colspan": "position",
 	"rowspan": "position", "verticalAlign": "position", "moduleWidth": "position", "barHeight": "position",
-	"fontFamily": "text", "fontSize": "text", "fontWeight": "text", "fontStyle": "text", "color": "text",
+	"font": "text", "family": "text", "fontFamily": "text", "fontSize": "text", "fontWeight": "text", "fontStyle": "text", "color": "text",
 	"textAlign": "text", "lineHeight": "text", "hyphenate": "text",
 	"spaceBefore": "spacing", "spaceAfter": "spacing", "padding": "spacing",
 	"backgroundColor": "border", "border": "border", "borderTop": "border", "borderBottom": "border",

@@ -7,12 +7,17 @@ import (
 	"strings"
 )
 
-// Muster aus dem XSD des Vorlagenformats (Length, Lengths, Color).
+// Muster aus dem XSD des Vorlagenformats (Length, Lengths, Color), jeweils
+// auch mit Verweis auf ein Token wie $primaer.
+const tokenRef = `\$[A-Za-z_][A-Za-z0-9_.\-]*`
+
 var (
-	lengthRe  = regexp.MustCompile(`^(-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)|0)$`)
+	lengthRe  = regexp.MustCompile(`^(-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)|0|` + tokenRef + `)$`)
 	columnRe  = regexp.MustCompile(`^[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%|\*)$`)
-	lengthsRe = regexp.MustCompile(`^(-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?)( -?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?){0,3}$`)
-	colorRe   = regexp.MustCompile(`^(#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?|[a-z]+)$`)
+	oneLength = `(-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?|` + tokenRef + `)`
+	lengthsRe = regexp.MustCompile(`^` + oneLength + `( ` + oneLength + `){0,3}$`)
+	colorRe   = regexp.MustCompile(`^(#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?|[a-z]+|` + tokenRef + `)$`)
+	tokenRe   = regexp.MustCompile(`^` + tokenRef + `$`)
 	numberRe  = regexp.MustCompile(`^[0-9]+$`)
 )
 
@@ -30,13 +35,16 @@ func checkValue(p Property, v string) error {
 	switch p.Kind {
 	case "length":
 		ok = lengthRe.MatchString(v) || p.Name == "width" && columnRe.MatchString(v)
-		hint = "eine Länge wie 20mm oder 12pt"
+		hint = "eine Länge wie 20mm oder 12pt oder ein Token wie $abstand"
 	case "lengths":
 		ok = lengthsRe.MatchString(v)
 		hint = "ein bis vier Längen wie 5mm oder 5mm 10mm"
 	case "color":
 		ok = colorRe.MatchString(v)
-		hint = "eine Farbe wie #336699"
+		hint = "eine Farbe wie #336699 oder ein Token wie $primaer"
+	case "font":
+		ok = tokenRe.MatchString(v)
+		hint = "ein Schrift-Token wie $fliesstext"
 	case "enum":
 		ok = slices.Contains(p.Enum, v)
 		hint = "einer der Werte " + strings.Join(p.Enum, ", ")

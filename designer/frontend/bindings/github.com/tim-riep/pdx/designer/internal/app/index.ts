@@ -34,6 +34,7 @@ export {
     Report,
     Result,
     TableOp,
+    TokenOp,
     XPathInfo,
     XPathQuery
 } from "./models.js";
