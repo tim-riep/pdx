@@ -11,6 +11,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"compress/flate"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -111,6 +112,10 @@ func ReadDir(dir string) (*Package, error) {
 			return err
 		}
 		if d.IsDir() {
+			// Versteckte Ordner wie .git gehören nicht zum Paket.
+			if p != dir && strings.HasPrefix(d.Name(), ".") {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		rel, err := filepath.Rel(dir, p)
@@ -287,6 +292,98 @@ func (p *Package) Write(w io.Writer) error {
 		}
 	}
 	return zw.Close()
+}
+
+// New baut ein Paket aus einer geladenen Vorlage und Dateien, ohne die
+// Vorlage erneut zu lesen. Pfade und Verweise werden geprüft wie beim Laden.
+func New(t *template.Template, files map[string][]byte) (*Package, error) {
+	if files == nil {
+		files = map[string][]byte{}
+	}
+	for name := range files {
+		if name == "template.xml" {
+			return nil, fmt.Errorf("template.xml gehört nicht in die übrigen Dateien")
+		}
+		if err := checkPath(name); err != nil {
+			return nil, err
+		}
+	}
+	p := &Package{Template: t, Files: files}
+	if err := p.checkRefs(); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+// WriteDir schreibt das Paket in ein Verzeichnis: template.xml kanonisch
+// und alle Dateien. Jede Datei wird erst vollständig geschrieben und dann
+// umbenannt. Dateien in den Paketordnern, die das Paket nicht mehr enthält,
+// werden gelöscht. Andere Dateien im Verzeichnis (etwa .git) bleiben.
+func (p *Package) WriteDir(dir string) error {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	put := func(name string, data []byte) error {
+		dst := filepath.Join(dir, filepath.FromSlash(name))
+		if old, err := os.ReadFile(dst); err == nil && bytes.Equal(old, data) {
+			return nil
+		}
+		if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+			return err
+		}
+		tmp, err := os.CreateTemp(filepath.Dir(dst), ".pdx-*")
+		if err != nil {
+			return err
+		}
+		if _, err := tmp.Write(data); err != nil {
+			tmp.Close()
+			os.Remove(tmp.Name())
+			return err
+		}
+		if err := tmp.Close(); err != nil {
+			os.Remove(tmp.Name())
+			return err
+		}
+		if err := os.Chmod(tmp.Name(), 0o644); err != nil {
+			os.Remove(tmp.Name())
+			return err
+		}
+		return os.Rename(tmp.Name(), dst)
+	}
+	if err := put("template.xml", template.Write(p.Template)); err != nil {
+		return err
+	}
+	for _, n := range p.Names() {
+		if err := put(n, p.Files[n]); err != nil {
+			return err
+		}
+	}
+	for _, d := range dirs {
+		root := filepath.Join(dir, d)
+		err := filepath.WalkDir(root, func(fp string, e fs.DirEntry, err error) error {
+			if err != nil {
+				if errors.Is(err, fs.ErrNotExist) {
+					return nil
+				}
+				return err
+			}
+			if e.IsDir() || strings.HasPrefix(e.Name(), ".") {
+				return nil
+			}
+			rel, err := filepath.Rel(dir, fp)
+			if err != nil {
+				return err
+			}
+			if _, ok := p.Files[filepath.ToSlash(rel)]; !ok {
+				return os.Remove(fp)
+			}
+			return nil
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Bytes liefert das Paket als ZIP-Daten.
