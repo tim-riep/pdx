@@ -282,6 +282,10 @@ func (g *galley) box(it item, before int) {
 	}
 	if len(g.items) > 0 {
 		g.items = append(g.items, item{kind: itPenalty, penalty: pen, brk: brk})
+	} else if brk != "" {
+		// Ein Umbruch vor dem ersten Inhalt zählt nur bei odd-page und
+		// even-page, die Seitenfolge setzt dann eine Leerseite davor.
+		g.items = append(g.items, item{kind: itPenalty, penalty: penaltyForced, brk: brk})
 	}
 	g.lastPath = it.path
 	if g.pending > 0 || g.pendingKeep > 0 {

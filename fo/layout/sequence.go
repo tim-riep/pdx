@@ -135,6 +135,18 @@ func (s *sequence) paginate() error {
 		if items, pos, err = s.adapt(m, items, pos, &width); err != nil {
 			return err
 		}
+		// break-before="odd-page" oder "even-page" am ersten Inhalt der
+		// Folge: notfalls eine Leerseite davor.
+		if s.count == 0 && pos < len(items) && items[pos].kind == itPenalty {
+			if brk := items[pos].brk; brk == "odd-page" || brk == "even-page" {
+				if next := s.e.pageNo + 1; (brk == "odd-page") != (next%2 == 1) {
+					if err := s.blankPage(false); err != nil {
+						return err
+					}
+					continue
+				}
+			}
+		}
 		condLast := cond
 		condLast.last = true
 		mLast, err := s.sel.pick(condLast, false)

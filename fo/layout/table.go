@@ -61,6 +61,11 @@ type rowLayout struct {
 	slices   []areatree.Length // Grenzen der Scheiben, beginnend bei 0, endend bei h
 	last     bool              // letzte Zeile ihres Abschnitts
 	keep     int               // Penalty zwischen den Scheiben
+	// forced sind erzwungene Umbrüche aus dem Zellinhalt an Scheibengrenzen
+	// (Index der Grenze), leadBrk und trailBrk Umbrüche vor und nach der
+	// Zeile (break-before am Anfang, break-after am Ende einer Zelle).
+	forced            map[int]string
+	leadBrk, trailBrk string
 	markers  markerSet
 	collapse bool
 }
@@ -83,12 +88,16 @@ type cellLayout struct {
 	minH   areatree.Length
 	bounds []bound
 	align  string
+	// leadBrk und trailBrk sind break-before am Anfang und break-after am
+	// Ende des Inhalts.
+	leadBrk, trailBrk string
 }
 
 // bound ist eine erlaubte Umbruchstelle im Inhalt einer Zelle.
 type bound struct {
 	off   areatree.Length // Abstand vom Inhaltsanfang
 	index int             // Index der Penalty in items
+	brk   string          // bei erzwungenen Umbrüchen page, odd-page oder even-page
 }
 
 // measure berechnet die Inhaltshöhe und die erlaubten Umbruchstellen einer
@@ -108,7 +117,14 @@ func measure(items []item) (areatree.Length, []bound) {
 			started = true
 		case itPenalty:
 			if it.penalty < penaltyInf && started {
-				bs = append(bs, bound{off: y, index: i})
+				b := bound{off: y, index: i}
+				if it.penalty <= penaltyForced {
+					b.brk = it.brk
+					if b.brk == "" {
+						b.brk = "page"
+					}
+				}
+				bs = append(bs, b)
 			}
 		}
 	}
@@ -170,6 +186,12 @@ func (g *galley) layoutCell(c *cellLayout, content *tree.Node, tbl *tableCtx) er
 	}
 	c.items = sg.items
 	c.contentH, c.bounds = measure(sg.items)
+	// Umbrüche am Anfang und Ende des Zellinhalts gelten vor und nach der
+	// Zeile (XSL 1.1 7.20.1, 7.20.2).
+	c.leadBrk, c.trailBrk = "", sg.brk
+	if len(sg.items) > 0 && sg.items[0].kind == itPenalty {
+		c.leadBrk = sg.items[0].brk
+	}
 	return nil
 }
 
@@ -240,10 +262,29 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 			}
 			if ok {
 				r.slices = append(r.slices, off)
+				for _, c := range r.cells {
+					top := r.sepV + c.inset[areatree.Top]
+					for _, bd := range c.bounds {
+						if bd.brk != "" && top+bd.off == off {
+							if r.forced == nil {
+								r.forced = map[int]string{}
+							}
+							r.forced[len(r.slices)-1] = bd.brk
+						}
+					}
+				}
 			}
 		}
 	}
 	r.slices = append(r.slices, r.h)
+	for _, c := range r.cells {
+		if r.leadBrk == "" {
+			r.leadBrk = c.leadBrk
+		}
+		if r.trailBrk == "" {
+			r.trailBrk = c.trailBrk
+		}
+	}
 }
 
 func sortLengths(v []areatree.Length) {
@@ -269,14 +310,23 @@ func (g *galley) emitRow(r *rowLayout, before int) {
 		}()
 	}
 	ord := g.next()
+	if r.leadBrk != "" {
+		g.brk = r.leadBrk
+	}
 	for k := 0; k+1 < len(r.slices); k++ {
 		pen := before
 		if k > 0 {
 			pen = r.keep
+			if b, ok := r.forced[k]; ok {
+				g.brk = b
+			}
 		}
 		o := ord
 		o.minor = k
 		g.box(item{h: r.slices[k+1] - r.slices[k], path: g.path(), ord: o, row: r, slice: k}, pen)
+	}
+	if r.trailBrk != "" {
+		g.brk = r.trailBrk
 	}
 }
 

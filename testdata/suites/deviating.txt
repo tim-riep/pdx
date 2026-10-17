@@ -28,7 +28,6 @@ fop/block_wrap-option: offen, erste Abweichung: Seiten: pdx 2, FOP 1
 fop/empty_table: begründet, leeres fo:table-body verletzt das Inhaltsmodell aus XSL 1.1 6.7.6 (table-row+|table-cell+)
 fop/flow_changing-ipd_5: offen, erste Abweichung: Seite 3: "beautiful, but the youngest was so beautiful that the sun itself, which has seen so much," verschoben um 0.00 pt waagerecht, -43.20 pt senkrecht
 fop/flow_changing-ipd_break-before: offen, erste Abweichung: Seite 1: "In olden times when wishing still helped one, there lived a" verschoben um 0.00 pt waagerecht, -1.60 pt senkrecht
-fop/flow_changing-ipd_break-before-table: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/flow_changing-ipd_last-page: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/flow_changing-ipd_last-page_7: offen, erste Abweichung: Seiten: pdx 2, FOP 5
 fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seiten: pdx 3, FOP 2
@@ -39,8 +38,7 @@ fop/leader_border_padding: offen, erste Abweichung: Seite 1: ".... dots solid 1p
 fop/leader_leader-pattern_dots: offen, erste Abweichung: Seite 1: "... Default dots pattern" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
 fop/leader_text-align: offen, erste Abweichung: Seite 1: "... dots" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
 fop/list-block_border_padding: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
-fop/list-item-body_break-before: offen, erste Abweichung: Seiten: pdx 4, FOP 7
-fop/list-item-with-ipd-change: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/list-item-with-ipd-change: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/list-item-with-ipd-change.fo:26:11: keine fo:conditional-page-master-reference passt zu Seite 2
 fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/list-item_padding_percentages: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "body 1: We should have 5% padding around this"
 fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
@@ -60,12 +58,9 @@ fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11
 fop/simple-page-master_unmapped_flow-name: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-border-separate3: offen, erste Abweichung: Seite 1: "cell6" verschoben um 0.00 pt waagerecht, 5.00 pt senkrecht
-fop/table-cell_block_break-after: offen, erste Abweichung: Seiten: pdx 1, FOP 2
-fop/table-cell_block_break-before: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/table-cell_block_keep-with-next: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "line1"
-fop/table-cell_break-after_last-block: offen, erste Abweichung: Seiten: pdx 1, FOP 2
-fop/table-cell_break-after_last-row: offen, erste Abweichung: Seiten: pdx 6, FOP 12
-fop/table-cell_break-before_first-row: offen, erste Abweichung: Seiten: pdx 6, FOP 12
+fop/table-cell_break-after_last-row: offen, erste Abweichung: Seite 4: Zeile nur in pdx: "Footer 1.1"
+fop/table-cell_break-before_first-row: offen, erste Abweichung: Seite 2: "After the table" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
 fop/table-cell_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 4
 fop/table-cell_display-align_page-break: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "cell3"
 fop/table-cell_height: offen, erste Abweichung: Seite 1: "cell10a" verschoben um 0.00 pt waagerecht, -6.00 pt senkrecht
@@ -74,7 +69,7 @@ fop/table-cell_keep-with-next: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5
 fop/table-cell_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
 fop/table-cell_page-break_span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "cell3"
-fop/table-cell_row-span_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 7
+fop/table-cell_row-span_breaks: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 1.1 Line 3"
 fop/table-cell_span-combinations: offen, erste Abweichung: Seite 1: "cell2" verschoben um -0.00 pt waagerecht, -7.20 pt senkrecht
 fop/table-column_column-width_proportional-column-width: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-header_in_list_bug: offen, erste Abweichung: Seite 1: "Header" verschoben um -12.01 pt waagerecht, -0.00 pt senkrecht
@@ -101,7 +96,6 @@ fop/table_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.1
 fop/table_keep-together_row-span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "Before the table"
 fop/table_layout_change_ipd: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
-fop/table_row-height_break: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/table_table-row_break-before: offen, erste Abweichung: Seiten: pdx 3, FOP 2
 w3c/fopc-fonts: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 w3c/fopc-hyphen: offen, erste Abweichung: Seite 1: "US English" verschoben um 0.00 pt waagerecht, 2.79 pt senkrecht
@@ -175,8 +169,6 @@ w3c/nist-crp-color-units8: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.1
 w3c/nist-egfocontentheightstf: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"content-height\" of this \"external-"
 w3c/nist-egfocontentwidthstf: offen, erste Abweichung: Seite 1: "The \"content-width\" of this \"external-graphic\" is set to" verschoben um 0.00 pt waagerecht, -23.40 pt senkrecht
 w3c/nist-inl-inline-elem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-keepandbreak10: offen, erste Abweichung: Seiten: pdx 1, FOP 2
-w3c/nist-keepandbreak12: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This text should be on the second page. This"
 w3c/nist-keepandbreak13: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a leading area in P (there should be no areas before"
 w3c/nist-keepandbreak14: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a trailing area in P (there should be no areas other"
 w3c/nist-keepandbreak15: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is the page"
