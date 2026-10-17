@@ -15,6 +15,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 
@@ -86,6 +87,66 @@ func (n *Node) SetAttr(name, value string) {
 	n.Attrs = append(n.Attrs, Attr{name, value})
 }
 
+// RemoveAttr entfernt ein Attribut und liefert seinen bisherigen Wert.
+func (n *Node) RemoveAttr(name string) (string, bool) {
+	for i, a := range n.Attrs {
+		if a.Name == name {
+			n.Attrs = append(n.Attrs[:i:i], n.Attrs[i+1:]...)
+			return a.Value, true
+		}
+	}
+	return "", false
+}
+
+// NewElement legt ein Element ohne Eltern an.
+func NewElement(name string, attrs ...Attr) *Node {
+	return &Node{Kind: Element, Name: name, Attrs: attrs}
+}
+
+// NewText legt einen Textknoten an.
+func NewText(data string) *Node { return &Node{Kind: Text, Data: data} }
+
+// InsertChild fügt c an Position i unter n ein. Ein i außerhalb der Kinder
+// hängt c an. c darf keinen Elternknoten haben.
+func (n *Node) InsertChild(i int, c *Node) {
+	if i < 0 || i > len(n.Children) {
+		i = len(n.Children)
+	}
+	n.Children = slices.Insert(n.Children, i, c)
+	c.Parent = n
+}
+
+// RemoveChild löst c von n und liefert seine bisherige Position, -1 wenn c
+// kein Kind von n ist.
+func (n *Node) RemoveChild(c *Node) int {
+	i := slices.Index(n.Children, c)
+	if i < 0 {
+		return -1
+	}
+	n.Children = slices.Delete(n.Children, i, i+1)
+	c.Parent = nil
+	return i
+}
+
+// Index liefert die Position unter dem Elternknoten, -1 ohne Eltern.
+func (n *Node) Index() int {
+	if n.Parent == nil {
+		return -1
+	}
+	return slices.Index(n.Parent.Children, n)
+}
+
+// Clone kopiert den Knoten mit allen Nachfahren, ohne Elternknoten.
+func (n *Node) Clone() *Node {
+	c := &Node{Kind: n.Kind, Name: n.Name, Attrs: slices.Clone(n.Attrs), Data: n.Data, Line: n.Line, Col: n.Col}
+	for _, ch := range n.Children {
+		cc := ch.Clone()
+		cc.Parent = c
+		c.Children = append(c.Children, cc)
+	}
+	return c
+}
+
 // ID liefert die ID des Elements.
 func (n *Node) ID() string { return n.Get("id", "") }
 
@@ -128,6 +189,10 @@ type Template struct {
 
 // ByID liefert das Element mit einer ID.
 func (t *Template) ByID(id string) *Node { return t.ids[id] }
+
+// Reindex baut den Index der IDs neu auf. Nötig nach Änderungen am
+// Knotenbaum, bevor ByID oder Validate genutzt werden.
+func (t *Template) Reindex() { t.index() }
 
 // Error ist ein Fehler in einer Vorlage mit Vorlagenelement-ID, wenn
 // zuordenbar, und Position.
@@ -174,6 +239,10 @@ func Parse(data []byte) (*Template, error) {
 	}
 	return t, nil
 }
+
+// ParseTree liest eine wohlgeformte Vorlage ohne Prüfung gegen das XSD, etwa
+// einen Zwischenstand im Designer. Validate holt die Prüfung nach.
+func ParseTree(data []byte) (*Template, error) { return parseTree(data) }
 
 // parseTree liest den Knotenbaum ohne Schemaprüfung.
 func parseTree(data []byte) (*Template, error) {
