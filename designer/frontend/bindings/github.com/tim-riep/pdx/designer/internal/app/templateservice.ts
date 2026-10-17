@@ -86,6 +86,15 @@ export function Snapshot(): $CancellablePromise<model$0.Snapshot> {
 }
 
 /**
+ * Table ändert die Struktur einer Tabelle als ein Schritt.
+ */
+export function Table(op: $models.TableOp): $CancellablePromise<$models.Result> {
+    return $Call.ByID(2232990997, op).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * Undo nimmt den letzten Schritt zurück.
  */
 export function Undo(): $CancellablePromise<$models.Result> {

@@ -380,6 +380,53 @@ export class Result {
     }
 }
 
+/**
+ * TableOp ist eine Änderung an der Struktur einer Tabelle.
+ * 
+ * 	addColumn     Ref (Tabelle oder Zelle), Index  Spalte einfügen, -1 hängt an
+ * 	removeColumn  Ref (Tabelle oder Zelle), Index  Spalte entfernen
+ * 	addRow        Ref (Abschnitt oder Zeile), Index  Zeile einfügen
+ * 	addSection    Ref (Tabelle), Kind header oder footer
+ * 	span          Ref (Zelle), Count  Zelle über Count Spalten
+ * 	sum           Ref (Zelle), Kind subtotal, carryOver oder total
+ */
+export class TableOp {
+    "op": string;
+    "ref": string;
+    "index": number;
+    "kind": string;
+    "count": number;
+
+    /** Creates a new TableOp instance. */
+    constructor($$source: Partial<TableOp> = {}) {
+        if (!("op" in $$source)) {
+            this["op"] = "";
+        }
+        if (!("ref" in $$source)) {
+            this["ref"] = "";
+        }
+        if (!("index" in $$source)) {
+            this["index"] = 0;
+        }
+        if (!("kind" in $$source)) {
+            this["kind"] = "";
+        }
+        if (!("count" in $$source)) {
+            this["count"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new TableOp instance from a string or object.
+     */
+    static createFrom($$source: any = {}): TableOp {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new TableOp($$parsedSource as Partial<TableOp>);
+    }
+}
+
 // Private type creation functions
 const $$createType0 = pipeline$0.PageRef.createFrom;
 const $$createType1 = $Create.Array($$createType0);

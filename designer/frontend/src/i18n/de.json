@@ -213,5 +213,17 @@
   "cmd.move": "Verschieben",
   "cmd.resize": "Größe ändern",
   "cmd.reorder": "Umsortieren",
-  "canvas.infoOne": "1 Seite, gesetzt in {ms} ms"
+  "canvas.infoOne": "1 Seite, gesetzt in {ms} ms",
+  "table.title": "Tabelle",
+  "table.colBefore": "Spalte links",
+  "table.colAfter": "Spalte rechts",
+  "table.colRemove": "Spalte entfernen",
+  "table.row": "Zeile einfügen",
+  "table.header": "Kopf hinzufügen",
+  "table.footer": "Fuß hinzufügen",
+  "table.span": "Über Spalten",
+  "table.subtotal": "Zwischensumme",
+  "table.carryOver": "Übertrag",
+  "table.total": "Summe",
+  "table.sums": "Summen in dieser Zelle"
 }

@@ -3,6 +3,7 @@
   import { t, label, propLabel } from "../lib/i18n";
   import { apply, node, typeOf } from "../lib/template.svelte";
   import { selection } from "../lib/selection.svelte";
+  import TableTools from "./TableTools.svelte";
 
   let query = $state("");
   const n = $derived(node(selection.ref));
@@ -48,6 +49,7 @@
       <strong>{label(n.type, n.name)}</strong>
       {#if !n.ref.startsWith("~")}<code>{n.ref}</code>{/if}
     </header>
+    <TableTools {n} />
     <input class="search" type="search" placeholder={t("inspector.search")} aria-label={t("inspector.search")} bind:value={query} />
     {#each groups as [g, props] (g)}
       <section>

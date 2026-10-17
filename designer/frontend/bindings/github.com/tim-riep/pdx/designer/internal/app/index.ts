@@ -22,5 +22,6 @@ export {
     ProjectState,
     RecentFile,
     Recovery,
-    Result
+    Result,
+    TableOp
 } from "./models.js";

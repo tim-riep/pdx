@@ -65,6 +65,9 @@ async function apply(m: Manifest) {
 
 on<Manifest>(EVENT.render, apply);
 RenderAPI.Latest().then((m) => apply(m as unknown as Manifest));
+// Das Backend kann noch die Ansicht einer früheren Sitzung haben, etwa nach
+// einem Neuladen. Die Oberfläche beginnt im Entwurf und meldet das.
+RenderAPI.SetView(render.view, "");
 
 export function setView(v: View) {
   render.view = v;

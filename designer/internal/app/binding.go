@@ -114,6 +114,7 @@ type builder struct {
 	t       *template.Template
 	used    map[string]bool
 	formats map[string]string // Art (number, date, dateTime) zu Name des Musters
+	numeric func(*template.Node) bool
 }
 
 func (b *builder) id(base string) string {
