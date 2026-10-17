@@ -32,11 +32,17 @@ func TestBreakPage(t *testing.T) {
 	if got := breakPage(items, 0, Lpt(25)); got != 1 {
 		t.Errorf("Keep nicht beachtet: %d", got)
 	}
-	// Nur verbotene Stellen: späteste wird genommen statt Inhalt zu verlieren.
+	// Verbotene Stellen: Der Keep bleibt erhalten, der Inhalt läuft bis zur
+	// nächsten erlaubten Stelle über die Seite hinaus (XSL 1.1 4.8).
 	items[1].penalty, items[3].penalty = penaltyInf, penaltyInf
-	if got := breakPage(items, 0, Lpt(25)); got != 3 {
-		t.Errorf("Rückfall bei verbotenen Stellen: %d", got)
+	if got := breakPage(items, 0, Lpt(25)); got != 5 {
+		t.Errorf("verbotene Stellen: Umbruch bei %d, erwartet 5", got)
 	}
+	items[5].penalty = penaltyInf
+	if got := breakPage(items, 0, Lpt(25)); got != len(items) {
+		t.Errorf("nur verbotene Stellen: Umbruch bei %d, erwartet keiner", got)
+	}
+	items[5].penalty = 0
 	// Erzwungener Umbruch.
 	items[1].penalty = penaltyForced
 	if got := breakPage(items, 0, Lpt(100)); got != 1 {

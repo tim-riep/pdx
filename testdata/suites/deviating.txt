@@ -19,7 +19,7 @@ fop/block_keep-together_overflow_1: offen, erste Abweichung: Seiten: pdx 5, FOP 
 fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished whenever it shone in her face." verschoben um 19.85 pt waagerecht, -0.00 pt senkrecht
 fop/block_margin_shorthands: offen, erste Abweichung: Seite 1: "left/right" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
-fop/block_space-before_space-after_bug38102: offen, erste Abweichung: Seiten: pdx 6, FOP 3
+fop/block_space-before_space-after_bug38102: offen, erste Abweichung: Seiten: pdx 5, FOP 3
 fop/block_text-align_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi" verschoben um -14.14 pt waagerecht, -43.20 pt senkrecht
 fop/block_uax14_explicit-breaks: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
 fop/block_uax14_linebreaking: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
@@ -29,7 +29,7 @@ fop/flow_changing-ipd_5: offen, erste Abweichung: Seite 3: "beautiful, but the y
 fop/flow_changing-ipd_break-before: offen, erste Abweichung: Seite 1: "In olden times when wishing still helped one, there lived a" verschoben um 0.00 pt waagerecht, -1.60 pt senkrecht
 fop/flow_changing-ipd_last-page: offen, erste Abweichung: Seiten: pdx 1, FOP 2
 fop/flow_changing-ipd_last-page_7: offen, erste Abweichung: Seiten: pdx 2, FOP 5
-fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seiten: pdx 3, FOP 2
+fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "After the big"
 fop/inline_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This demonstrates a long inline which stretches over multiple lines to show"
 fop/inline_border_padding: offen, erste Abweichung: Seite 1: "This demonstrates correct line breaking of a fo:inline because it does fit" verschoben um 0.00 pt waagerecht, -12.00 pt senkrecht
 fop/leader_background-color: offen, erste Abweichung: Seite 1: ".... dots yellow background" verschoben um 0.00 pt waagerecht, 5.41 pt senkrecht
@@ -83,7 +83,7 @@ fop/table-row_keep-with-previous_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 
 fop/table-stepper_colspan_border-before: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 2.1"
 fop/table_border-collapse_collapse_nrnc: offen, erste Abweichung: Seite 1: "Cell 2.2" verschoben um 0.00 pt waagerecht, 3.00 pt senkrecht
 fop/table_border-collapse_collapse_nrnc_no-col: offen, erste Abweichung: Seite 1: "Cell 2.2" verschoben um 0.00 pt waagerecht, 3.00 pt senkrecht
-fop/table_border-collapse_collapse_omitHF: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "Cell 1.1"
+fop/table_border-collapse_collapse_omitHF: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 1.2"
 fop/table_border-collapse_collapse_resolution: offen, erste Abweichung: Seite 1: "Cell 1.2" verschoben um -2.50 pt waagerecht, -1.00 pt senkrecht
 fop/table_border-collapse_collapse_resolution_no-col: offen, erste Abweichung: Seite 1: "Between tables" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
 fop/table_border-collapse_collapse_spans_1: offen, erste Abweichung: Seite 1: "Cell 1.2 Cell" verschoben um -6.00 pt waagerecht, -0.00 pt senkrecht

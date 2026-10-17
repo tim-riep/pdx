@@ -8,9 +8,9 @@ import "github.com/tim-riep/pdx/areatree"
 // Unter allen Penalties, bis zu denen der Inhalt in avail passt, gewinnt die
 // mit den geringsten Kosten, bei Gleichstand die späteste. Keeps mit
 // ganzzahliger Stärke werden so in aufsteigender Stärke gelockert (XSL 1.1
-// 4.8). Gibt es nur verbotene Stellen, wird die späteste genommen, statt
-// Inhalt zu verlieren. Passt schon die erste Box nicht, bricht die Seite an
-// der ersten möglichen Stelle danach.
+// 4.8). Gibt es nur verbotene Stellen, läuft der Inhalt über die Seite
+// hinaus, ein Keep mit always wird nie gebrochen. Passt schon die erste Box
+// nicht, bricht die Seite an der ersten erlaubten Stelle danach.
 func breakPage(items []item, start int, avail areatree.Length) int {
 	var h areatree.Length
 	seenBox := false
@@ -47,8 +47,15 @@ func breakPage(items []item, start int, avail areatree.Length) int {
 			if it.penalty <= penaltyForced {
 				return i
 			}
-			if h > avail {
+			// Passt der Inhalt nicht, wird an der nächsten erlaubten Stelle
+			// umbrochen. Ein Keep mit always bleibt erhalten, der Inhalt läuft
+			// dann über die Seite hinaus (XSL 1.1 4.8: Keeps müssen erfüllt
+			// werden, solange kein Umbruch oder stärkerer Keep dagegen steht).
+			if h > avail && it.penalty < penaltyInf {
 				return i
+			}
+			if h > avail {
+				continue
 			}
 			// Bricht die Seite im Rumpf einer Tabelle, steht der Fuß darunter.
 			var reserve areatree.Length
@@ -59,6 +66,9 @@ func breakPage(items []item, start int, avail areatree.Length) int {
 			}
 			if h+reserve > avail {
 				continue
+			}
+			if it.penalty >= penaltyInf {
+				continue // verbotene Stelle
 			}
 			if best < 0 || it.penalty <= bestPen {
 				best, bestPen = i, it.penalty
