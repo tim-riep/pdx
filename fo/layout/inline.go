@@ -397,15 +397,27 @@ func (pa *paragraph) leader(n *tree.Node, parent *props.Computed) error {
 	return nil
 }
 
-// markID hängt die ID eines Inline-Elements an das erste Stück mit Inhalt.
+// markID hängt die ID eines Inline-Elements an das erste und das letzte
+// Stück mit Inhalt. So kennt page-number-citation-last auch die letzte Seite
+// eines umbrochenen Inline-Elements.
 func (pa *paragraph) markID(n *tree.Node, from int) {
 	id, ok := n.Attr("id")
 	if !ok || id == "" {
 		return
 	}
+	content := func(i int) bool {
+		k := pa.pieces[i].kind
+		return k == pText || k == pGraphic
+	}
 	for i := from; i < len(pa.pieces); i++ {
-		if k := pa.pieces[i].kind; k == pText || k == pGraphic {
+		if content(i) {
 			pa.pieces[i].ids = append(pa.pieces[i].ids, id)
+			for j := len(pa.pieces) - 1; j > i; j-- {
+				if content(j) {
+					pa.pieces[j].ids = append(pa.pieces[j].ids, id)
+					break
+				}
+			}
 			return
 		}
 	}
