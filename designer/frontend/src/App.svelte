@@ -5,10 +5,17 @@
   import Modal from "./components/Modal.svelte";
   import StartScreen from "./components/StartScreen.svelte";
   import Canvas from "./components/canvas/Canvas.svelte";
+  import Tabs from "./components/Tabs.svelte";
+  import Hierarchy from "./components/Hierarchy.svelte";
+  import Inspector from "./components/Inspector.svelte";
+  import { clearSelection } from "./lib/selection.svelte";
   import { render, setView, type View } from "./lib/render.svelte";
   let version = $state("");
   let theme: "light" | "dark" | null = $state(null);
   let pathValue = $state("");
+  let leftTab = $state("hierarchy");
+  let rightTab = $state("inspector");
+  let bottomTab = $state("problems");
 
   AppAPI.Info().then((i) => (version = t("status.version", { version: i.version, engine: i.engine })));
 
@@ -24,6 +31,7 @@
   }
 
   function keydown(e: KeyboardEvent) {
+    if (e.key === "Escape" && !ui.pathPrompt && !ui.closeRequest) clearSelection();
     if (!(e.metaKey || e.ctrlKey) || ui.pathPrompt || ui.closeRequest) return;
     const k = e.key.toLowerCase();
     const act: Record<string, () => unknown> = {
@@ -73,7 +81,11 @@
     </div>
     <button class="icon" title={t("theme.toggle")} aria-label={t("theme.toggle")} onclick={toggleTheme}>◐</button>
   </header>
-  <aside class="left"><h2>{t("panel.data")}</h2><h2>{t("panel.hierarchy")}</h2></aside>
+  <aside class="left">
+    <Tabs tabs={[["data", t("panel.data")], ["hierarchy", t("panel.hierarchy")]]} bind:active={leftTab}>
+      {#if leftTab === "hierarchy"}<Hierarchy />{:else}<p class="soon">{t("panel.data")}</p>{/if}
+    </Tabs>
+  </aside>
   <main class="canvas" data-testid="canvas">
     {#if project.open}
       <Canvas />
@@ -81,8 +93,16 @@
       <StartScreen />
     {/if}
   </main>
-  <aside class="right"><h2>{t("panel.inspector")}</h2></aside>
-  <section class="bottom"><h2>{t("panel.problems")}</h2></section>
+  <aside class="right">
+    <Tabs tabs={[["inspector", t("panel.inspector")], ["styles", t("panel.styles")]]} bind:active={rightTab}>
+      {#if rightTab === "inspector"}<Inspector />{:else}<p class="soon">{t("panel.styles")}</p>{/if}
+    </Tabs>
+  </aside>
+  <section class="bottom">
+    <Tabs tabs={[["problems", t("panel.problems")], ["conformance", t("panel.conformance")]]} bind:active={bottomTab}>
+      <p class="soon">{t(bottomTab === "problems" ? "panel.problems" : "panel.conformance")}</p>
+    </Tabs>
+  </section>
   <footer class="status" data-testid="status">
     {#if ui.error}<span class="error" role="alert">{ui.error}</span>{:else if ui.notice}<span>{ui.notice}</span>{/if}
     <span class="version">{version}</span>
@@ -168,8 +188,14 @@
   .right,
   .bottom {
     background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .soon {
+    color: var(--text-muted);
     padding: var(--space-3);
-    overflow: auto;
   }
   .left {
     grid-area: left;
@@ -182,13 +208,6 @@
   .bottom {
     grid-area: bottom;
     border-top: 1px solid var(--border);
-  }
-  h2 {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
-    margin: 0 0 var(--space-2);
   }
   .canvas {
     grid-area: canvas;

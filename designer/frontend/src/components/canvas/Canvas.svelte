@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Page } from "../../lib/canvas/model";
   import { image, render } from "../../lib/render.svelte";
+  import { selection } from "../../lib/selection.svelte";
   import { t } from "../../lib/i18n";
   import PageView from "./PageView.svelte";
 
@@ -36,6 +37,22 @@
     return bottom > scrollTop - height && top < scrollTop + 2 * height;
   }
 
+  let viewport: HTMLElement | undefined = $state();
+
+  // Ausgewähltes Element sichtbar machen, etwa nach Klick in der Hierarchie.
+  $effect(() => {
+    if (!selection.reveal || !viewport) return;
+    const ref = selection.ref;
+    for (let i = 0; i < render.pages.length; i++) {
+      const a = render.pages[i].els.find((e) => e.id === ref);
+      if (a) {
+        const y = tops[i] + a.r[1] * zoom - 48;
+        if (y < viewport.scrollTop || y > viewport.scrollTop + height - 96) viewport.scrollTo({ top: y });
+        break;
+      }
+    }
+  });
+
   function setZoom(z: number) {
     fit = false;
     zoom = Math.max(0.25, Math.min(4, Math.round(z * 100) / 100));
@@ -69,7 +86,7 @@
     <span class="info" data-testid="render-info">{t("canvas.info", { pages: render.pages.length, ms: render.manifest.millis })}</span>
   {/if}
 </div>
-<div class="viewport" data-viewport bind:clientHeight={height} bind:clientWidth={width} onwheel={wheel}
+<div class="viewport" data-viewport bind:this={viewport} bind:clientHeight={height} bind:clientWidth={width} onwheel={wheel}
   onscroll={(e) => (scrollTop = (e.currentTarget as HTMLElement).scrollTop)}>
   <div class="pages" style="padding: {gap}px; gap: {gap}px">
     {#each render.pages as p, i (p.n)}

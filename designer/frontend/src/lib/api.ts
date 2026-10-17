@@ -6,6 +6,14 @@ import { Events } from "@wailsio/runtime";
 export * as AppAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/appservice";
 export * as ProjectAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/projectservice";
 export * as RenderAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/renderservice";
+export * as TemplateAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/templateservice";
+export type {
+  Snapshot,
+  ViewNode,
+  ElementType,
+  Property,
+  Item,
+} from "../../bindings/github.com/tim-riep/pdx/designer/internal/model/models";
 export type {
   ProjectState,
   RecentFile,

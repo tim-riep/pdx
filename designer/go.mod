@@ -4,12 +4,14 @@ go 1.26.4
 
 replace github.com/tim-riep/pdx => ../
 
-require github.com/wailsapp/wails/v3 v3.0.0-beta.30
+require (
+	github.com/tim-riep/go-xslt v0.1.0
+	github.com/wailsapp/wails/v3 v3.0.0-beta.30
+)
 
 require (
 	github.com/boombuler/barcode v1.1.0 // indirect
 	github.com/boxesandglue/textshape v0.0.18 // indirect
-	github.com/tim-riep/go-xslt v0.1.0 // indirect
 	golang.org/x/text v0.39.0 // indirect
 )
 

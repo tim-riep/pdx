@@ -52,3 +52,22 @@ func TestRender(t *testing.T) {
 		t.Errorf("nach Änderung ohne neuen Inhalt: %+v", m2)
 	}
 }
+
+func TestSnapshot(t *testing.T) {
+	c := NewCore(nil, nil, t.TempDir())
+	ts := NewTemplateService(c)
+	if _, err := ts.Snapshot(); err == nil {
+		t.Error("Snapshot ohne Vorlage gelingt")
+	}
+	if _, err := NewProjectService(c).Open(muster); err != nil {
+		t.Fatal(err)
+	}
+	s, err := ts.Snapshot()
+	if err != nil || s.Nodes["positionen"].Type != "table" {
+		t.Fatalf("Snapshot: %v", err)
+	}
+	cat, err := ts.Catalog()
+	if err != nil || cat["table"] == nil {
+		t.Fatalf("Catalog: %v", err)
+	}
+}
