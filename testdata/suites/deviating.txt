@@ -36,7 +36,6 @@ fop/markers_6a: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resol
 fop/markers_6b: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
 fop/page-number-citation-last_complex: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "table-header= 1"
 fop/page-number-citation_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
-fop/page-number-citation_list: offen, erste Abweichung: Seite 3: Zeile nur in pdx: "1"
 fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-position only und first, den XSL 1.1 nicht regelt, pdx setzt eine Seite, FOP fügt leere Seiten an
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an

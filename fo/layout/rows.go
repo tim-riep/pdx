@@ -72,9 +72,7 @@ func (pl *placer) drawRow(r *rowLayout, a, b, y areatree.Length) error {
 // drawRowIn zeichnet in einen bestimmten Container.
 func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y areatree.Length) error {
 	whole := a == 0 && b == r.h
-	if a == 0 {
-		pl.rowIDs(r, y)
-	}
+	pl.rowIDs(r, a, y)
 	if r.bg != nil {
 		bg := *r.bg
 		parent.Children = append(parent.Children, &areatree.Box{
@@ -171,10 +169,10 @@ func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y ar
 	return nil
 }
 
-// rowIDs vermerkt die IDs einer Zeile beim Zeichnen ihres ersten Fragments:
-// Zeile oder Listenpunkt, die Zellen (auch Label und Rumpf eines
-// Listenpunkts) und die Abschnitte der Tabelle bis zur Tabelle selbst.
-func (pl *placer) rowIDs(r *rowLayout, y areatree.Length) {
+// rowIDs vermerkt die IDs einer Zeile für jedes Fragment ab a: Zeile oder
+// Listenpunkt, die Zellen (auch Label und Rumpf eines Listenpunkts) und die
+// Abschnitte der Tabelle bis zur Tabelle selbst.
+func (pl *placer) rowIDs(r *rowLayout, a, y areatree.Length) {
 	folio := formatNumber(pl.page.Number, pl.e.format)
 	mark := func(n *tree.Node, x areatree.Length) {
 		if id, ok := n.Attr("id"); ok && id != "" {
@@ -185,7 +183,11 @@ func (pl *placer) rowIDs(r *rowLayout, y areatree.Length) {
 	for n := r.node; n != nil && !n.IsFO("table") && !n.IsFO("list-block"); n = n.Parent {
 		mark(n, r.x)
 	}
+	// Eine Zelle zählt auf jeder Seite, auf der Inhalt von ihr liegt, damit
+	// page-number-citation-last die letzte Seite findet.
 	for _, c := range r.cells {
-		mark(c.node, c.x)
+		if a == 0 || a-r.sepV-c.inset[areatree.Top] < c.contentH {
+			mark(c.node, c.x)
+		}
 	}
 }
