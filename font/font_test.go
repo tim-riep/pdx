@@ -49,8 +49,8 @@ func TestRegistryStandardFonts(t *testing.T) {
 	if f, err := r.Lookup("Symbol", 700, false); err != nil || f.PostScript != "LiberationSans-Bold" {
 		t.Errorf("Ersatz für Symbol: %v %v", f, err)
 	}
-	if f, err := r.Lookup("cursive", 400, false); err != nil || f.PostScript != "LiberationSerif" {
-		t.Errorf("cursive: %v %v", f, err)
+	if f, err := r.Lookup("cursive, serif", 400, false); err != nil || f.PostScript != "LiberationSerif" {
+		t.Errorf("cursive, serif: %v %v", f, err)
 	}
 }
 

@@ -36,14 +36,11 @@ var builtinAliases = map[string]string{
 	"courier":         "liberation mono",
 	"courier new":     "liberation mono",
 	"monospace":       "liberation mono",
-	// cursive und fantasy sind generische Familien aus CSS2, die XSL 1.1
-	// 7.9.2 übernimmt. Mangels eigener Schriften gilt eine Serifenschrift.
-	"cursive": "liberation serif",
-	"fantasy": "liberation serif",
 }
 
 // fallbackFamily ist die Ersatzfamilie, wenn keine Familie der Liste
-// vorhanden ist (XSL 1.1 7.9.3).
+// vorhanden ist (XSL 1.1 7.9.3). Die generischen Familien cursive und fantasy
+// haben keine eigene Schrift, die Liste wird dann weiter durchsucht.
 const fallbackFamily = "liberation sans"
 
 // NewRegistry legt eine Registry mit den eingebetteten Schriften an.
