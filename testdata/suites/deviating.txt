@@ -9,9 +9,8 @@ fop/block-container_absolute-position_border_padding: offen, erste Abweichung: S
 fop/block-container_absolute-position_no-height: offen, erste Abweichung: Seite 1: "absolutely positioned width, no height" verschoben um -10.00 pt waagerecht, -10.00 pt senkrecht
 fop/block-container_absolute-position_overflow: begründet, left und top beziehen sich auf die Randkante (DEVIATIONS.md, left und top bei absoluter Positionierung)
 fop/block-container_overconstrained_ipd: begründet, überbestimmte Geometrie (XSL 1.1 5.3.4), pdx setzt die Inhaltsbreite auf 0, FOP verteilt die Wörter regellos
-fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit." verschoben um 0.00 pt waagerecht, 31.20 pt senkrecht
 fop/block_break-before_bug44412: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
-fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
+fop/block_font-size_relative: begründet, smaller und larger nach XSL 1.1 7.9.4 und CSS2 15.2.4, der Formatierer darf zwischen den Tabellenwerten interpolieren, pdx rechnet mit dem Faktor 1,2, FOP rundet auf die Stufen 12 × 1,2 hoch n
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/block_last-line-end-indent: begründet, anderer Zeilenumbruch im Blocksatz, Wortabstände sind nach XSL 1.1 7.17.8 Sache des Formatierers, die letzte Zeile mit last-line-end-indent="-20pt" reicht zulässig bis 360 pt
 fop/block_margin_shorthands: begründet, ein leerer fo:block mit Rahmen erzeugt einen Bereich mit dessen Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln

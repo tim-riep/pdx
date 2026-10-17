@@ -56,7 +56,10 @@ type item struct {
 	h    areatree.Length
 	// keep ist bei Abständen der Anteil, der am Anfang einer Seite erhalten
 	// bleibt (Konditionalität retain).
-	keep    areatree.Length
+	keep areatree.Length
+	// shrink ist bei Abständen, um wie viel sie bis zum Minimum gestaucht
+	// werden dürfen.
+	shrink  areatree.Length
 	penalty int
 	// path sind die umschließenden Blöcke von außen nach innen. Bei Kanten
 	// gehört der Block der Kante dazu.
@@ -210,17 +213,17 @@ func noContent(n *tree.Node) bool {
 // spaceBefore sammelt space-before eines Blocks. Der erhaltene Anteil gilt
 // auch am Anfang einer Seite.
 func (g *galley) spaceBefore(p *props.Computed) {
-	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceBefore, prec: p.SpaceBeforePrec, retain: p.SpaceBeforeRetain})
+	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceBefore, min: p.SpaceBeforeMin, prec: p.SpaceBeforePrec, retain: p.SpaceBeforeRetain})
 }
 
 // spaceAfter sammelt space-after eines Blocks.
 func (g *galley) spaceAfter(p *props.Computed) {
-	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceAfter, prec: p.SpaceAfterPrec})
+	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceAfter, min: p.SpaceAfterMin, prec: p.SpaceAfterPrec})
 }
 
 // spaceSpec ist ein Abstand mit Priorität und Konditionalität.
 type spaceSpec struct {
-	v      areatree.Length
+	v, min areatree.Length
 	prec   int
 	retain bool
 }
@@ -229,30 +232,34 @@ type spaceSpec struct {
 // Erzwingende Abstände (force) gelten alle und heben die übrigen auf, sonst
 // gewinnt die höchste Priorität und darunter das größte Optimum. keep ist
 // das Ergebnis am Anfang einer Seite, dort entfallen bedingte Abstände.
-func resolveSpaces(specs []spaceSpec) (h, keep areatree.Length) {
-	resolve := func(retainedOnly bool) areatree.Length {
-		var forced areatree.Length
+func resolveSpaces(specs []spaceSpec) (h, min, keep areatree.Length) {
+	resolve := func(retainedOnly bool) (areatree.Length, areatree.Length) {
+		var forced, forcedMin areatree.Length
 		anyForce := false
-		bestPrec, best, found := 0, areatree.Length(0), false
+		bestPrec, found := 0, false
+		var best spaceSpec
 		for _, s := range specs {
 			if retainedOnly && !s.retain {
 				continue
 			}
 			if s.prec == props.PrecForce {
 				forced += s.v
+				forcedMin += s.min
 				anyForce = true
 				continue
 			}
-			if !found || s.prec > bestPrec || s.prec == bestPrec && s.v > best {
-				bestPrec, best, found = s.prec, s.v, true
+			if !found || s.prec > bestPrec || s.prec == bestPrec && s.v > best.v {
+				bestPrec, best, found = s.prec, s, true
 			}
 		}
 		if anyForce {
-			return forced
+			return forced, forcedMin
 		}
-		return best
+		return best.v, best.min
 	}
-	return resolve(false), resolve(true)
+	h, min = resolve(false)
+	keep, _ = resolve(true)
+	return h, min, keep
 }
 
 // breakValue liest break-before oder break-after. column gilt wie page, weil
@@ -345,8 +352,8 @@ func (g *galley) box(it item, before int) {
 		g.items = append(g.items, item{kind: itPenalty, penalty: penaltyForced, brk: brk})
 	}
 	g.lastPath = it.path
-	if h, keep := resolveSpaces(g.spaces); h != 0 || keep != 0 {
-		g.items = append(g.items, item{kind: itGlue, h: h, keep: keep})
+	if h, min, keep := resolveSpaces(g.spaces); h != 0 || keep != 0 {
+		g.items = append(g.items, item{kind: itGlue, h: h, shrink: h - min, keep: keep})
 	}
 	g.spaces = g.spaces[:0]
 	it.kind = itBox
@@ -501,6 +508,29 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 		for _, it := range g.items[start:] {
 			if it.kind == itBox || it.kind == itGlue {
 				used += it.h
+			}
+		}
+		// Zu viel Inhalt staucht zuerst die Abstände bis zu ihrem Minimum
+		// (XSL 1.1 4.3).
+		if used > *p.Height {
+			var shrink areatree.Length
+			for _, it := range g.items[start:] {
+				if it.kind == itGlue {
+					shrink += it.shrink
+				}
+			}
+			if shrink > 0 {
+				f := min(1, float64(used-*p.Height)/float64(shrink))
+				for i := start; i < len(g.items); i++ {
+					it := &g.items[i]
+					if it.kind == itGlue && it.shrink > 0 {
+						d := areatree.Length(f * float64(it.shrink))
+						it.h -= d
+						it.shrink -= d
+						it.keep = min(it.keep, it.h)
+						used -= d
+					}
+				}
 			}
 		}
 		// Fehlende Höhe wird aufgefüllt, überschüssiger Inhalt läuft über

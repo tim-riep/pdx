@@ -45,6 +45,9 @@ type Computed struct {
 
 	// Nicht vererbte Eigenschaften.
 	SpaceBefore, SpaceAfter Length
+	// SpaceBeforeMin und SpaceAfterMin sind die Komponente .minimum, ohne
+	// Angabe gleich dem Optimum.
+	SpaceBeforeMin, SpaceAfterMin Length
 	// SpaceBeforeRetain ist gesetzt, wenn space-before am Anfang einer Seite
 	// erhalten bleibt: bei .conditionality="retain" und immer, wenn der
 	// Abstand aus margin-top stammt (XSL 1.1 5.3.2).
@@ -514,6 +517,7 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		}
 		c.LastLineEndIndent = l
 	}
+	c.SpaceBeforeMin, c.SpaceAfterMin = -1, -1
 	if margin[areatree.Top] != nil {
 		c.SpaceBefore = *margin[areatree.Top]
 		c.SpaceBeforeRetain = true
@@ -522,24 +526,36 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		c.SpaceAfter = *margin[areatree.Bottom]
 	}
 	for _, sp := range []struct {
-		name string
-		dst  *Length
-	}{{"space-before", &c.SpaceBefore}, {"space-after", &c.SpaceAfter}} {
+		name     string
+		dst, min *Length
+	}{{"space-before", &c.SpaceBefore, &c.SpaceBeforeMin}, {"space-after", &c.SpaceAfter, &c.SpaceAfterMin}} {
 		v, ok := a[sp.name]
 		if !ok {
 			v, ok = a[sp.name+".optimum"]
 		}
-		if !ok {
-			continue
+		if ok {
+			l, err := length(sp.name, v)
+			if err != nil {
+				return err
+			}
+			*sp.dst = l
+			if sp.name == "space-before" {
+				c.SpaceBeforeRetain = false
+			}
 		}
-		l, err := length(sp.name, v)
-		if err != nil {
-			return err
+		if v, ok := a[sp.name+".minimum"]; ok {
+			l, err := length(sp.name+".minimum", v)
+			if err != nil {
+				return err
+			}
+			*sp.min = l
 		}
-		*sp.dst = l
-		if sp.name == "space-before" {
-			c.SpaceBeforeRetain = false
-		}
+	}
+	if c.SpaceBeforeMin < 0 || c.SpaceBeforeMin > c.SpaceBefore {
+		c.SpaceBeforeMin = c.SpaceBefore
+	}
+	if c.SpaceAfterMin < 0 || c.SpaceAfterMin > c.SpaceAfter {
+		c.SpaceAfterMin = c.SpaceAfter
 	}
 	if v, ok := a["space-before.conditionality"]; ok {
 		c.SpaceBeforeRetain = strings.TrimSpace(v) == "retain"
