@@ -22,17 +22,18 @@
   <!-- Einfache Typen -->
 
   <xs:simpleType name="Length">
-    <xs:annotation><xs:documentation>Länge mit Einheit, etwa 12pt, 20mm, 50%.</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>Länge mit Einheit, etwa 12pt, 20mm, 50%, oder Verweis auf ein Längen-Token wie $abstand-m.</xs:documentation></xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)"/>
       <xs:pattern value="0"/>
+      <xs:pattern value="$[A-Za-z_][A-Za-z0-9_.\-]*"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="Lengths">
-    <xs:annotation><xs:documentation>Eine bis vier Längen wie bei CSS (oben, rechts, unten, links).</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>Eine bis vier Längen wie bei CSS (oben, rechts, unten, links), jeweils auch als Verweis auf ein Längen-Token.</xs:documentation></xs:annotation>
     <xs:restriction base="xs:string">
-      <xs:pattern value="(-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?)( -?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?){0,3}"/>
+      <xs:pattern value="(-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?|$[A-Za-z_][A-Za-z0-9_.\-]*)( (-?[0-9]+(\.[0-9]+)?(pt|mm|cm|in|pc|px|%)?|$[A-Za-z_][A-Za-z0-9_.\-]*)){0,3}"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -44,9 +45,18 @@
   </xs:simpleType>
 
   <xs:simpleType name="Color">
+    <xs:annotation><xs:documentation>Farbe als #rgb, #rrggbb oder Name, oder Verweis auf ein Farb-Token wie $primaer.</xs:documentation></xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?"/>
       <xs:pattern value="[a-z]+"/>
+      <xs:pattern value="$[A-Za-z_][A-Za-z0-9_.\-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TokenRef">
+    <xs:annotation><xs:documentation>Verweis auf ein Token mit vorangestelltem $.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="$[A-Za-z_][A-Za-z0-9_.\-]*"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -108,6 +118,9 @@
   </xs:attributeGroup>
 
   <xs:attributeGroup name="styleAttrs">
+    <xs:attribute name="font" type="TokenRef">
+      <xs:annotation><xs:documentation>Schrift-Token: setzt Familie, Größe, Stärke und Stil, soweit das Token sie nennt. Ausdrückliche Attribute desselben Elements haben Vorrang.</xs:documentation></xs:annotation>
+    </xs:attribute>
     <xs:attribute name="fontFamily" type="xs:string"/>
     <xs:attribute name="fontSize" type="Length"/>
     <xs:attribute name="fontWeight">
@@ -147,6 +160,7 @@
       <xs:sequence>
         <xs:element ref="namespaces" minOccurs="0"/>
         <xs:element ref="styles" minOccurs="0"/>
+        <xs:element ref="tokens" minOccurs="0"/>
         <xs:element ref="formats" minOccurs="0"/>
         <xs:element ref="texts" minOccurs="0"/>
         <xs:element ref="pageSet"/>
@@ -195,6 +209,43 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="tokens">
+    <xs:annotation><xs:documentation>Design-Tokens: benannte Farben, Längen und Schriften. Stile und Elemente verweisen mit $id darauf. Ein Token darf auf ein anderes derselben Art verweisen.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="color">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="value" type="Color" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="length">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="value" type="Length" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="font">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:ID" use="required"/>
+            <xs:attribute name="family" type="xs:string"/>
+            <xs:attribute name="size" type="Length"/>
+            <xs:attribute name="weight">
+              <xs:simpleType><xs:restriction base="xs:token">
+                <xs:enumeration value="normal"/><xs:enumeration value="bold"/>
+              </xs:restriction></xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="style">
+              <xs:simpleType><xs:restriction base="xs:token">
+                <xs:enumeration value="normal"/><xs:enumeration value="italic"/>
+              </xs:restriction></xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 

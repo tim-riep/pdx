@@ -97,6 +97,10 @@ type compiler struct {
 
 // Compile übersetzt eine geprüfte Vorlage in XSLT 3.0.
 func Compile(t *template.Template, opts Options) (*Result, error) {
+	t, errs := resolveTokens(t)
+	if len(errs) > 0 {
+		return nil, errs
+	}
 	c := &compiler{t: t, w: newWriter(), styles: map[string]*node{}, texts: map[string]string{}}
 	c.lang = opts.Lang
 	if c.lang == "" {
