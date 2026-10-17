@@ -26,8 +26,9 @@ export interface Model {
   body(): ViewNode | undefined;
 }
 
-function accepts(m: Model, n: ViewNode): boolean {
-  return !!m.type(n)?.children?.some((c) => c.name === "field");
+// accepts meldet, ob n ein Kindelement mit dem Namen child aufnimmt.
+function accepts(m: Model, n: ViewNode, child: string): boolean {
+  return !!m.type(n)?.children?.some((c) => c?.name === child);
 }
 
 function positioned(n: ViewNode): boolean {
@@ -37,10 +38,12 @@ function positioned(n: ViewNode): boolean {
 
 const inside = (r: Rect, x: number, y: number) => x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3];
 
-export function dropTarget(m: Model, page: Page, index: HitIndex, x: number, y: number): Target | null {
+// dropTarget sucht das Element unter dem Punkt, das ein Kind mit dem Namen
+// child aufnimmt (etwa field, text, subform oder table).
+export function dropTarget(m: Model, page: Page, index: HitIndex, x: number, y: number, child = "field"): Target | null {
   const hit = index.at(x, y);
   let n = hit ? m.node(hit.id) : undefined;
-  while (n && !accepts(m, n)) n = m.node(n.parent);
+  while (n && !accepts(m, n, child)) n = m.node(n.parent);
   n ??= m.body();
   if (!n) return null;
   const container = n;

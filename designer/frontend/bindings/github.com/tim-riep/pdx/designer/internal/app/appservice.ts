@@ -32,5 +32,13 @@ export function Info(): $CancellablePromise<$models.Info> {
     });
 }
 
+/**
+ * PickFile fragt nach einer Datei, etwa einem Bild für den Baustein Bild.
+ * pattern ist ein Filter wie "*.png;*.jpg".
+ */
+export function PickFile(title: string, name: string, pattern: string): $CancellablePromise<string> {
+    return $Call.ByID(3624884525, title, name, pattern);
+}
+
 // Private type creation functions
 const $$createType0 = $models.Info.createFrom;

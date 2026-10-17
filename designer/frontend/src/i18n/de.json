@@ -196,5 +196,22 @@
   "data.type.integer": "Ganzzahl",
   "data.type.boolean": "Wahrheitswert",
   "data.type.complex": "Gruppe",
-  "drop.none": "Hier lässt sich nichts einfügen"
+  "drop.none": "Hier lässt sich nichts einfügen",
+  "insert.palette": "Bausteine",
+  "insert.text": "Text",
+  "insert.positioned": "Teilformular, positioniert",
+  "insert.flowed": "Teilformular, fließend",
+  "insert.line": "Linie",
+  "insert.rect": "Rechteck",
+  "insert.image": "Bild",
+  "insert.barcode": "Barcode",
+  "insert.pageNumber": "Seitenzahl",
+  "insert.table": "Tabelle",
+  "insert.imageFilter": "Bilder (PNG, JPEG)",
+  "insert.imagePath": "Pfad der Bilddatei",
+  "canvas.grid": "Raster",
+  "cmd.move": "Verschieben",
+  "cmd.resize": "Größe ändern",
+  "cmd.reorder": "Umsortieren",
+  "canvas.infoOne": "1 Seite, gesetzt in {ms} ms"
 }

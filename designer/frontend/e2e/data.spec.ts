@@ -26,7 +26,7 @@ test("XSD laden, Felder und Tabelle ziehen, Vorschau wechseln", async ({ page })
   await expect(page.getByTestId("inspector").locator('[data-prop="bind"] input')).toHaveValue("d:items/d:item");
 
   // Entwurf zeigt Platzhalter, die Tabelle hat drei Zeilen.
-  await expect(page.getByTestId("render-info")).toContainText("1 Seiten");
+  await expect(page.getByTestId("render-info")).toContainText("1 Seite");
   await page.getByRole("tab", { name: "Hierarchie" }).click();
   await expect(page.getByTestId("hierarchy").getByText("item", { exact: true })).toBeVisible();
 

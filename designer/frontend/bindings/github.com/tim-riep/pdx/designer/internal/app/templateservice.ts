@@ -59,6 +59,15 @@ export function History(): $CancellablePromise<model$0.History> {
 }
 
 /**
+ * InsertElement fügt einen Baustein ein und wählt ihn aus.
+ */
+export function InsertElement($in: $models.Insert): $CancellablePromise<$models.Result> {
+    return $Call.ByID(2385084186, $in).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * Redo wiederholt den zuletzt zurückgenommenen Schritt.
  */
 export function Redo(): $CancellablePromise<$models.Result> {

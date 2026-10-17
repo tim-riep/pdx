@@ -72,14 +72,20 @@ func buildDrop(t *template.Template, s *schema.Schema, drop Drop) (model.Command
 	if node.Min == 0 && !node.Repeated() && parent.Name != "text" && parent.Name != "span" {
 		el.SetAttr("presence", rel)
 	}
+	top := el
 	if positioned(parent) {
-		el.SetAttr("x", mm(drop.X))
-		el.SetAttr("y", mm(drop.Y))
-		if _, ok := el.Attr("w"); !ok {
-			el.SetAttr("w", "60mm")
+		if !hasPlacement(el) {
+			top = template.NewElement("subform", template.Attr{Name: "id", Value: b.id(el.ID() + "-bereich")},
+				template.Attr{Name: "layout", Value: "flowed"}, template.Attr{Name: "w", Value: "120mm"})
+			top.InsertChild(-1, el)
+		}
+		top.SetAttr("x", mm(drop.X))
+		top.SetAttr("y", mm(drop.Y))
+		if _, ok := top.Attr("w"); !ok {
+			top.SetAttr("w", "60mm")
 		}
 	}
-	xml := fragment(el)
+	xml := fragment(top)
 	cmd := model.Command{Op: "insert", Parent: drop.Parent, Index: drop.Index, XML: xml}
 	// Namespaces, die die Vorlage noch nicht kennt, werden deklariert.
 	if decl := nsCommands(t, s); len(decl) > 0 {

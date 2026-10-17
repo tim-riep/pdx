@@ -17,6 +17,7 @@ export {
 export {
     Drop,
     Info,
+    Insert,
     Manifest,
     ProjectState,
     RecentFile,

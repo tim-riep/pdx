@@ -78,6 +78,15 @@ func (a *AppService) ConfirmClose() {
 	}
 }
 
+// PickFile fragt nach einer Datei, etwa einem Bild für den Baustein Bild.
+// pattern ist ein Filter wie "*.png;*.jpg".
+func (a *AppService) PickFile(title, name, pattern string) (string, error) {
+	if a.c.dialogs == nil {
+		return "", ErrNoDialogs
+	}
+	return a.c.dialogs.OpenFile(title, []Filter{{Name: name, Pattern: pattern}}, false)
+}
+
 // Info liefert Name und Versionen.
 func (*AppService) Info() Info {
 	return Info{Name: "pdx Designer", Version: Version, Engine: pdx.Version}

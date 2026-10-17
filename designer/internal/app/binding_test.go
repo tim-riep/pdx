@@ -1,6 +1,7 @@
 package app
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -125,5 +126,44 @@ func TestImportSchema(t *testing.T) {
 	}
 	if _, err := ss.Import("/gibt/es/nicht.xsd", ""); err == nil {
 		t.Error("Import einer fehlenden Datei gelingt")
+	}
+}
+
+func TestInsertElements(t *testing.T) {
+	c := NewCore(nil, nil, t.TempDir())
+	if _, err := NewProjectService(c).Open(muster); err != nil {
+		t.Fatal(err)
+	}
+	ts := NewTemplateService(c)
+	for _, kind := range []string{KindText, KindPositioned, KindFlowed, KindLine, KindRect, KindBarcode, KindPageNumber, KindTable} {
+		for _, parent := range []string{"inhalt", "adressfenster"} {
+			res, err := ts.InsertElement(Insert{Kind: kind, Parent: parent, Index: -1, X: 10, Y: 5})
+			if err != nil {
+				t.Fatalf("%s in %s: %v", kind, parent, err)
+			}
+			n := c.doc.Pkg.Template.ByID(res.Select)
+			if n != nil && n.Parent.ID() != parent && n.Parent.Name == "subform" {
+				n = n.Parent // in einem Teilformular mit Lage
+			}
+			if n == nil || n.Parent.ID() != parent {
+				t.Fatalf("%s in %s: Element fehlt", kind, parent)
+			}
+			if parent == "adressfenster" && (n.Get("x", "") != "10mm" || n.Get("y", "") != "5mm") {
+				t.Errorf("%s positioniert ohne Lage", kind)
+			}
+		}
+	}
+	img := "../../../testdata/images"
+	files, _ := filepath.Glob(img + "/*.png")
+	if len(files) == 0 {
+		t.Skip("kein Testbild")
+	}
+	res, err := ts.InsertElement(Insert{Kind: KindImage, Parent: "inhalt", Index: -1, File: files[0]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	src := c.doc.Pkg.Template.ByID(res.Select).Get("src", "")
+	if _, ok := c.doc.Pkg.Files[src]; !ok || !strings.HasPrefix(src, "assets/") {
+		t.Errorf("Bild %q nicht im Paket", src)
 	}
 }

@@ -4,9 +4,11 @@
   import { selection } from "../../lib/selection.svelte";
   import { t } from "../../lib/i18n";
   import PageView from "./PageView.svelte";
+  import Palette from "./Palette.svelte";
 
   const gap = 24;
   let zoom = $state(1);
+  let grid = $state(true);
   let fit = $state(true);
   let scrollTop = $state(0);
   let height = $state(800);
@@ -78,19 +80,21 @@
 </script>
 
 <div class="canvas-tools">
+  {#if render.view === "design"}<Palette /><span class="sep"></span>{/if}
+  <label class="grid"><input type="checkbox" bind:checked={grid} /> {t("canvas.grid")}</label>
   <button onclick={() => setZoom(zoom / 1.25)} aria-label={t("canvas.zoomOut")}>−</button>
   <span data-testid="zoom">{Math.round(zoom * 100)} %</span>
   <button onclick={() => setZoom(zoom * 1.25)} aria-label={t("canvas.zoomIn")}>+</button>
   <button onclick={() => (fit = true)}>{t("canvas.fit")}</button>
   {#if render.manifest}
-    <span class="info" data-testid="render-info">{t("canvas.info", { pages: render.pages.length, ms: render.manifest.millis })}</span>
+    <span class="info" data-testid="render-info">{t(render.pages.length === 1 ? "canvas.infoOne" : "canvas.info", { pages: render.pages.length, ms: render.manifest.millis })}</span>
   {/if}
 </div>
 <div class="viewport" data-viewport bind:this={viewport} bind:clientHeight={height} bind:clientWidth={width} onwheel={wheel}
   onscroll={(e) => (scrollTop = (e.currentTarget as HTMLElement).scrollTop)}>
   <div class="pages" style="padding: {gap}px; gap: {gap}px">
     {#each render.pages as p, i (p.n)}
-      <PageView page={p} hash={render.manifest?.pages[i]?.hash ?? String(p.n)} {zoom} visible={visible(i)} {bitmap} {image} />
+      <PageView page={p} hash={render.manifest?.pages[i]?.hash ?? String(p.n)} {zoom} {grid} visible={visible(i)} {bitmap} {image} />
     {/each}
   </div>
 </div>
@@ -103,6 +107,17 @@
     padding: var(--space-1) var(--space-3);
     background: var(--surface);
     border-bottom: 1px solid var(--border);
+  }
+  .sep {
+    width: 1px;
+    align-self: stretch;
+    background: var(--border);
+  }
+  .grid {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
   }
   .canvas-tools .info {
     margin-left: auto;

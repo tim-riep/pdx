@@ -101,6 +101,58 @@ export class Info {
 }
 
 /**
+ * Insert beschreibt das Einfügen eines Bausteins.
+ */
+export class Insert {
+    "kind": string;
+    "parent": string;
+    "index": number;
+
+    /**
+     * mm, nur bei positionierten Eltern
+     */
+    "x": number;
+    "y": number;
+
+    /**
+     * File ist bei Bildern der Pfad der Bilddatei.
+     */
+    "file": string;
+
+    /** Creates a new Insert instance. */
+    constructor($$source: Partial<Insert> = {}) {
+        if (!("kind" in $$source)) {
+            this["kind"] = "";
+        }
+        if (!("parent" in $$source)) {
+            this["parent"] = "";
+        }
+        if (!("index" in $$source)) {
+            this["index"] = 0;
+        }
+        if (!("x" in $$source)) {
+            this["x"] = 0;
+        }
+        if (!("y" in $$source)) {
+            this["y"] = 0;
+        }
+        if (!("file" in $$source)) {
+            this["file"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Insert instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Insert {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Insert($$parsedSource as Partial<Insert>);
+    }
+}
+
+/**
  * Manifest beschreibt die gesetzten Seiten eines Stands. Die Seiten selbst
  * holt die Oberfläche über /pdx/page/<hash>, nur geänderte Hashes sind neu.
  */
