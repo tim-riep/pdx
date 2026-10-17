@@ -31,6 +31,8 @@ type Decl struct {
 	Simple bool
 	// Min und Max sind die Kardinalität relativ zum Elternelement.
 	Min, Max int
+	// Enum sind die erlaubten Werte eines einfachen Typs mit Aufzählung.
+	Enum []string
 
 	impl any
 }
@@ -91,6 +93,7 @@ func (m *xsdModel) Roots() []*Decl {
 func (m *xsdModel) decl(el *xsd.Element, lo, hi int) *Decl {
 	d := &Decl{Name: el.Name(), Min: lo, Max: hi, impl: el}
 	d.Type, d.Simple = typeInfo(el.Type())
+	d.Enum = enumOf(el.Type())
 	return d
 }
 
@@ -111,6 +114,23 @@ func typeInfo(t xsd.TypeDefinition) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// enumOf liefert die Aufzählung des einfachen Inhalts, falls vorhanden.
+func enumOf(t xsd.TypeDefinition) []string {
+	switch t := t.(type) {
+	case *xsd.SimpleType:
+		if t != nil {
+			return t.Enumeration()
+		}
+	case *xsd.ComplexType:
+		if t.ContentKind() == xsd.ContentSimple {
+			if st := t.SimpleContent(); st != nil {
+				return st.Enumeration()
+			}
+		}
+	}
+	return nil
 }
 
 func simpleBase(t *xsd.SimpleType) string {
@@ -183,7 +203,11 @@ func (m *xsdModel) Children(d *Decl) ([]*Decl, bool) {
 		if a.Use == xsd.UseRequired {
 			lo = 1
 		}
-		out = append(out, &Decl{Name: a.Name, Attr: true, Type: simpleBase(a.Type), Simple: true, Min: lo, Max: 1})
+		var enum []string
+		if a.Type != nil {
+			enum = a.Type.Enumeration()
+		}
+		out = append(out, &Decl{Name: a.Name, Attr: true, Type: simpleBase(a.Type), Simple: true, Min: lo, Max: 1, Enum: enum})
 	}
 	if ct.AttributeWildcard() != nil {
 		open = true

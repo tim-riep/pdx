@@ -6,7 +6,7 @@ require github.com/boxesandglue/textshape v0.0.18
 
 require (
 	github.com/boombuler/barcode v1.1.0
-	github.com/tim-riep/go-xslt v0.0.8
+	github.com/tim-riep/go-xslt v0.1.0
 )
 
 require golang.org/x/text v0.38.0

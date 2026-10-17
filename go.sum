@@ -4,5 +4,7 @@ github.com/boxesandglue/textshape v0.0.18 h1:UItAnfJtHpMuJaZ3yFiolGK8bH0KDWxHkHK
 github.com/boxesandglue/textshape v0.0.18/go.mod h1:DdRw4tpKs6xFaulvBfut/ICZGXgZeibMhoLrQycmVh8=
 github.com/tim-riep/go-xslt v0.0.8 h1:lHG0huSb+3I9Y/LTwDkaofPSeunGfp3+DILpD8qcZ0s=
 github.com/tim-riep/go-xslt v0.0.8/go.mod h1:rSo6bBiGlcLiQCguoW2iUBEIZ9IdBOBLrj9mecEQd2k=
+github.com/tim-riep/go-xslt v0.1.0 h1:MWaAvrRVdJt9OEK/FoIvY40Fu9q2Su0GVdJnkUVy7rE=
+github.com/tim-riep/go-xslt v0.1.0/go.mod h1:rSo6bBiGlcLiQCguoW2iUBEIZ9IdBOBLrj9mecEQd2k=
 golang.org/x/text v0.38.0 h1:sXmwo9DwP3OK9EZ7PqAdaooSGozfl/3a6/xJcbzPRhE=
 golang.org/x/text v0.38.0/go.mod h1:YXZt3QhHUKYT53r2lLKFIVi6Ao1jdzrTR/KQ09qyxF4=
