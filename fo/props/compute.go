@@ -31,14 +31,17 @@ type Computed struct {
 	StartIndent      Length
 	EndIndent        Length
 	TextIndent       Length
-	LinefeedPreserve bool
-	Widows           int
-	Hyphenate        bool
-	HyphenChar       string
-	HyphenPush       int
-	HyphenRemain     int
-	Orphans          int
-	Lang             string
+	// LastLineEndIndent wird zur Endkante der letzten Zeile addiert (XSL 1.1
+	// 7.16.3).
+	LastLineEndIndent Length
+	LinefeedPreserve  bool
+	Widows            int
+	Hyphenate         bool
+	HyphenChar        string
+	HyphenPush        int
+	HyphenRemain      int
+	Orphans           int
+	Lang              string
 
 	// Nicht vererbte Eigenschaften.
 	SpaceBefore, SpaceAfter Length
@@ -90,7 +93,7 @@ func (c *Computed) inherit() *Computed {
 		FontFamily: c.FontFamily, FontSize: c.FontSize, FontWeight: c.FontWeight, Italic: c.Italic,
 		Color: c.Color, TextAlign: c.TextAlign, TextAlignLast: c.TextAlignLast,
 		LineHeightFactor: c.LineHeightFactor, LineHeight: c.LineHeight,
-		StartIndent: c.StartIndent, EndIndent: c.EndIndent, TextIndent: c.TextIndent,
+		StartIndent: c.StartIndent, EndIndent: c.EndIndent, TextIndent: c.TextIndent, LastLineEndIndent: c.LastLineEndIndent,
 		LinefeedPreserve: c.LinefeedPreserve, Lang: c.Lang, Widows: c.Widows, Orphans: c.Orphans,
 		Hyphenate: c.Hyphenate, HyphenChar: c.HyphenChar, HyphenPush: c.HyphenPush, HyphenRemain: c.HyphenRemain,
 	}
@@ -503,6 +506,13 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 			return err
 		}
 		c.TextIndent = l
+	}
+	if v, ok := a["last-line-end-indent"]; ok {
+		l, err := length("last-line-end-indent", v)
+		if err != nil {
+			return err
+		}
+		c.LastLineEndIndent = l
 	}
 	if margin[areatree.Top] != nil {
 		c.SpaceBefore = *margin[areatree.Top]

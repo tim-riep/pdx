@@ -15,7 +15,7 @@ fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem 
 fop/block_break-before_bug44412: offen, erste Abweichung: Seite 2: "The break-before set on this block causes the parent block" verschoben um 0.00 pt waagerecht, -4.00 pt senkrecht
 fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished whenever it shone in her face." verschoben um 19.85 pt waagerecht, -0.00 pt senkrecht
+fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "In olden times when wishing still helped one, there lived a king whose"
 fop/block_margin_shorthands: begründet, ein leerer fo:block mit Rahmen erzeugt einen Bereich mit dessen Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
 fop/block_space-before_space-after_bug38102: begründet, pdx nimmt das Optimum von Abständen, FOP staucht bis zum Minimum, XSL 1.1 4.3 lässt jeden Wert im Bereich zu

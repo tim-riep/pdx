@@ -725,6 +725,12 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 		from, indent = g.skip.minor, 0
 	}
 	items := pa.items(from, p.TextAlign == "justify")
+	// last-line-end-indent verkürzt die letzte Zeile, negative Werte
+	// verlängern sie (XSL 1.1 7.16.3). Die unsichtbare Box am Absatzende
+	// wirkt im Umbruch und in der Ausrichtung.
+	if l := p.LastLineEndIndent; l != 0 && len(items) > 0 {
+		items = append(items, linebreak.Item{Kind: linebreak.Box, Width: l, Payload: -1})
+	}
 	breaks, err := g.e.opts.Breaker.Break(items, func(line int) areatree.Length {
 		if line == 0 {
 			return avail - indent
