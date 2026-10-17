@@ -62,8 +62,9 @@
         <XPathInput ref={n.ref} prop={xp.prop} value={current} multiline status={false} label={propLabel(xp.prop)} placeholder={t("xpath.hint")} />
         <div class="actions">
           <div class="result">{#if xp.draft.trim()}<XPathStatus />{/if}</div>
-          <button disabled={!dirty} onclick={() => commit(current)}>{t("xpath.apply")}</button>
-          <button disabled={!dirty} onclick={() => setDraft(current)}>{t("xpath.revert")}</button>
+          <!-- mousedown verhindert, dass der Editor den Fokus verliert und dabei schon übernimmt -->
+          <button disabled={!dirty} onmousedown={(e) => e.preventDefault()} onclick={() => commit(current)}>{t("xpath.apply")}</button>
+          <button disabled={!dirty} onmousedown={(e) => e.preventDefault()} onclick={() => setDraft(current)}>{t("xpath.revert")}</button>
         </div>
       </div>
       <div class="list" aria-label={t("xpath.fields")}>

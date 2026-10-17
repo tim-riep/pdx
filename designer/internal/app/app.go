@@ -113,6 +113,7 @@ type Core struct {
 	view   model.Snapshot
 	schema schemaCache
 	v      validator
+	conf   conformance
 	// AutosaveDelay ist die Wartezeit nach einer Änderung bis zur
 	// automatischen Sicherung.
 	AutosaveDelay time.Duration

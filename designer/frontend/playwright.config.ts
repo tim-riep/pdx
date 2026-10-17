@@ -10,6 +10,9 @@ const port = Number(process.env.PDX_E2E_PORT ?? 8799);
 const data = process.env.PDX_DESIGNER_DATA ?? mkdtempSync(join(tmpdir(), "pdx-e2e-"));
 process.env.PDX_E2E_DATA = data;
 const bin = `../out/designer-server${process.platform === "win32" ? ".exe" : ""}`;
+// veraPDF ersetzt eine Attrappe mit festem Bericht, damit die Tests schnell
+// und ohne Docker laufen. Unter Windows fehlt die Shell, dort entfällt der Test.
+const verapdf = process.env.PDX_VERAPDF ?? (process.platform === "win32" ? "" : join(import.meta.dirname, "e2e/fixtures/verapdf-attrappe"));
 
 export default defineConfig({
   testDir: "e2e",
@@ -22,7 +25,7 @@ export default defineConfig({
     { name: "webkit", use: { ...devices["Desktop Safari"], viewport: { width: 1440, height: 900 } } },
   ],
   webServer: {
-    command: `cd .. && CGO_ENABLED=0 go build -tags server -o ${bin} . && PDX_DESIGNER_DATA=${data} WAILS_SERVER_PORT=${port} ${bin}`,
+    command: `cd .. && CGO_ENABLED=0 go build -tags server -o ${bin} . && PDX_DESIGNER_DATA=${data} PDX_VERAPDF=${verapdf} WAILS_SERVER_PORT=${port} ${bin}`,
     url: `http://localhost:${port}/health`,
     timeout: 180_000,
     reuseExistingServer: false,

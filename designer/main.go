@@ -29,6 +29,7 @@ func init() {
 	application.RegisterEvent[model.Patch](app.EventTemplateChanged)
 	application.RegisterEvent[app.Manifest](app.EventRenderPages)
 	application.RegisterEvent[app.Report](app.EventProblems)
+	application.RegisterEvent[app.Conformance](app.EventConformance)
 }
 
 func main() {
@@ -60,6 +61,7 @@ func main() {
 			application.NewService(app.NewTemplateService(core)),
 			application.NewService(app.NewSchemaService(core)),
 			application.NewService(app.NewValidationService(core)),
+			application.NewService(app.NewConformanceService(core)),
 			// Seiten, Schriften und Bilder des Canvas über HTTP.
 			application.NewServiceWithOptions(app.NewAssets(core), application.ServiceOptions{Route: "/pdx"}),
 		},

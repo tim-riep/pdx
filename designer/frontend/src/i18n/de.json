@@ -259,5 +259,19 @@
   "problems.source.layout": "Satz",
   "problems.document": "Dokument",
   "problems.goto": "Zum Element",
-  "problems.missing": "Das Element gibt es nicht mehr."
+  "problems.missing": "Das Element gibt es nicht mehr.",
+  "conformance.check": "PDF/A-3b prüfen",
+  "conformance.again": "Erneut prüfen",
+  "conformance.cancel": "Abbrechen",
+  "conformance.running": "Prüfung läuft, veraPDF braucht einige Sekunden.",
+  "conformance.idle": "Erzeugt das PDF mit eingebetteten Daten und prüft es mit veraPDF.",
+  "conformance.ok": "Konform mit PDF/A-3b",
+  "conformance.bad": "Nicht konform, {n} Regeln verletzt",
+  "conformance.error": "Prüfung nicht möglich",
+  "conformance.stale": "Veraltet, die Vorlage hat sich seitdem geändert.",
+  "conformance.page": "Seite {n}",
+  "conformance.more": "{n} weitere",
+  "conformance.meta": "{runner}, {seconds} s",
+  "conformance.clause": "Abschnitt {clause}",
+  "conformance.clauseTest": "Abschnitt {clause}, Test {test}"
 }

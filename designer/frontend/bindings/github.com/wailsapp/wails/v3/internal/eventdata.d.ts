@@ -16,6 +16,7 @@ declare module "@wailsio/runtime" {
     namespace Events {
         interface CustomEvents {
             "app:close-request": app$0.ProjectState;
+            "conformance:changed": app$0.Conformance;
             "problems:changed": app$0.Report;
             "project:changed": app$0.ProjectState;
             "render:pages": app$0.Manifest;

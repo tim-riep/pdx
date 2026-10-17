@@ -16,6 +16,186 @@ import * as pipeline$0 from "../pipeline/models.js";
 import * as xpath$0 from "../xpath/models.js";
 
 /**
+ * Conformance ist der Stand der Prüfung.
+ */
+export class Conformance {
+    "state": string;
+
+    /**
+     * Rev ist die geprüfte Revision. Weicht sie vom Dokument ab, ist das
+     * Ergebnis veraltet.
+     */
+    "rev": number;
+
+    /**
+     * leer für Platzhalterdaten
+     */
+    "sample": string;
+    "runner": string;
+    "profile": string;
+
+    /**
+     * Compliant gilt nur im Zustand done.
+     */
+    "compliant": boolean;
+    "findings": ConformanceFinding[];
+
+    /**
+     * Problems sind Fehler beim Erzeugen des PDF.
+     */
+    "problems": pipeline$0.Problem[];
+    "notes": string[];
+    "error": string;
+    "millis": number;
+
+    /** Creates a new Conformance instance. */
+    constructor($$source: Partial<Conformance> = {}) {
+        if (!("state" in $$source)) {
+            this["state"] = "";
+        }
+        if (!("rev" in $$source)) {
+            this["rev"] = 0;
+        }
+        if (!("sample" in $$source)) {
+            this["sample"] = "";
+        }
+        if (!("runner" in $$source)) {
+            this["runner"] = "";
+        }
+        if (!("profile" in $$source)) {
+            this["profile"] = "";
+        }
+        if (!("compliant" in $$source)) {
+            this["compliant"] = false;
+        }
+        if (!("findings" in $$source)) {
+            this["findings"] = [];
+        }
+        if (!("problems" in $$source)) {
+            this["problems"] = [];
+        }
+        if (!("notes" in $$source)) {
+            this["notes"] = [];
+        }
+        if (!("error" in $$source)) {
+            this["error"] = "";
+        }
+        if (!("millis" in $$source)) {
+            this["millis"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Conformance instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Conformance {
+        const $$createField6_0 = $$createType1;
+        const $$createField7_0 = $$createType3;
+        const $$createField8_0 = $$createType4;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("findings" in $$parsedSource) {
+            $$parsedSource["findings"] = $$createField6_0($$parsedSource["findings"]);
+        }
+        if ("problems" in $$parsedSource) {
+            $$parsedSource["problems"] = $$createField7_0($$parsedSource["problems"]);
+        }
+        if ("notes" in $$parsedSource) {
+            $$parsedSource["notes"] = $$createField8_0($$parsedSource["notes"]);
+        }
+        return new Conformance($$parsedSource as Partial<Conformance>);
+    }
+}
+
+/**
+ * ConformanceFinding ist eine verletzte Regel mit ihren Einzelprüfungen.
+ */
+export class ConformanceFinding {
+    "clause": string;
+    "test": string;
+    "description": string;
+    "count": number;
+    "items": ConformanceItem[];
+
+    /** Creates a new ConformanceFinding instance. */
+    constructor($$source: Partial<ConformanceFinding> = {}) {
+        if (!("clause" in $$source)) {
+            this["clause"] = "";
+        }
+        if (!("test" in $$source)) {
+            this["test"] = "";
+        }
+        if (!("description" in $$source)) {
+            this["description"] = "";
+        }
+        if (!("count" in $$source)) {
+            this["count"] = 0;
+        }
+        if (!("items" in $$source)) {
+            this["items"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ConformanceFinding instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ConformanceFinding {
+        const $$createField4_0 = $$createType6;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("items" in $$parsedSource) {
+            $$parsedSource["items"] = $$createField4_0($$parsedSource["items"]);
+        }
+        return new ConformanceFinding($$parsedSource as Partial<ConformanceFinding>);
+    }
+}
+
+/**
+ * ConformanceItem ist eine fehlgeschlagene Einzelprüfung von veraPDF.
+ */
+export class ConformanceItem {
+    /**
+     * Ref ist das Vorlagenelement, wenn sich der Kontext zuordnen lässt.
+     */
+    "ref": string;
+
+    /**
+     * Page ist die Seite ab 1, 0 ohne Seitenbezug.
+     */
+    "page": number;
+    "context": string;
+    "message": string;
+
+    /** Creates a new ConformanceItem instance. */
+    constructor($$source: Partial<ConformanceItem> = {}) {
+        if (!("ref" in $$source)) {
+            this["ref"] = "";
+        }
+        if (!("page" in $$source)) {
+            this["page"] = 0;
+        }
+        if (!("context" in $$source)) {
+            this["context"] = "";
+        }
+        if (!("message" in $$source)) {
+            this["message"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ConformanceItem instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ConformanceItem {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new ConformanceItem($$parsedSource as Partial<ConformanceItem>);
+    }
+}
+
+/**
  * Drop beschreibt, wohin ein Datenknoten gezogen wurde.
  */
 export class Drop {
@@ -246,9 +426,9 @@ export class Manifest {
      * Creates a new Manifest instance from a string or object.
      */
     static createFrom($$source: any = {}): Manifest {
-        const $$createField3_0 = $$createType1;
-        const $$createField4_0 = $$createType3;
-        const $$createField5_0 = $$createType5;
+        const $$createField3_0 = $$createType8;
+        const $$createField4_0 = $$createType10;
+        const $$createField5_0 = $$createType3;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("pages" in $$parsedSource) {
             $$parsedSource["pages"] = $$createField3_0($$parsedSource["pages"]);
@@ -468,7 +648,7 @@ export class Report {
      * Creates a new Report instance from a string or object.
      */
     static createFrom($$source: any = {}): Report {
-        const $$createField1_0 = $$createType7;
+        const $$createField1_0 = $$createType12;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField1_0($$parsedSource["problems"]);
@@ -505,7 +685,7 @@ export class Result {
      * Creates a new Result instance from a string or object.
      */
     static createFrom($$source: any = {}): Result {
-        const $$createField2_0 = $$createType8;
+        const $$createField2_0 = $$createType13;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("history" in $$parsedSource) {
             $$parsedSource["history"] = $$createField2_0($$parsedSource["history"]);
@@ -608,9 +788,9 @@ export class XPathInfo {
      * Creates a new XPathInfo instance from a string or object.
      */
     static createFrom($$source: any = {}): XPathInfo {
-        const $$createField2_0 = $$createType10;
-        const $$createField3_0 = $$createType12;
-        const $$createField4_0 = $$createType14;
+        const $$createField2_0 = $$createType15;
+        const $$createField3_0 = $$createType17;
+        const $$createField4_0 = $$createType19;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField2_0($$parsedSource["problems"]);
@@ -659,18 +839,23 @@ export class XPathQuery {
 }
 
 // Private type creation functions
-const $$createType0 = pipeline$0.PageRef.createFrom;
+const $$createType0 = ConformanceFinding.createFrom;
 const $$createType1 = $Create.Array($$createType0);
-const $$createType2 = pipeline$0.FontRef.createFrom;
+const $$createType2 = pipeline$0.Problem.createFrom;
 const $$createType3 = $Create.Array($$createType2);
-const $$createType4 = pipeline$0.Problem.createFrom;
-const $$createType5 = $Create.Array($$createType4);
-const $$createType6 = Problem.createFrom;
-const $$createType7 = $Create.Array($$createType6);
-const $$createType8 = model$0.History.createFrom;
-const $$createType9 = xpath$0.Problem.createFrom;
+const $$createType4 = $Create.Array($Create.Any);
+const $$createType5 = ConformanceItem.createFrom;
+const $$createType6 = $Create.Array($$createType5);
+const $$createType7 = pipeline$0.PageRef.createFrom;
+const $$createType8 = $Create.Array($$createType7);
+const $$createType9 = pipeline$0.FontRef.createFrom;
 const $$createType10 = $Create.Array($$createType9);
-const $$createType11 = Field.createFrom;
-const $$createType12 = $Create.Nullable($$createType11);
-const $$createType13 = xpath$0.Result.createFrom;
-const $$createType14 = $Create.Nullable($$createType13);
+const $$createType11 = Problem.createFrom;
+const $$createType12 = $Create.Array($$createType11);
+const $$createType13 = model$0.History.createFrom;
+const $$createType14 = xpath$0.Problem.createFrom;
+const $$createType15 = $Create.Array($$createType14);
+const $$createType16 = Field.createFrom;
+const $$createType17 = $Create.Nullable($$createType16);
+const $$createType18 = xpath$0.Result.createFrom;
+const $$createType19 = $Create.Nullable($$createType18);

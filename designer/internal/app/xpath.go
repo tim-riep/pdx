@@ -74,17 +74,7 @@ func (s *TemplateService) xpathInput(ref string) (xpathInput, error) {
 		}
 	}
 	// Beispieldaten wie in der Vorschau, sonst Platzhalter.
-	sample := s.c.r.sample
-	if sample == "" {
-		if l := d.Pkg.Samples(); len(l) > 0 {
-			sample = l[0]
-		}
-	}
-	if b, ok := d.Pkg.Files[sample]; ok {
-		in.data, in.sample = b, sample
-	} else if in.sc != nil {
-		in.data = in.sc.Placeholder()
-	}
+	in.data, in.sample = s.c.previewDataLocked()
 	return in, nil
 }
 

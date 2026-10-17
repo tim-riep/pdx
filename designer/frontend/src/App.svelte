@@ -8,6 +8,7 @@
   import Tabs from "./components/Tabs.svelte";
   import XPathPanel from "./components/XPathPanel.svelte";
   import ProblemsPanel from "./components/ProblemsPanel.svelte";
+  import ConformancePanel from "./components/ConformancePanel.svelte";
   import { entries } from "./lib/problems.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
@@ -137,7 +138,7 @@
       {:else if bottomTab === "problems"}
         <ProblemsPanel />
       {:else}
-        <p class="soon">{t("panel.conformance")}</p>
+        <ConformancePanel />
       {/if}
     </Tabs>
   </section>

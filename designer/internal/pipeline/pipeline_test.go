@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"testing"
+	"time"
 
+	"github.com/tim-riep/pdx/pdf/render"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
 )
@@ -117,5 +119,27 @@ func BenchmarkDesignerEdit(b *testing.B) {
 		if _, err := p.Run(context.Background(), in); err != nil {
 			b.Fatal(err)
 		}
+	}
+}
+
+func TestPDF(t *testing.T) {
+	in := input(t)
+	var tr render.Trace
+	pdf, probs, err := New().PDF(context.Background(), in, time.Date(2026, 1, 15, 9, 0, 0, 0, time.UTC), &tr)
+	if err != nil || len(probs) != 0 {
+		t.Fatalf("PDF: %v %v", err, probs)
+	}
+	if !bytes.HasPrefix(pdf, []byte("%PDF-")) || !bytes.Contains(pdf, []byte("/EmbeddedFiles")) {
+		t.Fatalf("kein PDF mit Anhang (%d Bytes)", len(pdf))
+	}
+	if len(tr.Pages) == 0 || len(tr.Pages[0].Ops) == 0 {
+		t.Fatalf("Spur leer: %+v", tr)
+	}
+	ids := map[string]bool{}
+	for _, r := range tr.Pages[0].Ops {
+		ids[r.ID] = true
+	}
+	if !ids["z-betrag-f"] {
+		t.Fatalf("Spur ohne z-betrag-f: %v", ids)
 	}
 }

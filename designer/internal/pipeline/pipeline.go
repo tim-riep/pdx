@@ -20,6 +20,7 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/image"
+	"github.com/tim-riep/pdx/pdf/render"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
 )
@@ -258,6 +259,25 @@ func encodePNG(im *image.Image) ([]byte, error) {
 		return nil, err
 	}
 	return b.Bytes(), nil
+}
+
+// PDF erzeugt das PDF eines Stands mit dem Standardprofil (PDF/A-3b) und
+// den Anhängen der Vorlage. created ist das Erstellungsdatum. trace erhält, wenn gesetzt, die Zuordnung der
+// Operatoren zu den Vorlagenelementen. Fehler tragen die Vorlagen-ID wie in
+// den Befunden von Run.
+func (p *Pipeline) PDF(ctx context.Context, in Input, created time.Time, trace *render.Trace) ([]byte, []Problem, error) {
+	tpl, _, err := p.compile(in)
+	if err != nil {
+		return nil, problems(err), nil
+	}
+	res, err := tpl.Render(in.Data, pdx.TemplateOptions{Options: pdx.Options{Fonts: p.reg, Context: ctx, Trace: trace, CreationDate: created}})
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return nil, nil, err
+	}
+	if err != nil {
+		return nil, problems(err), nil
+	}
+	return res.PDF, nil, nil
 }
 
 // problems übersetzt Fehler der Engine in Befunde mit Vorlagen-ID.
