@@ -1,0 +1,15 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 9
+1 0.000 10.308 line1
+2 0.000 10.308 line2 break-before="column"
+2 0.000 24.708 line3
+3 0.000 10.308 line4 break-before="page"
+3 0.000 24.708 line5
+4 0.000 10.308 line6 break-before="even-page"
+4 0.000 24.708 line7
+6 0.000 10.308 line8 break-before="even-page"
+6 0.000 24.708 line9
+7 0.000 10.308 line10 break-before="odd-page"
+7 0.000 24.708 line11
+9 0.000 10.308 line12 break-before="odd-page"
+9 0.000 24.708 line13

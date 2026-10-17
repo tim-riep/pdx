@@ -1,0 +1,4 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 72.000 113.232 position
+1 181.488 170.832 NOT ok!

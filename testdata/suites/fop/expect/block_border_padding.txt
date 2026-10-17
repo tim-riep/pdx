@@ -1,0 +1,6 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 - 20.308 no gap between red and blue border!
+1 - 59.708 padding="5pt" on outer block, gap between borders!
+1 - 104.108 margin="5pt" on outer block
+1 - 148.508 margin="5pt" on inner block

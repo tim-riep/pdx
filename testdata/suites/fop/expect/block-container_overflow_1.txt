@@ -1,0 +1,18 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 15.000 30.308 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+1 15.000 44.708 Pellentesque hendrerit euismod velit. Nulla facilisi. Etiam et
+1 15.000 59.108 risus at neque ultrices facilisis. Donec lectus est, nonummy
+1 15.000 73.508 quis, rhoncus bibendum, porta at, nisl.
+1 15.000 92.908 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+1 15.000 107.308 Pellentesque hendrerit euismod velit. Nulla facilisi. Etiam et
+1 15.000 121.708 risus at neque ultrices facilisis. Donec lectus est, nonummy
+1 15.000 136.108 quis, rhoncus bibendum, porta at, nisl.
+1 15.000 155.508 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+1 15.000 169.908 Pellentesque hendrerit euismod velit. Nulla facilisi. Etiam et
+1 15.000 184.308 risus at neque ultrices facilisis. Donec lectus est, nonummy
+1 15.000 198.708 quis, rhoncus bibendum, porta at, nisl.
+1 15.000 218.108 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+1 15.000 232.508 Pellentesque hendrerit euismod velit. Nulla facilisi. Etiam et
+1 15.000 246.908 risus at neque ultrices facilisis. Donec lectus est, nonummy
+1 15.000 261.308 quis, rhoncus bibendum, porta at, nisl.

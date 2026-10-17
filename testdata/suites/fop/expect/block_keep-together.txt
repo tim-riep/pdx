@@ -1,0 +1,38 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 14
+1 0.000 10.308 block1
+1 0.000 24.708 block2
+2 0.000 10.308 block3 The quick brown fox jumps over the lazy dog. The quick
+2 0.000 24.708 brown fox jumps over the lazy dog. The quick brown fox jumps over
+2 0.000 39.108 the lazy dog.
+2 0.000 53.508 block4
+3 0.000 10.308 block5
+4 0.000 10.308 block6
+4 0.000 24.708 block7
+4 0.000 39.108 block8
+4 0.000 53.508 block9
+5 0.000 10.308 block10
+6 0.000 10.308 block11
+6 0.000 24.708 block12
+7 0.000 10.308 block13 The quick brown fox jumps over the lazy dog. The quick
+7 0.000 24.708 brown fox jumps over the lazy dog. The quick brown fox jumps over
+7 0.000 39.108 the lazy dog.
+7 0.000 53.508 block14
+8 0.000 10.308 block15
+9 0.000 10.308 block16
+9 0.000 24.708 block17
+9 0.000 39.108 block18
+9 0.000 53.508 block19
+10 0.000 10.308 block20
+11 0.000 10.308 block21
+11 0.000 24.708 block22
+12 0.000 10.308 block23
+12 0.000 24.708 block24
+12 0.000 39.108 block25
+12 0.000 53.508 block26
+13 0.000 10.308 block31
+13 0.000 24.708 block32
+14 0.000 10.308 block33
+14 0.000 24.708 block34
+14 0.000 39.108 block35
+14 0.000 53.508 block36

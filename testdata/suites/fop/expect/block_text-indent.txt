@@ -1,0 +1,24 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 20.000 10.308 In olden times when wishing still helped one, there lived a
+1 0.000 24.708 king whose daughters were all beautiful; and the youngest was
+1 0.000 39.108 so beautiful that the sun itself, which has seen so much, was
+1 0.000 53.508 astonished whenever it shone in her face. Close by the king's castle
+1 0.000 67.908 lay a great dark forest, and under an old lime-tree in the forest was
+1 0.000 82.308 a well, and when the day was very warm, the king's child went out
+1 0.000 96.708 into the forest and sat down by the side of the cool fountain; and
+1 0.000 111.108 when she was bored she took a golden ball, and threw it up on high
+1 0.000 125.508 and caught it; and this ball was her favorite plaything.
+1 20.000 139.908 In olden times when wishing still helped one, there lived a
+1 0.000 154.308 king whose daughters were all beautiful; and the youngest was so
+1 0.000 168.708 beautiful that the sun itself, which has seen so much, was astonished
+1 0.000 183.108 whenever it shone in her face. Close by the king's castle lay a great
+1 0.000 197.508 dark forest, and under an old lime-tree in the forest was a well, and
+1 0.000 211.908 when the day was very warm, the king's child went out into the forest
+1 0.000 226.308 and sat down by the side of the cool fountain; and when she was
+1 0.000 240.708 bored she took a golden ball, and threw it up on high and caught it;
+1 0.000 255.108 and this ball was her favorite plaything.
+1 20.000 269.508 This is just for testing purpose and this line will be indented.
+1 20.000 283.908 This is the nested block.
+1 0.000 298.308 The text following the nested block should NOT indented. The text
+1 0.000 312.708 following the nested block should NOT be indented.

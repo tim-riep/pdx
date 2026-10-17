@@ -1,0 +1,8 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 4.896 ... Default dots pattern
+1 0.000 19.296 ... leader-pattern-width="use-font-metrics"
+1 - 33.696 .... leader-length="20mm" leader-pattern-width="5mm"
+1 - 48.096 .... leader-length="20%" leader-pattern-width="5mm"
+1 0.000 62.496 ... leader-pattern-width="1pt"
+1 - 76.896 .... leader-length="20%" leader-pattern-width="5%"

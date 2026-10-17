@@ -1,0 +1,7 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 28.346 38.654 Marker1 : AAAA 123456789 - numbers with a lower font-size : Missing first four letter of marker
+1 28.346 53.054 'AAAA' ????
+1 28.346 123.693 Beginning of Page-sequence
+1 28.346 138.093 Text with marker A
+1 28.346 152.493 End of Page-sequence

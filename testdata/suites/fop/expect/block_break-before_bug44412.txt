@@ -1,0 +1,6 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 20.000 30.308 Before the block
+2 20.000 34.308 The break-before set on this block causes the parent block
+2 20.000 48.708 to produce an empty block area with only a border before on
+2 20.000 63.108 the first page.

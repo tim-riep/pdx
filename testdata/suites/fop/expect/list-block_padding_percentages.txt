@@ -1,0 +1,11 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 18.000 28.308 label 1
+1 90.000 28.308 body 1: The whole list should have a 5%
+1 90.000 42.708 padding shown in yellow.
+1 18.000 57.108 label 2
+1 90.000 57.108 body 2: The whole list should have a 5%
+1 90.000 71.508 padding shown in yellow.
+1 18.000 85.908 label 3
+1 90.000 85.908 body 3: The whole list should have a 5%
+1 90.000 100.308 padding shown in yellow.

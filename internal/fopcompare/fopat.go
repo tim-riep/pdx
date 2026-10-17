@@ -25,6 +25,9 @@ type ATLine struct {
 	Page     int
 	Text     string
 	Baseline float64
+	// X ist der Anfang der ersten Glyphe, nur bei Zeilen aus pdx (HasX).
+	X    float64
+	HasX bool
 }
 
 // frame ist ein offener Bereich beim Lesen von FOPs Area Tree.

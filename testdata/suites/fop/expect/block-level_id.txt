@@ -1,0 +1,9 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 20.000 30.308 block1
+1 20.000 44.708 •
+1 70.000 44.708 here is text in the list item body
+1 20.000 59.108 header
+1 20.000 73.508 body-content
+1 20.000 87.908 footer
+1 20.000 102.308 block-container-content

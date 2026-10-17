@@ -1,0 +1,5 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 15.324 10.308 Default space pattern
+1 39.324 24.708 leader-length="0.5in"
+1 21.324 39.108 leader-length="5%"

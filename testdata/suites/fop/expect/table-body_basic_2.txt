@@ -1,0 +1,10 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+2 0.000 6.872 A
+2 0.000 16.472 B
+2 28.800 6.872 Cras et felis faucibus justo fringilla tincidunt. Vivamus vitae wisi ut orci
+2 28.800 16.472 egestas bibendum. Nullam nunc orci, euismod non, pulvinar sit amet,
+2 28.800 26.072 aliquet a, leo. Aliquam dapibus, justo pulvinar euismod fringilla, neque
+2 28.800 35.672 ipsum pretium lorem, eget pharetra eros massa vel nulla. Ut lobortis
+2 28.800 45.272 enim id magna. Pellentesque sagittis. Etiam tristique arcu. Cras eu dolor.
+2 28.800 54.872 Praesent aliquam wisi sit amet enim. Nullam id diam.

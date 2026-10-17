@@ -1,0 +1,25 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 50.000 60.308 In olden times when wishing still helped one, there
+1 50.000 74.708 lived a king whose daughters were all beautiful, but the
+1 50.000 89.108 youngest was so beautiful that the sun itself, which has
+1 50.000 103.508 seen so much, was astonished whenever it shone in her
+1 50.000 117.908 face.
+1 50.000 132.308 In olden times when wishing still helped one, there
+1 50.000 146.708 lived a king whose daughters were all beautiful, but the
+1 50.000 161.108 youngest was so beautiful that the sun itself, which has
+1 50.000 175.508 seen so much, was astonished whenever it shone in her
+1 50.000 189.908 face.
+1 50.000 204.308 In olden times when wishing still helped one, there
+1 50.000 218.708 lived a king whose daughters were all beautiful, but the
+1 50.000 233.108 youngest was so beautiful that the sun itself, which has
+2 50.000 60.308 seen so much, was astonished whenever it shone in her face. In olden times when wishing
+2 50.000 74.708 still helped one, there lived a king whose daughters were all beautiful, but the youngest was
+2 50.000 89.108 so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in
+2 50.000 103.508 her face.
+2 50.000 117.908 In olden times when wishing still helped one, there lived a king whose daughters were all
+2 50.000 132.308 beautiful, but the youngest was so beautiful that the sun itself, which has seen so much, was
+2 50.000 146.708 astonished whenever it shone in her face.
+2 50.000 161.108 In olden times when wishing still helped one, there lived a king whose daughters were all
+2 50.000 175.508 beautiful, but the youngest was so beautiful that the sun itself, which has seen so much, was
+2 50.000 189.908 astonished whenever it shone in her face.

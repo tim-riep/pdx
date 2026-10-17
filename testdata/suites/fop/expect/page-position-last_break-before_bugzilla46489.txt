@@ -1,0 +1,8 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 40.000 50.308 Some text
+1 196.960 50.308 More text before break. More text before break. More text before
+1 196.960 64.708 break.
+2 40.000 50.308 TEXT AFTER BREAK
+2 40.000 72.708 blah blah blah
+2 40.000 87.108 blah blah blah

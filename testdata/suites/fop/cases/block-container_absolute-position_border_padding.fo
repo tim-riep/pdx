@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Aus Apache FOP 2.11, test/layoutengine/standard-testcases/block-container_absolute-position_border_padding.xml -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg">
+      <fo:layout-master-set>
+        <fo:simple-page-master master-name="normal" page-width="5in" page-height="5in">
+          <fo:region-body/>
+        </fo:simple-page-master>
+      </fo:layout-master-set>
+      <fo:page-sequence master-reference="normal" white-space-collapse="true">
+        <fo:flow flow-name="xsl-region-body">
+          <fo:block-container left="20pt" top="10pt" right="20pt" height="50pt" absolute-position="absolute" background-color="orange" border="solid 5pt" padding="5pt">
+            <fo:block background-color="yellow">absolutely positioned right/width plus border &amp; padding</fo:block>
+          </fo:block-container>
+          <fo:block-container left="20pt" top="90pt" right="20pt" height="50pt" absolute-position="absolute" background-color="orange" margin="0pt" border-right="solid 45pt" border="solid 5pt" padding="5pt">
+            <fo:block background-color="yellow">absolutely positioned right/width plus border &amp; padding, margin=0pt</fo:block>
+          </fo:block-container>
+          <fo:block-container left="20pt" top="170pt" right="20pt" height="50pt" absolute-position="absolute" background-color="orange" margin="0pt" border-right="solid 45pt" border="solid 5pt" padding="5pt">
+            <fo:block background-color="yellow" start-indent="0pt" end-indent="0pt">absolutely positioned right/width plus border &amp; padding, margin=0pt, start|end-indent=0pt</fo:block>
+          </fo:block-container>
+          <fo:block-container left="20pt" top="250pt" right="20pt" height="50pt" absolute-position="absolute" background-color="orange" margin="5pt" border-right="solid 45pt" border="solid 5pt" padding="5pt">
+            <fo:block background-color="yellow" start-indent="0pt" end-indent="0pt">absolutely positioned right/width plus border &amp; padding, margin=5pt, start|end-indent=0pt</fo:block>
+          </fo:block-container>
+          <fo:block color="lightgrey">
+            This is some background-text. 
+            This is some background-text. 
+            This is some background-text. 
+            This is some background-text. 
+            This is some background-text. 
+            This is some background-text. 
+            This is some background-text. 
+            This is some background-text. 
+            This is some background-text.
+          </fo:block>
+        </fo:flow>
+      </fo:page-sequence>
+    </fo:root>

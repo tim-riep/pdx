@@ -1,0 +1,19 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 38.000 48.308 cell A1
+1 153.200 48.308 cell B1
+1 38.000 66.708 cell A2
+1 153.200 66.708 cell B2
+1 210.800 66.708 cell C2
+1 38.000 85.108 cell A3
+1 210.800 85.108 cell C3
+1 210.800 103.508 cell C4
+1 38.000 121.908 cell A5
+1 210.800 121.908 cell C5
+1 153.200 140.308 cell B6
+1 210.800 140.308 cell C6
+1 38.000 281.108 cell A1 cell A1
+1 38.000 295.508 cell A1 cell A1
+1 134.000 281.108 cell B1
+2 38.000 46.308 cell A1 cell A1
+2 38.000 60.708 cell A1 cell A1

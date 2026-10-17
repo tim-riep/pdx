@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Aus Apache FOP 2.11, test/layoutengine/standard-testcases/table_bug37270.xml -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+      <fo:layout-master-set>
+        <fo:simple-page-master master-name="normal" page-width="5in" page-height="5in">
+          <fo:region-body/>
+        </fo:simple-page-master>
+      </fo:layout-master-set>
+      <fo:page-sequence master-reference="normal">
+        <fo:flow flow-name="xsl-region-body">
+          <fo:table table-layout="fixed" width="100%" border-collapse="separate">
+            <fo:table-column/>
+            <fo:table-column/>
+            <fo:table-column/>
+            <fo:table-column/>
+            <fo:table-body>
+              <fo:table-row>
+                <!-- Note: the padding-top caused a NullPointerException -->
+                <fo:table-cell padding-top="40pt" number-rows-spanned="3" background-color="yellow" id="left">
+                  <fo:block>row 1 col 1</fo:block>
+                </fo:table-cell>
+                <!-- absent table-cells in first row -->
+                <!--fo:table-cell column-number="4">
+                  <fo:block>xxxxx</fo:block>
+                </fo:table-cell-->
+              </fo:table-row>
+              <fo:table-row background-color="orange">
+                <fo:table-cell number-columns-spanned="2" id="r2c2">
+                  <fo:block>row 2 col 2</fo:block>
+                </fo:table-cell>
+                <fo:table-cell id="r2c4">
+                  <fo:block>Row 2 col 4</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell number-columns-spanned="2" id="r3c2">
+                  <fo:block>row 3 col 2</fo:block>
+                </fo:table-cell>
+                <fo:table-cell id="r3c4">
+                  <fo:block>Row 3 col 4</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+            </fo:table-body>
+          </fo:table>
+        </fo:flow>
+      </fo:page-sequence>
+    </fo:root>

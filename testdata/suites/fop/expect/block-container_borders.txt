@@ -1,0 +1,10 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 - 10.308 left ***
+1 - 24.708 start ***
+1 - 39.108 right ***
+1 - 53.508 end ***
+1 - 72.908 top ***
+1 - 92.308 before ***
+1 - 106.708 bottom ***
+1 - 126.108 after ***

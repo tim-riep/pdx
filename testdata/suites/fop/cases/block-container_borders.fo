@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Aus Apache FOP 2.11, test/layoutengine/standard-testcases/block-container_borders.xml -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg">
+      <fo:layout-master-set>
+        <fo:simple-page-master master-name="normal" page-width="5in" page-height="5in">
+          <fo:region-body/>
+        </fo:simple-page-master>
+      </fo:layout-master-set>
+      <fo:page-sequence master-reference="normal" white-space-collapse="true">
+        <fo:flow flow-name="xsl-region-body">
+          <fo:block-container border-left-style="solid" border-left-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">left ***</fo:block>
+          </fo:block-container>
+          <fo:block-container border-start-style="solid" border-start-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">start ***</fo:block>
+          </fo:block-container>
+          <fo:block-container border-right-style="solid" border-right-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">right ***</fo:block>
+          </fo:block-container>
+          <fo:block-container border-end-style="solid" border-end-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">end ***</fo:block>
+          </fo:block-container>
+          <fo:block-container border-top-style="solid" border-top-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">top ***</fo:block>
+          </fo:block-container>
+          <fo:block-container border-before-style="solid" border-before-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">before ***</fo:block>
+          </fo:block-container>
+          <fo:block-container border-bottom-style="solid" border-bottom-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">bottom ***</fo:block>
+          </fo:block-container>
+          <fo:block-container border-after-style="solid" border-after-width="5pt">
+            <fo:block text-align-last="justify" background-color="yellow">after ***</fo:block>
+          </fo:block-container>
+        </fo:flow>
+      </fo:page-sequence>
+    </fo:root>

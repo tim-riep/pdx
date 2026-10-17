@@ -1,0 +1,35 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 4
+1 0.000 10.308 page 1
+1 0.000 24.708 [PAGE] [PS] [DOC]
+1 0.000 48.026 Part 1
+1 0.000 63.108 text1
+1 0.000 77.508 text1
+1 0.000 91.908 text1
+1 0.000 106.308 text1
+1 0.000 120.708 text1
+1 0.000 135.108 text1
+1 258.360 157.908 [PAGE] [PS] [DOC]
+1 258.360 172.308 [PAGE] [PS] [DOC]
+2 0.000 10.308 page 2
+2 0.000 24.708 [PS] [DOC]
+2 0.000 46.308 text1
+2 297.420 157.908 [PS] [DOC]
+2 297.420 172.308 [PS] [DOC]
+3 0.000 10.308 page 3
+3 0.000 24.708 [DOC]
+3 0.000 46.308 sometext
+3 0.000 60.708 sometext
+3 0.000 75.108 sometext
+3 0.000 89.508 sometext
+3 0.000 103.908 sometext
+3 0.000 118.308 sometext
+3 0.000 132.708 sometext
+3 320.052 157.908 [DOC]
+3 320.052 172.308 [DOC]
+4 0.000 10.308 page 4
+4 0.000 24.708 [DOC]
+4 0.000 46.308 sometext
+4 0.000 60.708 sometext
+4 320.052 157.908 [DOC]
+4 320.052 172.308 [DOC]

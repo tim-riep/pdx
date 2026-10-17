@@ -1,0 +1,24 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 5.000 15.308 solid
+1 77.000 15.308 dashed
+1 149.000 15.308 dotted
+1 221.000 15.308 double
+1 293.000 15.308 groove
+1 2.000 36.708 solid
+1 74.000 36.708 dashed
+1 146.000 36.708 dotted
+1 218.000 36.708 double
+1 290.000 36.708 groove
+1 5.000 58.108 groove
+1 77.000 58.108 ridge
+1 149.000 58.108 inset
+1 221.000 58.108 outset
+1 2.000 79.508 groove
+1 74.000 79.508 ridge
+1 146.000 79.508 inset
+1 218.000 79.508 outset
+1 0.000 95.908 none
+1 72.000 95.908 hidden
+1 0.000 110.308 none
+1 72.000 110.308 hidden

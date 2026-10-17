@@ -1,0 +1,57 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 5.000 14.872 BA -- Break Opportunity After (A)
+1 5.000 26.190 VeryLongWordWithAThinSpace
+1 7.000 38.190 PutInTheMiddleOfIt
+1 5.000 51.472 BB -- Break Opportunity Before (B)
+1 5.000 62.790 VeryLongWordWithAnAcuteAccent
+1 5.000 74.790 ´PutInTheMiddleOfIt
+1 5.000 88.072 B2 -- Break Opportunity Before and After (B/A)
+1 5.000 99.390 —Very—Long—Word—With—LotsOf
+1 5.000 111.390 —Em—Dashes—Put—InBetween—
+1 5.000 123.390 And—Around—
+1 5.000 136.672 B2 -- Break Opportunity Before and After (B/A) -
+1 5.000 146.272 as before but don't break between consecutive
+1 5.000 155.872 Em Dashes
+1 5.000 167.190 AVeryLongWordWithSomeDouble
+1 5.000 179.190 — —Dashes— —Put— —In
+1 5.000 194.190 AVeryLongWordWithSomeDouble——
+1 5.000 206.190 Dashes——Put——In
+1 5.000 219.472 CL -- Closing Punctuation (XB)
+1 5.000 230.790 Closing ) brackets ) even ) if )
+1 5.000 242.790 preceeded ) by ) a ) space ) are ) not )
+1 5.000 254.790 a ) break ) point
+1 5.000 268.072 EX -- Exclamation / interrogation (XB)
+1 5.000 279.390 Question ?marks ?and exclamation !
+1 5.000 291.390 marks !even ?if !preceeded ?by !a ?
+1 5.000 303.390 space !are ?not !a ?break !point
+1 5.000 316.672 HY -- Hyphen Minus (XA)
+1 5.000 327.990 Very-Long-Word-With-Lots-Of-
+1 5.000 339.990 Hyphens-Put-In-Between
+1 5.000 354.990 Hyphens-in-numbers-do-
+1 5.000 366.990 not-123-567-890-break
+1 5.000 380.272 ID -- Ideographic (B/A)
+1 5.000 391.590 Need A Proper Test Case For This
+1 10.540 403.590 As Here Only The Ideographic
+1 10.540 415.590 Space Is Used
+1 5.000 428.872 IN -- Inseperable characters (XP)
+1 5.000 440.190 There is never a
+1 5.000 452.190 break…………………………between
+1 5.000 464.190 characters of this class
+1 5.000 477.472 IS -- Numeric Separator (Infix) (XB)
+1 5.000 488.790 Numbers containing separators
+1 5.000 500.790 123,345,678.00 08:00:23.15 are not
+1 5.000 512.790 broken
+1 5.000 526.072 OP -- Opening Punctuation (XA)
+1 5.000 537.390 Opening ( brackets ( even ( if
+1 5.000 549.390 ( followed ( by ( a ( space ( are ( not
+1 5.000 561.390 ( a ( break ( point
+1 5.000 574.672 SY -- Symbols Allowing Break After (A)
+1 5.000 585.990 http://a/very/long/url/can/be/broken/
+1 5.000 597.990 after/the/solidus
+1 5.000 612.990 No-break-point-in-normal-
+1 5.000 624.990 dates-12/12/2006-or-
+1 5.000 636.990 fractions-12345678/67890112
+1 5.000 650.272 WJ -- Word Joiner (XB/XA)
+1 5.000 661.590 Here we/prevent/any/breaks/after
+1 5.000 673.590 the/solidus

@@ -1,0 +1,14 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 5.000 15.590 To emphasize a word we give it a 1pt border and a background.
+1 5.000 37.590 Demonstrates a big border inline with border="solid 5pt red" padding="5pt"
+1 5.000 49.590 extending over the small allocation rectangle to the top and bottom.
+1 - 71.590 Demonstrates unsymmetric borders and padding but the baselines should
+1 5.000 83.590 align.
+1 - 114.180 Big border with a smaller font but the baselines
+1 5.000 138.180 should align.
+1 5.000 163.590 This demonstrates correct line breaking of a fo:inline because it does fit nicely..
+1 5.000 175.590 This demonstrates correct line breaking of a fo:inline because it does fit
+1 8.000 187.590 nicely.. Not really as we started a fo:inline with border/padding just before the
+1 5.000 199.590 word "nicely" which forces it to the next line.
+1 5.000 214.590 Demonstrates nested inlines finishing together

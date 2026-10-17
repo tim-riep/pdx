@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Aus Apache FOP 2.11, test/layoutengine/standard-testcases/block_uax14_linebreaking.xml -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg">
+      <fo:layout-master-set>
+        <fo:simple-page-master master-name="normal" page-width="2.5in" page-height="10in" margin="5pt">
+          <fo:region-body/>
+        </fo:simple-page-master>
+      </fo:layout-master-set>
+      <fo:page-sequence master-reference="normal" white-space-collapse="true">
+        <fo:flow flow-name="xsl-region-body" font-size="10pt">
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            BA -- Break Opportunity After (A)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            VeryLongWordWithAThinSpace PutInTheMiddleOfIt
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            BB -- Break Opportunity Before (B)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            VeryLongWordWithAnAcuteAccent´PutInTheMiddleOfIt
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            B2 -- Break Opportunity Before and After (B/A)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            —Very—Long—Word—With—LotsOf—Em—Dashes—Put—InBetween—And—Around—
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            B2 -- Break Opportunity Before and After (B/A) - as before but don't break between consecutive Em Dashes
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            AVeryLongWordWithSomeDouble— —Dashes— —Put— —In
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            AVeryLongWordWithSomeDouble——Dashes——Put——In
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            CL -- Closing Punctuation (XB)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            Closing ) brackets ) even ) if ) preceeded ) by ) a ) space ) are ) not ) a ) break ) point
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            EX -- Exclamation / interrogation (XB)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            Question ?marks ?and exclamation !marks !even ?if !preceeded ?by !a ?space !are ?not !a ?break !point
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            HY -- Hyphen Minus (XA)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            Very-Long-Word-With-Lots-Of-Hyphens-Put-In-Between
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            Hyphens-in-numbers-do-not-123-567-890-break
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            ID -- Ideographic (B/A)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 0pt 0pt">
+            Need　A　Proper　Test　Case　For　This　As　Here　Only　The　Ideographic　Space　Is　Used
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            IN -- Inseperable characters (XP)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            There is never a break…………………………between characters of this class
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            IS -- Numeric Separator (Infix) (XB)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            Numbers containing separators 123,345,678.00 08:00:23.15 are not broken
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            OP -- Opening Punctuation (XA)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            Opening ( brackets ( even ( if ( followed ( by ( a ( space ( are ( not ( a ( break ( point
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            SY -- Symbols Allowing Break After (A)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            http://a/very/long/url/can/be/broken/after/the/solidus
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            No-break-point-in-normal-dates-12/12/2006-or-fractions-12345678/67890112
+          </fo:block>
+          <fo:block background-color="silver" font-size="8pt" margin="3pt 0pt 0pt 0pt">
+            WJ -- Word Joiner (XB/XA)
+          </fo:block>
+          <fo:block background-color="yellow" margin="0pt 0pt 3pt 0pt">
+            Here we/⁠prevent/⁠any/⁠breaks/⁠after the/⁠solidus
+          </fo:block>
+        </fo:flow>
+      </fo:page-sequence>
+    </fo:root>

@@ -1,0 +1,12 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 6.000 13.308 background on cell
+1 186.000 13.308 background on cell
+1 6.000 35.708 background on row
+1 186.000 35.708 background on row
+1 6.000 58.108 background on body
+1 186.000 58.108 background on body
+1 6.000 80.508 background on column
+1 186.000 80.508 background on column
+1 6.000 102.908 background on table
+1 186.000 102.908 background on table

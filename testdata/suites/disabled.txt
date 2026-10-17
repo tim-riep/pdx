@@ -1,0 +1,578 @@
+# Deaktivierte Fälle der FO-Testsuiten mit Begründung, eine Zeile je Fall.
+# Zeilen mit den Gründen des Imports und der Referenz schreiben die Werkzeuge
+# neu (siehe internal/fosuite), alle anderen bleiben stehen.
+
+fop/afp-extension_1: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/balanced-columns_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/balanced-columns_2: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/balanced-columns_3: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+fop/balanced-columns_4: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/balanced-columns_5: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/balanced-columns_6: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/basic-link_background-image_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_external-destination_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_external-destination_writing-mode_rl_2: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_height: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="12pt"
+fop/basic-link_height_baseline-shift: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="-5pt"
+fop/basic-link_height_baseline-shift_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_height_inline-child: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="12pt"
+fop/basic-link_height_inline-child_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_height_multi-child: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="12pt"
+fop/basic-link_height_multi-child_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_height_multi-line: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="12pt"
+fop/basic-link_height_multi-line_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_height_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_internal-desination-next-page_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_internal-desination-same-page-after_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic-link_internal-desination-same-page-before_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/basic_link_to_last_page: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/bidi_propagation_1: nicht im Teilumfang von pdx: 41:44: fo:bidi-override wird noch nicht unterstützt
+fop/block-break-inline-break-before: nicht im Teilumfang von pdx: 12:15: fo:block ist in fo:inline nicht erlaubt
+fop/block-container_absolute-position_break-after: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/block-container_absolute-position_display-align: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="90"
+fop/block-container_absolute-position_fox-transform: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/block-container_absolute-position_multi-column: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/block-container_absolute-position_no-height_2: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="90"
+fop/block-container_absolute-position_reference-orientation: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="90"
+fop/block-container_background-image_background-position-relative: braucht Dateien aus dem Testverzeichnis: ../resources/images/box1.png
+fop/block-container_background-image_background-repeat: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/block-container_display-align_space-before: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="90"
+fop/block-container_overflow_2: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/block-container_reference-orientation: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/block-container_reference-orientation_2: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="90"
+fop/block-container_reference-orientation_bug36391: in FOP 2.11 deaktiviert: An assert is failing
+fop/block-container_space-before_space-after_1: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/block-container_space-before_space-after_2: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/block-container_space-before_space-after_3: in FOP 2.11 deaktiviert: Block-containers with no height currently don't create a fence for spaces as they should (they behave like a normal block).
+fop/block-container_start-indent_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/block-inline-break-before: nicht im Teilumfang von pdx: 12:15: fo:block ist in fo:inline nicht erlaubt
+fop/block-inline-empty-character: nicht im Teilumfang von pdx: 9:50: fo:character wird noch nicht unterstützt
+fop/block-inline-inline-break-before: nicht im Teilumfang von pdx: 13:17: fo:block ist in fo:inline nicht erlaubt
+fop/block_basic_2: nicht im Teilumfang von pdx: 12:21: fo:wrapper wird noch nicht unterstützt
+fop/block_bidi_jira2303: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/block_break-before_bug46240: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/block_bug39414: nicht im Teilumfang von pdx: Eigenschaft white-space="pre"
+fop/block_font-stretch: in FOP 2.11 deaktiviert: Font-stretch is not implemented, yet.
+fop/block_hidden: nicht im Teilumfang von pdx: Eigenschaft visibility="hidden"
+fop/block_letter-spacing: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="2pt"
+fop/block_letter-spacing_text-align_justify: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="2pt"
+fop/block_letter-spacing_white-space_pre: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="0.5pt"
+fop/block_line-height-shift-adjustment: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="sub"
+fop/block_line-stacking-strategy_1: nicht im Teilumfang von pdx: Eigenschaft line-stacking-strategy="font-height"
+fop/block_linefeed-treatment: in FOP 2.11 deaktiviert: Preserved linefeeds in a fo:character are not handled correctly.
+fop/block_padding_2: nicht im Teilumfang von pdx: Eigenschaft padding-before.conditionality="retain"
+fop/block_shy_linebreaking: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="2pt"
+fop/block_space-before_space-after_2: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/block_space-before_space-after_3: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/block_space-before_space-after_4: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/block_space-before_space-after_5: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+fop/block_space-before_space-after_6: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/block_space-before_space-after_8: in FOP 2.11 deaktiviert: An empty block currently produces a fence for stacking constraints which it shouldn't.
+fop/block_text-align_3: nicht im Teilumfang von pdx: Eigenschaft white-space-collapse="false"
+fop/block_text-align_4: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/block_text-align_5: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/block_white-space: nicht im Teilumfang von pdx: Eigenschaft text-decoration="underline"
+fop/block_white-space-collapse_1: nicht im Teilumfang von pdx: 15:19: fo:character wird noch nicht unterstützt
+fop/block_white-space-collapse_2: nicht im Teilumfang von pdx: 15:19: fo:character wird noch nicht unterstützt
+fop/block_white-space-treatment_1: nicht im Teilumfang von pdx: Eigenschaft white-space-treatment="ignore"
+fop/block_white-space-treatment_2: nicht im Teilumfang von pdx: Eigenschaft white-space-collapse="false"
+fop/block_white-space-treatment_3: in FOP 2.11 deaktiviert: White space handling incorrectly stops at fo:inline boundaries when it comes to formatter generated line breaks.
+fop/block_white-space_1: nicht im Teilumfang von pdx: Eigenschaft white-space-collapse="false"
+fop/block_white-space_4: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="2pt"
+fop/block_white-space_bug50988: nicht im Teilumfang von pdx: 9:21: fo:character wird noch nicht unterstützt
+fop/block_white-space_nbsp_2: in FOP 2.11 deaktiviert: The nbsp given as an fo:character is not adjustable and therefore the justification does not work in this case.
+fop/block_word-spacing: in FOP 2.11 deaktiviert: Word-spacing may not work as expected.
+fop/block_word-spacing_text-align_justify: in FOP 2.11 deaktiviert: Word-spacing may not work as expected.
+fop/bookmarks_1: nicht im Teilumfang von pdx: 44:32: fo:flow darf keinen Text enthalten
+fop/bookmarks_3: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/change-bar_block: nicht im Teilumfang von pdx: 12:19: fo:change-bar-begin wird noch nicht unterstützt
+fop/change-bar_inline: nicht im Teilumfang von pdx: 13:25: fo:change-bar-begin wird noch nicht unterstützt
+fop/change-bar_list: nicht im Teilumfang von pdx: 11:19: fo:change-bar-begin wird noch nicht unterstützt
+fop/change-bar_overlapped: nicht im Teilumfang von pdx: 13:22: fo:change-bar-begin wird noch nicht unterstützt
+fop/change-bar_placement: nicht im Teilumfang von pdx: 12:19: fo:change-bar-begin wird noch nicht unterstützt
+fop/change-bar_placement-rtl: nicht im Teilumfang von pdx: 12:19: fo:change-bar-begin wird noch nicht unterstützt
+fop/change-bar_style: nicht im Teilumfang von pdx: 12:19: fo:change-bar-begin wird noch nicht unterstützt
+fop/change-bar_table: nicht im Teilumfang von pdx: 12:22: fo:change-bar-begin wird noch nicht unterstützt
+fop/character_background-color: nicht im Teilumfang von pdx: 10:16: fo:character wird noch nicht unterstützt
+fop/character_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/character_border_padding: nicht im Teilumfang von pdx: 10:16: fo:character wird noch nicht unterstützt
+fop/character_vertical-align: nicht im Teilumfang von pdx: 10:27: fo:character wird noch nicht unterstützt
+fop/character_writing-mode_rl: nicht im Teilumfang von pdx: 10:23: fo:character wird noch nicht unterstützt
+fop/color_1: braucht Dateien aus dem Testverzeichnis: ../../../fop-core/src/main/resources/org/apache/fop/pdf/sRGB.icc
+fop/external-graphic_basic: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/external-graphic_bmp: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.bmp
+fop/external-graphic_border_padding: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/external-graphic_breaking: braucht Dateien aus dem Testverzeichnis: ../resources/images/arrow_up_medium.png
+fop/external-graphic_bug37815: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg72dpi.jpg
+fop/external-graphic_content-height_content-width: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/external-graphic_content-height_content-width_2: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg72dpi.jpg
+fop/external-graphic_display-align: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/external-graphic_emf: braucht Dateien aus dem Testverzeichnis: ../resources/images/img.emf
+fop/external-graphic_eps: braucht Dateien aus dem Testverzeichnis: ../resources/images/barcode.eps
+fop/external-graphic_gif: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg72dpi.gif
+fop/external-graphic_height_percentage: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/external-graphic_invalid: braucht Dateien aus dem Testverzeichnis: file://localhost/some-invalid-uri.png
+fop/external-graphic_jpeg: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/external-graphic_overflow_hidden: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/external-graphic_oversized: in FOP 2.11 deaktiviert: Images currently don't shrink so they fit on a page when they are too big and shrinking is allowed to happen (min/opt/max).
+fop/external-graphic_png: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.png
+fop/external-graphic_rfc2397: braucht Dateien aus dem Testverzeichnis: &#34;data:image/gif;base64,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&#10;&#34;
+fop/external-graphic_size_1: braucht Dateien aus dem Testverzeichnis: ../resources/images/big-image.png
+fop/external-graphic_size_2: braucht Dateien aus dem Testverzeichnis: ../resources/images/box1.png
+fop/external-graphic_src_uri: in FOP 2.11 deaktiviert: Doesn't work behind a proxy which requires authorization.
+fop/external-graphic_svg: braucht Dateien aus dem Testverzeichnis: ../resources/images/img.svg
+fop/external-graphic_svgz: braucht Dateien aus dem Testverzeichnis: ../resources/images/img-w-size.svgz
+fop/external-graphic_tiff: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.tif
+fop/external-graphic_wmf: braucht Dateien aus dem Testverzeichnis: ../resources/images/testChart.wmf
+fop/float_1: nicht im Teilumfang von pdx: 32:9: fo:float wird noch nicht unterstützt
+fop/float_10: nicht im Teilumfang von pdx: 10:13: fo:float wird noch nicht unterstützt
+fop/float_2: nicht im Teilumfang von pdx: 32:9: fo:float wird noch nicht unterstützt
+fop/float_3: nicht im Teilumfang von pdx: 11:9: fo:float wird noch nicht unterstützt
+fop/float_4: nicht im Teilumfang von pdx: 57:9: fo:float wird noch nicht unterstützt
+fop/float_5: nicht im Teilumfang von pdx: 16:9: fo:float wird noch nicht unterstützt
+fop/float_6: nicht im Teilumfang von pdx: 34:9: fo:float wird noch nicht unterstützt
+fop/float_7: nicht im Teilumfang von pdx: 10:53: fo:footnote wird noch nicht unterstützt
+fop/float_8: nicht im Teilumfang von pdx: 13:9: fo:float wird noch nicht unterstützt
+fop/float_9: braucht Dateien aus dem Testverzeichnis: unknown-token
+fop/flow_changing-ipd_1: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/flow_changing-ipd_3: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/flow_changing-ipd_4: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/flow_changing-ipd_7: nicht im Teilumfang von pdx: 23:13: fo:block ist in fo:inline nicht erlaubt
+fop/flow_changing-ipd_block-container_1: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/flow_changing-ipd_block-container_2: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/flow_changing-ipd_break-before-table2: nicht im Teilumfang von pdx: Eigenschaft vertical-align="middle"
+fop/flow_changing-ipd_columns: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/flow_changing-ipd_image: braucht Dateien aus dem Testverzeichnis: ../resources/images/fop-logo-color-24bit.png
+fop/flow_changing-ipd_last-page_11: nicht im Teilumfang von pdx: 26:15: fo:block ist in fo:inline nicht erlaubt
+fop/flow_changing-ipd_last-page_12: braucht Dateien aus dem Testverzeichnis: a.TIFF
+fop/flow_changing-ipd_last-page_13: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_last-page_14: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_last-page_15: nicht im Teilumfang von pdx: 23:38: fo:block ist in fo:inline nicht erlaubt
+fop/flow_changing-ipd_last-page_16: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_last-page_17: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_last-page_20: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_last-page_5: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_last-page_6: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_list: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_list2: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_list3: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_list4: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_list5: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_list6: nicht im Teilumfang von pdx: 8:7: fo:region-start wird noch nicht unterstützt
+fop/flow_changing-ipd_no-last-page: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_table: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_table2: braucht Dateien aus dem Testverzeichnis: black.png
+fop/flow_changing-ipd_table_2: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-ipd_table_3: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/flow_changing-span: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/footnote_basic: nicht im Teilumfang von pdx: 9:52: fo:footnote wird noch nicht unterstützt
+fop/footnote_basic_link: nicht im Teilumfang von pdx: 14:17: fo:footnote wird noch nicht unterstützt
+fop/footnote_bug37880: nicht im Teilumfang von pdx: 11:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_bug53005: nicht im Teilumfang von pdx: 10:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_changing-page-bpd: nicht im Teilumfang von pdx: 33:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_changing-page-bpd_2: nicht im Teilumfang von pdx: 24:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_column_span: nicht im Teilumfang von pdx: 11:476: fo:footnote wird noch nicht unterstützt
+fop/footnote_footnote-only-final-page_multiple: nicht im Teilumfang von pdx: 11:7: fo:footnote wird noch nicht unterstützt
+fop/footnote_footnote-only-final-page_multiple_whole: nicht im Teilumfang von pdx: 18:87: fo:footnote wird noch nicht unterstützt
+fop/footnote_footnote-only-final-page_several-pages: nicht im Teilumfang von pdx: 27:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_footnote-only-final-page_simple: nicht im Teilumfang von pdx: 27:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_footnote-separator: nicht im Teilumfang von pdx: 12:52: fo:footnote wird noch nicht unterstützt
+fop/footnote_id: in FOP 2.11 deaktiviert: The "id" for fo:footnote and fo:footnote-body is properly processed, but implementation in the layout engine remains incomplete/
+fop/footnote_in_list: nicht im Teilumfang von pdx: 10:37: fo:footnote wird noch nicht unterstützt
+fop/footnote_in_list_2: nicht im Teilumfang von pdx: 16:97: fo:footnote wird noch nicht unterstützt
+fop/footnote_in_table: nicht im Teilumfang von pdx: 10:37: fo:footnote wird noch nicht unterstützt
+fop/footnote_in_table-heading: nicht im Teilumfang von pdx: 13:54: fo:footnote wird noch nicht unterstützt
+fop/footnote_in_table_2: nicht im Teilumfang von pdx: 18:37: fo:footnote wird noch nicht unterstützt
+fop/footnote_in_table_3: nicht im Teilumfang von pdx: 17:37: fo:footnote wird noch nicht unterstützt
+fop/footnote_in_table_fixed-height: nicht im Teilumfang von pdx: 21:37: fo:footnote wird noch nicht unterstützt
+fop/footnote_jira1749: nicht im Teilumfang von pdx: 10:34: fo:footnote wird noch nicht unterstützt
+fop/footnote_jira2106: nicht im Teilumfang von pdx: 13:14: fo:footnote wird noch nicht unterstützt
+fop/footnote_large: nicht im Teilumfang von pdx: 27:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_lastpage: nicht im Teilumfang von pdx: 462:9: fo:footnote wird noch nicht unterstützt
+fop/footnote_positioning_1: nicht im Teilumfang von pdx: 27:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_positioning_2: nicht im Teilumfang von pdx: 27:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_positioning_3: nicht im Teilumfang von pdx: 19:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_positioning_4: nicht im Teilumfang von pdx: 27:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_positioning_5: nicht im Teilumfang von pdx: 27:13: fo:footnote wird noch nicht unterstützt
+fop/footnote_reset: nicht im Teilumfang von pdx: 11:27: fo:footnote wird noch nicht unterstützt
+fop/footnote_space-resolution: in FOP 2.11 deaktiviert: Space resolution does not work between footnote regions.
+fop/footnote_writing-mode_rl: nicht im Teilumfang von pdx: 12:15: fo:footnote wird noch nicht unterstützt
+fop/foreign-attributes: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/fox_destination_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/fox_disable-column-balancing: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/fox_external-document_1: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg72dpi.png
+fop/fox_external-document_2: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg72dpi.png
+fop/fox_external-document_3: braucht Dateien aus dem Testverzeichnis: ../resources/images/multi-page.tiff
+fop/fox_widow-content-limit_bug48380: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/inline-container_alignment: nicht im Teilumfang von pdx: 11:63: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_alignment-adjust: nicht im Teilumfang von pdx: 11:63: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_alignment-baseline: nicht im Teilumfang von pdx: 11:63: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_basic: nicht im Teilumfang von pdx: 9:29: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_border_padding: in FOP 2.11 deaktiviert: Borders and paddings on an inline-container will be ignored.
+fop/inline-container_bpd: nicht im Teilumfang von pdx: 9:29: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_dominant-baseline: nicht im Teilumfang von pdx: 11:63: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_ipd-auto: nicht im Teilumfang von pdx: 9:29: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_ipd-percent: nicht im Teilumfang von pdx: 9:29: fo:inline-container wird noch nicht unterstützt
+fop/inline-container_keeps: in FOP 2.11 deaktiviert: The keep-with-previous and keep-with-next properties have not been implemented on inline-container yet. They will be treated as if they had the value "auto".
+fop/inline-level_id: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg72dpi.jpg
+fop/inline_alignment-adjust_1: nicht im Teilumfang von pdx: Eigenschaft alignment-adjust="baseline"
+fop/inline_alignment-adjust_2: nicht im Teilumfang von pdx: Eigenschaft alignment-adjust="0pt"
+fop/inline_alignment-baseline_1: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="baseline"
+fop/inline_alignment-baseline_2: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="baseline"
+fop/inline_alignment-baseline_3: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="baseline"
+fop/inline_alignment-baseline_4: nicht im Teilumfang von pdx: Eigenschaft dominant-baseline="reset-size"
+fop/inline_background-color_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/inline_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/inline_baseline-shift_1: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="sub"
+fop/inline_baseline-shift_2: nicht im Teilumfang von pdx: Eigenschaft baseline-shift="sub"
+fop/inline_baseline-shift_3: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="middle"
+fop/inline_baseline-shift_4: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="central"
+fop/inline_block-level_nested_1: nicht im Teilumfang von pdx: 11:15: fo:list-block ist in fo:inline nicht erlaubt
+fop/inline_block_nested_1: nicht im Teilumfang von pdx: 9:37: fo:block ist in fo:inline nicht erlaubt
+fop/inline_block_nested_2: nicht im Teilumfang von pdx: 12:13: fo:block ist in fo:inline nicht erlaubt
+fop/inline_block_nested_3: in FOP 2.11 deaktiviert: Placing a table as a child of an fo:inline produces a NullPointerException.
+fop/inline_block_nested_4: nicht im Teilumfang von pdx: 11:47: fo:block ist in fo:inline nicht erlaubt
+fop/inline_block_nested_5: nicht im Teilumfang von pdx: 11:15: fo:block ist in fo:inline nicht erlaubt
+fop/inline_block_nested_6: nicht im Teilumfang von pdx: 11:15: fo:block ist in fo:inline nicht erlaubt
+fop/inline_block_nested_bug36248: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/inline_border_padding_block_nested_1: nicht im Teilumfang von pdx: 11:87: fo:block ist in fo:inline nicht erlaubt
+fop/inline_border_padding_block_nested_2: nicht im Teilumfang von pdx: 11:359: fo:block ist in fo:inline nicht erlaubt
+fop/inline_border_padding_conditionality_1: nicht im Teilumfang von pdx: Eigenschaft border-start-width.conditionality="retain"
+fop/inline_border_padding_conditionality_2: nicht im Teilumfang von pdx: Eigenschaft padding-start.conditionality="retain"
+fop/inline_dominant-baseline_1: nicht im Teilumfang von pdx: Eigenschaft dominant-baseline="no-change"
+fop/inline_dominant-baseline_2: nicht im Teilumfang von pdx: Eigenschaft dominant-baseline="no-change"
+fop/inline_dominant-baseline_3: nicht im Teilumfang von pdx: Eigenschaft dominant-baseline="central"
+fop/inline_keep-together: nicht im Teilumfang von pdx: 12:31: fo:wrapper wird noch nicht unterstützt
+fop/inline_letter-spacing: in FOP 2.11 deaktiviert: Letter-spacing may not work as expected within fo:inline.
+fop/inline_letter-spacing_2: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="2pt"
+fop/inline_table_nested_1: nicht im Teilumfang von pdx: 10:29: fo:table ist in fo:inline nicht erlaubt
+fop/inline_vertical-align_1: nicht im Teilumfang von pdx: Eigenschaft vertical-align="top"
+fop/inline_vertical-align_2: braucht Dateien aus dem Testverzeichnis: ../resources/images/arrow_down_small.png
+fop/inline_white-space-treatment_bugzilla45097: nicht im Teilumfang von pdx: Eigenschaft text-decoration="underline"
+fop/inline_word-spacing: in FOP 2.11 deaktiviert: Word-spacing may not work as expected within fo:inline.
+fop/inline_word-spacing_text-align_justify: in FOP 2.11 deaktiviert: inline word-spacing text-align justify
+fop/instream-foreign-object_basic_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/instream-foreign-object_border_padding_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/instream-foreign-object_display-align_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/keep-together_overflow-recovery_bug49835: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+fop/keep_within-column_basic: nicht im Teilumfang von pdx: Eigenschaft column-count="5"
+fop/keep_within-page_multi-column_overflow: in FOP 2.11 deaktiviert: The block should cause overflow in the last column on the page, rather than be broken.
+fop/kerning_1_off: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="1pt"
+fop/kerning_1_on: nicht im Teilumfang von pdx: Eigenschaft letter-spacing="1pt"
+fop/knuth_element-null_position: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/leader-alignment: in FOP 2.11 deaktiviert: Leader-alignment is not yet implemented.
+fop/leader-alignment_writing-mode_rl: nicht im Teilumfang von pdx: 10:13: fo:bidi-override wird noch nicht unterstützt
+fop/leader_alignment-baseline: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="baseline"
+fop/leader_leader-pattern_dots_writing-mode_rl: nicht im Teilumfang von pdx: 11:13: fo:bidi-override wird noch nicht unterstützt
+fop/leader_leader-pattern_rule_writing-system_rl: nicht im Teilumfang von pdx: 11:16: fo:bidi-override wird noch nicht unterstützt
+fop/leader_leader-pattern_space_writing-mode_rl: nicht im Teilumfang von pdx: 11:16: fo:bidi-override wird noch nicht unterstützt
+fop/leader_leader-pattern_use-content: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="middle"
+fop/leader_leader-pattern_use-content_bug: in FOP 2.11 deaktiviert: Line height is not correctly calculated for use-content leaders whose height is larger than the rest of the line.
+fop/leader_leader-pattern_use-content_writing-mode_rl: nicht im Teilumfang von pdx: 10:13: fo:bidi-override wird noch nicht unterstützt
+fop/linearea_nonempty_1: nicht im Teilumfang von pdx: Eigenschaft line-height-shift-adjustment="disregard-shifts"
+fop/linefeed-treatment_preserve: nicht im Teilumfang von pdx: Eigenschaft white-space="pre"
+fop/list-2-columns: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/list-block_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/list-block_fox_orphan-content-limit_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/list-block_fox_widow-content-limit_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/list-block_npe_bug_empty_2nd_block: nicht im Teilumfang von pdx: Testfall ohne fo:root
+fop/list-block_space-before_space-after_1: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/list-block_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/list-item-body_break-before_multicolumn: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/list-item_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/marker_white-space-collapse: nicht im Teilumfang von pdx: Eigenschaft white-space-collapse="false"
+fop/marker_white-space-treatment_bug42703: braucht Dateien aus dem Testverzeichnis: ../resources/images/img.svg
+fop/marker_white-space_npe: nicht im Teilumfang von pdx: 6:11: fo:region-end wird noch nicht unterstützt
+fop/marker_white-space_static-content: nicht im Teilumfang von pdx: 13:11: fo:marker ist in fo:flow nicht erlaubt
+fop/markers_2: nicht im Teilumfang von pdx: 6:11: fo:region-end wird noch nicht unterstützt
+fop/markers_7: nicht im Teilumfang von pdx: 21:11: fo:marker ist in fo:flow nicht erlaubt
+fop/markers_8: nicht im Teilumfang von pdx: 28:13: fo:marker ist in fo:table nicht erlaubt
+fop/markers_inline-level: nicht im Teilumfang von pdx: 41:15: fo:block ist in fo:inline nicht erlaubt
+fop/multi-switch_basic: nicht im Teilumfang von pdx: 10:11: fo:multi-switch wird noch nicht unterstützt
+fop/multi-switch_select-first-fitting: nicht im Teilumfang von pdx: 9:11: fo:multi-switch wird noch nicht unterstützt
+fop/multi-switch_select-first-fitting_forced-page-break: nicht im Teilumfang von pdx: 11:13: fo:multi-switch wird noch nicht unterstützt
+fop/multi-switch_select-first-fitting_middle-page: nicht im Teilumfang von pdx: 10:11: fo:multi-switch wird noch nicht unterstützt
+fop/multi-switch_select-first-fitting_multiple-variants: nicht im Teilumfang von pdx: 14:11: fo:multi-switch wird noch nicht unterstützt
+fop/multi-switch_select-first-fitting_padding: nicht im Teilumfang von pdx: 9:11: fo:multi-switch wird noch nicht unterstützt
+fop/multi-switch_select-first-fitting_several-multi-switch: nicht im Teilumfang von pdx: 9:11: fo:multi-switch wird noch nicht unterstützt
+fop/page-breaking_2: nicht im Teilumfang von pdx: Eigenschaft white-space-collapse="false"
+fop/page-breaking_3: nicht im Teilumfang von pdx: Eigenschaft white-space-collapse="false"
+fop/page-breaking_4: in FOP 2.11 deaktiviert: Page breaking currently doesn't support changing available IPD between pages of a single page-sequence. Element list generation has to be reset to redetermine l…
+fop/page-breaking_6: in FOP 2.11 deaktiviert: Line breaking is not 100% correct when there's too little space. Overflows are not detected and warned.
+fop/page-height_indefinite_simple: in FOP 2.11 deaktiviert: A RuntimeException is thrown for a page of indefinite height. Lots of warnings.
+fop/page-number-citation-last_page-sequence: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-number-citation_background-image: in FOP 2.11 deaktiviert: Background-images on page-number-citations are not placed correctly.
+fop/page-number-citation_complex_1: in FOP 2.11 deaktiviert: The "id" attributes are not properly handled for all block-level FO elements.
+fop/page-number-citation_complex_2: in FOP 2.11 deaktiviert: The "id" attributes are not properly handled for all inline-level FO elements.
+fop/page-number-citation_vertical-align: nicht im Teilumfang von pdx: Eigenschaft vertical-align="top"
+fop/page-number-citation_writing-mode_rl: nicht im Teilumfang von pdx: 9:26: fo:bidi-override wird noch nicht unterstützt
+fop/page-number-citation_writing-mode_rl_bug2789: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/page-number_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/page-number_bidi_jira2410: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/page-number_vertical-align: nicht im Teilumfang von pdx: Eigenschaft vertical-align="top"
+fop/page-position_last_1: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-position_only_3: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/page-position_only_4: nicht im Teilumfang von pdx: 7:7: fo:region-end wird noch nicht unterstützt
+fop/page-position_only_5: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/page-position_only_5_legacy: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/page-position_only_6: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/page-position_only_7: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/page-position_only_8: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/page-position_only_8_legacy: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/page-sequence_two-column_last-page_1: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-sequence_two-column_last-page_2: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-sequence_two-column_last-page_2bis: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-sequence_two-column_last-page_3: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-sequence_two-column_last-page_4: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-sequence_two-column_last-page_5: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-sequence_two-column_last-page_6: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/page-sequence_two-column_last-page_7: nicht im Teilumfang von pdx: 466:74: fo:block ist in fo:inline nicht erlaubt
+fop/page-sequence_two-column_last-page_8: nicht im Teilumfang von pdx: 463:55: fo:block ist in fo:inline nicht erlaubt
+fop/pcl-extension_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/pdf-dictionary-extension_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/pdf-dictionary-extension_2: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/pdf-dictionary-extension_3: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/pdf-embedded-file-extension: braucht Dateien aus dem Testverzeichnis: ../resources/images/arrow_down_large.png
+fop/pdf-page-xmp: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/region-body_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/region-body_blank-page: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/region-body_column-count_1: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_1_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_2: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_2_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_balance_2col: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_balance_4col: in FOP 2.11 deaktiviert: Situation in a 4-column document where the column balancing doesn't work and even causes some content to disappear.
+fop/region-body_column-count_bug36356: in FOP 2.11 deaktiviert: Column balancing doesn't work as expected.
+fop/region-body_column-count_bug37468: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+fop/region-body_column-count_bug37813: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+fop/region-body_column-count_bug37828: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_bug38054: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_footnote: in FOP 2.11 deaktiviert: Footnotes may overlap with text of the region-body in multi-column documents.
+fop/region-body_column-count_span_1: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+fop/region-body_column-count_span_2: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+fop/region-body_column-count_span_3: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_span_4: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_span_5: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/region-body_column-count_span_writing-mode_rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/region-body_display-align: nicht im Teilumfang von pdx: Eigenschaft column-count="4"
+fop/region_display-align_table: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/retrieve-table-marker_multicolumn: nicht im Teilumfang von pdx: 20:7: fo:wrapper wird noch nicht unterstützt
+fop/simple-page-master_borders_padding: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_margin_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="90"
+fop/simple-page-master_reference-orientation_0_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation_0_writing-mode_rl_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation_180_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation_180_writing-mode_rl_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation_270_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation_270_writing-mode_rl_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation_90_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_reference-orientation_90_writing-mode_rl_region-body_margin_relative: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_regions: nicht im Teilumfang von pdx: 7:11: fo:region-start wird noch nicht unterstützt
+fop/simple-page-master_unmapped_flow-name_2: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/simple-page-master_writing-mode_rl_region-body_writing-mode-lr: in FOP 2.11 deaktiviert: Test erroneously depends upon incorrect implementation of writing-mode trait derivation on fo:region-*.
+fop/static-content_overflow_1: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-border-rendering-mode-overpaint: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-border-rendering-mode-standard: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-border-row-span-rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/table-border-span-rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/table-cell_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/box1.png
+fop/table-cell_bc-child: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/table-cell_border_padding_conditionality: nicht im Teilumfang von pdx: Eigenschaft padding-before.conditionality="retain"
+fop/table-cell_break-after: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-cell_break-after_inside: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-cell_break-before: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-cell_break-before_inside: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-cell_break-before_multicolumn: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+fop/table-cell_conditional-spaces_1: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+fop/table-cell_conditional-spaces_2: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/table-cell_empty_area_with_marker: in FOP 2.11 deaktiviert: A table-cell producing an empty area does currently not add any markers to a page. See TODO entry in AreaAdditionUtil.
+fop/table-cell_height2: nicht im Teilumfang von pdx: 14:15: fo:wrapper wird noch nicht unterstützt
+fop/table-cell_space-before_space_after: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/table-column_column-progression-rl_1: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/table-column_column-progression-rl_2: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl"
+fop/table-column_column-progression-rl_3: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/table-header_bug37875: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/table-inline-pagebreak: nicht im Teilumfang von pdx: 17:23: fo:block ist in fo:inline nicht erlaubt
+fop/table-row_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/table-row_break-after: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table-row_break-before: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
+fop/table_backgrounds: braucht Dateien aus dem Testverzeichnis: ../resources/images/fop-logo-gray-8bit.png
+fop/table_border-collapse_collapse_conditionals: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table_border-collapse_separate_conditionals: nicht im Teilumfang von pdx: Eigenschaft padding-after.conditionality="retain"
+fop/table_border-width_conditionality: in FOP 2.11 deaktiviert: The code should be ok, but the test case uses shorthands and therefore is probably not expressing the indended outcome according to the spec. The test case shou…
+fop/table_border_padding_2: nicht im Teilumfang von pdx: Eigenschaft padding-before.conditionality="retain"
+fop/table_border_padding_3: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_border_padding_4: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_border_padding_5: braucht Dateien aus dem Testverzeichnis: a
+fop/table_border_padding_6: nicht im Teilumfang von pdx: 124:47: fo:block ist in fo:inline nicht erlaubt
+fop/table_border_padding_7: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_border_padding_8: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_border_padding_9: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_empty_header: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_fox_orphan-content-limit_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_fox_widow-content-limit_1: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_fox_widow-content-limit_2: nicht im Teilumfang von pdx: nutzt FOP-Erweiterungen (fox)
+fop/table_in_footnote: nicht im Teilumfang von pdx: 11:11: fo:footnote wird noch nicht unterstützt
+fop/table_in_marker_bug47101: nicht im Teilumfang von pdx: 13:11: fo:marker ist in fo:flow nicht erlaubt
+fop/table_jira2388: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/table_linefeed: nicht im Teilumfang von pdx: 18:17: fo:wrapper wird noch nicht unterstützt
+fop/table_list: braucht Dateien aus dem Testverzeichnis: www.x.de/x
+fop/table_row-delay: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table_row-delay_fixed-row-height: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table_row-delay_header-footer: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table_space-before_space-after_1: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/table_space-before_space-after_2: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+fop/table_writing-mode_rl: nicht im Teilumfang von pdx: 17:31: fo:bidi-override wird noch nicht unterstützt
+fop/text-decoration_1: nicht im Teilumfang von pdx: 19:53: fo:character wird noch nicht unterstützt
+fop/text-decoration_2: nicht im Teilumfang von pdx: Eigenschaft text-decoration="underline"
+fop/title_empty: nicht im Teilumfang von pdx: 9:9: fo:title wird noch nicht unterstützt
+fop/title_linefeed-treatment: nicht im Teilumfang von pdx: 9:9: fo:title wird noch nicht unterstützt
+fop/title_non-empty: nicht im Teilumfang von pdx: 9:9: fo:title wird noch nicht unterstützt
+fop/wrapper_block: nicht im Teilumfang von pdx: 9:11: fo:wrapper wird noch nicht unterstützt
+fop/wrapper_block_id: nicht im Teilumfang von pdx: 9:11: fo:wrapper wird noch nicht unterstützt
+fop/wrapper_block_id2: braucht Dateien aus dem Testverzeichnis: ../resources/images/box1.png
+fop/wrapper_block_id2_legacy: braucht Dateien aus dem Testverzeichnis: ../resources/images/box1.png
+fop/wrapper_inline: nicht im Teilumfang von pdx: 9:35: fo:wrapper wird noch nicht unterstützt
+fop/wrapper_inline_block: nicht im Teilumfang von pdx: 9:35: fo:wrapper wird noch nicht unterstützt
+fop/wrapper_space: braucht Dateien aus dem Testverzeichnis: test.png
+fop/wrapper_text-transform_1: nicht im Teilumfang von pdx: 9:27: fo:wrapper wird noch nicht unterstützt
+fop/wrapper_text-transform_2: nicht im Teilumfang von pdx: 9:24: fo:wrapper wird noch nicht unterstützt
+w3c/fopc-allregions: braucht Dateien aus dem Testverzeichnis: normal.pdf
+w3c/fopc-background: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-background.fo:12:39: For "fo:simple-page-master", "fo:region-body" must be d…
+w3c/fopc-basic1: braucht Dateien aus dem Testverzeichnis: normal.pdf
+w3c/fopc-basic2: braucht Dateien aus dem Testverzeichnis: normal.pdf
+w3c/fopc-border: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-border.fo:15:5: Element "fo:page-sequence-master" is missing required proper…
+w3c/fopc-borders: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-borders.fo:12:39: For "fo:simple-page-master", "fo:region-body" must be decl…
+w3c/fopc-bordershorthand: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-bordershorthand.fo:50:3: Element "fo:page-sequence-master" is missing requir…
+w3c/fopc-break: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-break.fo:12:39: For "fo:simple-page-master", "fo:region-body" must be declar…
+w3c/fopc-character: nicht im Teilumfang von pdx: 70:8: fo:character wird noch nicht unterstützt
+w3c/fopc-columnlevel1: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+w3c/fopc-columns: nicht im Teilumfang von pdx: 90:6: fo:footnote wird noch nicht unterstützt
+w3c/fopc-corresprop: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-corresprop.fo:50:3: Element "fo:page-sequence-master" is missing required pr…
+w3c/fopc-extensive: nicht im Teilumfang von pdx: 131:12: fo:flow darf keinen Text enthalten
+w3c/fopc-footnotes-simple: nicht im Teilumfang von pdx: 18:6: fo:footnote wird noch nicht unterstützt
+w3c/fopc-franklin_2pageseqs: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-franklin_2pageseqs.fo:56:5: Element "fo:page-sequence-master" is missing req…
+w3c/fopc-franklin_alt: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-franklin_alt.fo:46:4: Element "fo:page-sequence-master" is missing required …
+w3c/fopc-franklin_rep: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-franklin_rep.fo:22:5: Element "fo:page-sequence-master" is missing required …
+w3c/fopc-franklin_rep_max_repeats: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-franklin_rep_max_repeats.fo:22:5: Element "fo:page-sequence-master" is missi…
+w3c/fopc-franklin_rep_max_repeats_nl: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-franklin_rep_max_repeats_nl.fo:22:5: Element "fo:page-sequence-master" is mi…
+w3c/fopc-giro: braucht Dateien aus dem Testverzeichnis: file:graphics/fop.jpg
+w3c/fopc-headfoot: nicht im Teilumfang von pdx: Eigenschaft vertical-align="middle"
+w3c/fopc-images: braucht Dateien aus dem Testverzeichnis: file:graphics/xml_feather.gif
+w3c/fopc-inhprop: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-inhprop.fo:50:3: Element "fo:page-sequence-master" is missing required prope…
+w3c/fopc-keep: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-keep.fo:12:39: For "fo:simple-page-master", "fo:region-body" must be declare…
+w3c/fopc-link: braucht Dateien aus dem Testverzeichnis: normal.pdf
+w3c/fopc-list: braucht Dateien aus dem Testverzeichnis: file:graphics/listgeometry.gif
+w3c/fopc-normal: nicht im Teilumfang von pdx: Eigenschaft font-variant="small-caps"
+w3c/fopc-normalex: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-normalex.fo:50:3: Element "fo:page-sequence-master" is missing required prop…
+w3c/fopc-omit: nicht im Teilumfang von pdx: Eigenschaft vertical-align="middle"
+w3c/fopc-pagelevel4: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+w3c/fopc-simplecol: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+w3c/fopc-simplecol2: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+w3c/fopc-simplecol3: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+w3c/fopc-simplecol4: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+w3c/fopc-space: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/fopc-space.fo:12:39: For "fo:simple-page-master", "fo:region-body" must be declar…
+w3c/fopc-textdeko: nicht im Teilumfang von pdx: Eigenschaft text-decoration="underline"
+w3c/fopc-widowsorphans: nicht im Teilumfang von pdx: Eigenschaft column-count="3"
+w3c/nist-bcfoorientation180: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="180"
+w3c/nist-bcfoorientation270: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="270"
+w3c/nist-bcfoorientation90: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="90"
+w3c/nist-bcfoorientationneg180: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="-180"
+w3c/nist-bcfoorientationneg270: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="-270"
+w3c/nist-bcfoorientationneg90: nicht im Teilumfang von pdx: Eigenschaft reference-orientation="-90"
+w3c/nist-cbpbp-margin10: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin11: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin2: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin3: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin4: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin5: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin6: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin7: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin8: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cbpbp-margin9: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cfp-font-size19: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: min (12000) > opt (0)
+w3c/nist-cfp-font-variant1: nicht im Teilumfang von pdx: Eigenschaft font-variant="small-caps"
+w3c/nist-cfp-font1: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/nist-cfp-font1.fo:4:41: For "fo:simple-page-master", "fo:region-body" must be dec…
+w3c/nist-cfp-font2: nicht im Teilumfang von pdx: Eigenschaft font-variant="small-caps"
+w3c/nist-cfp-font6: nicht im Teilumfang von pdx: Eigenschaft font-variant="small-caps"
+w3c/nist-cfp-font7: nicht im Teilumfang von pdx: Eigenschaft font-variant="small-caps"
+w3c/nist-cfp-font8: nicht im Teilumfang von pdx: Eigenschaft font-variant="small-caps"
+w3c/nist-cfp-font9: nicht im Teilumfang von pdx: Eigenschaft font-variant="small-caps"
+w3c/nist-cmpb-margin-bottom1: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-bottom2: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-bottom3: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-bottom4: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-bottom5: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-bottom6: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-bottom7: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-bottom8: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-cmpb-margin-top1: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/nist-cmpb-margin-top2: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/nist-cmpb-margin-top3: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/nist-cmpb-margin-top4: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/nist-cmpb-margin-top5: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/nist-cmpb-margin-top6: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/nist-cmpb-margin-top7: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/nist-cmpi-margin-bottom-inline1: nicht im Teilumfang von pdx: Eigenschaft space-after.conditionality="retain"
+w3c/nist-line2: nicht im Teilumfang von pdx: Eigenschaft line-stacking-strategy="line-height"
+w3c/nist-recarea2: nicht im Teilumfang von pdx: Eigenschaft writing-mode="tb-rl"
+w3c/nist-recarea3: nicht im Teilumfang von pdx: 10:9: fo:bidi-override wird noch nicht unterstützt
+w3c/nist-recarea4: nicht im Teilumfang von pdx: 11:11: fo:bidi-override wird noch nicht unterstützt
+w3c/nist-recarea5: nicht im Teilumfang von pdx: Eigenschaft writing-mode="tb-rl"
+w3c/nist-recarea6: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="before-edge"
+w3c/nist-recarea7: nicht im Teilumfang von pdx: Eigenschaft alignment-baseline="after-edge"
+w3c/nist-renderingmodel3: nicht im Teilumfang von pdx: 10:9: fo:character wird noch nicht unterstützt
+w3c/nist-renderingmodel5: nicht im Teilumfang von pdx: Eigenschaft visibility="hidden"
+w3c/nist-tafowritingm1: nicht im Teilumfang von pdx: Eigenschaft writing-mode="tb-rl"
+w3c/nist-tcofovisibilityh: nicht im Teilumfang von pdx: Eigenschaft visibility="hidden"
+w3c/xep-Charents: nicht im Teilumfang von pdx: Eigenschaft word-spacing="2pt"
+w3c/xep-Pushkin: nicht im Teilumfang von pdx: Eigenschaft column-count="2"
+w3c/xep-adobe-standard: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-align: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-aspect: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-baseline-shift: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-bgimage: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-bold: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-borders: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-charsets: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-color: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-columns: nicht im Teilumfang von pdx: 12:3: fo:region-end wird noch nicht unterstützt
+w3c/xep-contrast: nicht im Teilumfang von pdx: 26:13: fo:footnote wird noch nicht unterstützt
+w3c/xep-decoration: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-family: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-firstline: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-footnotes: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-force-page-count: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/xep-force-page-count.fo:33:8: Element "fo:page-sequence-master" is missing requir…
+w3c/xep-headers: nicht im Teilumfang von pdx: 9:7: fo:region-start wird noch nicht unterstützt
+w3c/xep-images-inline: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-indent: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-inline-borders: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-italic: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-leader: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-linebreak: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-lineheight: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-lists: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-marker: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
+w3c/xep-maximum-repeats: FOP 2.11 setzt den Fall nicht: SEVERE: javax.xml.transform.TransformerException: file:/work/out/suites/w3c/fo/xep-maximum-repeats.fo:46:10: Element "fo:page-sequence-master" is missing requir…
+w3c/xep-padding: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-pagebreak: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-pagemaster: nicht im Teilumfang von pdx: 49:21: fo:wrapper wird noch nicht unterstützt
+w3c/xep-pagesequence: nicht im Teilumfang von pdx: 10:7: fo:region-start wird noch nicht unterstützt
+w3c/xep-phonetic: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-sh-font: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-shadow: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-size: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-smallcaps: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-space-before: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-spacing: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-stacking: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-stretch: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-symbol: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-table_columns: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-table_headers: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-table_plain: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-table_spans: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-transform: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt
+w3c/xep-zapf-dingbats: nicht im Teilumfang von pdx: 8:505: fo:wrapper wird noch nicht unterstützt

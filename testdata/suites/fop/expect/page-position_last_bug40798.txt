@@ -1,0 +1,12 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 5
+1 279.867 59.299 only
+1 42.519 87.645 This is the only page
+2 281.547 59.299 first
+2 42.519 87.645 This is the first page
+3 283.217 59.299 rest
+3 42.519 87.645 This is a middle page
+4 283.217 59.299 rest
+4 42.519 87.645 This is a middle page
+5 283.777 59.299 last
+5 42.519 87.645 This is the last page

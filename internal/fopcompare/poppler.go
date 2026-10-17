@@ -61,11 +61,14 @@ type bboxDoc struct {
 		Flows []struct {
 			Blocks []struct {
 				Lines []struct {
-					XMin  float64  `xml:"xMin,attr"`
-					YMin  float64  `xml:"yMin,attr"`
-					XMax  float64  `xml:"xMax,attr"`
-					YMax  float64  `xml:"yMax,attr"`
-					Words []string `xml:"word"`
+					XMin  float64 `xml:"xMin,attr"`
+					YMin  float64 `xml:"yMin,attr"`
+					XMax  float64 `xml:"xMax,attr"`
+					YMax  float64 `xml:"yMax,attr"`
+					Words []struct {
+						XMin float64 `xml:"xMin,attr"`
+						Text string  `xml:",chardata"`
+					} `xml:"word"`
 				} `xml:"line"`
 			} `xml:"block"`
 		} `xml:"flow"`
@@ -85,10 +88,11 @@ func Lines(ctx context.Context, pdf []byte) ([]Line, int, error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	return parseBBox(data)
+	return ParseBBox(data)
 }
 
-func parseBBox(data []byte) ([]Line, int, error) {
+// ParseBBox liest die Ausgabe von pdftotext -bbox-layout.
+func ParseBBox(data []byte) ([]Line, int, error) {
 	var doc bboxDoc
 	dec := xml.NewDecoder(strings.NewReader(string(data)))
 	dec.Strict = false
@@ -101,8 +105,17 @@ func parseBBox(data []byte) ([]Line, int, error) {
 		for _, f := range p.Flows {
 			for _, b := range f.Blocks {
 				for _, l := range b.Lines {
-					out = append(out, Line{Page: pi + 1, Text: strings.Join(l.Words, " "),
-						X: l.XMin, Y: l.YMin, W: l.XMax - l.XMin, H: l.YMax - l.YMin})
+					// Poppler übergeht beim xMin der Zeile Wörter, die genau bei
+					// x = 0 beginnen. Der Anfang ist daher das kleinste xMin der
+					// Wörter.
+					x := l.XMin
+					words := make([]string, len(l.Words))
+					for i, w := range l.Words {
+						words[i] = w.Text
+						x = min(x, w.XMin)
+					}
+					out = append(out, Line{Page: pi + 1, Text: strings.Join(words, " "),
+						X: x, Y: l.YMin, W: l.XMax - x, H: l.YMax - l.YMin})
 				}
 			}
 		}

@@ -1,0 +1,9 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 28.308 margin not specified
+1 0.000 42.708 padding="5%" on this
+1 0.000 57.108 2x1in yellow container
+1 36.000 136.308 margin="0pt"
+1 36.000 150.708 padding="5%" on
+1 36.000 165.108 this 2x1in blue
+1 36.000 179.508 container

@@ -1,0 +1,6 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 3
+1 14.173 81.173 First Page
+2 14.173 24.481 Continued
+2 14.173 81.173 Second Page
+3 14.173 81.173 Third Page

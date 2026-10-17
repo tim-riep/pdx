@@ -1,0 +1,9 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 36.000 28.308 Header Col 1
+1 144.000 28.308 Header Col 2
+1 252.000 28.308 Header Col 3
+1 36.000 42.708 Row 1 Col 1
+1 144.000 42.708 Row 1 Col 2
+1 252.000 42.708 Row 1 Col 3
+1 0.000 75.108 Table on yellow background with 5% padding

@@ -1,0 +1,20 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 0.000 10.308 1. Chapter .... 9
+1 28.346 24.708 1.1 Section .... 9
+1 28.346 39.108 1.2 Section .... 9
+1 0.000 53.508 2. Chapter .... 10
+1 28.346 67.908 2.1 Section .... 10
+1 28.346 82.308 2.2 Section .... 10
+1 0.000 96.708 1. Chapter
+1 0.000 111.108 Text
+1 0.000 125.508 1.1 Section
+1 0.000 139.908 Text
+1 0.000 154.308 1.2 Section
+1 0.000 168.708 Text
+2 0.000 10.308 2. Chapter
+2 0.000 24.708 Text
+2 0.000 39.108 2.1 Section
+2 0.000 53.508 Text
+2 0.000 67.908 2.2 Section
+2 0.000 82.308 Text

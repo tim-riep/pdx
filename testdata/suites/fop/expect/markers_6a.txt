@@ -1,0 +1,97 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 5
+1 - 10.308 5 Property Refinement / Resolution page 1
+1 0.000 46.308 5 Property Refinement / Resolution
+1 0.000 66.708 During refinement the set of properties that apply to a formatting
+1 0.000 81.108 object is transformed into a set of traits that define constraints
+1 0.000 95.508 on the result of formatting. For many traits there is a one-to-one
+1 0.000 109.908 correspondence with a property; for other traits the transformation
+1 0.000 124.308 is more complex. Details on the transformation are described
+1 0.000 138.708 below.
+1 0.000 159.108 5.1 Specified, Computed, and Actual Values, and Inheritance
+1 0.000 179.508 For every property that is applicable to a given formatting object, it
+1 0.000 193.908 is necessary to determine the value of the property. Three variants
+1 0.000 208.308 of the property value are distinguished: the specified value, the
+1 0.000 222.708 computed value, and the actual value.
+1 0.000 243.108 5.2 Specified Values
+1 0.000 263.508 The specified value of a property is determined using the following
+1 0.000 277.908 mechanisms (in order of precedence)
+1 0.000 334.308 5 Property Refinement / Resolution
+2 - 10.308 6 Shorthand Expansion page 2
+2 0.000 46.308 If the tree-construction process placed the property on the
+2 0.000 60.708 formatting object, use the value of that property as the specified
+2 0.000 75.108 value. This is called "explicit specification".
+2 0.000 89.508 Otherwise, if the property is inheritable, use the value of that
+2 0.000 103.908 property from the parent formatting object, generally the computed
+2 0.000 118.308 value (see below).
+2 0.000 138.708 6 Shorthand Expansion
+2 0.000 159.108 In XSL there are two kinds of shorthand properties; those
+2 0.000 173.508 originating from CSS, such as "border", and those that arise from
+2 0.000 187.908 breaking apart and/or combining CSS properties, such as "page-
+2 0.000 202.308 break-inside". In XSL both types of shorthands are handled in the
+2 0.000 216.708 same way.
+2 0.000 237.108 6.1 Actual Values
+2 0.000 257.508 Specified values may be absolute (i.e., they are not specified
+2 0.000 271.908 relative to another value, as in "red" or "2mm") or relative (i.e., they
+2 0.000 286.308 are specified relative to another value, as in "auto", "2em", and
+2 0.000 300.708 "12%"), or they may be expressions. For most absolute values,
+2 0.000 315.108 no computation is needed to find the computed value. Relative
+2 267.576 334.308 6.1 Actual Values
+3 - 10.308 6 Shorthand Expansion page 3
+3 0.000 46.308 values, on the other hand, must be transformed into computed
+3 0.000 60.708 values: percentages must be multiplied by a reference value (each
+3 0.000 75.108 property defines which value that is), values with a relative unit (em)
+3 0.000 89.508 must be made absolute by multiplying with the appropriate font
+3 0.000 103.908 size, "auto" values must be computed by the formulas given with
+3 0.000 118.308 each property, certain property values ("smaller", "bolder") must be
+3 0.000 132.708 replaced according to their definitions. The computed value of any
+3 0.000 147.108 property that controls a border width where the style of the border is
+3 0.000 161.508 "none" is forced to be "0pt".
+3 0.000 175.908 Some properties have more than one way in which the property
+3 0.000 190.308 value can be specified. The simplest example of such properties
+3 0.000 204.708 are those which can be specified either in terms of a direction
+3 0.000 219.108 relative to the writing-mode (e.g., padding-before) or a direction in
+3 0.000 233.508 terms of the absolute geometric orientation of the viewport (e.g.,
+3 0.000 247.908 padding-top). These two properties are called the relative property
+3 0.000 262.308 and the absolute property, respectively. Collectively, they are called
+3 0.000 276.708 "corresponding properties".
+3 0.000 291.108 Specifying a value for one property determines both a computed
+3 0.000 305.508 value for the specified property and a computed value for the
+3 0.000 319.908 corresponding property. Which relative property corresponds
+3 0.000 334.308 6 Shorthand Expansion
+4 - 10.308 6.1 Actual Values page 4
+4 0.000 46.308 to which absolute property depends on the writing-mode. For
+4 0.000 60.708 example, if the "writing-mode" at the top level of a document is
+4 0.000 75.108 "lr-tb", then "padding-start" corresponds to "padding-left", but if
+4 0.000 89.508 the "writing-mode" is "rl-tb", then "padding-start" corresponds to
+4 0.000 103.908 "padding-right". The exact specification of how to compute the
+4 0.000 118.308 values of corresponding properties is given in [5.3 Computing the
+4 0.000 132.708 Values of Corresponding Properties].
+4 0.000 147.108 In most cases, elements inherit computed values. However, there
+4 0.000 161.508 are some properties whose specified value may be inherited (e.g.,
+4 0.000 175.908 some values for the "line-height" property). In the cases where child
+4 0.000 190.308 elements do not inherit the computed value, this is described in the
+4 0.000 204.708 property definition.
+4 0.000 219.108 A computed value is in principle ready to be used, but a user agent
+4 0.000 233.508 may not be able to make use of the value in a given environment.
+4 0.000 247.908 For example, a user agent may only be able to render borders
+4 0.000 262.308 with integer pixel widths and may, therefore, have to adjust the
+4 0.000 276.708 computed width to an integral number of media pixels. The actual
+4 0.000 291.108 value is the computed value after any such adjustments have been
+4 0.000 305.508 applied.
+4 0.000 334.308 6.1 Actual Values
+5 - 10.308 6 Shorthand Expansion page 5
+5 0.000 46.308 Some of the properties applicable to formatting objects are
+5 0.000 60.708 "inheritable." Such properties are so identified in the property
+5 0.000 75.108 description. The inheritable properties can be placed on any
+5 0.000 89.508 formatting object. The inheritable properties are propagated down
+5 0.000 103.908 the formatting object tree from a parent to each child. (These
+5 0.000 118.308 properties are given their initial value at the root of the result
+5 0.000 132.708 tree.) For a given inheritable property, if that property is present
+5 0.000 147.108 on a child, then that value of the property is used for that child
+5 0.000 161.508 (and its descendants until explicitly re-set in a lower descendant);
+5 0.000 175.908 otherwise, the specified value of that property on the child is
+5 0.000 190.308 the computed value of that property on the parent formatting
+5 0.000 204.708 object. Hence there is always a specified value defined for every
+5 0.000 219.108 inheritable property for every formatting object.
+5 0.000 334.308 6 Shorthand Expansion

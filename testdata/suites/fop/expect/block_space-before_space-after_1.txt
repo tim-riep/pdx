@@ -1,0 +1,8 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 10.308 overlapping block1, negative space-after
+1 0.000 16.708 normal block1
+1 0.000 36.108 spaced block1
+1 0.000 50.508 spaced block2
+1 0.000 69.908 normal block2
+1 0.000 76.308 overlapping block2, negative space-before

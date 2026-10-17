@@ -1,0 +1,32 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 12
+1 20.000 30.308 Before the break
+1 20.000 335.908 page: 1
+2 20.000 30.308 This text should be on page 2.
+2 20.000 44.708 Inner block with break-after.
+2 20.000 335.908 page: 2
+3 20.000 30.308 This text should be on page 3.
+3 20.000 335.908 page: 3
+4 20.000 30.308 Before the break
+4 20.000 335.908 page: 1
+5 20.000 30.308 This text should be on page 2.
+5 20.000 44.708 Inner block with break-after.
+5 20.000 335.908 page: 2
+6 20.000 30.308 This text should be on page 3.
+6 20.000 335.908 page: 3
+7 20.000 30.308 Before the break
+7 20.000 335.908 page: 1
+8 20.000 30.308 This text should be on page 2.
+8 20.000 44.708 Inner block in table with break-after.
+8 20.000 335.908 page: 2
+9 20.000 30.308 This text should be on page 3.
+9 20.000 335.908 page: 3
+10 20.000 30.308 Before the break
+10 20.000 335.908 page: 1
+11 20.000 30.308 +
+11 44.000 30.308 This text should be on page 2.
+11 20.000 44.708 +
+11 44.000 44.708 Inner block in list-item with break-after.
+11 20.000 335.908 page: 2
+12 20.000 30.308 This text should be on page 3.
+12 20.000 335.908 page: 3

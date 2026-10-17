@@ -1,0 +1,17 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 20.000 30.308 Before the tables
+1 23.000 47.708 Cell 1.1
+1 123.000 46.708 Cell 1.2
+1 20.000 65.108 Between tables
+1 25.000 84.508 Cell 1.1
+1 125.000 81.508 Cell 1.2 Cell 1.2
+1 125.000 95.908 Cell 1.2 Cell 1.2
+1 20.000 112.308 Between tables
+1 24.000 128.708 cell 1.1
+1 124.000 130.708 cell 1.2
+1 20.000 147.108 Between tables
+1 24.000 164.508 cell1.1 cell1.1
+1 24.000 178.908 cell1.1 cell1.1
+1 124.000 163.508 cell 1.2
+1 20.000 196.308 After the tables

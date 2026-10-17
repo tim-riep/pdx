@@ -1,0 +1,29 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 12
+1 217.171 67.000 FIRST PAGE OF SEQUENCE
+1 70.866 67.000 TEST PAGE 1
+2 234.295 67.000 Normal Non-blank page
+2 70.866 67.000 TEST PAGE 2
+2 261.313 767.159 Normal footer
+3 234.295 67.000 Normal Non-blank page
+3 70.866 67.000 TEST PAGE 3
+3 261.313 767.159 Normal footer
+4 238.321 67.000 Intentionally left blank.
+5 217.171 67.000 FIRST PAGE OF SEQUENCE
+5 70.866 67.000 TEST PAGE 1
+6 234.295 67.000 Normal Non-blank page
+6 70.866 67.000 TEST PAGE 2
+6 261.313 767.159 Normal footer
+7 234.295 67.000 Normal Non-blank page
+7 70.866 67.000 TEST PAGE 3
+7 261.313 767.159 Normal footer
+8 238.321 67.000 Intentionally left blank.
+9 217.171 67.000 FIRST PAGE OF SEQUENCE
+9 70.866 67.000 TEST PAGE 1
+10 234.295 67.000 Normal Non-blank page
+10 70.866 67.000 TEST PAGE 2
+10 261.313 767.159 Normal footer
+11 234.295 67.000 Normal Non-blank page
+11 70.866 67.000 TEST PAGE 3
+11 261.313 767.159 Normal footer
+12 238.321 67.000 Intentionally left blank.

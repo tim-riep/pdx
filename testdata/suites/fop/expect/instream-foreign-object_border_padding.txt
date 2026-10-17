@@ -1,0 +1,7 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 73.324 71.572 Normal font
+1 97.700 161.564 FOP
+1 0.000 203.395 In both blocks we have a setting of border-width="5pt 10pt 20pt 15pt" padding="15pt 20pt
+1 0.000 214.195 10pt 5pt" on the i-f-o. In the first block the i-f-o determines the height of the line in the 2nd
+1 0.000 224.995 block the font is bigger than the i-f-o.

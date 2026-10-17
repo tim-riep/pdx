@@ -1,0 +1,8 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 20.500 20.808 Table header
+1 10.500 36.208 Before page break
+1 20.500 51.608 Table footer
+2 20.500 20.808 Table header
+2 10.500 36.208 After page break
+2 20.500 51.608 Table footer

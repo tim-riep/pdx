@@ -1,0 +1,6 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 13.744 1. Marker
+1 0.000 26.072 First marker with small font
+1 0.000 296.590 2. Marker
+1 0.000 317.180 Second marker big font

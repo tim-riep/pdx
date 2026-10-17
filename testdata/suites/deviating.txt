@@ -1,0 +1,351 @@
+# Bekannte Abweichungen von FOP, eine Zeile je Fall. Ein Fall hier zählt im
+# Bericht als "abweichend (bekannt)" und lässt make fo-conformance nicht
+# scheitern. Begründete Abweichungen verweisen auf DEVIATIONS.md. Zeilen mit
+# "offen" sind noch nicht untersucht und Arbeit für die Engine.
+# PDX_SUITE_RECORD=1 trägt neue Abweichungen als offen ein und behobene aus.
+
+fop/basic-link_background-image: offen, erste Abweichung: Seite 1: "Why is FOP so cool?" verschoben um 0.00 pt waagerecht, 10.98 pt senkrecht
+fop/basic-link_external-destination_2: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/basic-link_external-destination_2.fo:31:17: in fo:instream-foreign-object wird nur pdx:barcode unterstützt
+fop/basic-link_for_toc: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/basic-link_for_toc.fo:29:104: ref-id "1" verweist auf keine ID im Dokument
+fop/basic-link_for_toc_writing-mode_rl: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/basic-link_for_toc_writing-mode_rl.fo:29:104: ref-id "1" verweist auf keine ID im Dokument
+fop/basic-link_internal-desination-forwards-backwards: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/basic-link_internal-desination-forwards-backwards.fo:34:15: internal-destination "c1001" verweist auf keine ID im Dokum…
+fop/basic-link_padding_bug50196: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/basic-link_padding_bug50196.fo:28:13: internal-destination "dest1" verweist auf keine ID im Dokument
+fop/block-container_absolute-position: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "absolutely positioned"
+fop/block-container_absolute-position_border_padding: offen, erste Abweichung: Seite 1: "background-text." verschoben um -233.93 pt waagerecht, -0.00 pt senkrecht
+fop/block-container_absolute-position_fixed: offen, erste Abweichung: Seite 1: "abs-bc blue" verschoben um -0.02 pt waagerecht, -5.00 pt senkrecht
+fop/block-container_absolute-position_no-height: offen, erste Abweichung: Seite 1: "absolutely positioned width, no height" verschoben um -10.00 pt waagerecht, -10.00 pt senkrecht
+fop/block-container_absolute-position_overflow: offen, erste Abweichung: Seite 1: "auto overflow" verschoben um 10.00 pt waagerecht, -0.00 pt senkrecht
+fop/block-container_bugzilla50965: offen, erste Abweichung: Seite 1: "A" verschoben um -113.38 pt waagerecht, -0.00 pt senkrecht
+fop/block-container_content_size_percentage: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "50% nested"
+fop/block-container_overconstrained_ipd: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "5.3.4 Overconstrained Geometry"
+fop/block-container_padding_percentages: offen, erste Abweichung: Seite 1: "margin=\"0pt\"" verschoben um -18.00 pt waagerecht, -28.80 pt senkrecht
+fop/block-container_page-breaking: offen, erste Abweichung: Seiten: pdx 1, FOP 3
+fop/block-container_squeeze-content_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit." verschoben um 0.00 pt waagerecht, 31.20 pt senkrecht
+fop/block-container_start-indent: offen, erste Abweichung: Seite 1: "fo:block|fo:block-container|fo:block" verschoben um -10.00 pt waagerecht, -0.00 pt senkrecht
+fop/block-container_width_height: offen, erste Abweichung: Seite 1: "inline-progression-dimension=\"4in\" specified" verschoben um 71.89 pt waagerecht, -0.00 pt senkrecht
+fop/block-level_break-after_bug44412: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/block-level_break-after_bug44412.fo:49:17: start-indent: body-start() ist nur innerhalb von fo:list-item erlaubt
+fop/block_bidi_jira2258: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/block_bidi_jira2258.fo:28:24: Schrift LiberationSans enthält die Zeichen U+0628 'ب', U+0646 'ن' nicht
+fop/block_border_bug43917: offen, erste Abweichung: Seiten: pdx 3, FOP 2
+fop/block_break-before_bug44412: offen, erste Abweichung: Seite 2: "The break-before set on this block causes the parent block" verschoben um 0.00 pt waagerecht, -4.00 pt senkrecht
+fop/block_font-family: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/block_font-family.fo:30:43: Schriftfamilie "cursive" nicht gefunden
+fop/block_font-size_absolute: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/block_font-size_absolute.fo:48:64: Schriftfamilie "cursive" nicht gefunden
+fop/block_font-size_relative: offen, erste Abweichung: Seite 1: "font-size=\"larger\"" verschoben um 0.00 pt waagerecht, -1.58 pt senkrecht
+fop/block_font-style: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/block_font-style.fo:32:11: font-style: ungültiger Wert "obscure"
+fop/block_keep-together_integers_1: offen, erste Abweichung: Seiten: pdx 7, FOP 6
+fop/block_keep-together_overflow_1: offen, erste Abweichung: Seiten: pdx 5, FOP 6
+fop/block_last-line-end-indent: offen, erste Abweichung: Seite 1: "astonished whenever it shone in her face." verschoben um 19.85 pt waagerecht, -0.00 pt senkrecht
+fop/block_linefeed-treatment_2: offen, erste Abweichung: Seite 1: "Leasing a ..." verschoben um -0.05 pt waagerecht, -10.00 pt senkrecht
+fop/block_margin_inherit: offen, erste Abweichung: Seite 1: "margin=\"inherit\" - should have the same margin as" verschoben um 0.00 pt waagerecht, -18.00 pt senkrecht
+fop/block_margin_percentages: offen, erste Abweichung: Seite 1: "margin=\"5%\" - should have the slightly smaller margin" verschoben um 1.80 pt waagerecht, -18.00 pt senkrecht
+fop/block_margin_shorthands: offen, erste Abweichung: Seite 1: "left/right" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
+fop/block_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
+fop/block_space-before_space-after_1: offen, erste Abweichung: Seite 1: "normal block1" verschoben um 0.00 pt waagerecht, 8.00 pt senkrecht
+fop/block_space-before_space-after_bug38102: offen, erste Abweichung: Seiten: pdx 6, FOP 3
+fop/block_text-align_1: offen, erste Abweichung: Seite 1: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi" verschoben um -14.14 pt waagerecht, -43.20 pt senkrecht
+fop/block_uax14_explicit-breaks: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/block_uax14_explicit-breaks.fo:29:21: Schrift LiberationSans enthält die Zeichen U+0085 '\u0085' nicht
+fop/block_uax14_linebreaking: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/block_uax14_linebreaking.fo:78:72: Schrift LiberationSans enthält die Zeichen U+3000 '\u3000' nicht
+fop/block_white-space_nbsp_1: offen, erste Abweichung: Seite 1: "single nbsp around" verschoben um -3.32 pt waagerecht, -0.00 pt senkrecht
+fop/block_wrap-option: offen, erste Abweichung: Seiten: pdx 2, FOP 1
+fop/empty_table: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/empty_table.fo:38:29: fo:table ohne Spalten und Zellen
+fop/flow_changing-ipd_5: offen, erste Abweichung: Seite 3: "beautiful, but the youngest was so beautiful that the sun itself, which has seen so much," verschoben um 0.00 pt waagerecht, -43.20 pt senkrecht
+fop/flow_changing-ipd_break-before: offen, erste Abweichung: Seite 1: "In olden times when wishing still helped one, there lived a" verschoben um 0.00 pt waagerecht, -13.60 pt senkrecht
+fop/flow_changing-ipd_break-before-table: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/flow_changing-ipd_last-page: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/flow_changing-ipd_last-page_7: offen, erste Abweichung: Seiten: pdx 2, FOP 5
+fop/flow_changing-ipd_overflow: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/flow_changing-ipd_text-indent: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "on an fo:block should not cause loss of text. Setting"
+fop/inline_background-color: offen, erste Abweichung: Seite 1: "To emphasize a phrase highlight it." verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+fop/inline_border_padding: offen, erste Abweichung: Seite 1: "To emphasize a word we give it a 1pt border and a background." verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+fop/instream-foreign-object_basic: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/instream-foreign-object_basic.fo:29:15: in fo:instream-foreign-object wird nur pdx:barcode unterstützt
+fop/instream-foreign-object_border_padding: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/instream-foreign-object_border_padding.fo:29:15: in fo:instream-foreign-object wird nur pdx:barcode unterstützt
+fop/instream-foreign-object_display-align: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/instream-foreign-object_display-align.fo:30:15: in fo:instream-foreign-object wird nur pdx:barcode unterstützt
+fop/leader_background-color: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "dots yellow background"
+fop/leader_border_padding: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "dots solid 1pt red border"
+fop/leader_leader-pattern_dots: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Default dots pattern"
+fop/leader_leader-pattern_rule: offen, erste Abweichung: Seite 1: "No rule-style given" verschoben um -39.32 pt waagerecht, -0.00 pt senkrecht
+fop/leader_leader-pattern_space: offen, erste Abweichung: Seite 1: "Default space pattern" verschoben um -15.32 pt waagerecht, -0.00 pt senkrecht
+fop/leader_text-align: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "dots"
+fop/list-block_border_padding: offen, erste Abweichung: Seite 1: "label" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
+fop/list-item-body_break-before: offen, erste Abweichung: Seiten: pdx 4, FOP 7
+fop/list-item-with-ipd-change: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/list-item_block_keep-with-previous: offen, erste Abweichung: Seiten: pdx 2, FOP 3
+fop/list-item_padding: offen, erste Abweichung: Seite 1: "label 1" verschoben um 0.00 pt waagerecht, -5.00 pt senkrecht
+fop/list-item_padding_percentages: offen, erste Abweichung: Seite 1: "label 1" verschoben um 0.00 pt waagerecht, -18.00 pt senkrecht
+fop/list-item_space-before_space-after_2: offen, erste Abweichung: Seite 1: "•" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
+fop/list-item_two_pages: offen, erste Abweichung: Seite 2: "13" verschoben um 0.00 pt waagerecht, 12.00 pt senkrecht
+fop/list_provisional-distance-between-starts_percentage: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/list_provisional-distance-between-starts_percentage.fo:27:11: provisional-distance-between-starts: Prozentangabe "10%" …
+fop/list_provisional-label-separation_percentage: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/list_provisional-label-separation_percentage.fo:27:11: provisional-distance-between-starts: Prozentangabe "20%" ist hie…
+fop/marker_bug: offen, erste Abweichung: Seite 1: Zeile nur in FOP: "First marker with whitespace around"
+fop/marker_font-size: offen, erste Abweichung: Seite 1: Zeile nur in FOP: "First marker with small font"
+fop/marker_inline_white-space: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/marker_inline_white-space.fo:42:15: fo:block@42:15 wird im Absatz nicht unterstützt
+fop/marker_instream-foreign-object: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/marker_instream-foreign-object.fo:30:13: font-size: muss positiv sein
+fop/marker_page-number-citation_bugzilla45295: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/marker_page-number-citation_bugzilla45295.fo:42:39: ref-id "end-of-document" verweist auf keine ID im Dokument
+fop/marker_percentage-resolution: offen, erste Abweichung: Seite 1: "Test" verschoben um 89.99 pt waagerecht, -0.00 pt senkrecht
+fop/markers_1: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/markers_3: offen, erste Abweichung: Seite 2: "[PS] [DOC]" verschoben um 3.24 pt waagerecht, -0.00 pt senkrecht
+fop/markers_4: offen, erste Abweichung: Seite 1: Zeile nur in FOP: "0"
+fop/markers_5b: offen, erste Abweichung: Seite 1: Zeile nur in FOP: "0.00"
+fop/markers_6a: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
+fop/markers_6b: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 0.00 pt waagerecht, 21.60 pt senkrecht
+fop/markers_9: offen, erste Abweichung: Seite 1: Zeile nur in FOP: "A"
+fop/page-breaking_4a: offen, erste Abweichung: Seite 3: "last line in new block" verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht
+fop/page-breaking_5: offen, erste Abweichung: Seiten: pdx 3, FOP 4
+fop/page-breaking_7: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/page-breaking_7.fo:25:7: fo:region-body hat keine Fläche, Ränder zu groß
+fop/page-number-citation-last_basic: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/page-number-citation-last_basic.fo:51:53: ref-id "eof2" verweist auf keine ID im Dokument
+fop/page-number-citation-last_complex: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/page-number-citation-last_complex.fo:74:33: ref-id "item1-label" verweist auf keine ID im Dokument
+fop/page-number-citation_basic: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/page-number-citation_basic.fo:33:48: ref-id "eof1" verweist auf keine ID im Dokument
+fop/page-number-citation_border_padding: offen, erste Abweichung: Seite 1: "Page number citation 1 with a 1pt border." verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+fop/page-number-citation_bugzilla44794: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "inline: 1 to 1."
+fop/page-number-citation_empty-inline: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/page-number-citation_empty-inline.fo:34:21: ref-id "empty-inline1" verweist auf keine ID im Dokument
+fop/page-number-citation_list: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/page-number-citation_list.fo:102:21: ref-id "item1-label" verweist auf keine ID im Dokument
+fop/page-number_border_padding: offen, erste Abweichung: Seite 1: "Page number 1 with a 1pt border." verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+fop/page-position-last_break-before_bugzilla46489: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/page-position_only_elastic: offen, erste Abweichung: Seite 1: "Only page" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
+fop/page-sequence-force-page-count-odd: offen, erste Abweichung: Seiten: pdx 1, FOP 3
+fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11, FOP 13
+fop/page-sequence_last-page_space-before: offen, erste Abweichung: Seite 2: "Before the page break" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
+fop/simple-page-master_unmapped_flow-name: offen, erste Abweichung: Seiten: pdx 2, FOP 3
+fop/table-body_basic_1: offen, erste Abweichung: Seite 1: "blah" verschoben um 180.00 pt waagerecht, -0.00 pt senkrecht
+fop/table-body_basic_2: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-body_basic_2.fo:27:11: height: unbekannte Einheit "mpt" in "8400mpt"
+fop/table-border-separate3: offen, erste Abweichung: Seite 1: "cell6" verschoben um 0.00 pt waagerecht, 5.00 pt senkrecht
+fop/table-cell_block_break-after: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/table-cell_block_break-before: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/table-cell_block_keep-with-next: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "line1"
+fop/table-cell_block_margin_percentage: offen, erste Abweichung: Seite 1: "cell1" verschoben um 0.00 pt waagerecht, -14.40 pt senkrecht
+fop/table-cell_break-after_last-block: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/table-cell_break-after_last-row: offen, erste Abweichung: Seiten: pdx 6, FOP 12
+fop/table-cell_break-before_first-row: offen, erste Abweichung: Seiten: pdx 6, FOP 12
+fop/table-cell_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 4
+fop/table-cell_display-align: offen, erste Abweichung: Seite 1: "cell5" verschoben um 0.00 pt waagerecht, -25.60 pt senkrecht
+fop/table-cell_display-align_page-break: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "cell3"
+fop/table-cell_height: offen, erste Abweichung: Seite 1: "cell5" verschoben um 0.00 pt waagerecht, -5.60 pt senkrecht
+fop/table-cell_keep-together: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-cell_keep-together.fo:95:11: space-after: Ausdruck "100" liefert eine Zahl statt einer Länge
+fop/table-cell_keep-with-next: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-cell_keep-with-next.fo:120:11: space-after: Ausdruck "88" liefert eine Zahl statt einer Länge
+fop/table-cell_keep-with-previous: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-cell_keep-with-previous.fo:91:11: space-after: Ausdruck "124" liefert eine Zahl statt einer Länge
+fop/table-cell_number-columns-spanned: offen, erste Abweichung: Seite 1: "cell1" verschoben um -2.50 pt waagerecht, -0.00 pt senkrecht
+fop/table-cell_padding_percentages: offen, erste Abweichung: Seite 1: "Row 1 Col 2" verschoben um -7.20 pt waagerecht, -0.00 pt senkrecht
+fop/table-cell_page-break_span: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/table-cell_row-span_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 7
+fop/table-cell_span-combinations: offen, erste Abweichung: Seite 1: "cell2" verschoben um -0.00 pt waagerecht, -7.20 pt senkrecht
+fop/table-cell_table-units_mixed: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-cell_table-units_mixed.fo:28:13: column-width: Addition von Zahl und Länge in "2pt + proportional-column-width(1…
+fop/table-cell_various-combinations: offen, erste Abweichung: Seite 1: "cell with border and height" verschoben um 0.00 pt waagerecht, -7.80 pt senkrecht
+fop/table-column_column-number: offen, erste Abweichung: Seite 1: "cell3" verschoben um -18.00 pt waagerecht, -0.00 pt senkrecht
+fop/table-column_column-width_proportional-column-width: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-column_column-width_proportional-column-width.fo:64:13: column-width: proportional-column-width erwartet eine pos…
+fop/table-column_first-row-width: offen, erste Abweichung: Seite 1: "cell2" verschoben um 24.00 pt waagerecht, -0.00 pt senkrecht
+fop/table-column_gap: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-column_gap.fo:38:17: Zelle passt nicht in die 2 Spalten der Tabelle
+fop/table-header_in_list_bug: offen, erste Abweichung: Seite 1: "Header" verschoben um -12.01 pt waagerecht, -0.00 pt senkrecht
+fop/table-header_table-footer_4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "content content content"
+fop/table-headings_inline_padding-start: offen, erste Abweichung: Seite 1: "Table header" verschoben um -10.00 pt waagerecht, -0.00 pt senkrecht
+fop/table-row_break-after_last-row: offen, erste Abweichung: Seite 2: "After the table" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
+fop/table-row_break-before_break-after_2: offen, erste Abweichung: Seite 5: "after the table" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
+fop/table-row_break-before_first-row: offen, erste Abweichung: Seite 2: "After the table" verschoben um 0.00 pt waagerecht, 2.00 pt senkrecht
+fop/table-row_break-before_row-span: offen, erste Abweichung: Seite 2: "After the table" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
+fop/table-row_break-inside-span: offen, erste Abweichung: Seiten: pdx 2, FOP 1
+fop/table-row_keep-together_2: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-row_keep-together_2.fo:62:11: space-after: Ausdruck "118" liefert eine Zahl statt einer Länge
+fop/table-row_keep-with-next_3: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-row_keep-with-next_3.fo:58:11: space-after: Ausdruck "88" liefert eine Zahl statt einer Länge
+fop/table-row_keep-with-previous: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-row_keep-with-previous.fo:91:11: space-after: Ausdruck "124" liefert eine Zahl statt einer Länge
+fop/table-row_keep-with-previous_2: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table-row_keep-with-previous_2.fo:91:11: space-after: Ausdruck "124" liefert eine Zahl statt einer Länge
+fop/table-stepper_colspan_border-before: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 2.1"
+fop/table_border-collapse_collapse_nrnc: offen, erste Abweichung: Seite 1: "Cell 2.2" verschoben um 0.00 pt waagerecht, 3.00 pt senkrecht
+fop/table_border-collapse_collapse_nrnc_no-col: offen, erste Abweichung: Seite 1: "Cell 2.2" verschoben um 0.00 pt waagerecht, 3.00 pt senkrecht
+fop/table_border-collapse_collapse_omitHF: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "Cell 1.1"
+fop/table_border-collapse_collapse_resolution: offen, erste Abweichung: Seite 1: "Cell 1.2" verschoben um -2.50 pt waagerecht, -1.00 pt senkrecht
+fop/table_border-collapse_collapse_resolution_no-col: offen, erste Abweichung: Seite 1: "Between tables" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+fop/table_border-collapse_collapse_spans_1: offen, erste Abweichung: Seite 1: "Cell 1.2 Cell" verschoben um -6.00 pt waagerecht, -0.00 pt senkrecht
+fop/table_border-collapse_collapse_spans_2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3"
+fop/table_border-collapse_collapse_spans_2_no-col: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3"
+fop/table_border-collapse_separate_border-spacing_1: offen, erste Abweichung: Seite 1: "cell1" verschoben um -2.50 pt waagerecht, -0.00 pt senkrecht
+fop/table_break-before_break-after: offen, erste Abweichung: Seite 3: "cell1" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
+fop/table_keep-together: offen, erste Abweichung: Seite 1: "line1" verschoben um 180.00 pt waagerecht, -0.00 pt senkrecht
+fop/table_keep-together_2: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table_keep-together_2.fo:62:11: space-after: Ausdruck "100" liefert eine Zahl statt einer Länge
+fop/table_keep-together_row-span: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "Before the table"
+fop/table_layout_change_ipd: offen, erste Abweichung: Fehler in pdx: testdata/suites/fop/cases/table_layout_change_ipd.fo:42:51: Schriftfamilie "Arial WGL" nicht gefunden
+fop/table_overconstrained_ipd: offen, erste Abweichung: Seite 1: "5.3.4" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
+fop/table_padding_percentages: offen, erste Abweichung: Seite 1: "Header Col 1" verschoben um -18.00 pt waagerecht, -0.00 pt senkrecht
+fop/table_row-height_break: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+fop/table_table-layout_fixed_2: offen, erste Abweichung: Seite 1: "cell2" verschoben um 50.00 pt waagerecht, -0.00 pt senkrecht
+fop/table_table-row_break-before: offen, erste Abweichung: Seiten: pdx 3, FOP 2
+fop/table_width: offen, erste Abweichung: Seite 1: "cell1" verschoben um 0.00 pt waagerecht, -10.00 pt senkrecht
+fop/word_lonely_shy: offen, erste Abweichung: Seite 1: "a b c d" verschoben um -16.62 pt waagerecht, -0.00 pt senkrecht
+w3c/fopc-fonts: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/fopc-fonts.fo:29:64: Schrift LiberationSans enthält die Zeichen U+007F '\x7f' nicht
+w3c/fopc-hyphen: offen, erste Abweichung: Seite 1: "US English" verschoben um 0.00 pt waagerecht, 2.79 pt senkrecht
+w3c/fopc-instream: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/fopc-instream.fo:16:1: in fo:instream-foreign-object wird nur pdx:barcode unterstützt
+w3c/fopc-leader: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/fopc-leader.fo:275:72: Schriftfamilie "Symbol" nicht gefunden
+w3c/fopc-newlinktest: offen, erste Abweichung: Seite 1: "Apache FOP is the world's first print formatter driven by XSL formatting objects. It is a Java" verschoben um 2.77 pt waagerecht, -110.41 pt senkrecht
+w3c/fopc-pagelevel1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Keep and break conditions apply to a class of areas, which are"
+w3c/fopc-pagelevel2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Keep and break conditions apply to a class of areas, which are"
+w3c/fopc-pagelevel3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Keep and break conditions apply to a class of areas, which are"
+w3c/fopc-simple: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "and processed on the Web in the way that is now possible with HTML. XML has"
+w3c/nist-adp-height1: offen, erste Abweichung: Seite 1: "The square above should be 50 pixels tall" verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
+w3c/nist-adp-height2: offen, erste Abweichung: Seite 1: "The square above should be 100 pixels tall" verschoben um 0.00 pt waagerecht, -25.00 pt senkrecht
+w3c/nist-adp-height3: offen, erste Abweichung: Seite 1: "The square above should be 200 pixels tall" verschoben um 0.00 pt waagerecht, -50.00 pt senkrecht
+w3c/nist-adp-width1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph"
+w3c/nist-adp-width2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be"
+w3c/nist-adp-width3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be 400 pixels wide. This is extra"
+w3c/nist-adp-width4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph"
+w3c/nist-bcfobordercolor2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "\"red\" (before),\"blue\""
+w3c/nist-bcfobordercolor4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"border-before-color\""
+w3c/nist-blockarea2: offen, erste Abweichung: Seite 1: "Space before this area should be" verschoben um 0.00 pt waagerecht, 4.32 pt senkrecht
+w3c/nist-blockarea3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should increase in size from"
+w3c/nist-blockarea4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The areas below should decrease in size from"
+w3c/nist-blockarea5: offen, erste Abweichung: Seite 1: "Should have two child areas" verschoben um 0.00 pt waagerecht, 40.32 pt senkrecht
+w3c/nist-blrp-heightoflines1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a font size of 14px and a line height of 20px. This means that the lines of text within it should be"
+w3c/nist-blrp-heightoflines2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a font size of 14px and a line height of 20px. This means that the lines of text within it should be"
+w3c/nist-blrp-line-height1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height10: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a"
+w3c/nist-blrp-line-height2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height6: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height7: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height8: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-line-height9: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This sentence should have a"
+w3c/nist-blrp-text-indent8: offen, erste Abweichung: Seite 1: "The" verschoben um 270.00 pt waagerecht, -0.00 pt senkrecht
+w3c/nist-blrp-text-indent9: offen, erste Abweichung: Seite 1: "The first line of this sentence should be indented 25 pixels, but the rest of it should be flush with the normal left" verschoben um -6.25 pt waagerec…
+w3c/nist-cbpbp-border-bottom-width-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a border bottom width of 25px and border-style of solid. There is an inline element of"
+w3c/nist-cbpbp-border-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border 10px teal"
+w3c/nist-cbpbp-border-left-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph has a background color of gray and a 20-pixel left margin, and it contains an inline element of"
+w3c/nist-cbpbp-border-left-inline2: offen, erste Abweichung: Seite 1: "This paragraph has a background color of gray and a 20-pixel left margin, and it contains an inline element" verschoben um -5.00 pt waagerecht, -0.00 …
+w3c/nist-cbpbp-border-left-width-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a background color of gray and margin-left of 20px. However, it contains an inline element of"
+w3c/nist-cbpbp-border-left-width-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a border left width of 25px and border-style of solid. There is an red inline element of"
+w3c/nist-cbpbp-border-right-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "border-right purple double 10px, which should have a 10-pixel purple double right border. The line-height of the"
+w3c/nist-cbpbp-border-right-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph has a background color of gray and a 20-pixel right margin, and it contains an inline element of"
+w3c/nist-cbpbp-border-right-width-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a border right width of 25px and border-style of solid. There is an inline element of"
+w3c/nist-cbpbp-border-right-width5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should have a thin right border width, which will become more obvious if the element is more than"
+w3c/nist-cbpbp-border-style-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border-style dashed"
+w3c/nist-cbpbp-border-style-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is an unstyled element, save for the background color, and containing an inline element of border-style groove"
+w3c/nist-cbpbp-border-top-width-inline1: offen, erste Abweichung: Seite 1: "This element has a border top width of 25px and border-style of solid. However, it contains an inline element of" verschoben um 0.00 pt waagerecht, -6…
+w3c/nist-cbpbp-border-top-width-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a border top width of 25px and border-style of solid. There is an inline element of"
+w3c/nist-cbpbp-border-top-width2: offen, erste Abweichung: Seite 1: "This element should have a top border width of 25 pixels." verschoben um 0.00 pt waagerecht, -6.25 pt senkrecht
+w3c/nist-cbpbp-border-top1: offen, erste Abweichung: Seite 1: "This element should have a purple, double, 10-pixel top border. Individual properties are tested here." verschoben um 0.00 pt waagerecht, -2.50 pt sen…
+w3c/nist-cbpbp-border-width-inline1: offen, erste Abweichung: Seite 1: "This element has a border-width of 25px and border-style of solid. However, it contains an inline element of" verschoben um 0.00 pt waagerecht, -6.25 …
+w3c/nist-cbpbp-border-width-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a border-width of 25px and border-style of solid. However, it contains an inline element of"
+w3c/nist-cbpbp-border-width2: offen, erste Abweichung: Seite 1: "This element should have an overall border width of 50 pixels. Individual properties are tested here." verschoben um 0.00 pt waagerecht, -12.50 pt sen…
+w3c/nist-cbpbp-border3: offen, erste Abweichung: Seite 1: "This element should have a ten-pixel wide teal outset border all the way around. Individual properties are tested" verschoben um 0.00 pt waagerecht, -…
+w3c/nist-cbpbp-border4: offen, erste Abweichung: Seite 1: "This element should have a ten-pixel wide olive inset border all the way around. Individual properties are tested" verschoben um 0.00 pt waagerecht, -…
+w3c/nist-cbpbp-border7: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-cbpbp-border7.fo:9:7: border-width: ungültige Längenangabe "left"
+w3c/nist-cbpbp-padding-bottom-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of"
+w3c/nist-cbpbp-padding-bottom-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of"
+w3c/nist-cbpbp-padding-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "0.3pc and background-color of red, giving it a red background and 0.3pc padding. Padding on inline elements does"
+w3c/nist-cbpbp-padding-left-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of padding-left"
+w3c/nist-cbpbp-padding-left-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of padding-left"
+w3c/nist-cbpbp-padding-right-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of"
+w3c/nist-cbpbp-padding-right-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of"
+w3c/nist-cbpbp-padding-right5: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "to the width"
+w3c/nist-cbpbp-padding-top3: offen, erste Abweichung: Seite 1: "This element should have a top padding of 25 pixels, which will require extra text in order to test. Both the content" verschoben um 0.00 pt waagerech…
+w3c/nist-cbpbp-padding-top5: offen, erste Abweichung: Seite 1: "This element" verschoben um 0.00 pt waagerecht, 135.00 pt senkrecht
+w3c/nist-cbpbp-padding3: offen, erste Abweichung: Seite 1: "This element should have an overall padding of 25 pixels, which will require extra text in order to test. Both the" verschoben um 0.00 pt waagerecht, …
+w3c/nist-cfp-font-family3: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-cfp-font-family3.fo:10:39: Schriftfamilie "cursive" nicht gefunden
+w3c/nist-cfp-font-family4: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-cfp-font-family4.fo:10:39: Schriftfamilie "fantasy" nicht gefunden
+w3c/nist-cfp-font-family7: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "These sentences should be in a monospace font, not serif, if monospace (the first"
+w3c/nist-cfp-font-size17: offen, erste Abweichung: Seite 1: "This sentence should be twenty-five pixels tall." verschoben um 0.00 pt waagerecht, -5.37 pt senkrecht
+w3c/nist-cfp-font-size18: offen, erste Abweichung: Seite 1: "This font size of this line is set to 10px." verschoben um 0.00 pt waagerecht, -2.15 pt senkrecht
+w3c/nist-cfp-font10: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in a sans-serif font, oblique and not small-caps, with a weight of 700."
+w3c/nist-cfp-font11: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+w3c/nist-cfp-font3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in serif font. Its font-size should be 150%"
+w3c/nist-cfp-font4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element should be in a sans-serif font. Its font-size should be 150% the containing block size, and its line-height"
+w3c/nist-cfp-font5: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-cfp-font5.fo:10:76: Schriftfamilie "cursive" nicht gefunden
+w3c/nist-cmpb-margin-left3: offen, erste Abweichung: Seite 1: "This element should have a margin-left of 25 pixels." verschoben um -6.25 pt waagerecht, -0.00 pt senkrecht
+w3c/nist-cmpb-margin-right3: offen, erste Abweichung: Seite 1: "This element should have a right margin of 25 pixels." verschoben um 6.05 pt waagerecht, -0.00 pt senkrecht
+w3c/nist-cmpi-margin-bottom-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of"
+w3c/nist-cmpi-margin-left-inline2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of margin-left"
+w3c/nist-cmpi-margin-right-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element is unstyled save for a background color of gray. However, it contains an inline element of margin-right"
+w3c/nist-cmpi-margin-top-inline1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "25px and background-color of red, giving it a red background and a 25px top margin. Margins on inline elements"
+w3c/nist-crp-color-units8: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-crp-color-units8.fo:10:7: color: unbekannte Farbe "invalidvalue"
+w3c/nist-egfobordercolor1: offen, erste Abweichung: Seite 1: "The border color properties for image were set" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfobordercolor2: offen, erste Abweichung: Seite 1: "The border color properties for image were set" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle1: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle2: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle3: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle4: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle5: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle6: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle7: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderstyle8: offen, erste Abweichung: Seite 1: "The border style properties for this image are" verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderwidth1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "width properties for image are set to \"0.3in\"."
+w3c/nist-egfoborderwidth2: offen, erste Abweichung: Seite 1: "width properties for image are set to \"thin\"." verschoben um -1.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-egfoborderwidth3: offen, erste Abweichung: Seite 1: "width properties for image set to \"medium\"." verschoben um -2.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-egfoborderwidth4: offen, erste Abweichung: Seite 1: "width properties set to \"thik\"." verschoben um -4.00 pt waagerecht, -4.00 pt senkrecht
+w3c/nist-egfoborderwidth5: offen, erste Abweichung: Seite 1: "width properties for image are set to \"thick\"" verschoben um -4.00 pt waagerecht, -0.00 pt senkrecht
+w3c/nist-egfocontentheight: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-egfocontentheight.fo:10:9: Bild "nist.gif": Bildformat nicht unterstützt, erwartet JPEG oder PNG
+w3c/nist-egfocontentheightp: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-egfocontentheightp.fo:10:9: Bild "nist.gif": Bildformat nicht unterstützt, erwartet JPEG oder PNG
+w3c/nist-egfocontentheightstf: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"content-height\" of this"
+w3c/nist-egfocontentwidth: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-egfocontentwidth.fo:10:9: Bild "nist.gif": Bildformat nicht unterstützt, erwartet JPEG oder PNG
+w3c/nist-egfocontentwidthp: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-egfocontentwidthp.fo:10:9: Bild "nist.gif": Bildformat nicht unterstützt, erwartet JPEG oder PNG
+w3c/nist-egfocontentwidthstf: offen, erste Abweichung: Seite 1: "The \"content-width\" of this \"external-graphic\" is set to" verschoben um 0.00 pt waagerecht, -23.40 pt senkrecht
+w3c/nist-egfopadding1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "the \"padding\" properties for image were set to"
+w3c/nist-egfopadding2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "the \"padding\" properties for image were set to"
+w3c/nist-inl-inline-elem2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a paragraph that has a very long span in it, and the span has a 12px border separated from the span by 2pt of left padding (…
+w3c/nist-keepandbreak10: offen, erste Abweichung: Seiten: pdx 1, FOP 2
+w3c/nist-keepandbreak12: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This text should be on the second page. This"
+w3c/nist-keepandbreak13: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a leading area in P (there should be no areas before"
+w3c/nist-keepandbreak14: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is a trailing area in P (there should be no areas other"
+w3c/nist-keepandbreak15: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This is the page"
+w3c/nist-keepandbreak16: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "All page sizes should be"
+w3c/nist-keepandbreak17: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "All page sizes should be"
+w3c/nist-lbfomarginbottom2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"margin-Bottom\" for this list-block was set to \"inherit\""
+w3c/nist-lbfomarginright1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"margin-right\" for this"
+w3c/nist-lbfomarginright2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"margin-right\" for this"
+w3c/nist-lbfomargintop2: offen, erste Abweichung: Seite 1: "Use this text as reference to check the \"list-block\" below\"." verschoben um 0.00 pt waagerecht, -36.00 pt senkrecht
+w3c/nist-lbfospacebefore2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "The \"space-before\" on this \"block-list\" was set to \"inherit\""
+w3c/nist-lifobordercolor1: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifobordercolor2: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifobordercolor3: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifobordercolor4: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifobordercolor5: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifobordercolor6: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifobordercolor7: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle1: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle10: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle11: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle12: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle13: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle2: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle3: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle4: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle5: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle6: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle7: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle8: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderstyle9: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderwidth1: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -21.60 pt senkrecht
+w3c/nist-lifoborderwidth10: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-lifoborderwidth3: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -1.00 pt senkrecht
+w3c/nist-lifoborderwidth4: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-lifoborderwidth6: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-lifoborderwidth8: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-lifoborderwidth9: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -2.00 pt senkrecht
+w3c/nist-lifopadding1: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -15.40 pt senkrecht
+w3c/nist-lifopadding2: offen, erste Abweichung: Seite 1: "1)" verschoben um 0.00 pt waagerecht, -8.20 pt senkrecht
+w3c/nist-misc-comments2: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-comments2.fo:10:7: font-size: Ausdruck "" ist unvollständig
+w3c/nist-misc-hformatting1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This text is inside an element. The border, padding, and margins for this paragraph should"
+w3c/nist-misc-hformatting10: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting10.fo:10:7: margin-right: unbekannter Wert "auto"
+w3c/nist-misc-hformatting2: offen, erste Abweichung: Seite 1: "This paragraph have a left margin of ten pixels." verschoben um -2.50 pt waagerecht, -0.00 pt senkrecht
+w3c/nist-misc-hformatting3: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting3.fo:10:7: margin-right: unbekannter Wert "auto"
+w3c/nist-misc-hformatting4: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting4.fo:10:7: margin-right: unbekannter Wert "auto"
+w3c/nist-misc-hformatting5: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting5.fo:10:7: margin-left: unbekannter Wert "auto"
+w3c/nist-misc-hformatting6: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting6.fo:10:7: margin-left: unbekannter Wert "auto"
+w3c/nist-misc-hformatting7: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting7.fo:10:7: margin-right: unbekannter Wert "auto"
+w3c/nist-misc-hformatting8: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting8.fo:10:7: margin-right: unbekannter Wert "auto"
+w3c/nist-misc-hformatting9: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-hformatting9.fo:11:9: padding: unbekannter Wert "auto"
+w3c/nist-misc-len-units10: offen, erste Abweichung: Seite 1: "This element should have a left margin of 3 picas (the plus sign in the style should make no difference)." verschoben um 36.00 pt waagerecht, -0.00 pt…
+w3c/nist-misc-len-units11: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This element has a font-size of 40px and a"
+w3c/nist-misc-parsing3: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-misc-parsing3.fo:10:7: background-color: unbekannte Farbe "xyz"
+w3c/nist-misc-perc-units1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be"
+w3c/nist-misc-perc-units2: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should be"
+w3c/nist-misc-perc-units3: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This paragraph should have a left margin of 25% (.25in) of its conatining"
+w3c/nist-misc-replelem1: offen, erste Abweichung: Seite 1: "The above image should be a 50px(width) square." verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
+w3c/nist-misc-replelem2: offen, erste Abweichung: Seite 1: "The above image should be a 50px (width=\"50px\" height=\"auto\") square." verschoben um 0.00 pt waagerecht, -12.50 pt senkrecht
+w3c/nist-misc-replelem5: offen, erste Abweichung: Seite 1: "The content-height of this image was set 50px." verschoben um -12.50 pt waagerecht, -12.50 pt senkrecht
+w3c/nist-recarea8: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "This block contains an inline-progression-dimension of 2.0 inches and a"
+w3c/nist-recarea9: offen, erste Abweichung: Seite 1: "This block contains a block-progression-dimension of 0.5 inches and an" verschoben um 0.00 pt waagerecht, 28.80 pt senkrecht
+w3c/nist-renderingmodel2: offen, erste Abweichung: Fehler in pdx: out/suites/w3c/fo/nist-renderingmodel2.fo:10:9: Bild "http://xw2k.sdct.itl.nist.gov/carmelo/images/nist.gif": Schema "http" wird nicht unterstüt…
+w3c/nist-space1: offen, erste Abweichung: Seite 1: "This is line 2, overlaps line 1." verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht
+w3c/nist-space2: offen, erste Abweichung: Seite 1: "This is line 2, overlaps line 1." verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht
+w3c/nist-tcfoborderstyle10: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Only the \"border-before-style\""
+w3c/nist-tcfoborderstyle11: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Only the \"border-after-style\""
+w3c/nist-tcfoborderstyle12: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Only the \"border-start-style\""
+w3c/nist-tcfoborderstyle13: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Only the \"border-end-style\""
+w3c/nist-tcfocolumnnumber: offen, erste Abweichung: Seite 1: "appear in" verschoben um 144.00 pt waagerecht, -0.00 pt senkrecht
+w3c/xep-ogorek: offen, erste Abweichung: Seite 1: "Jeśli ogórek nie śpiewa," verschoben um 0.00 pt waagerecht, 14.40 pt senkrecht

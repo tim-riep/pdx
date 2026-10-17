@@ -157,6 +157,9 @@ type cmpLine struct {
 // wird nur, dass eine Punktfolge dasteht.
 var leaderDots = regexp.MustCompile(`\.{4,}`)
 
+// Norm vereinheitlicht einen Zeilentext für den Vergleich.
+func Norm(s string) string { return norm(s) }
+
 func norm(s string) string {
 	s = leaderDots.ReplaceAllString(s, "....")
 	return strings.Join(strings.Fields(strings.ReplaceAll(s, "\u00a0", " ")), " ")
@@ -202,15 +205,15 @@ func PDXLines(d *areatree.Document) []ATLine {
 			if !ok || c.Kind != areatree.KindLine {
 				return true
 			}
-			base := -1.0
-			areatree.Walk(c.Children, func(x areatree.Area) bool {
-				if g, ok := x.(*areatree.GlyphRun); ok && base < 0 {
-					base = g.Origin.Y.Pt()
+			base, x := -1.0, 0.0
+			areatree.Walk(c.Children, func(a areatree.Area) bool {
+				if g, ok := a.(*areatree.GlyphRun); ok && base < 0 {
+					base, x = g.Origin.Y.Pt(), g.Origin.X.Pt()
 				}
 				return true
 			})
 			if base >= 0 {
-				out = append(out, ATLine{Page: pageIdx, Text: lineText(c), Baseline: base})
+				out = append(out, ATLine{Page: pageIdx, Text: lineText(c), Baseline: base, X: x, HasX: true})
 			}
 			return false
 		})

@@ -1,0 +1,13 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 4
+1 42.519 38.654 WARNING: Page sequence contains: 4 pages.
+1 42.519 67.000 This page sequence has more than one page so you will see the message only at the top of the
+1 42.519 81.400 first page.
+1 42.519 751.068 Page (1 / 4)
+2 42.519 67.000 Some text.
+2 42.519 751.068 Page (2 / 4)
+3 42.519 67.000 Some text.
+3 42.519 751.068 Page (3 / 4)
+4 42.519 38.654 [marker content]
+4 42.519 67.000 Some more text on last page.
+4 42.519 751.068 Page (4 / 4)

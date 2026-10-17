@@ -1,0 +1,15 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 4
+1 0.000 10.308 Apache FOP is a
+1 0.000 24.708 great tool to create
+1 0.000 39.108 PDF documents with.
+1 0.000 53.508 Apache FOP is a
+1 0.000 67.908 great tool to create
+1 0.000 82.308 PDF documents with.
+3 0.000 10.308 Apache FOP is a
+3 0.000 24.708 great tool to create
+3 0.000 39.108 PDF documents with.
+3 0.000 53.508 Apache FOP is a
+3 0.000 67.908 great tool to create
+3 0.000 82.308 PDF documents with.
+4 0.000 10.308 last line in new block

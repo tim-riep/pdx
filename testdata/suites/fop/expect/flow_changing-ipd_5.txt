@@ -1,0 +1,38 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 5
+1 - 60.308 (a)
+1 - 60.308 In olden times when wishing still helped one, there lived a king whose daughters were all
+1 74.000 74.708 beautiful, but the youngest was so beautiful that the sun itself, which has seen so much,
+1 74.000 89.108 was astonished whenever it shone in her face.
+1 - 103.508 (a)
+1 - 103.508 In olden times when wishing still helped one, there lived a king whose daughters were all
+1 74.000 117.908 beautiful, but the youngest was so beautiful that the sun itself, which has seen so much,
+1 74.000 132.308 was astonished whenever it shone in her face.
+2 - 60.308 (a)
+2 - 60.308 In olden times when wishing still helped one, there
+2 74.000 74.708 lived a king whose daughters were all beautiful,
+2 74.000 89.108 but the youngest was so beautiful that the sun
+2 74.000 103.508 itself, which has seen so much, was astonished
+2 74.000 117.908 whenever it shone in her face.
+2 - 132.308 (a)
+2 - 132.308 In olden times when wishing still helped one, there
+3 74.000 60.308 lived a king whose daughters were all beautiful, but the youngest was so beautiful that the
+3 74.000 74.708 sun itself, which has seen so much, was astonished whenever it shone in her face.
+3 - 89.108 (a)
+3 - 89.108 In olden times when wishing still helped one, there lived a king whose daughters were all
+3 74.000 103.508 beautiful, but the youngest was so beautiful that the sun itself, which has seen so much,
+3 74.000 117.908 was astonished whenever it shone in her face.
+3 - 132.308 (a)
+3 - 132.308 In olden times when wishing still helped one, there lived a king whose daughters were all
+4 74.000 60.308 beautiful, but the youngest was so beautiful that the
+4 74.000 74.708 sun itself, which has seen so much, was astonished
+4 74.000 89.108 whenever it shone in her face.
+4 - 103.508 (a)
+4 - 103.508 In olden times when wishing still helped one, there
+4 74.000 117.908 lived a king whose daughters were all beautiful,
+4 74.000 132.308 but the youngest was so beautiful that the sun
+5 74.000 60.308 itself, which has seen so much, was astonished whenever it shone in her face.
+5 - 74.708 (a)
+5 - 74.708 In olden times when wishing still helped one, there lived a king whose daughters were all
+5 74.000 89.108 beautiful, but the youngest was so beautiful that the sun itself, which has seen so much,
+5 74.000 103.508 was astonished whenever it shone in her face.

@@ -1,0 +1,13 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 20.000 30.308 test
+1 20.000 52.708 •
+1 70.000 52.708 here is text in the list item body
+1 20.000 75.108 •
+1 70.000 75.108 here is text in the list item body
+1 20.000 97.508 •
+1 70.000 97.508 here is text in the list item body
+1 20.000 119.908 •
+1 70.000 119.908 here is text in the list item body
+2 20.000 30.308 •
+2 70.000 30.308 here is text in the list item body

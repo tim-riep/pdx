@@ -1,0 +1,11 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 36.000 46.308 The first row of the following table has a fixed height,
+1 36.000 60.708 and a forced break occurs before this height is
+1 36.000 75.108 reached.
+1 40.000 97.508 Cell 1
+1 184.000 97.508 Cell 2
+2 40.000 46.308 Should be on a new
+2 40.000 60.708 page
+2 40.000 83.108 Cell 3
+2 184.000 83.108 Cell 4

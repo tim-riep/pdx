@@ -1,0 +1,6 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 36.000 28.308 margin="inherit" - should have the same margin as
+1 36.000 42.708 the enclosing block
+1 0.000 75.108 Yellow block has margin="5%" - 18pt margin based on 5in page
+1 0.000 89.508 width

@@ -1,0 +1,16 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 4
+1 0.000 10.308 page: 1 of 2
+1 0.000 24.708 page: 1, bof1 is on page 1
+1 0.000 39.108 page: 1, bof2 is on page 11
+1 0.000 53.508 page: 1
+2 0.000 10.308 page: 2
+2 0.000 24.708 page: 2
+2 0.000 39.108 page: 2 of 2
+3 0.000 10.308 page: 11 of 12
+3 0.000 24.708 page: 11
+3 0.000 39.108 page: 11
+3 0.000 53.508 page: 11
+4 0.000 10.308 page: 12, bof1 is on page 1
+4 0.000 24.708 page: 12, bof2 is on page 11
+4 0.000 39.108 page: 12 of 12

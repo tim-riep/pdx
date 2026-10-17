@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Aus Apache FOP 2.11, test/layoutengine/standard-testcases/table_border-collapse_collapse_spans_2_no-col.xml -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+      <fo:layout-master-set>
+        <fo:simple-page-master master-name="normal" page-width="16cm" page-height="30cm" margin="20pt">
+          <fo:region-body margin="0pt"/>
+        </fo:simple-page-master>
+      </fo:layout-master-set>
+      <fo:page-sequence master-reference="normal">
+        <fo:flow flow-name="xsl-region-body">
+
+          <fo:block>Before tables</fo:block>
+          <!-- table 1 -->
+          <fo:table table-layout="fixed" width="400pt" border-collapse="collapse">
+            <fo:table-body>
+              <fo:table-row>
+                <fo:table-cell border-top="4pt solid black" border-bottom="4pt solid black" border-left="4pt solid black" border-right="4pt solid black">
+                  <fo:block>Cell 1.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top="6pt solid silver" border-bottom="6pt hidden silver" border-left="6pt solid silver" border-right="6pt solid silver">
+                  <fo:block>Cell 1.2</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="12pt solid maroon" border-bottom=" 6pt double maroon" border-left=" 6pt solid maroon" border-right=" 6pt solid maroon">
+                  <fo:block>Cell 2.1 Cell 2.1 Cell 2.1 Cell 2.1 Cell 2.1 Cell 2.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell number-rows-spanned="2" number-columns-spanned="2" background-color="yellow" border-top="4pt solid red" border-bottom="4pt dashed red" border-left="10pt dashed red" border-right="4pt double red">
+                  <fo:block>Cell 2.2</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="6pt double fuchsia" border-bottom="6pt inset fuchsia" border-left="30pt solid fuchsia" border-right="6pt inset fuchsia">
+                  <fo:block>Cell 3.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top="5pt ridge maroon" border-bottom="6pt solid maroon" border-left="10pt none maroon" border-right="6pt none maroon">
+                  <fo:block>Cell 3.4</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top=" 6pt inset black" border-bottom=" 4pt solid black" border-left=" 4pt solid black" border-right="40pt solid black">
+                  <fo:block>Cell 4.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top=" 5pt outset silver" border-bottom="60pt solid silver" border-left=" 6pt solid silver" border-right=" 6pt none silver">
+                  <fo:block>Cell 4.2 Cell 4.2</fo:block>
+                </fo:table-cell>
+                <fo:table-cell number-rows-spanned="3" number-columns-spanned="2" background-color="yellow" border-top="40pt double green" border-bottom="5pt solid green" border-left="6pt solid green" border-right="5pt dashed green">
+                  <fo:block>Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3 Cell 4.3</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="4pt solid black" border-bottom="4pt solid black" border-left="4pt solid black" border-right="4pt solid black">
+                  <fo:block>Cell 5.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top="6pt solid silver" border-bottom="6pt hidden silver" border-left="6pt solid silver" border-right="60pt solid silver">
+                  <fo:block>Cell 5.2</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="12pt solid maroon" border-bottom=" 6pt double maroon" border-left=" 6pt solid maroon" border-right=" 6pt solid maroon">
+                  <fo:block>Cell 6.1 Cell 6.1 Cell 6.1 Cell 6.1 Cell 6.1 Cell 6.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+            </fo:table-body>
+          </fo:table>
+
+          <fo:block space-before="10pt" space-after="10pt">Between tables</fo:block>
+          <!-- table 2 -->
+          <fo:table table-layout="fixed" width="400pt" border-collapse="collapse">
+            <fo:table-column number-columns-repeated="4" column-width="proportional-column-width(1)"/>
+            <fo:table-body>
+              <fo:table-row>
+                <fo:table-cell border-top="12pt solid black" border-bottom="12pt solid blue" border-left="12pt solid red" border-right="4pt solid teal">
+                  <fo:block>Cell 1.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell padding="10pt" border-top="4pt solid silver" border-bottom="5pt solid purple" border-left="5pt solid purple" border-right="10pt solid olive">
+                  <fo:block>Cell 1.2 Cell 1.2</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top="6pt solid black" border-bottom="6pt solid navy" border-left="6pt solid purple" border-right="16pt solid red">
+                  <fo:block>Cell 1.3</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top="0pt solid black" border-bottom="10pt solid blue" border-left="12pt solid red" border-right="4pt solid teal">
+                  <fo:block>Cell 1.4</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="10pt solid black" border-bottom="4pt solid blue" border-left="12pt solid purple" border-right="4pt solid teal">
+                  <fo:block>Cell 2.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell number-rows-spanned="3" number-columns-spanned="3" background-color="yellow" padding="15pt" border-top="4pt solid silver" border-bottom="12pt solid navy" border-left="2pt solid purple" border-right="4pt solid olive">
+                  <fo:block>Cell 2.2</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="3pt solid black" border-bottom="10pt solid silver" border-left="3pt solid red" border-right="10pt solid teal">
+                  <fo:block>Cell 3.1 Cell 3.1 Cell 3.1 Cell 3.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="6pt solid silver" border-bottom="6pt solid navy" border-left="6pt solid purple" border-right="16pt solid olive">
+                  <fo:block>Cell 4.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="12pt solid black" border-bottom="12pt solid blue" border-left="12pt solid red" border-right="12pt solid teal">
+                  <fo:block>Cell 5.1</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top="4pt solid silver" border-bottom="4pt solid purple" border-left="4pt solid purple" border-right="10pt solid olive">
+                  <fo:block>Cell 5.2 Cell 5.2</fo:block>
+                </fo:table-cell>
+                <fo:table-cell border-top="30pt solid silver" border-bottom="6pt solid navy" border-left="6pt solid purple" border-right="16pt solid olive">
+                  <fo:block>Cell 5.3</fo:block>
+                </fo:table-cell>
+                <fo:table-cell padding="20pt" border-top="10pt solid black" border-bottom="4pt solid blue" border-left="12pt solid red" border-right="4pt solid teal">
+                  <fo:block>Cell 5.4</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+            </fo:table-body>
+          </fo:table>
+
+          <fo:block>After the tables</fo:block>
+        </fo:flow>
+      </fo:page-sequence>
+    </fo:root>

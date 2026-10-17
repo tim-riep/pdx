@@ -34,7 +34,7 @@ func TestParseBBox(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lines, pages, err := parseBBox(data)
+	lines, pages, err := ParseBBox(data)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,0 +1,10 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 3
+1 36.000 46.308 This is just some generic text to use for testing. This is just some generic text to use for testing. This
+1 36.000 60.708 is just some generic text to use for testing. This is just some generic text to use for testing. This is just
+1 36.000 75.108 some generic text to use for testing. This is just some generic text to use for testing. This is just some
+1 36.000 89.508 generic text to use for testing. This is just some generic text to use for testing.
+2 36.000 46.308 This is just some generic text to use for testing. This is just some generic text to use for testing. This is just some generic text to use for
+2 36.000 60.708 testing. This is just some generic text to use for testing. This is just some generic text to use for testing. This is just some generic text to
+2 36.000 75.108 use for testing. This is just some generic text to use for testing. This is just some generic text to use for testing.
+3 36.000 46.308 A table with first row empty after change in IPD and forced break before page...

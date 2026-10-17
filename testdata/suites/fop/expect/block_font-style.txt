@@ -1,0 +1,20 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 10.068 font-family="serif" font-style not given
+1 0.000 24.468 font-family="serif" font-style="normal"
+1 0.000 38.874 font-family="serif" font-style="italic"
+1 0.000 53.268 font-family="serif" font-style="oblique"
+1 0.000 67.668 font-family="serif" font-style="backslant"
+1 0.000 82.068 font-family="serif" font-style="obscure"
+1 0.000 96.708 font-family="sans-serif" font-style not given
+1 0.000 111.108 font-family="sans-serif" font-style="normal"
+1 0.000 125.526 font-family="sans-serif" font-style="italic"
+1 0.000 139.866 font-family="sans-serif" font-style="oblique"
+1 0.000 154.308 font-family="sans-serif" font-style="backslant"
+1 0.000 168.708 font-family="sans-serif" font-style="obscure"
+1 0.000 182.544 font-family="monospace" font-style not given
+1 0.000 196.944 font-family="monospace" font-style="normal"
+1 0.000 211.344 font-family="monospace" font-style="italic"
+1 0.000 226.032 font-family="monospace" font-style="oblique"
+1 0.000 240.144 font-family="monospace" font-style="backslant"
+1 0.000 254.544 font-family="serif" font-style="obscure"

@@ -8,7 +8,7 @@ TEMPLATES := $(wildcard testdata/templates/*/template.xml)
 PDFS      := $(patsubst testdata/fo/%.fo,$(OUT)/%.pdf,$(CORPUS)) \
              $(patsubst testdata/templates/%/template.xml,$(OUT)/vorlage-%.pdf,$(TEMPLATES))
 
-.PHONY: all build test vet fuzz golden conformance fop-compare clean
+.PHONY: all build test vet fuzz golden conformance fop-compare fo-conformance fo-reference clean
 
 all: vet test
 
@@ -54,3 +54,14 @@ clean:
 # Vergleicht den Korpus mit Apache FOP (Docker, nur für Tests).
 fop-compare:
 	PDX_FOP=1 $(GO) test -run 'CorpusAgainstFOP|MusterrechnungAgainstFOP' -v ./internal/fopcompare
+
+# FO-Testsuiten (FOP standard-testcases und W3C XSL Test Suite) gegen die
+# Erwartungen aus FOP. Lädt die W3C-Suite beim ersten Lauf herunter. Bericht
+# in out/fo-conformance.md.
+fo-conformance:
+	PDX_W3C=1 $(GO) test -run TestImportW3C -count=1 ./internal/fosuite
+	PDX_FO_CONFORMANCE=1 $(GO) test -run TestFOConformance -count=1 -v ./internal/fosuite
+
+# Erwartungen der Testsuiten neu mit FOP erzeugen (Docker).
+fo-reference:
+	PDX_FOP=1 PDX_SUITE_UPDATE=1 $(GO) test -run TestReference -count=1 -timeout 60m -v ./internal/fosuite

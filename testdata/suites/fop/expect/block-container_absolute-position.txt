@@ -1,0 +1,11 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 - 20.308 absolutely positioned width/height
+1 - 50.308 absolutely positioned right/bottom
+1 0.000 10.308 This is some background-text. This is some background-text. This
+1 - 24.708 is some background-text. This is some background-text. This is
+1 0.000 39.108 some background-text. This is some background-text.
+1 100.000 110.308 absolutely positioned right/
+1 100.000 124.708 bottom (inside a block)
+1 - 53.508 This is some background-text. This is some background-text. This
+1 0.000 67.908 is some background-text.

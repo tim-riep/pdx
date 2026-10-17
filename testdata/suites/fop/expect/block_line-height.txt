@@ -1,0 +1,17 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 10.308 line-height="normal"
+1 10.000 26.769 font-size="larger" - line height grows
+1 10.000 40.270 font-size="smaller" - line height shrinks
+1 0.000 55.788 line-height="150%"
+1 10.000 74.409 font-size="larger" - line height same as above
+1 10.000 91.270 font-size="smaller" - line height same as above
+1 0.000 110.788 line-height="20pt"
+1 10.000 131.409 font-size="larger" - line height same as above
+1 10.000 150.270 font-size="smaller" - line height same as above
+1 0.000 169.788 line-height="1.5"
+1 10.000 190.209 font-size="larger" - line height grows
+1 10.000 207.370 font-size="smaller" - line height shrinks
+1 0.000 221.888 line-height="150% - 5pt"
+1 10.000 235.510 font-size="larger" - line height same as above
+1 10.000 247.370 font-size="smaller" - line height same as above

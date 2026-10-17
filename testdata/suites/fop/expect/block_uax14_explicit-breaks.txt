@@ -1,0 +1,12 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 6.872 This is a piece of text with preserved linefeed
+1 0.000 16.472 character.
+1 0.000 26.072 This is a piece of text with a next-line
+1 0.000 35.672 character.
+1 0.000 45.272 This is a piece of text with a line-separator
+1 0.000 54.872 character.
+1 0.000 64.472 This is a piece of text with a paragraph-separator
+1 0.000 74.072 character.
+1 0.000 83.672 There should be 2 empty lines between this one
+1 0.000 112.472 and this one.

@@ -1,0 +1,13 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 10.308 plain instream-foreign-object
+1 20.000 45.972 End
+1 0.000 60.372 instream-foreign-object with display-align="auto"
+1 20.000 96.036 End
+1 0.000 110.436 instream-foreign-object with display-align="before"
+1 20.000 146.100 End
+1 0.000 160.500 instream-foreign-object with display-align="center"
+1 20.000 196.164 End
+1 0.000 210.564 instream-foreign-object with display-align="after"
+1 20.000 246.228 End
+1 0.000 260.628 EOF

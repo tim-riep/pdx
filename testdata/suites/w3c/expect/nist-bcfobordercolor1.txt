@@ -1,0 +1,6 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 144.000 40.108 #700ec9a422f90cf0
+1 144.000 54.508 #b649ba10f6df8803
+1 144.000 68.908 #93ea736194c5a298
+1 144.000 83.308 #20a3997dea9d2591

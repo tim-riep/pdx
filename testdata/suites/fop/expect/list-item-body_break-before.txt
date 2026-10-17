@@ -1,0 +1,19 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 7
+1 - 15.308 (a)
+1 - 15.308 This content starts on page 1 and overflows to page
+1 25.000 29.708 2. This content starts on page 1 and overflows to
+1 25.000 44.108 page 2. This content starts on page 1 and overflows
+1 25.000 58.508 to page 2. This content starts on page 1 and
+1 25.000 72.908 overflows to page 2. This content starts on page 1
+2 25.000 15.308 and overflows to page 2. This content starts on page
+2 25.000 29.708 1 and overflows to page 2. This content starts on
+2 25.000 44.108 page 1 and overflows to page 2.
+3 25.000 15.308 This content is on page 3.
+4 25.000 15.308 This content is on page 4.
+5 - 15.308 (b)
+5 - 15.308 This content is on page 5.
+6 - 15.308 (c)
+6 - 15.308 This content is on page 6.
+7 - 15.308 (d)
+7 - 15.308 This content is on page 7.

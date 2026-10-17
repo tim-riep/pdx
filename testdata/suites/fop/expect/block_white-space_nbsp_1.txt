@@ -1,0 +1,5 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 3.324 10.308 single nbsp around
+1 6.648 39.108 after empty line
+1 - 58.508 single nbsp around

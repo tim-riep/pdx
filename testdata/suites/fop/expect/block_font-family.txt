@@ -1,0 +1,11 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 0.000 10.308 font-family not given
+1 0.000 24.468 font-family="serif"
+1 0.000 39.108 font-family="sans-serif"
+1 0.000 53.508 font-family="cursive"
+1 0.000 67.908 font-family="fantasy"
+1 0.000 81.744 font-family="monospace"
+1 0.000 96.708 font-family="Helvetica,sans-serif,Symbol"
+1 0.000 111.108 font-family="Helvetica, sans-serif, Symbol"
+1 0.000 124.944 font-family="myfont1,myfont2,monospace,Symbol"

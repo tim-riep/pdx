@@ -1,0 +1,9 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 3
+1 0.000 10.308 block1 (in block-container, height="2in")
+1 0.000 154.308 outside block-container
+1 0.000 168.708 block2 (in block-container, height="2in")
+2 0.000 10.308 block3 (in block-container, height="2in")
+2 0.000 154.308 block4 (in block-container, height="2in")
+2 0.000 298.308 outside block-container
+3 0.000 10.308 block5 (in block-container, height="2in")

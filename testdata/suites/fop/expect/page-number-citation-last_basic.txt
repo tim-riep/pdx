@@ -1,0 +1,21 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 6
+1 0.000 10.308 page: 1 of 3
+1 0.000 24.708 bof3's last area is on page 2
+1 0.000 39.108 test
+1 0.000 53.508 test
+1 0.000 67.908 test
+2 0.000 10.308 test
+2 0.000 24.708 test
+2 0.000 39.108 test
+2 0.000 53.508 test
+3 0.000 10.308 page: 3
+3 0.000 24.708 bof3's last area is on page 2
+3 0.000 39.108 page eof1: 3 of 3
+3 0.000 53.508 page eof2: 3 of 13
+4 0.000 10.308 page: 11 of 13
+4 0.000 24.708 bof3's last area is on page 2
+5 0.000 10.308 page: 12
+6 0.000 10.308 page: 13
+6 0.000 24.708 page eof1: 13 of 3
+6 0.000 39.108 page eof2: 13 of 13

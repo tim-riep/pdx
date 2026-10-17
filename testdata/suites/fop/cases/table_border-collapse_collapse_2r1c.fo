@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Aus Apache FOP 2.11, test/layoutengine/standard-testcases/table_border-collapse_collapse_2r1c.xml -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg">
+      <fo:layout-master-set>
+        <fo:simple-page-master master-name="normal" page-width="15cm" page-height="15cm" margin="20pt">
+          <fo:region-body margin="0pt"/>
+        </fo:simple-page-master>
+      </fo:layout-master-set>
+      <fo:page-sequence master-reference="normal">
+        <fo:flow flow-name="xsl-region-body">
+          <fo:block>Before the tables</fo:block>
+
+          <!-- table 1 -->
+          <fo:table table-layout="fixed" width="100pt" border-collapse="collapse">
+            <fo:table-column column-width="proportional-column-width(1)"/>
+            <fo:table-body>
+              <fo:table-row>
+                <fo:table-cell border="4pt solid black">
+                  <fo:block>Cell 1.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border="6pt solid blue">
+                  <fo:block>Cell 2.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+            </fo:table-body>
+          </fo:table>
+          <fo:block>Between tables</fo:block>
+
+          <!-- table 2 -->
+          <fo:table table-layout="fixed" width="100pt" border-collapse="collapse">
+            <fo:table-column column-width="proportional-column-width(1)"/>
+            <fo:table-body>
+              <fo:table-row>
+                <fo:table-cell border="6pt solid black">
+                  <fo:block>Cell 1.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border="4pt solid blue">
+                  <fo:block>Cell 2.1 Cell 2.1 Cell 2.1 Cell 2.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+            </fo:table-body>
+          </fo:table>
+          <fo:block>Between tables</fo:block>
+
+          <!-- table 3 -->
+          <fo:table table-layout="fixed" width="100pt" border-collapse="collapse">
+            <fo:table-column column-width="proportional-column-width(1)"/>
+            <fo:table-body>
+              <fo:table-row>
+                <fo:table-cell border-top="2pt solid black" border-bottom="6pt solid blue" border-left="8pt solid red" border-right="2pt solid orange">
+                  <fo:block>Cell 1.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="4pt solid gray" border-bottom="12pt solid navy" border-left="6pt solid purple" border-right="10pt solid yellow">
+                  <fo:block>cell 2.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+            </fo:table-body>
+          </fo:table>
+          <fo:block>Between tables</fo:block>
+
+          <!-- table 4 -->
+          <fo:table table-layout="fixed" width="100pt" border-collapse="collapse">
+            <fo:table-column column-width="proportional-column-width(1)"/>
+            <fo:table-body>
+              <fo:table-row>
+                <fo:table-cell border-top="12pt solid black" border-bottom="6pt solid blue" border-left="2pt solid red" border-right="10pt solid orange">
+                  <fo:block>Cell 1.1 Cell 1.1 Cell 1.1 Cell 1.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+              <fo:table-row>
+                <fo:table-cell border-top="8pt solid gray" border-bottom="2pt solid navy" border-left="8pt solid purple" border-right="6pt solid yellow">
+                  <fo:block>cell 2.1</fo:block>
+                </fo:table-cell>
+              </fo:table-row>
+            </fo:table-body>
+          </fo:table>
+          <fo:block>After the tables</fo:block>
+        </fo:flow>
+      </fo:page-sequence>
+    </fo:root>

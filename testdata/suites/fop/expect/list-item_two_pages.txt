@@ -1,0 +1,113 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 2
+1 28.346 37.714 8
+1 52.346 37.714 Non-Solicitation: I will not, for a period of one year after the Separation Date, solicit, interfere with, or cause
+1 52.346 50.714 any current Red Cross employee to leave employment with the Red Cross, nor will I solicit, induce, or attempt
+1 52.346 63.714 to induce any of the Red Cross’ past or current customers, clients, or donors (a) to cease doing business, in
+1 52.346 76.714 whole or in part, with or through the Red Cross, or (b) to do business with any other person, corporation, or
+1 52.346 89.714 other entity performing services materially similar to or competitive with those provided by the Red Cross.
+1 28.346 114.714 9
+1 52.346 114.714 Consideration and No Additional Payments: In consideration for my promises in the Agreement, including the
+1 52.346 127.714 Release of Claims below, I am receiving pay and benefits to which I am not otherwise entitled. I agree that I
+1 52.346 140.714 am not entitled to any additional pay or benefits beyond what is provided in this Agreement.
+1 28.346 165.714 10
+1 52.346 165.714 Release of Claims: I permanently and completely waive, release, and forever discharge Red Cross from
+1 52.346 178.714 liability for all known and unknown claims, charges, complaints and causes of action (collectively, “Release
+1 52.346 191.714 of Claims”) that I have or may have accrued through the effective date of this Agreement. This is a general
+1 52.346 204.714 release, and includes all claims except those that cannot be released under applicable law. This Release of
+1 52.346 217.714 Claims includes, but is not limited to, the following:
+1 - 242.714 (a)
+1 - 242.714 claims that could have been raised under any statute, law, regulation or precedent, with respect to my
+1 76.346 255.714 employment or termination from employment;
+1 - 280.714 (b)
+1 - 280.714 claims for wrongful discharge, breach of contract, breach of implied covenant of good faith and fair
+1 76.346 293.714 dealing, interference with contractual relations, interference with prospective economic advantage,
+1 76.346 306.714 negligence, defamation, misrepresentation, fraud, infliction of emotional distress, and any other claims
+1 76.346 319.714 brought under common law in any form;
+1 - 344.714 (c)
+1 - 344.714 claims arising under or based upon Title VII of the Civil Rights Act of 1964, the Age Discrimination
+1 76.346 357.714 in Employment Act of 1967 (“ADEA”), the Employee Retirement Income Security Act of 1974, the
+1 76.346 370.714 Americans with Disabilities Act, the Civil Rights Act of 1991, the civil rights statutes codified at 42
+1 76.346 383.714 U.S.C.§ 1981 et seq., the Family and Medical Leave Act, and any other applicable federal, state or local
+1 76.346 396.714 statute, law, ordinance, decision, rule or law of any kind, as well as any amendments thereof; provided,
+1 76.346 409.714 however, that the following claims are excluded from this provision and are NOT waived:
+1 76.346 434.714 i
+1 100.346 434.714 Claims for benefits entitlements vested as of the Separation Date, pursuant to a written Red Cross
+1 100.346 447.714 benefit plan;
+1 76.346 472.714 ii
+1 100.346 472.714 Claims for continuation of insurance coverage pursuant to COBRA; and
+1 76.346 497.714 iii
+1 100.346 497.714 unemployment, workers’ compensation or any state disability insurance benefits pursuant to the
+1 100.346 510.714 terms of applicable state law; and,
+1 - 535.714 (d)
+1 - 535.714 any and all claims, including those that are not known or suspected at the time of the execution of this
+1 76.346 548.714 Agreement, notwithstanding the provisions of Section 1542 of the Civil Code of California, and in spite
+1 76.346 561.714 of any protections, rights or benefits that may be afforded to California-based employees under Section
+1 76.346 574.714 1542.
+1 28.346 599.714 11
+1 52.346 599.714 No Lawsuits or Other Actions: I have not filed or caused to be filed any lawsuits, charges or complaints
+1 52.346 612.714 against the Red Cross with any court or municipal, state or federal agency. To the extent consistent with
+1 52.346 625.714 applicable law, I will not initiate any legal action, charge or complaint against the Red Cross in any forum in
+1 52.346 638.714 connection with the claims released in this Agreement, except that I understand that nothing in this Agreement
+1 52.346 651.714 interferes with my right to file a charge with the Equal Employment Opportunity Commission (“EEOC”)
+1 52.346 664.714 or participate in an EEOC investigation or proceeding. I understand that I am waiving the right to recover
+1 52.346 677.714 monetary or other damages in any action brought by the EEOC or any other party.
+1 28.346 702.714 12
+1 52.346 702.714 Older Workers’ Benefits Protection Act: I affirm that:
+1 - 727.714 (a)
+1 - 727.714 I have read and fully understand the terms of this Agreement, including the Release of Claims;
+2 - 37.714 (b)
+2 - 37.714 this Agreement specifically waives my rights and potential claims under the ADEA;
+2 - 62.714 (c)
+2 - 62.714 the consideration for the Release of Claims in this Agreement is adequate to make it final and binding,
+2 76.346 75.714 and is in addition to payments or benefits to which I would otherwise be entitled;
+2 - 100.714 (d)
+2 - 100.714 I am hereby advised to consult with an attorney before entering into and signing this Agreement and
+2 76.346 113.714 Release of Claims, and I have independently and freely exercised my own judgment and discretion in
+2 76.346 126.714 deciding whether to do so;
+2 - 151.714 (e)
+2 - 151.714 I have been given a minimum of forty-five (45) days to consider this Agreement and Release of Claims,
+2 76.346 164.714 and if I have decided to enter into this Agreement before the end of that period I have done so voluntarily
+2 76.346 177.714 as signified by my signature below;
+2 52.346 202.714 (f)
+2 76.346 202.714 I have received and reviewed Attachment B of this Agreement listing the ages and job titles of persons in
+2 76.346 215.714 the unit who were and were not eligible for severance under the Plan; and
+2 - 240.714 (g)
+2 - 240.714 I may revoke this Agreement and Release of Claims up to seven (7) days after signing it by providing
+2 76.346 253.714 written notice of such revocation to ytytytyt u, Human Resources Business Advisor at the Red Cross, at:
+2 76.346 266.714 HR Now Service Center
+2 76.346 279.714 13500 South Point Blvd., Suite L
+2 76.346 292.714 Charlotte, NC 28273
+2 76.346 305.714 Phone: 833-473-9261
+2 76.346 318.714 Fax: 704-943-7396
+2 76.346 331.714 (“Right to Revoke”). I further agree that, if I exercise my Right to Revoke, all of the Red Cross’
+2 76.346 344.714 obligations to me under the Agreement will become null and void.
+2 28.346 369.714 13
+2 52.346 369.714 Cooperation in Legal Proceedings: I will cooperate with the Red Cross in any investigations into matters
+2 52.346 382.714 that occurred during my employment. If I have knowledge relevant to any legal proceeding in which the
+2 52.346 395.714 Red Cross is involved, I agree to be available at mutually agreed-upon times and places to assist the Red
+2 52.346 408.714 Cross or its agents in the legal proceeding. If I am contacted by anyone concerning a potential claim, charge,
+2 52.346 421.714 complaint, demand, lawsuit, governmental investigation or other proceeding against the Red Cross, or if I
+2 52.346 434.714 receive a subpoena concerning a proceeding against it, I will notify the Red Cross’ Office of General Counsel
+2 52.346 447.714 as soon as possible at 431 18th Street, NW, Washington, DC 20006, Phone: (202) 303-5433; Fax: (202)
+2 52.346 460.714 303-0143.
+2 28.346 485.714 14
+2 52.346 485.714 Liquidated Damages: In the event I violate this Agreement after accepting any of its benefits, the Red Cross
+2 52.346 498.714 shall be entitled to liquidated damages in the amount of $5,000. I acknowledge that the actual damages the
+2 52.346 511.714 Red Cross would sustain upon any such violation are difficult or impossible to ascertain in advance and that
+2 52.346 524.714 the sum of $5,000 is a reasonable approximation of a likely amount of damages.
+2 28.346 549.714 15
+2 52.346 549.714 Severability: If any term of this Agreement is held to be illegal, invalid, or unenforceable, all other provisions
+2 52.346 562.714 will remain in full force and effect. The illegal, invalid, or unenforceable provision will, to the extent
+2 52.346 575.714 permissible, be applied so as to render the remaining provisions enforceable.
+2 28.346 600.714 16
+2 52.346 600.714 Governing Law: The terms and enforcement of this Agreement are governed by the laws of the District of
+2 52.346 613.714 Columbia without regard to conflict of law rules.
+2 28.346 638.714 17
+2 52.346 638.714 Entire Agreement: This Agreement sets forth the entire agreement between me and the Red Cross, and it fully
+2 52.346 651.714 supersedes any and all prior negotiations, agreements and understandings between us about the matters in
+2 52.346 664.714 the Agreement, except that my commitments contained in the Code of Business Ethics and Conduct and any
+2 52.346 677.714 prior executed confidentiality agreements, including the Confidential Information and Intellectual Property
+2 52.346 690.714 Agreement, remain in effect. This Agreement may only be modified in a written amendment signed both by
+2 52.346 703.714 me and by a duly authorized officer of the Red Cross. In entering into this Agreement, I have relied only on its
+2 52.346 716.714 written terms and not on any statements or representations of any person or entity.

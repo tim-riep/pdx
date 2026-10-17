@@ -1,0 +1,14 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 36.000 46.308 The after borders of the body’s cells, in the trailing
+1 36.000 60.708 case, are thicker than in the normal case.
+1 37.000 82.872 Cell 1.1
+1 181.000 82.872 Cell 1.2
+1 37.000 94.872 Cell 2.1
+1 181.000 94.872 Cell 2.2
+1 38.000 108.872 Footer 1.1
+1 182.000 108.872 Footer 1.2
+1 36.000 144.108 The after border of cell 1, in the normal case, is
+1 36.000 158.508 thicker than in the trailing case.
+1 36.500 180.172 Cell 1
+1 37.000 192.172 Cell 2

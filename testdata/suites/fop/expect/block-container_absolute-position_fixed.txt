@@ -1,0 +1,8 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 1
+1 30.000 40.308 absolute-position="fixed"
+1 50.000 60.308 absolute-position="absolute"
+1 168.984 251.308 abs-bc blue
+1 97.000 251.308 fixed-bc in
+1 97.000 265.708 abs-bc
+1 164.328 275.708 abs-bc 2 red

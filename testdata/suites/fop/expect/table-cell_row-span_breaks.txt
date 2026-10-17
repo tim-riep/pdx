@@ -1,0 +1,35 @@
+# Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
+pages 7
+1 36.000 43.072 Before the table
+1 38.000 57.072 Cell 1.1 Line 1
+1 38.000 67.072 Cell 1.1 Line 2
+1 182.000 57.072 Cell 1.2 Line 1
+1 182.000 67.072 Cell 1.2 Line 2
+2 38.000 43.072 Cell 1.1 Line 3
+2 38.000 53.072 Cell 1.1 Line 4
+2 182.000 45.072 Cell 2.2 Line 1
+2 182.000 55.072 Cell 2.2 Line 2
+2 36.000 69.072 After the table
+3 36.000 43.072 Before the table
+3 38.000 57.072 Cell 1.1 Line 1
+3 38.000 67.072 Cell 1.1 Line 2
+3 182.000 57.072 Cell 1.2 Line 1
+3 182.000 67.072 Cell 1.2 Line 2
+5 38.000 45.072 Cell 2.1 Line 1
+5 38.000 55.072 Cell 2.1 Line 2
+5 182.000 43.072 Cell 1.2 Line 3
+5 182.000 53.072 Cell 1.2 Line 4
+5 36.000 69.072 After the table
+6 36.000 43.072 Before the table
+6 182.000 57.072 Cell 1.2 Line 1
+6 182.000 67.072 Cell 1.2 Line 2
+6 38.000 57.072 Cell 1.1 Line 1
+6 38.000 67.072 Cell 1.1 Line 2
+6 38.000 77.072 Cell 1.1 Line 3
+6 182.000 81.072 Cell 2.2 Line 1
+6 182.000 91.072 Cell 2.2 Line 2
+7 38.000 45.072 Cell 3.1 Line 1
+7 38.000 55.072 Cell 3.1 Line 2
+7 182.000 45.072 Cell 3.2 Line 1
+7 182.000 55.072 Cell 3.2 Line 2
+7 36.000 69.072 After the table

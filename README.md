@@ -170,6 +170,7 @@ PDX_CONFORMANCE=1 go test ./...
 
 * `make test` führt alle Unit-, Golden-File- und Reproduzierbarkeitstests aus.
 * `make conformance` rendert den Korpus `testdata/fo` und die Vorlagen unter `testdata/templates` per CLI und prüft jede Datei mit veraPDF.
+* `make fo-conformance` setzt die FO-Testsuiten (ausgewählte Fälle aus Apache FOP 2.11 und die W3C XSL Test Suite, die beim ersten Lauf heruntergeladen wird) und vergleicht sie mit Erwartungen aus FOP. Bericht je Kategorie in `out/fo-conformance.md`, deaktivierte Fälle mit Begründung in `testdata/suites/disabled.txt`, bekannte und offene Abweichungen in `testdata/suites/deviating.txt`. `make fo-reference` erzeugt die Erwartungen neu (Docker).
 * `make fop-compare` vergleicht Korpus und Musterrechnung mit Apache FOP 2.11 (Docker, `PDX_FOP=1`). Toleranz: Positionen 1 pt, höchstens 0,5 % abweichende Pixel je Seite bei 72 dpi.
 * Mit `PDX_CONFORMANCE=1` rufen auch die Go-Tests veraPDF auf.
 * `make golden` schreibt Golden Files nach bewusster Änderung neu (`UPDATE_GOLDEN=1`).
