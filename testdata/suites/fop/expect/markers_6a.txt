@@ -16,7 +16,7 @@ pages 5
 1 0.000 243.108 5.2 Specified Values
 1 0.000 263.508 The specified value of a property is determined using the following
 1 0.000 277.908 mechanisms (in order of precedence)
-1 0.000 334.308 5 Property Refinement / Resolution
+1 173.376 334.308 5 Property Refinement / Resolution
 2 - 10.308 6 Shorthand Expansion page 2
 2 0.000 46.308 If the tree-construction process placed the property on the
 2 0.000 60.708 formatting object, use the value of that property as the specified
@@ -58,7 +58,7 @@ pages 5
 3 0.000 291.108 Specifying a value for one property determines both a computed
 3 0.000 305.508 value for the specified property and a computed value for the
 3 0.000 319.908 corresponding property. Which relative property corresponds
-3 0.000 334.308 6 Shorthand Expansion
+3 235.320 334.308 6 Shorthand Expansion
 4 - 10.308 6.1 Actual Values page 4
 4 0.000 46.308 to which absolute property depends on the writing-mode. For
 4 0.000 60.708 example, if the "writing-mode" at the top level of a document is
@@ -79,7 +79,7 @@ pages 5
 4 0.000 276.708 computed width to an integral number of media pixels. The actual
 4 0.000 291.108 value is the computed value after any such adjustments have been
 4 0.000 305.508 applied.
-4 0.000 334.308 6.1 Actual Values
+4 267.576 334.308 6.1 Actual Values
 5 - 10.308 6 Shorthand Expansion page 5
 5 0.000 46.308 Some of the properties applicable to formatting objects are
 5 0.000 60.708 "inheritable." Such properties are so identified in the property
@@ -94,4 +94,4 @@ pages 5
 5 0.000 190.308 the computed value of that property on the parent formatting
 5 0.000 204.708 object. Hence there is always a specified value defined for every
 5 0.000 219.108 inheritable property for every formatting object.
-5 0.000 334.308 6 Shorthand Expansion
+5 235.320 334.308 6 Shorthand Expansion

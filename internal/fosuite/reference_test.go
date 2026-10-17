@@ -104,8 +104,9 @@ func expectFromFOP(out string, c Case) (*Expect, string) {
 		text string
 	}
 	// Poppler liefert X, der Area Tree Text und Grundlinie. Gleiche Texte
-	// einer Seite werden beidseits von oben nach unten (bei gleicher Höhe
-	// von links nach rechts) einander zugeordnet.
+	// einer Seite werden über die Höhe einander zugeordnet, bei gleicher
+	// Höhe von links nach rechts. Poppler teilt manche Zeilen, etwa an einem
+	// Leader, deshalb genügt die Reihenfolge allein nicht.
 	xs := map[key][]fopcompare.Line{}
 	if bb, err := os.ReadFile(filepath.Join(out, c.Name+".bbox.html")); err == nil {
 		if pl, _, err := fopcompare.ParseBBox(bb); err == nil {
@@ -142,8 +143,9 @@ func expectFromFOP(out string, c Case) (*Expect, string) {
 		ln := Line{Page: l.Page, Y: l.Baseline, Text: textFor(c.Suite, l.Text)}
 		k := key{l.Page, text}
 		if q := xs[k]; len(q) > 0 {
-			ln.X, ln.HasX = q[0].X, true
-			xs[k] = q[1:]
+			i := fopcompare.Nearest(q, l.Baseline)
+			ln.X, ln.HasX = q[i].X, true
+			xs[k] = append(q[:i:i], q[i+1:]...)
 		}
 		e.Lines = append(e.Lines, ln)
 	}

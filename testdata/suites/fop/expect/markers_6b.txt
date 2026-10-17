@@ -17,7 +17,7 @@ pages 5
 1 0.000 243.108 5.2 Specified Values
 1 0.000 263.508 The specified value of a property is determined using the following
 1 0.000 277.908 mechanisms (in order of precedence)
-1 0.000 334.308 5 Property Refinement / Resolution
+1 173.376 334.308 5 Property Refinement / Resolution
 1 173.376 348.708 5 Property Refinement / Resolution
 2 - 10.308 5 Property Refinement / Resolution page 2
 2 0.000 24.708 6 Shorthand Expansion
@@ -40,7 +40,7 @@ pages 5
 2 0.000 300.708 "12%"), or they may be expressions. For most absolute values,
 2 0.000 315.108 no computation is needed to find the computed value. Relative
 2 267.576 334.308 6.1 Actual Values
-2 0.000 348.708 5 Property Refinement / Resolution
+2 173.376 348.708 5 Property Refinement / Resolution
 3 - 10.308 6 Shorthand Expansion page 3
 3 0.000 24.708 6 Shorthand Expansion
 3 0.000 46.308 values, on the other hand, must be transformed into computed
@@ -63,7 +63,7 @@ pages 5
 3 0.000 291.108 Specifying a value for one property determines both a computed
 3 0.000 305.508 value for the specified property and a computed value for the
 3 0.000 319.908 corresponding property. Which relative property corresponds
-3 0.000 334.308 6 Shorthand Expansion
+3 235.320 334.308 6 Shorthand Expansion
 3 235.320 348.708 6 Shorthand Expansion
 4 - 10.308 6 Shorthand Expansion page 4
 4 0.000 24.708 6 Shorthand Expansion
@@ -86,7 +86,7 @@ pages 5
 4 0.000 276.708 computed width to an integral number of media pixels. The actual
 4 0.000 291.108 value is the computed value after any such adjustments have been
 4 0.000 305.508 applied.
-4 0.000 334.308 6 Shorthand Expansion
+4 235.320 334.308 6 Shorthand Expansion
 4 235.320 348.708 6 Shorthand Expansion
 5 - 10.308 6 Shorthand Expansion page 5
 5 0.000 24.708 6 Shorthand Expansion
@@ -103,5 +103,5 @@ pages 5
 5 0.000 190.308 the computed value of that property on the parent formatting
 5 0.000 204.708 object. Hence there is always a specified value defined for every
 5 0.000 219.108 inheritable property for every formatting object.
-5 0.000 334.308 6 Shorthand Expansion
+5 235.320 334.308 6 Shorthand Expansion
 5 235.320 348.708 6 Shorthand Expansion

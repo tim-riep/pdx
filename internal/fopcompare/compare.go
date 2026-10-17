@@ -167,15 +167,34 @@ func norm(s string) string {
 
 // withX ergänzt Zeilen aus dem Area Tree um X aus Poppler, zugeordnet über
 // Seite, Text und Vorkommen.
+// Nearest liefert den Index der Zeile, deren Höhe die Grundlinie am besten
+// trifft. Bei gleichem Abstand gewinnt die frühere Zeile.
+func Nearest(q []Line, baseline float64) int {
+	best, bestD := 0, math.Inf(1)
+	for i, l := range q {
+		d := 0.0
+		switch {
+		case baseline < l.Y:
+			d = l.Y - baseline
+		case baseline > l.Y+l.H:
+			d = baseline - l.Y - l.H
+		}
+		if d < bestD {
+			best, bestD = i, d
+		}
+	}
+	return best
+}
+
 func withX(at []ATLine, pl []Line) []cmpLine {
 	type key struct {
 		page int
 		text string
 	}
-	xs := map[key][]float64{}
+	xs := map[key][]Line{}
 	for _, l := range pl {
 		k := key{l.Page, norm(l.Text)}
-		xs[k] = append(xs[k], l.X)
+		xs[k] = append(xs[k], l)
 	}
 	var out []cmpLine
 	for _, l := range at {
@@ -186,9 +205,12 @@ func withX(at []ATLine, pl []Line) []cmpLine {
 		}
 		k := key{l.Page, norm(l.Text)}
 		c := cmpLine{Page: l.Page, Text: norm(l.Text), Y: l.Baseline}
+		// Gleicher Text kann mehrmals auf einer Seite stehen, etwa im Fluss
+		// und im static-content.
 		if q := xs[k]; len(q) > 0 {
-			c.X, c.HasX = q[0], true
-			xs[k] = q[1:]
+			best := Nearest(q, l.Baseline)
+			c.X, c.HasX = q[best].X, true
+			xs[k] = append(q[:best:best], q[best+1:]...)
 		}
 		out = append(out, c)
 	}

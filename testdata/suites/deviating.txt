@@ -7,7 +7,6 @@
 fop/block-container_absolute-position: begründet, FOP bricht nach dem Schrägstrich um, XSL 1.1 legt Umbruchstellen nicht fest (1.1.2), gleiche Breite und ohne Überlauf
 fop/block-container_absolute-position_border_padding: begründet, left und top messen nach CSS2 9.3.2 und 10.3.7 bis zur Randkante, FOP setzt die Inhaltskante auf left und lässt margin-top weg (DEVIATIONS.md, left und top bei absoluter Positionierung)
 fop/block-container_absolute-position_overflow: begründet, left und top beziehen sich auf die Randkante (DEVIATIONS.md, left und top bei absoluter Positionierung)
-fop/block-container_overconstrained_ipd: begründet, überbestimmte Geometrie (XSL 1.1 5.3.4), pdx setzt die Inhaltsbreite auf 0, FOP verteilt die Wörter regellos
 fop/block_break-before_bug44412: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/block_font-size_relative: begründet, smaller und larger nach XSL 1.1 7.9.4 und CSS2 15.2.4, der Formatierer darf zwischen den Tabellenwerten interpolieren, pdx rechnet mit dem Faktor 1,2, FOP rundet auf die Stufen 12 × 1,2 hoch n
 fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
@@ -30,8 +29,8 @@ fop/list-item-with-ipd-change: begründet, page-position="rest" gilt nach XSL 1.
 fop/list-item_padding_percentages: begründet, body-start() nach dem Wortlaut von XSL 1.1 7.30.12 mit start-indent des fo:list-block (DEVIATIONS.md, body-start)
 fop/list-item_space-before_space-after_2: begründet, FOP staucht Abstände unter das Optimum, um Seiten zu füllen, pdx nimmt das Optimum, beides liegt im Bereich nach XSL 1.1 4.3
 fop/markers_3: offen, erste Abweichung: Seite 2: "[PS] [DOC]" verschoben um 3.24 pt waagerecht, -0.00 pt senkrecht
-fop/markers_6a: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
-fop/markers_6b: offen, erste Abweichung: Seite 1: "5 Property Refinement / Resolution" verschoben um 173.24 pt waagerecht, -0.00 pt senkrecht
+fop/markers_6a: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "\"12%\"), or they may be expressions. For most absolute values, no"
+fop/markers_6b: offen, erste Abweichung: Seite 2: Zeile nur in pdx: "\"12%\"), or they may be expressions. For most absolute values, no"
 fop/page-number-citation-last_complex: begründet, nach XSL 1.1 7.30.10 zählen auch Bereiche der Nachfahren, für table-header, table-footer, table-body und table-row also die Zellen auf Seite 1, FOP gibt nichts aus
 fop/page-number-citation_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-position only und first, den XSL 1.1 nicht regelt, pdx setzt eine Seite, FOP fügt leere Seiten an

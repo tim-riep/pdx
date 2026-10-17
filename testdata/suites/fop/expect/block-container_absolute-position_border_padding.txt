@@ -5,7 +5,7 @@ pages 1
 1 - 30.308 absolutely positioned right/width plus border & padding
 1 0.000 39.108 is some background-text. This is some background-text. This is
 1 0.000 53.508 some background-text. This is some background-text. This is some
-1 233.928 67.908 background-text.
+1 0.000 67.908 background-text.
 1 30.000 110.308 absolutely positioned right/width plus
 1 30.000 124.708 border & padding, margin=0pt
 1 20.000 190.308 absolutely positioned right/width plus border &
