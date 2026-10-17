@@ -45,15 +45,18 @@ type renderer struct {
 	gen    uint64 // Zähler der Läufe, nur der neueste wird gemeldet
 }
 
-// SetView wählt Ansicht und Beispieldatensatz (Pfad unter samples/, leer für
-// den ersten) und setzt neu.
+// SetView wählt Ansicht und Beispieldatensatz (Pfad unter samples/, leer
+// behält die Auswahl) und setzt neu.
 func (s *RenderService) SetView(view, sample string) {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
 	if view != ViewDesign && view != ViewPreview {
 		view = ViewPreview
 	}
-	s.c.r.view, s.c.r.sample = view, sample
+	s.c.r.view = view
+	if sample != "" {
+		s.c.r.sample = sample
+	}
 	s.c.scheduleLocked(0)
 }
 
@@ -92,21 +95,15 @@ func (c *Core) render() {
 	c.r.gen++
 	gen := c.r.gen
 	p := c.doc.Pkg
-	sample := c.r.sample
-	if sample == "" {
-		if s := p.Samples(); len(s) > 0 {
-			sample = s[0]
-		}
-	}
-	data, ok := p.Files[sample]
-	if c.r.view == ViewDesign || !ok {
-		// Entwurf, oder Vorschau ohne Beispieldaten: Platzhalter aus dem XSD.
+	var data []byte
+	var sample string
+	if c.r.view == ViewDesign {
+		data = []byte("<daten/>")
 		if sc, err := c.schemaLocked(); err == nil && sc != nil {
-			data, sample, ok = sc.Placeholder(), "", true
+			data = sc.Placeholder()
 		}
-	}
-	if !ok {
-		data, sample = []byte("<daten/>"), ""
+	} else {
+		data, sample = c.previewDataLocked()
 	}
 	// Die Dateiliste kopieren: Befehle ändern sie, während gesetzt wird.
 	in := pipeline.Input{Canon: template.Write(p.Template), Files: maps.Clone(p.Files), Data: data}

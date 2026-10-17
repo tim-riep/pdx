@@ -319,5 +319,21 @@
   "pdf.pages": "{n} Seiten, PDF/A-3b",
   "pdf.page": "1 Seite, PDF/A-3b",
   "pdf.error": "Das PDF ließ sich nicht erzeugen",
-  "pdf.open": "PDF in neuem Fenster"
+  "pdf.open": "PDF in neuem Fenster",
+  "panel.samples": "Beispiele",
+  "samples.title": "Beispieldaten",
+  "samples.hint": "Die Auswahl gilt für Vorschau, PDF und Konformität.",
+  "samples.none": "Noch keine Beispieldaten. Die Vorschau zeigt Platzhalter aus dem Daten-XSD.",
+  "samples.import": "Importieren",
+  "samples.path": "Pfad der XML-Datei",
+  "samples.remove": "Beispieldaten entfernen",
+  "samples.edge": "Randfälle erzeugen",
+  "samples.edge.minimal": "Minimal",
+  "samples.edge.minimalHint": "Nur Pflichtknoten, Wiederholungen so selten wie erlaubt",
+  "samples.edge.maximal": "Maximal",
+  "samples.edge.maximalHint": "Alle optionalen Knoten, 60 Einträge je Wiederholung",
+  "samples.edge.lang": "Lange Texte",
+  "samples.edge.langHint": "Lange Wörter und Sätze für Umbrüche und Überläufe",
+  "samples.problems": "{n} Befunde",
+  "samples.size": "{kb} KB"
 }

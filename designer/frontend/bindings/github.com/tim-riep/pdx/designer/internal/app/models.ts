@@ -769,6 +769,86 @@ export class Result {
 }
 
 /**
+ * Sample ist ein Datensatz im Paket.
+ */
+export class Sample {
+    /**
+     * samples/rechnung.xml
+     */
+    "path": string;
+    "name": string;
+    "size": number;
+
+    /**
+     * Selected markiert den Datensatz der Vorschau.
+     */
+    "selected": boolean;
+
+    /** Creates a new Sample instance. */
+    constructor($$source: Partial<Sample> = {}) {
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("name" in $$source)) {
+            this["name"] = "";
+        }
+        if (!("size" in $$source)) {
+            this["size"] = 0;
+        }
+        if (!("selected" in $$source)) {
+            this["selected"] = false;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Sample instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Sample {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Sample($$parsedSource as Partial<Sample>);
+    }
+}
+
+/**
+ * Samples sind die Datensätze und die Auswahl.
+ */
+export class Samples {
+    "items": Sample[];
+
+    /**
+     * Placeholder meldet, dass die Vorschau Platzhalter zeigt, weil es keine
+     * Beispieldaten gibt.
+     */
+    "placeholder": boolean;
+
+    /** Creates a new Samples instance. */
+    constructor($$source: Partial<Samples> = {}) {
+        if (!("items" in $$source)) {
+            this["items"] = [];
+        }
+        if (!("placeholder" in $$source)) {
+            this["placeholder"] = false;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Samples instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Samples {
+        const $$createField0_0 = $$createType17;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("items" in $$parsedSource) {
+            $$parsedSource["items"] = $$createField0_0($$parsedSource["items"]);
+        }
+        return new Samples($$parsedSource as Partial<Samples>);
+    }
+}
+
+/**
  * Segment ist ein Stück gemischten Inhalts: Text (ein Zeilenumbruch wird zu
  * br), ein vorhandenes eingebettetes Element (Ref) oder ein neues Feld
  * (Bind, relativ zum Kontext des Elements).
@@ -936,9 +1016,9 @@ export class XPathInfo {
      * Creates a new XPathInfo instance from a string or object.
      */
     static createFrom($$source: any = {}): XPathInfo {
-        const $$createField2_0 = $$createType17;
-        const $$createField3_0 = $$createType19;
-        const $$createField4_0 = $$createType21;
+        const $$createField2_0 = $$createType19;
+        const $$createField3_0 = $$createType21;
+        const $$createField4_0 = $$createType23;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField2_0($$parsedSource["problems"]);
@@ -1003,9 +1083,11 @@ const $$createType12 = $Create.Array($$createType11);
 const $$createType13 = Problem.createFrom;
 const $$createType14 = $Create.Array($$createType13);
 const $$createType15 = model$0.History.createFrom;
-const $$createType16 = xpath$0.Problem.createFrom;
+const $$createType16 = Sample.createFrom;
 const $$createType17 = $Create.Array($$createType16);
-const $$createType18 = Field.createFrom;
-const $$createType19 = $Create.Nullable($$createType18);
-const $$createType20 = xpath$0.Result.createFrom;
+const $$createType18 = xpath$0.Problem.createFrom;
+const $$createType19 = $Create.Array($$createType18);
+const $$createType20 = Field.createFrom;
 const $$createType21 = $Create.Nullable($$createType20);
+const $$createType22 = xpath$0.Result.createFrom;
+const $$createType23 = $Create.Nullable($$createType22);

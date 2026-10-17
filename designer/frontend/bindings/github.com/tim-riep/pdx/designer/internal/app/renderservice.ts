@@ -24,8 +24,8 @@ export function Latest(): $CancellablePromise<$models.Manifest> {
 }
 
 /**
- * SetView wählt Ansicht und Beispieldatensatz (Pfad unter samples/, leer für
- * den ersten) und setzt neu.
+ * SetView wählt Ansicht und Beispieldatensatz (Pfad unter samples/, leer
+ * behält die Auswahl) und setzt neu.
  */
 export function SetView(view: string, sample: string): $CancellablePromise<void> {
     return $Call.ByID(4023186, view, sample);

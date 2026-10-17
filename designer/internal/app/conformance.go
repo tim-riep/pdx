@@ -155,14 +155,12 @@ func (s *ConformanceService) Cancel() {
 // Platzhalter aus dem XSD.
 func (c *Core) previewDataLocked() ([]byte, string) {
 	p := c.doc.Pkg
-	sample := c.r.sample
-	if sample == "" {
-		if s := p.Samples(); len(s) > 0 {
-			sample = s[0]
-		}
+	// Die Auswahl gilt, solange es die Datei gibt, sonst die erste.
+	if b, ok := p.Files[c.r.sample]; ok && c.r.sample != "" {
+		return b, c.r.sample
 	}
-	if b, ok := p.Files[sample]; ok {
-		return b, sample
+	if s := p.Samples(); len(s) > 0 {
+		return p.Files[s[0]], s[0]
 	}
 	if sc, err := c.schemaLocked(); err == nil && sc != nil {
 		return sc.Placeholder(), ""

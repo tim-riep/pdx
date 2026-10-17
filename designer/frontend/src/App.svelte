@@ -10,6 +10,7 @@
   import ProblemsPanel from "./components/ProblemsPanel.svelte";
   import ContextMenu from "./components/ContextMenu.svelte";
   import PdfView from "./components/PdfView.svelte";
+  import SamplesPanel from "./components/SamplesPanel.svelte";
   import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
   import ConformancePanel from "./components/ConformancePanel.svelte";
@@ -125,8 +126,8 @@
     <button class="icon" title={t("theme.toggle")} aria-label={t("theme.toggle")} onclick={toggleTheme}>◐</button>
   </header>
   <aside class="left">
-    <Tabs tabs={[["data", t("panel.data")], ["hierarchy", t("panel.hierarchy")]]} bind:active={leftTab}>
-      {#if leftTab === "hierarchy"}<Hierarchy />{:else}<DataPanel />{/if}
+    <Tabs tabs={[["data", t("panel.data")], ["hierarchy", t("panel.hierarchy")], ["samples", t("panel.samples")]]} bind:active={leftTab}>
+      {#if leftTab === "hierarchy"}<Hierarchy />{:else if leftTab === "samples"}<SamplesPanel />{:else}<DataPanel />{/if}
     </Tabs>
   </aside>
   <main class="canvas" data-testid="canvas">

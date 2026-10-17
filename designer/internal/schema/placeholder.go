@@ -11,27 +11,50 @@ import (
 // des Feldes, Zahlen und Daten einen passenden Beispielwert, wiederholte
 // Knoten erscheinen dreimal, optionale einmal.
 func (s *Schema) Placeholder() []byte {
+	return s.Generate(Gen{Repeat: placeholderRepeat, Optional: true})
+}
+
+// placeholderRepeat ist die Zahl der Einträge wiederholter Knoten.
+const placeholderRepeat = 3
+
+// Gen steuert das Erzeugen von Daten, etwa für Randfälle.
+type Gen struct {
+	// Repeat ist die Zahl der Einträge wiederholter Knoten, höchstens so
+	// viele, wie das Schema erlaubt. 0 nimmt die kleinste erlaubte Zahl.
+	Repeat int
+	// Optional nimmt optionale Knoten auf, sonst entfallen sie.
+	Optional bool
+	// LongText macht Texte lang, um Umbrüche und Überläufe zu prüfen.
+	LongText bool
+}
+
+// Generate erzeugt einen Datensatz nach dem Schema.
+func (s *Schema) Generate(g Gen) []byte {
 	var b bytes.Buffer
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
 	for i, r := range s.Roots {
 		if i > 0 {
 			break // ein Dokument hat eine Wurzel
 		}
-		s.write(&b, r, true, 0)
+		s.write(&b, r, true, 0, g)
 	}
 	return b.Bytes()
 }
 
-// placeholderRepeat ist die Zahl der Einträge wiederholter Knoten.
-const placeholderRepeat = 3
-
-func (s *Schema) write(b *bytes.Buffer, n *Node, root bool, depth int) {
+func (s *Schema) write(b *bytes.Buffer, n *Node, root bool, depth int, g Gen) {
 	count := 1
-	if n.Repeated() {
-		count = placeholderRepeat
-		if n.Max > 1 && n.Max < count {
+	switch {
+	case root:
+	case n.Repeated():
+		count = g.Repeat
+		if count < n.Min {
+			count = n.Min
+		}
+		if n.Max > 0 && count > n.Max {
 			count = n.Max
 		}
+	case n.Min == 0 && !g.Optional:
+		count = 0
 	}
 	for range count {
 		b.WriteString("<" + n.Name)
@@ -50,8 +73,11 @@ func (s *Schema) write(b *bytes.Buffer, n *Node, root bool, depth int) {
 		var elems []*Node
 		for _, c := range n.Children {
 			if c.Attr {
+				if c.Min == 0 && !g.Optional {
+					continue
+				}
 				b.WriteString(" " + strings.TrimPrefix(c.Name, "@") + `="`)
-				xml.EscapeText(b, []byte(sampleValue(c)))
+				xml.EscapeText(b, []byte(value(c, g)))
 				b.WriteString(`"`)
 			} else {
 				elems = append(elems, c)
@@ -59,15 +85,30 @@ func (s *Schema) write(b *bytes.Buffer, n *Node, root bool, depth int) {
 		}
 		b.WriteString(">")
 		if len(elems) == 0 && !n.Recursive {
-			xml.EscapeText(b, []byte(sampleValue(n)))
+			xml.EscapeText(b, []byte(value(n, g)))
 		}
 		for _, c := range elems {
 			if !c.Recursive {
-				s.write(b, c, false, depth+1)
+				s.write(b, c, false, depth+1, g)
 			}
 		}
 		b.WriteString("</" + n.Name + ">")
 	}
+}
+
+// longText ist ein langer Text mit langen Wörtern für Randfälle.
+const longText = "Donaudampfschifffahrtsgesellschaftskapitänsmütze und Rechnungsposition mit ausführlicher Leistungsbeschreibung über mehrere Zeilen, damit Umbrüche, Silbentrennung und Überläufe sichtbar werden"
+
+// value liefert den Wert eines Knotens, lange Texte nur bei Texten ohne
+// festes Format.
+func value(n *Node, g Gen) string {
+	v := sampleValue(n)
+	if g.LongText && len(n.Enum) == 0 && (n.Type == "string" || n.Type == "normalizedString" || n.Type == "token") {
+		if _, known := knownValues[strings.ToLower(strings.TrimPrefix(n.Name[strings.LastIndex(n.Name, ":")+1:], "@"))]; !known {
+			return v + " " + longText
+		}
+	}
+	return v
 }
 
 // sampleValue liefert einen Beispielwert passend zum Typ.

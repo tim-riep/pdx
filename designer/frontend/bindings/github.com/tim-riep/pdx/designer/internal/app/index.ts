@@ -5,6 +5,7 @@ import * as AppService from "./appservice.js";
 import * as ConformanceService from "./conformanceservice.js";
 import * as ProjectService from "./projectservice.js";
 import * as RenderService from "./renderservice.js";
+import * as SampleDataService from "./sampledataservice.js";
 import * as SchemaService from "./schemaservice.js";
 import * as TemplateService from "./templateservice.js";
 import * as ValidationService from "./validationservice.js";
@@ -13,6 +14,7 @@ export {
     ConformanceService,
     ProjectService,
     RenderService,
+    SampleDataService,
     SchemaService,
     TemplateService,
     ValidationService
@@ -35,6 +37,8 @@ export {
     Recovery,
     Report,
     Result,
+    Sample,
+    Samples,
     Segment,
     TableOp,
     TokenOp,
