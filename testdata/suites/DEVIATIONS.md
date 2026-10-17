@@ -190,3 +190,13 @@ die Folge nicht. pdx behält das erste Leerzeichen. FOP behält vor und nach
 der Grenze je eines, wenn das fo:inline einen Rahmen hat, und bricht dadurch
 anders um (Fälle nist-cbpbp-border-color-inline3 und
 nist-cbpbp-border-width-inline1).
+
+## Wahl im Bereich eines Abstands
+
+Nach XSL 1.1 4.3 begrenzen die aufgelösten Werte minimum und maximum einen
+Abstand nur. Welchen Wert im Bereich der Formatierer nimmt, lässt die
+Spezifikation offen, das optimum ist der bevorzugte Wert. pdx nimmt das
+optimum und staucht nur, wenn ein fo:block-container mit fester Höhe sonst
+überliefe. FOP staucht Abstände auch, um Seiten zu füllen (Fälle fopc-hyphen,
+fopc-leader, fopc-pagelevel2 und fopc-pagelevel3). Ist nur .optimum
+angegeben, bleibt .minimum beim Anfangswert 0pt (7.11.5).

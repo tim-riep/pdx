@@ -45,8 +45,8 @@ type Computed struct {
 
 	// Nicht vererbte Eigenschaften.
 	SpaceBefore, SpaceAfter Length
-	// SpaceBeforeMin und SpaceAfterMin sind die Komponente .minimum, ohne
-	// Angabe gleich dem Optimum.
+	// SpaceBeforeMin und SpaceAfterMin sind die Komponente .minimum. Bei
+	// einem einfachen Wert gleich dem Optimum, bei .optimum allein 0pt.
 	SpaceBeforeMin, SpaceAfterMin Length
 	// SpaceBeforeRetain ist gesetzt, wenn space-before am Anfang einer Seite
 	// erhalten bleibt: bei .conditionality="retain" und immer, wenn der
@@ -531,7 +531,10 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}{{"space-before", &c.SpaceBefore, &c.SpaceBeforeMin}, {"space-after", &c.SpaceAfter, &c.SpaceAfterMin}} {
 		v, ok := a[sp.name]
 		if !ok {
-			v, ok = a[sp.name+".optimum"]
+			// Ohne .minimum bleibt es beim Anfangswert 0pt (XSL 1.1 7.11.5).
+			if v, ok = a[sp.name+".optimum"]; ok {
+				*sp.min = 0
+			}
 		}
 		if ok {
 			l, err := length(sp.name, v)

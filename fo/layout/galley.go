@@ -504,6 +504,11 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 		return err
 	}
 	if fixedH {
+		// Der Abstand vor dem ersten Inhalt gehört zum Abstand vor dem
+		// Container und zählt nicht zu seiner Höhe.
+		for start < len(g.items) && g.items[start].kind != itBox {
+			start++
+		}
 		var used areatree.Length
 		for _, it := range g.items[start:] {
 			if it.kind == itBox || it.kind == itGlue {
