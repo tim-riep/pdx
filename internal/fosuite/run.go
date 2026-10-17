@@ -5,6 +5,7 @@ import (
 	"math"
 	"path/filepath"
 	"runtime/debug"
+	"sort"
 	"time"
 
 	"github.com/tim-riep/pdx"
@@ -80,7 +81,27 @@ func Compare(c Case, o Outcome, e *Expect, tol float64) []Diff {
 		}
 		return text
 	}
-	for _, l := range o.Lines {
+	// Gleiche Texte auf einer Seite werden nach Lage zugeordnet, oben vor
+	// unten und links vor rechts. Die Reihenfolge der Zeilen im Area Tree ist
+	// Sache der Implementierung (etwa bei Tabellenzellen).
+	byPos := func(a, b float64, ax, bx float64) bool {
+		if math.Abs(a-b) > 0.5 {
+			return a < b
+		}
+		return ax < bx
+	}
+	for k, q := range rest {
+		sort.SliceStable(q, func(i, j int) bool { return byPos(q[i].Y, q[j].Y, q[i].X, q[j].X) })
+		rest[k] = q
+	}
+	lines := append([]fopcompare.ATLine(nil), o.Lines...)
+	sort.SliceStable(lines, func(i, j int) bool {
+		if lines[i].Page != lines[j].Page {
+			return lines[i].Page < lines[j].Page
+		}
+		return byPos(lines[i].Baseline, lines[j].Baseline, lines[i].X, lines[j].X)
+	})
+	for _, l := range lines {
 		plain := fopcompare.Norm(l.Text)
 		if plain == "" {
 			continue

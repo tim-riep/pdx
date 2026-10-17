@@ -2,5 +2,5 @@
 pages 1
 1 - 10.308 Testing area BPDs...
 1 7.086 14.559 bc1
-1 0.000 24.708 Below
 1 7.086 20.229 Above
+1 0.000 24.708 Below

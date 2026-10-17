@@ -3,10 +3,10 @@ pages 2
 1 28.346 40.092 First line
 2 28.346 40.092 Before the table
 2 30.346 62.892 Cell 1.1 Line 1
-2 30.346 79.692 Cell 1.1 Line 2
 2 214.598 62.892 Cell 1.2 Line 1
+2 30.346 79.692 Cell 1.1 Line 2
 2 214.598 79.692 Cell 1.2 Line 2
 2 30.346 100.492 Cell 2.1 Line 1
-2 30.346 117.292 Cell 2.1 Line 2
 2 214.598 100.492 Cell 2.1 Line 1
+2 30.346 117.292 Cell 2.1 Line 2
 2 214.598 117.292 Cell 2.1 Line 2

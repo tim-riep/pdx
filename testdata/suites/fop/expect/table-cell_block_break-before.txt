@@ -3,7 +3,7 @@ pages 2
 1 0.000 10.308 cell1 - line 1
 1 180.000 10.308 cell2 - line 1
 2 0.000 10.308 cell1 - line 2
-2 0.000 24.708 cell1 - line 3
 2 180.000 10.308 cell2 - line 2
+2 0.000 24.708 cell1 - line 3
 2 0.000 39.108 cell3
 2 180.000 39.108 cell4

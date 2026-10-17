@@ -2,21 +2,21 @@
 pages 4
 1 36.000 42.912 First line
 2 38.000 48.912 Cell 1.1 Line 1
-2 38.000 58.912 Cell 1.1 Line 2
 2 182.000 48.912 Cell 1.2 Line 1
+2 38.000 58.912 Cell 1.1 Line 2
 2 182.000 58.912 Cell 1.2 Line 2
 2 38.000 72.912 Cell 2.1 Line 1
-2 38.000 82.912 Cell 2.1 Line 2
 2 182.000 72.912 Cell 2.1 Line 1
+2 38.000 82.912 Cell 2.1 Line 2
 2 182.000 82.912 Cell 2.1 Line 2
 2 36.000 98.912 After the table
 3 36.000 42.912 First line
 4 38.000 44.912 Cell 1.1 Line 1
-4 38.000 54.912 Cell 1.1 Line 2
 4 181.000 44.912 Cell 1.2 Line 1
+4 38.000 54.912 Cell 1.1 Line 2
 4 181.000 54.912 Cell 1.2 Line 2
 4 38.000 66.912 Cell 2.1 Line 1
-4 38.000 76.912 Cell 2.1 Line 2
 4 181.000 66.912 Cell 2.1 Line 1
+4 38.000 76.912 Cell 2.1 Line 2
 4 181.000 76.912 Cell 2.1 Line 2
 4 36.000 88.912 After the table

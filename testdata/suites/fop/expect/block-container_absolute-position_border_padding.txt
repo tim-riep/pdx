@@ -1,14 +1,14 @@
 # Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1
 pages 1
+1 0.000 10.308 This is some background-text. This is some background-text.
+1 - 24.708 This is some background-text. This is some background-text. This
 1 - 30.308 absolutely positioned right/width plus border & padding
+1 0.000 39.108 is some background-text. This is some background-text. This is
+1 0.000 53.508 some background-text. This is some background-text. This is some
+1 233.928 67.908 background-text.
 1 30.000 110.308 absolutely positioned right/width plus
 1 30.000 124.708 border & padding, margin=0pt
 1 20.000 190.308 absolutely positioned right/width plus border &
 1 20.000 204.708 padding, margin=0pt, start|end-indent=0pt
 1 20.000 270.308 absolutely positioned right/width plus border &
 1 20.000 284.708 padding, margin=5pt, start|end-indent=0pt
-1 0.000 10.308 This is some background-text. This is some background-text.
-1 - 24.708 This is some background-text. This is some background-text. This
-1 0.000 39.108 is some background-text. This is some background-text. This is
-1 0.000 53.508 some background-text. This is some background-text. This is some
-1 233.928 67.908 background-text.

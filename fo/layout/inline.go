@@ -385,7 +385,9 @@ func (pa *paragraph) leader(n *tree.Node, parent *props.Computed) error {
 		return tree.Errorf(n, "leader-pattern %q ist ungültig", spec.pattern)
 	}
 	opt = min(max(opt, spec.min), spec.max)
-	pa.pieces = append(pa.pieces, piece{kind: pNoBreak, st: st},
+	// Die Box der Breite 0 hält den Leader am Zeilenanfang fest: Er ist ein
+	// Inline-Bereich (XSL 1.1 6.6.9), kein Leerraum, der dort entfällt.
+	pa.pieces = append(pa.pieces, piece{kind: pEdge, st: st}, piece{kind: pNoBreak, st: st},
 		piece{kind: pLeader, st: st, width: opt, leader: spec})
 	return nil
 }

@@ -2,26 +2,26 @@
 pages 6
 1 36.000 43.072 1. Before the table
 2 38.000 49.072 Cell 1.1 Line 1
-2 38.000 59.072 Cell 1.1 Line 2
 2 182.000 49.072 Cell 1.2 Line 1
+2 38.000 59.072 Cell 1.1 Line 2
 2 182.000 59.072 Cell 1.2 Line 2
 2 38.000 73.072 Cell 2.1 Line 1
-2 38.000 83.072 Cell 2.1 Line 2
 2 182.000 73.072 Cell 3.1 Line 1
+2 38.000 83.072 Cell 2.1 Line 2
 2 182.000 83.072 Cell 3.1 Line 2
 2 36.000 99.072 After the table
 3 36.000 43.072 2. Before the table
 4 38.000 49.072 Cell 1.1 Line 1
+4 182.000 49.072 Cell 1.2 Line 1
 4 38.000 59.072 Cell 1.1 Line 2
+4 182.000 59.072 Cell 1.2 Line 2
 4 38.000 73.072 Cell 2.2 Line 1
 4 38.000 83.072 Cell 2.2 Line 2
-4 182.000 49.072 Cell 1.2 Line 1
-4 182.000 59.072 Cell 1.2 Line 2
 4 36.000 99.072 After the table
 5 36.000 43.072 3. Before the table
 5 38.000 155.072 Cell 1.1 Line 1
-5 38.000 165.072 Cell 1.1 Line 2
 5 181.000 155.072 Cell 1.2 Line 1
+5 38.000 165.072 Cell 1.1 Line 2
 5 181.000 165.072 Cell 1.2 Line 2
 6 181.000 44.072 Cell 2.1 Line 1
 6 181.000 54.072 Cell 2.1 Line 2

@@ -446,23 +446,61 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	set := make([]bool, ncols)
 	ci := 0
 	for _, c := range columns {
-		v := attrOr(c, "column-width", "proportional-column-width(1)")
-		fixed, prop, err := props.EvalColumnWidth(v, p.FontSize, tw)
-		if err != nil {
-			return tree.Errorf(c, "column-width: %v", err)
-		}
 		if num, ok := c.Attr("column-number"); ok {
 			if k, err := strconv.Atoi(num); err == nil && k >= 1 && k <= ncols {
 				ci = k - 1
 			}
+		}
+		v, ok := c.Attr("column-width")
+		if !ok {
+			ci += repeated(c)
+			continue
+		}
+		fixed, prop, err := props.EvalColumnWidth(v, p.FontSize, tw)
+		if err != nil {
+			return tree.Errorf(c, "column-width: %v", err)
 		}
 		for k := 0; k < repeated(c) && ci < ncols; k++ {
 			widths[ci], fracs[ci], set[ci] = fixed, prop, true
 			ci++
 		}
 	}
-	// Spalten ohne fo:table-column erhalten einen Anteil. XSL 1.1 7.28.9
-	// verlangt column-width für jede Spalte, pdx ist hier nachsichtig.
+	// Spalten ohne column-width übernehmen wie im festen Tabellenlayout von
+	// CSS2 (17.5.2.1, XSL 1.1 7.28.16) die Breite einer Zelle der ersten
+	// Zeile, sonst erhalten sie einen Anteil. XSL 1.1 7.28.9 verlangt
+	// column-width für jede Spalte, pdx ist hier nachsichtig.
+	// Zellen der ersten Zeile der Tabelle, Kopf vor Rumpf.
+	var first []*tree.Node
+	for _, want := range []section{secHeader, secBody} {
+		for _, r := range rows {
+			if r.sec == want && first == nil {
+				first = r.cells
+			}
+		}
+	}
+	if first != nil {
+		col := 0
+		for _, cell := range first {
+			if num, ok := cell.Attr("column-number"); ok {
+				if k, err := strconv.Atoi(strings.TrimSpace(num)); err == nil && k >= 1 {
+					col = k - 1
+				}
+			}
+			span := spanAttr(cell, "number-columns-spanned")
+			if col < ncols && span == 1 && !set[col] {
+				v, ok := cell.Attr("width")
+				if !ok {
+					v, ok = cell.Attr("inline-progression-dimension")
+				}
+				if ok && v != "auto" {
+					if l, err := props.EvalLength(v, p.FontSize, tw, nil); err == nil {
+						widths[col], set[col] = l, true
+					}
+				}
+			}
+			col += span
+		}
+	}
 	for i := range set {
 		if !set[i] {
 			fracs[i] = 1
@@ -772,7 +810,7 @@ func rowHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 	return 0, nil
 }
 
-// separation liest border-separation (XSL 1.1 7.26.5).
+// separation liest border-separation (XSL 1.1 7.28.5) und border-spacing.
 func separation(n *tree.Node, fs areatree.Length) (areatree.Length, areatree.Length, error) {
 	parse := func(v string) (areatree.Length, error) {
 		l, err := props.EvalLength(v, fs, -1, nil)
@@ -783,7 +821,13 @@ func separation(n *tree.Node, fs areatree.Length) (areatree.Length, areatree.Len
 	}
 	var h, v areatree.Length
 	var err error
-	if s, ok := n.Attr("border-separation"); ok {
+	// border-spacing ist die Kurzform aus CSS2 (XSL 1.1 7.31.9), die
+	// ausführlichen Eigenschaften haben Vorrang.
+	s, ok := n.Attr("border-separation")
+	if !ok {
+		s, ok = n.Attr("border-spacing")
+	}
+	if ok {
 		parts := strings.Fields(s)
 		if h, err = parse(parts[0]); err != nil {
 			return 0, 0, err

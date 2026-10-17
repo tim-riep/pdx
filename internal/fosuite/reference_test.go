@@ -2,9 +2,11 @@ package fosuite
 
 import (
 	"context"
+	"math"
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"testing"
 
@@ -101,25 +103,46 @@ func expectFromFOP(out string, c Case) (*Expect, string) {
 		page int
 		text string
 	}
-	xs := map[key][]float64{}
+	// Poppler liefert X, der Area Tree Text und Grundlinie. Gleiche Texte
+	// einer Seite werden beidseits von oben nach unten (bei gleicher Höhe
+	// von links nach rechts) einander zugeordnet.
+	xs := map[key][]fopcompare.Line{}
 	if bb, err := os.ReadFile(filepath.Join(out, c.Name+".bbox.html")); err == nil {
 		if pl, _, err := fopcompare.ParseBBox(bb); err == nil {
 			for _, l := range pl {
 				k := key{l.Page, fopcompare.Norm(l.Text)}
-				xs[k] = append(xs[k], l.X)
+				xs[k] = append(xs[k], l)
 			}
 		}
 	}
-	e := &Expect{Pages: pages}
+	for k, q := range xs {
+		sort.SliceStable(q, func(i, j int) bool {
+			if math.Abs(q[i].Y-q[j].Y) > 0.5 {
+				return q[i].Y < q[j].Y
+			}
+			return q[i].X < q[j].X
+		})
+		xs[k] = q
+	}
+	var ordered []fopcompare.ATLine
 	for _, l := range lines {
-		text := fopcompare.Norm(l.Text)
-		if text == "" {
-			continue
+		if fopcompare.Norm(l.Text) != "" {
+			ordered = append(ordered, l)
 		}
+	}
+	sort.SliceStable(ordered, func(i, j int) bool {
+		if ordered[i].Page != ordered[j].Page {
+			return ordered[i].Page < ordered[j].Page
+		}
+		return ordered[i].Baseline < ordered[j].Baseline-0.5
+	})
+	e := &Expect{Pages: pages}
+	for _, l := range ordered {
+		text := fopcompare.Norm(l.Text)
 		ln := Line{Page: l.Page, Y: l.Baseline, Text: textFor(c.Suite, l.Text)}
 		k := key{l.Page, text}
 		if q := xs[k]; len(q) > 0 {
-			ln.X, ln.HasX = q[0], true
+			ln.X, ln.HasX = q[0].X, true
 			xs[k] = q[1:]
 		}
 		e.Lines = append(e.Lines, ln)

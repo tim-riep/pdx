@@ -13,7 +13,7 @@ pages 2
 1 153.200 140.308 cell B6
 1 210.800 140.308 cell C6
 1 38.000 281.108 cell A1 cell A1
-1 38.000 295.508 cell A1 cell A1
 1 134.000 281.108 cell B1
+1 38.000 295.508 cell A1 cell A1
 2 38.000 46.308 cell A1 cell A1
 2 38.000 60.708 cell A1 cell A1

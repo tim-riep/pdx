@@ -6,30 +6,30 @@ pages 8
 2 38.000 43.072 Cell 1.1 Line 2
 2 182.000 43.072 Cell 1.2 Line 2
 2 38.000 57.072 Cell 2.1 Line 1
-2 38.000 67.072 Cell 2.1 Line 2
 2 182.000 57.072 Cell 3.1 Line 1
+2 38.000 67.072 Cell 2.1 Line 2
 2 182.000 67.072 Cell 3.1 Line 2
 2 36.000 83.072 After the table
 3 36.000 43.072 2. Before the table
 3 38.000 165.072 Cell 1.1 Line 1
 3 182.000 165.072 Cell 1.2 Line 1
 4 38.000 43.072 Cell 1.1 Line 2
+4 182.000 43.072 Cell 1.2 Line 2
 4 38.000 57.072 Cell 2.1 Line 1
 4 38.000 67.072 Cell 2.1 Line 2
-4 182.000 43.072 Cell 1.2 Line 2
 4 36.000 83.072 After the table
 5 36.000 43.072 3. Before the table
 5 38.000 137.072 Cell 1.1 Line 1
 5 182.000 137.072 Cell 1.2 Line 1
 6 38.000 43.072 Cell 1.1 Line 2
+6 182.000 43.072 Cell 1.2 Line 2
 6 38.000 57.072 Cell 2.1 Line 1
 6 38.000 67.072 Cell 2.1 Line 2
-6 182.000 43.072 Cell 1.2 Line 2
 6 36.000 83.072 After the table
 7 36.000 43.072 4. Before the table
 7 181.000 143.072 Cell 1.2 Line 1
-7 181.000 153.072 Cell 1.2 Line 2
 7 38.000 143.072 Cell 1.1 Line 1
+7 181.000 153.072 Cell 1.2 Line 2
 7 38.000 153.072 Cell 1.1 Line 2
 7 181.000 165.072 Cell 2.2 Line 1
 8 181.000 43.072 Cell 2.2 Line 2

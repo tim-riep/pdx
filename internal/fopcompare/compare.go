@@ -208,7 +208,15 @@ func PDXLines(d *areatree.Document) []ATLine {
 			base, x := -1.0, 0.0
 			areatree.Walk(c.Children, func(a areatree.Area) bool {
 				if g, ok := a.(*areatree.GlyphRun); ok && base < 0 {
-					base, x = g.Origin.Y.Pt(), g.Origin.X.Pt()
+					// Der Anfang ist die erste sichtbare Glyphe, wie bei Poppler.
+					ox := g.Origin.X
+					for _, gl := range g.Glyphs {
+						if strings.TrimSpace(gl.Text) != "" || gl.Text == "" {
+							break
+						}
+						ox += gl.Advance
+					}
+					base, x = g.Origin.Y.Pt(), ox.Pt()
 				}
 				return true
 			})

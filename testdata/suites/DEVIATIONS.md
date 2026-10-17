@@ -153,3 +153,28 @@ Position, statt eine nicht konforme Datei zu erzeugen. Betroffen sind
 Testfälle mit U+0085, U+007F und U+3000, für die die eingebauten
 Liberation-Schriften keine Glyphe haben. U+3000 ist nach 7.17.7 kein
 Wortzwischenraum, sondern ein gewöhnliches Zeichen.
+
+## body-start()
+
+XSL 1.1 7.30.12 definiert: „body-start() = the value of the start-indent +
+start-intrusion-adjustment + the value of the provisional-distance-between-starts
+of the closest ancestor fo:list-block“. Wie bei label-end(), wo eine Klammer
+die Werte zusammenfasst, liest pdx alle Werte am nächsten fo:list-block. FOP
+nimmt den start-indent des Listenpunkts. Unterschiede gibt es nur, wenn ein
+Listenpunkt eigene Ränder, Rahmen oder Padding hat.
+
+## Padding bei Tabellen und Zellen
+
+Nach XSL 1.1 5.3.2 ist start-indent die Summe aus Rand, Rahmen und Padding,
+das Inhaltsrechteck beginnt bei start-indent (4.2.2). pdx setzt den Inhalt
+einer Tabelle oder Zelle deshalb um Rahmen plus Padding ein. FOP rechnet das
+Padding zusätzlich ein, wenn margin angegeben ist, und setzt den Inhalt um das
+doppelte Padding ein (Fälle table_padding_percentages und
+table-cell_padding_percentages).
+
+## Einheit px, thin, medium und thick
+
+Für px verlangt XSL 1.1 5.9.13.1 eine geräteabhängige Größe nach der
+„arc-span rule“ aus CSS2, also dem Referenzpixel. pdx nimmt wie CSS 2.1 1/96
+Zoll (0,75 pt), FOP 1/72 Zoll. Die Breiten thin, medium und thick sind nach
+7.8.24 Sache des Formatierers (pdx: 0,5 pt, 1 pt, 2 pt).
