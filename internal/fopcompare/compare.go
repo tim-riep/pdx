@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"math"
+	"regexp"
 	"strings"
 
 	"github.com/tim-riep/pdx/areatree"
@@ -151,7 +152,13 @@ type cmpLine struct {
 	HasX bool
 }
 
+// leaderDots erkennt Punktfolgen aus fo:leader. Ohne leader-alignment ist
+// die Zahl der Punkte Sache der Implementierung (XSL 1.1 7.21.1), verglichen
+// wird nur, dass eine Punktfolge dasteht.
+var leaderDots = regexp.MustCompile(`\.{4,}`)
+
 func norm(s string) string {
+	s = leaderDots.ReplaceAllString(s, "....")
 	return strings.Join(strings.Fields(strings.ReplaceAll(s, "\u00a0", " ")), " ")
 }
 

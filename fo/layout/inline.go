@@ -23,7 +23,23 @@ const (
 	pNoBreak
 	// pHyphen ist eine Trennstelle in einem Wort.
 	pHyphen
+	// pLeader ist ein fo:leader, ein dehnbarer Glue ohne Umbruchstelle.
+	pLeader
 )
+
+// leaderSpec beschreibt das Muster eines fo:leader.
+type leaderSpec struct {
+	pattern   string // space, rule, dots
+	thickness areatree.Length
+	style     areatree.BorderStyle
+	patternW  areatree.Length // 0 bei use-font-metrics
+	min, max  areatree.Length
+}
+
+// linkRef ist das Ziel eines fo:basic-link.
+type linkRef struct {
+	dest, uri string
+}
 
 // hyphenPenalty ist der Strafwert einer Trennstelle wie bei Apache FOP
 // (KnuthPenalty.FLAGGED_PENALTY).
@@ -89,6 +105,10 @@ type piece struct {
 	deferred *tree.Node
 	// ids sind IDs von Inline-Elementen, deren Inhalt mit diesem Stück beginnt.
 	ids []string
+	// link ist bei Inhalt eines fo:basic-link gesetzt.
+	link *linkRef
+	// leader beschreibt einen fo:leader.
+	leader *leaderSpec
 }
 
 // paragraph sammelt die Stücke eines Absatzes.
@@ -174,6 +194,35 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 		}
 		pa.markID(n, before)
 		return nil
+	case n.IsFO("basic-link"):
+		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
+		if err != nil {
+			return err
+		}
+		ref := &linkRef{}
+		if id, ok := n.Attr("internal-destination"); ok && id != "" {
+			ref.dest = id
+			pa.g.e.links = append(pa.g.e.links, linkCheck{node: n, id: id})
+		} else if u, ok := n.Attr("external-destination"); ok && srcURI(u) != "" {
+			ref.uri = srcURI(u)
+		} else {
+			return tree.Errorf(n, "fo:basic-link ohne internal-destination oder external-destination")
+		}
+		before := len(pa.pieces)
+		for _, ch := range n.Children {
+			if err := pa.add(ch, ip); err != nil {
+				return err
+			}
+		}
+		for i := before; i < len(pa.pieces); i++ {
+			if pa.pieces[i].link == nil {
+				pa.pieces[i].link = ref
+			}
+		}
+		pa.markID(n, before)
+		return nil
+	case n.IsFO("leader"):
+		return pa.leader(n, p)
 	case n.IsFO("page-number-citation"), n.IsFO("page-number-citation-last"):
 		ip, err := props.Compute(p, n, pa.g.contentW(pa.p))
 		if err != nil {
@@ -202,6 +251,70 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 		return pa.graphic(n, p)
 	}
 	return tree.Errorf(n, "%s wird im Absatz nicht unterstützt", n.Label())
+}
+
+// leader nimmt ein fo:leader auf (XSL 1.1 6.6.9). leader-length gibt
+// Mindest-, Wunsch- und Höchstlänge an (anfangs 0, 12pt und 100 % der
+// Zeile). Gedehnt wird über den Blocksatz der Zeile.
+func (pa *paragraph) leader(n *tree.Node, parent *props.Computed) error {
+	avail := pa.g.contentW(pa.p)
+	p, err := props.Compute(parent, n, avail)
+	if err != nil {
+		return err
+	}
+	st, err := pa.style(n, p, nil)
+	if err != nil {
+		return err
+	}
+	spec := &leaderSpec{pattern: attrOr(n, "leader-pattern", "space"), thickness: areatree.Pt, style: areatree.Solid,
+		min: 0, max: avail}
+	opt := 12 * areatree.Pt
+	length := func(name string, def areatree.Length) (areatree.Length, error) {
+		return props.LengthAttr(n, name, def, p.FontSize, avail)
+	}
+	if v, ok := n.Attr("leader-length"); ok {
+		l, err := props.EvalLength(v, p.FontSize, avail, nil)
+		if err != nil {
+			return tree.Errorf(n, "leader-length: %v", err)
+		}
+		spec.min, opt, spec.max = l, l, l
+	}
+	if spec.min, err = length("leader-length.minimum", spec.min); err != nil {
+		return err
+	}
+	if opt, err = length("leader-length.optimum", opt); err != nil {
+		return err
+	}
+	if spec.max, err = length("leader-length.maximum", spec.max); err != nil {
+		return err
+	}
+	if spec.thickness, err = length("rule-thickness", spec.thickness); err != nil {
+		return err
+	}
+	if v, _ := n.Attr("leader-pattern-width"); v != "" && v != "use-font-metrics" {
+		if spec.patternW, err = length("leader-pattern-width", 0); err != nil {
+			return err
+		}
+	}
+	switch v := attrOr(n, "rule-style", "solid"); v {
+	case "dashed":
+		spec.style = areatree.Dashed
+	case "dotted":
+		spec.style = areatree.Dotted
+	case "double":
+		spec.style = areatree.Double
+	}
+	switch spec.pattern {
+	case "space", "rule", "dots":
+	case "use-content":
+		spec.pattern = "space" // Inhalt als Muster folgt später, Leerraum als Rückfall
+	default:
+		return tree.Errorf(n, "leader-pattern %q ist ungültig", spec.pattern)
+	}
+	opt = min(max(opt, spec.min), spec.max)
+	pa.pieces = append(pa.pieces, piece{kind: pNoBreak, st: st},
+		piece{kind: pLeader, st: st, width: opt, leader: spec})
+	return nil
 }
 
 // markID hängt die ID eines Inline-Elements an das erste Stück mit Inhalt.
@@ -390,6 +503,10 @@ func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 		case pHyphen:
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: hyphenPenalty, Flagged: true,
 				Width: pc.width, Payload: i})
+		case pLeader:
+			l := pc.leader
+			items = append(items, linebreak.Item{Kind: linebreak.Glue, Width: pc.width,
+				Stretch: max(l.max-pc.width, 0), Shrink: max(pc.width-l.min, 0), Payload: i})
 		}
 	}
 	return items
@@ -482,11 +599,17 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			align = "start"
 		}
 	}
+	// Für die Ausrichtung zählen nur echte Dehnungen. Die Hilfsdehnung des
+	// Flattersatzes (+R am Hilfselement, −R am Leerraum) dient nur der
+	// Umbruchwahl und gleicht sich in der Zeile aus.
+	real := func(it linebreak.Item) bool { return it.Payload >= 0 && it.Stretch >= 0 }
 	var natural, stretch, shrink areatree.Length
 	for _, it := range seg {
 		natural += it.Width
-		stretch += it.Stretch
-		shrink += it.Shrink
+		if real(it) {
+			stretch += it.Stretch
+			shrink += it.Shrink
+		}
 	}
 	if align == "justify" && last && stretch > 0 && natural < avail {
 		ratio = float64(avail-natural) / float64(stretch)
@@ -495,6 +618,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		ratio = 0
 	}
 	adjust := func(it linebreak.Item) areatree.Length {
+		if !real(it) {
+			return it.Width
+		}
 		switch {
 		case ratio > 0:
 			return it.Width + areatree.Length(ratio*float64(it.Stretch))
@@ -567,6 +693,11 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			if pc.deferred != nil {
 				run = nil // nach der Seitenzahl beginnt ein neuer Run
 			}
+		case pLeader:
+			run = nil
+			w := adjust(it)
+			line.areas = append(line.areas, drawLeader(pc, x, w, baseline)...)
+			x += w
 		case pGraphic:
 			run = nil
 			line.areas = append(line.areas, &areatree.Image{
@@ -576,6 +707,7 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			x += pc.width
 		}
 	}
+	line.areas = append(line.areas, linkAreas(pa, seg, x0, align, avail, width, adjust, h)...)
 	if hy != nil {
 		// Trennstrich am Zeilenende, im Stil des getrennten Wortes.
 		if run == nil || runStyle != hy.st {
@@ -592,4 +724,82 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	}
 	g.addLine(line, ord, pen)
 	return nil
+}
+
+// drawLeader zeichnet einen fo:leader der Breite w ab x.
+func drawLeader(pc piece, x, w, baseline areatree.Length) []areatree.Area {
+	l := pc.leader
+	switch l.pattern {
+	case "rule":
+		y := baseline - l.thickness/2
+		return []areatree.Area{&areatree.Line{From: areatree.Point{X: x, Y: y}, To: areatree.Point{X: x + w, Y: y},
+			Width: l.thickness, Style: l.style, Color: pc.st.p.Color}}
+	case "dots":
+		gs, err := pc.st.face.Shape(".", pc.st.p.FontSize, font.ShapeOptions{})
+		if err != nil || len(gs) != 1 {
+			return nil
+		}
+		dot := gs[0]
+		pw := l.patternW
+		if pw <= 0 {
+			pw = dot.Advance
+		}
+		if pw <= 0 {
+			return nil
+		}
+		// Punkte auf ein Raster relativ zum Zeilenanfang, damit sie in
+		// aufeinanderfolgenden Zeilen untereinander stehen.
+		start := ((x + pw - 1) / pw) * pw
+		run := &areatree.GlyphRun{Origin: areatree.Point{X: start, Y: baseline}, Font: pc.st.fontID,
+			Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc}
+		for pos := start; pos+dot.Advance <= x+w; pos += pw {
+			g := dot
+			g.Advance = pw
+			run.Glyphs = append(run.Glyphs, g)
+		}
+		if len(run.Glyphs) == 0 {
+			return nil
+		}
+		return []areatree.Area{run}
+	}
+	return nil
+}
+
+// linkAreas legt über zusammenhängende Stücke desselben fo:basic-link je
+// einen Link-Bereich in Zeilenhöhe.
+func linkAreas(pa *paragraph, seg []linebreak.Item, x0 areatree.Length, align string, avail, width areatree.Length,
+	adjust func(linebreak.Item) areatree.Length, h areatree.Length) []areatree.Area {
+	x := x0
+	switch align {
+	case "center":
+		x += (avail - width) / 2
+	case "end":
+		x += avail - width
+	}
+	var out []areatree.Area
+	var cur *linkRef
+	var startX areatree.Length
+	flush := func(end areatree.Length) {
+		if cur != nil && end > startX {
+			out = append(out, &areatree.Link{Rect: areatree.Rect{X: startX, Y: 0, W: end - startX, H: h}, Dest: cur.dest, URI: cur.uri})
+		}
+		cur = nil
+	}
+	for _, it := range seg {
+		if it.Payload < 0 {
+			// Hilfselemente des Flattersatzes unterbrechen keinen Link.
+			x += adjust(it)
+			continue
+		}
+		ref := pa.pieces[it.Payload].link
+		if ref != cur {
+			flush(x)
+			if ref != nil {
+				cur, startX = ref, x
+			}
+		}
+		x += adjust(it)
+	}
+	flush(x)
+	return out
 }

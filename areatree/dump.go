@@ -3,6 +3,7 @@ package areatree
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -39,6 +40,16 @@ func Dump(d *Document) []byte {
 		}
 		b.WriteByte('\n')
 	}
+	ids := make([]string, 0, len(d.Dests))
+	for id := range d.Dests {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		ds := d.Dests[id]
+		fmt.Fprintf(&b, "  dest %s page=%d %s,%s\n", strconv.Quote(id), ds.Page, ds.At.X, ds.At.Y)
+	}
+	dumpBookmarks(&b, d.Bookmarks, 1)
 	for _, p := range d.Pages {
 		fmt.Fprintf(&b, "  page %d %sx%s", p.Number, p.Width, p.Height)
 		if p.TrimBox != nil {
@@ -98,6 +109,12 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 		case *Line:
 			fmt.Fprintf(b, "line %s,%s %s,%s %s\n", v.From.X, v.From.Y, v.To.X, v.To.Y,
 				border(Border{Width: v.Width, Style: v.Style, Color: v.Color}))
+		case *Link:
+			target := "dest=" + strconv.Quote(v.Dest)
+			if v.URI != "" {
+				target = "uri=" + strconv.Quote(v.URI)
+			}
+			fmt.Fprintf(b, "link %s %s\n", rect(v.Rect), target)
 		case *Box:
 			fmt.Fprintf(b, "box %s", rect(v.Rect))
 			if v.Fill != nil {
@@ -110,6 +127,23 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 		default:
 			fmt.Fprintf(b, "unbekannt %T\n", a)
 		}
+	}
+}
+
+func dumpBookmarks(b *bytes.Buffer, bms []Bookmark, depth int) {
+	for _, bm := range bms {
+		fmt.Fprintf(b, "%sbookmark %s", strings.Repeat("  ", depth), strconv.Quote(bm.Title))
+		if bm.Dest != "" {
+			fmt.Fprintf(b, " dest=%s", strconv.Quote(bm.Dest))
+		}
+		if bm.URI != "" {
+			fmt.Fprintf(b, " uri=%s", strconv.Quote(bm.URI))
+		}
+		if bm.Open {
+			b.WriteString(" open")
+		}
+		b.WriteByte('\n')
+		dumpBookmarks(b, bm.Children, depth+1)
 	}
 }
 

@@ -3,6 +3,9 @@ document title="Seitenfolgen" subject="Korpus: Seitenfolgen und Verweise" lang="
   font 1 LiberationSans
   font 2 LiberationSerif
   font 3 LiberationSans-Italic
+  dest "abschnitt-17" page=3 56.693,487.217
+  dest "abschnitt-3" page=2 56.693,291.098
+  dest "hauptteil" page=2 0,0
   page 1 595.276x841.89
     region 56.693,85.04 481.89x657.637 src=fo:region-body@12:7
       block 56.693,85.04 481.89x19.2 src=fo:block@50:7

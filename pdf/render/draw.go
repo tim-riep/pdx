@@ -10,10 +10,11 @@ import (
 
 // pageCtx zeichnet die Bereiche einer Seite in einen Content Stream.
 type pageCtx struct {
-	r   *renderer
-	res *pageRes
-	c   pdf.Content
-	h   float64 // Seitenhöhe in Punkt für die Umrechnung der y-Achse
+	r      *renderer
+	res    *pageRes
+	c      pdf.Content
+	h      float64 // Seitenhöhe in Punkt für die Umrechnung der y-Achse
+	annots pdf.Array
 }
 
 func (pc *pageCtx) x(l areatree.Length) float64 { return l.Pt() }
@@ -65,6 +66,8 @@ func (pc *pageCtx) area(a areatree.Area) error {
 		return pc.line(v.From, v.To, areatree.Border{Width: v.Width, Style: v.Style, Color: v.Color})
 	case *areatree.Box:
 		return pc.boxArea(v)
+	case *areatree.Link:
+		return pc.link(v)
 	}
 	return fmt.Errorf("unbekannter Bereich %T", a)
 }

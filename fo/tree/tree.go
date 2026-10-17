@@ -99,7 +99,12 @@ func Errorf(n *Node, format string, args ...any) error {
 // Elemente des unterstützten Teilumfangs und ihre erlaubten FO-Kinder. "#text"
 // erlaubt Text, "#block" alle Blockelemente, "#inline" alle Inlineelemente.
 var allowed = map[string][]string{
-	"root":                                {"layout-master-set", "declarations", "page-sequence"},
+	"root":                                {"layout-master-set", "declarations", "bookmark-tree", "page-sequence"},
+	"bookmark-tree":                       {"bookmark"},
+	"bookmark":                            {"bookmark-title", "bookmark"},
+	"bookmark-title":                      {"#text"},
+	"leader":                              {"#inline", "#text"},
+	"basic-link":                          {"#inline", "#text"},
 	"layout-master-set":                   {"simple-page-master", "page-sequence-master"},
 	"page-sequence-master":                {"single-page-master-reference", "repeatable-page-master-reference", "repeatable-page-master-alternatives"},
 	"single-page-master-reference":        {},
@@ -141,7 +146,7 @@ var blockLevel = map[string]bool{"block": true, "block-container": true, "table"
 	"retrieve-marker": true, "retrieve-table-marker": true}
 var inlineLevel = map[string]bool{"inline": true, "external-graphic": true, "page-number": true,
 	"page-number-citation": true, "page-number-citation-last": true,
-	"retrieve-marker": true, "retrieve-table-marker": true}
+	"retrieve-marker": true, "retrieve-table-marker": true, "leader": true, "basic-link": true}
 
 // markerParents dürfen fo:marker als Kinder haben.
 var markerParents = map[string]bool{"block": true, "block-container": true, "inline": true, "table-row": true,

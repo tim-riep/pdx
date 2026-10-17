@@ -208,6 +208,7 @@ func (s *sequence) newPage(m *master) *areatree.Container {
 	s.e.doc.Pages = append(s.e.doc.Pages, s.page)
 	if id, ok := s.node.Attr("id"); ok {
 		s.e.recordID(id, formatNumber(s.page.Number, s.e.format))
+		s.e.recordDest(id, s.page, areatree.Point{})
 	}
 	region := &areatree.Container{Kind: areatree.KindRegion, Rect: m.body, Source: m.bodyNode.Label()}
 	s.page.Areas = append(s.page.Areas, region)

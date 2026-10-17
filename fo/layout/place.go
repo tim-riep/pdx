@@ -133,11 +133,13 @@ func (pl *placer) box(it item) error {
 	for _, ctx := range it.path {
 		if id, ok := ctx.node.Attr("id"); ok && id != "" {
 			pl.e.recordID(id, folio)
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + ctx.x, Y: pl.y})
 		}
 	}
 	if it.line != nil {
 		for _, id := range it.line.ids {
 			pl.e.recordID(id, folio)
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + it.line.x, Y: pl.y})
 		}
 	}
 	switch {

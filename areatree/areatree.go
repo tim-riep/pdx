@@ -93,6 +93,25 @@ type Document struct {
 	Images      []ImageRef
 	Attachments []Attachment
 	Meta        Metadata
+	// Dests ordnet IDs ihre Lage zu, für interne Verweise und Lesezeichen.
+	Dests map[string]Dest
+	// Bookmarks sind die Lesezeichen (fo:bookmark-tree).
+	Bookmarks []Bookmark
+}
+
+// Dest ist ein Sprungziel: Seitenindex (ab 0) und Punkt auf der Seite.
+type Dest struct {
+	Page int
+	At   Point
+}
+
+// Bookmark ist ein Lesezeichen. Ziel ist entweder Dest (eine ID) oder URI.
+type Bookmark struct {
+	Title    string
+	Dest     string
+	URI      string
+	Open     bool
+	Children []Bookmark
 }
 
 // Metadata sind die Dokumentmetadaten.
@@ -331,6 +350,16 @@ type Box struct {
 	Fill   *Color
 	Stroke *Border
 }
+
+// Link ist ein anklickbarer Bereich. Ziel ist entweder Dest (eine ID im
+// Dokument) oder URI.
+type Link struct {
+	Rect
+	Dest string
+	URI  string
+}
+
+func (*Link) isArea() {}
 
 func (*Container) isArea() {}
 func (*GlyphRun) isArea()  {}

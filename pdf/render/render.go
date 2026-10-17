@@ -47,6 +47,9 @@ type renderer struct {
 	fonts  *fontSet
 	images *imageSet
 	gs     map[string]pdf.Ref
+
+	pageRefs []pdf.Ref
+	pageIdx  int
 }
 
 func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
@@ -83,8 +86,15 @@ func (r *renderer) build() error {
 	if err := r.fonts.embed(); err != nil {
 		return err
 	}
+	// Seitenobjekte vorab reservieren, damit Verweise auf spätere Seiten zeigen
+	// können.
+	r.pageRefs = make([]pdf.Ref, len(r.doc.Pages))
+	for i := range r.doc.Pages {
+		r.pageRefs[i] = r.d.Reserve()
+	}
 	var kids pdf.Array
-	for _, p := range r.doc.Pages {
+	for i, p := range r.doc.Pages {
+		r.pageIdx = i
 		ref, err := r.page(p)
 		if err != nil {
 			return fmt.Errorf("Seite %d: %w", p.Number, err)
@@ -98,6 +108,13 @@ func (r *renderer) build() error {
 		r.catalog.Set("Lang", pdf.TextString(r.doc.Meta.Lang))
 	}
 	r.info = r.infoDict()
+	if len(r.doc.Bookmarks) > 0 {
+		outlines, err := r.outlines()
+		if err != nil {
+			return err
+		}
+		r.catalog.Set("Outlines", outlines)
+	}
 	if err := r.attachments(); err != nil {
 		return err
 	}
@@ -158,5 +175,10 @@ func (r *renderer) page(p *areatree.Page) (pdf.Ref, error) {
 	if p.BleedBox != nil {
 		page.Set("BleedBox", pc.box(*p.BleedBox))
 	}
-	return r.d.Add(page), nil
+	if len(pc.annots) > 0 {
+		page.Set("Annots", pc.annots)
+	}
+	ref := r.pageRefs[r.pageIdx]
+	r.d.Set(ref, page)
+	return ref, nil
 }

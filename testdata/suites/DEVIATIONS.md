@@ -77,3 +77,11 @@ mit (das Projekt OFFO wird getrennt verteilt), ohne sie trennt FOP nicht.
 Fälle mit `hyphenate="true"` werden deshalb nicht mit FOP verglichen
 (Korpus: silbentrennung). Wie FOP versucht pdx zuerst einen Umbruch ohne
 Trennstellen und gibt Trennstellen den Strafwert 50.
+
+## Lesezeichen mit external-destination
+
+XSL 1.1 6.11.2 erlaubt an `fo:bookmark` neben `internal-destination` auch
+`external-destination`. pdx schreibt dafür einen Gliederungseintrag mit
+URI-Aktion. FOP 2.11 bricht dabei mit „DestinationData must contain a ID
+reference“ ab. Der Korpusfall verweise nutzt deshalb nur interne Ziele,
+externe Lesezeichen prüft ein eigener Test (pdf/render).

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Leader (Punkte, Linie, Leerraum), interne und externe Links und
+     Lesezeichen. -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm">
+      <fo:region-body/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Verweise" subject="Korpus: Leader, Links und Lesezeichen"/>
+  </fo:declarations>
+  <fo:bookmark-tree>
+    <fo:bookmark internal-destination="inhalt"><fo:bookmark-title>Inhalt</fo:bookmark-title></fo:bookmark>
+    <fo:bookmark internal-destination="kap1">
+      <fo:bookmark-title>1 Grundlagen</fo:bookmark-title>
+      <fo:bookmark internal-destination="kap1-1"><fo:bookmark-title>1.1 Area Tree</fo:bookmark-title></fo:bookmark>
+    </fo:bookmark>
+    <fo:bookmark internal-destination="kap2" starting-state="hide">
+      <fo:bookmark-title>2 Ausgabe</fo:bookmark-title>
+      <fo:bookmark internal-destination="kap2-1"><fo:bookmark-title>2.1 PDF/A</fo:bookmark-title></fo:bookmark>
+    </fo:bookmark>
+  </fo:bookmark-tree>
+  <fo:page-sequence master-reference="A4" font-family="Helvetica" font-size="11pt" line-height="1.4">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block id="inhalt" font-size="16pt" font-weight="bold" space-after="6mm">Inhalt</fo:block>
+      <fo:block text-align-last="justify"><fo:basic-link internal-destination="kap1">1 Grundlagen</fo:basic-link><fo:leader leader-pattern="dots"/><fo:page-number-citation ref-id="kap1"/></fo:block>
+      <fo:block text-align-last="justify" start-indent="6mm"><fo:basic-link internal-destination="kap1-1">1.1 Area Tree</fo:basic-link><fo:leader leader-pattern="dots"/><fo:page-number-citation ref-id="kap1-1"/></fo:block>
+      <fo:block text-align-last="justify"><fo:basic-link internal-destination="kap2">2 Ausgabe</fo:basic-link><fo:leader leader-pattern="dots"/><fo:page-number-citation ref-id="kap2"/></fo:block>
+      <fo:block text-align-last="justify" start-indent="6mm"><fo:basic-link internal-destination="kap2-1">2.1 PDF/A</fo:basic-link><fo:leader leader-pattern="dots"/><fo:page-number-citation ref-id="kap2-1"/></fo:block>
+      <fo:block space-before="6mm">Linie als Trenner: <fo:leader leader-pattern="rule" leader-length="40mm" rule-thickness="0.5pt"/> und Leerraum: [<fo:leader leader-pattern="space" leader-length="20mm"/>]</fo:block>
+      <fo:block>Mehr zur Spezifikation unter <fo:basic-link external-destination="url('https://www.w3.org/TR/xsl11/')" color="#1f4e79">www.w3.org/TR/xsl11</fo:basic-link>.</fo:block>
+      <fo:block id="kap1" break-before="page" font-size="16pt" font-weight="bold" space-after="4mm">1 Grundlagen</fo:block>
+      <fo:block>Text zu den Grundlagen.</fo:block>
+      <fo:block id="kap1-1" font-size="13pt" font-weight="bold" space-before="6mm" space-after="3mm">1.1 Area Tree</fo:block>
+      <fo:block>Zurück zum <fo:basic-link internal-destination="inhalt" color="#1f4e79">Inhalt</fo:basic-link>.</fo:block>
+      <fo:block id="kap2" break-before="page" font-size="16pt" font-weight="bold" space-after="4mm">2 Ausgabe</fo:block>
+      <fo:block>Text zur Ausgabe.</fo:block>
+      <fo:block id="kap2-1" font-size="13pt" font-weight="bold" space-before="6mm" space-after="3mm">2.1 PDF/A</fo:block>
+      <fo:block>Alle Dateien bestehen veraPDF.</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

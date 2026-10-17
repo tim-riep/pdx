@@ -2,6 +2,7 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
   font 0 LiberationSans-Bold
   font 1 LiberationSans
   font 2 LiberationSans-Italic
+  dest "ende" page=1 56.693,728.875
   page 1 595.276x841.89
     region 56.693,76.536 481.89x688.818 src=fo:region-body@8:7
       block 56.693,76.536 481.89x16.8 src=fo:block@24:7

@@ -15,6 +15,7 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/image"
+	"strings"
 )
 
 // Options steuert das Layout.
@@ -50,6 +51,8 @@ type engine struct {
 	prevIDs map[string]*idPages
 	// format ist das Seitenzahlformat der aktuellen Seitenfolge.
 	format string
+	// links sind interne Verweise und Lesezeichen zur Prüfung am Ende.
+	links []linkCheck
 
 	// marks sind die Marker-Ereignisse je Seite, markOrder in Seitenfolge.
 	marks     map[*areatree.Page]*pageMarks
@@ -76,6 +79,39 @@ func (e *engine) recordID(id string, page string) {
 		return
 	}
 	e.ids[id] = &idPages{first: page, last: page}
+}
+
+// recordDest vermerkt die erste Lage einer ID als Sprungziel.
+func (e *engine) recordDest(id string, page *areatree.Page, at areatree.Point) {
+	if e.doc.Dests == nil {
+		e.doc.Dests = map[string]areatree.Dest{}
+	}
+	if _, ok := e.doc.Dests[id]; ok {
+		return
+	}
+	for i := len(e.doc.Pages) - 1; i >= 0; i-- {
+		if e.doc.Pages[i] == page {
+			e.doc.Dests[id] = areatree.Dest{Page: i, At: at}
+			return
+		}
+	}
+}
+
+// links sind die internen Verweise eines Durchlaufs, geprüft am Ende.
+type linkCheck struct {
+	node *tree.Node
+	id   string
+}
+
+// checkLinks prüft, dass interne Verweise und Lesezeichen auf vorhandene IDs
+// zeigen.
+func (e *engine) checkLinks() error {
+	for _, l := range e.links {
+		if _, ok := e.doc.Dests[l.id]; !ok {
+			return tree.Errorf(l.node, "internal-destination %q verweist auf keine ID im Dokument", l.id)
+		}
+	}
+	return nil
 }
 
 // citationText liefert den Text eines Verweises aus dem vorigen Durchlauf.
@@ -166,6 +202,9 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 		if err := e.checkCitations(); err != nil {
 			return nil, err
 		}
+		if err := e.checkLinks(); err != nil {
+			return nil, err
+		}
 		if !e.unstable {
 			return e.doc, nil
 		}
@@ -213,6 +252,12 @@ func (e *engine) run(root *tree.Node) error {
 			if err := e.readMasters(c); err != nil {
 				return err
 			}
+		case c.IsFO("bookmark-tree"):
+			bms, err := e.bookmarks(c)
+			if err != nil {
+				return err
+			}
+			e.doc.Bookmarks = bms
 		case c.IsFO("declarations"):
 			if err := e.declarations(c); err != nil {
 				return err
@@ -364,4 +409,41 @@ func (e *engine) face(n *tree.Node, p *props.Computed) (*font.Face, error) {
 		return nil, tree.Errorf(n, "%v", err)
 	}
 	return f, nil
+}
+
+// bookmarks liest fo:bookmark-tree (XSL 1.1 6.11).
+func (e *engine) bookmarks(n *tree.Node) ([]areatree.Bookmark, error) {
+	var out []areatree.Bookmark
+	for _, c := range n.Children {
+		if !c.IsFO("bookmark") {
+			continue
+		}
+		bm := areatree.Bookmark{Open: attrOr(c, "starting-state", "show") == "show"}
+		if id, ok := c.Attr("internal-destination"); ok && id != "" {
+			bm.Dest = id
+			e.links = append(e.links, linkCheck{node: c, id: id})
+		} else if u, ok := c.Attr("external-destination"); ok && u != "" {
+			bm.URI = srcURI(u)
+		} else {
+			return nil, tree.Errorf(c, "fo:bookmark ohne internal-destination oder external-destination")
+		}
+		for _, t := range c.Children {
+			if t.IsFO("bookmark-title") {
+				var b strings.Builder
+				for _, x := range t.Children {
+					if x.Kind == tree.Text {
+						b.WriteString(x.Data)
+					}
+				}
+				bm.Title = strings.Join(strings.Fields(b.String()), " ")
+			}
+		}
+		kids, err := e.bookmarks(c)
+		if err != nil {
+			return nil, err
+		}
+		bm.Children = kids
+		out = append(out, bm)
+	}
+	return out, nil
 }

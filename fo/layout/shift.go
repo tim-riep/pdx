@@ -37,6 +37,11 @@ func shift(a areatree.Area, dx, dy areatree.Length) areatree.Area {
 		l.To.X += dx
 		l.To.Y += dy
 		return &l
+	case *areatree.Link:
+		l := *v
+		l.X += dx
+		l.Y += dy
+		return &l
 	case *areatree.Box:
 		b := *v
 		b.X += dx
