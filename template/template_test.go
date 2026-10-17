@@ -68,9 +68,9 @@ func TestSchemaErrorsCarryID(t *testing.T) {
 	}
 	cases := map[string]string{
 		`<template xmlns="urn:falsch"/>`: "Namespace",
-		`<template xmlns="https://pdx.example/ns/template/0" id="a" lang="de" version="0"><pageSet id="p"><pageMaster id="m"/></pageSet><body id="b"><unbekannt id="u"/></body></template>`: "Schema",
+		`<template xmlns="https://pdx.example/ns/template/0" id="a" lang="de" version="0"><pageSet id="p"><pageMaster id="m"/></pageSet><body id="b"><unbekannt id="u"/></body></template>`:          "Schema",
 		`<template xmlns="https://pdx.example/ns/template/0" id="a" lang="de" version="0"><pageSet id="p"><pageMaster id="m"/></pageSet><body id="b"><text id="x"/><text id="x"/></body></template>`: "Schema",
-		`<template xmlns="https://pdx.example/ns/template/0" id="a" lang="de" version="0"><pageSet id="p">Text</pageSet></template>`: "keinen Text",
+		`<template xmlns="https://pdx.example/ns/template/0" id="a" lang="de" version="0"><pageSet id="p">Text</pageSet></template>`:                                                                 "keinen Text",
 	}
 	for in, want := range cases {
 		if _, err := Parse([]byte(in)); err == nil || !strings.Contains(err.Error(), want) {
