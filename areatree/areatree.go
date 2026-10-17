@@ -246,9 +246,12 @@ const (
 	Dotted
 	// Double zeichnet eine Doppellinie.
 	Double
+	// Hidden zeichnet nichts wie None, gewinnt aber bei zusammenfallenden
+	// Tabellenrahmen gegen alle anderen Stile (CSS2 17.6.2.1).
+	Hidden
 )
 
-var styleNames = [...]string{"none", "solid", "dashed", "dotted", "double"}
+var styleNames = [...]string{"none", "solid", "dashed", "dotted", "double", "hidden"}
 
 func (s BorderStyle) String() string { return styleNames[s] }
 
@@ -260,7 +263,7 @@ type Border struct {
 }
 
 // Visible meldet, ob die Kante gezeichnet wird.
-func (b Border) Visible() bool { return b.Style != None && b.Width > 0 }
+func (b Border) Visible() bool { return b.Style != None && b.Style != Hidden && b.Width > 0 }
 
 // Seiten für Container.Border.
 const (

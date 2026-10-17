@@ -762,28 +762,34 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 			}
 			c.border[areatree.Bottom] = winnerPrec(cands)
 			// Links und rechts.
+			// Seitlich je überspannter Zeile auflösen, die breiteste Kante
+			// bestimmt den Einzug der Zelle.
 			for _, side := range []int{areatree.Left, areatree.Right} {
-				cands = cands[:0]
 				other, k, otherSide := c.col-1, c.col, areatree.Right
 				outer := c.col == 0
 				if side == areatree.Right {
 					other, k, otherSide = c.col+c.span, c.col+c.span-1, areatree.Left
 					outer = c.col+c.span == ncols
 				}
-				add(c.p.Border[side], precCell)
-				colB(k, side)
-				if o := neighbour(ri, other); o != nil {
-					add(o.p.Border[otherSide], precCell)
-				}
-				colB(other, otherSide)
-				if outer {
-					for r := ri; r <= lastRow; r++ {
+				var best areatree.Border
+				for r := ri; r <= lastRow; r++ {
+					cands = cands[:0]
+					add(c.p.Border[side], precCell)
+					colB(k, side)
+					if o := neighbour(r, other); o != nil {
+						add(o.p.Border[otherSide], precCell)
+					}
+					colB(other, otherSide)
+					if outer {
 						add(rows[r].props.Border[side], precRow)
 						add(rows[r].secProps.Border[side], secPrec[rows[r].sec])
+						add(tableBorder[side], precTable)
 					}
-					add(tableBorder[side], precTable)
+					if w := winnerPrec(cands); w.Visible() && (!best.Visible() || w.Width > best.Width) {
+						best = w
+					}
 				}
-				c.border[side] = winnerPrec(cands)
+				c.border[side] = best
 			}
 			for s := 0; s < 4; s++ {
 				w := areatree.Length(0)
@@ -1085,6 +1091,11 @@ type cand struct {
 func winnerPrec(cands []cand) areatree.Border {
 	var best cand
 	found := false
+	for _, c := range cands {
+		if c.b.Style == areatree.Hidden {
+			return areatree.Border{}
+		}
+	}
 	for _, c := range cands {
 		if !c.b.Visible() {
 			continue

@@ -45,11 +45,13 @@ Wörter daher an anderen Stellen, Zeileninhalte und Grundlinien stimmen
 
 ## Tabellen im Modell collapse
 
-`border-collapse="collapse"` ist der Anfangswert (XSL 1.1 7.26.1). pdx löst
-jede Zellkante zwischen Zelle, Nachbarzelle, Zeile und an den Außenkanten
-der Tabelle nach Breite und dann nach Stilrang auf (6.7.10). Rahmen von
-Spalten und Abschnitten (fo:table-column, fo:table-body) gehen noch nicht in
-die Auflösung ein. Das Modell `collapse-with-precedence` wird wie `collapse`
+`border-collapse="collapse"` ist der Anfangswert (XSL 1.1 7.28.3). pdx löst
+jede Zellkante zwischen Zelle, Nachbarzelle, Zeile, Abschnitt, Spalte und
+Tabelle auf, wo sie angrenzen (6.7.10): `hidden` unterdrückt die Kante, sonst
+gewinnt der breitere Rahmen, dann der stärkere Stil, dann die Priorität nach
+den Anfangswerten von `border-*-precedence` (7.28.1). Überspannt eine Zelle
+mehrere Zeilen, bestimmt die breiteste Seitenkante ihren Einzug. Das Modell
+`collapse-with-precedence` mit eigenen Prioritäten wird wie `collapse`
 behandelt.
 
 ## fo:retrieve-table-marker im Tabellenkopf

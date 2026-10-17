@@ -236,7 +236,7 @@ func expand4(vs []string) ([4]string, error) {
 }
 
 var borderStyles = map[string]areatree.BorderStyle{
-	"none": areatree.None, "hidden": areatree.None, "solid": areatree.Solid, "dashed": areatree.Dashed,
+	"none": areatree.None, "hidden": areatree.Hidden, "solid": areatree.Solid, "dashed": areatree.Dashed,
 	"dotted": areatree.Dotted, "double": areatree.Double,
 	// groove, ridge, inset und outset werden als durchgezogen gezeichnet.
 	"groove": areatree.Solid, "ridge": areatree.Solid, "inset": areatree.Solid, "outset": areatree.Solid,
