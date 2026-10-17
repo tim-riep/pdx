@@ -386,6 +386,7 @@ fop/static-content_overflow_1: nicht im Teilumfang von pdx: Eigenschaft border-b
 fop/table-border-rendering-mode-overpaint: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
 fop/table-border-rendering-mode-standard: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
 fop/table-border-row-span-rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
+fop/table-border-separate3: nicht im Teilumfang von pdx: Eigenschaft empty-cells="hide"
 fop/table-border-span-rl: nicht im Teilumfang von pdx: Eigenschaft writing-mode="rl-tb"
 fop/table-cell_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/box1.png
 fop/table-cell_bc-child: nicht im Teilumfang von pdx: Eigenschaft space-before.conditionality="retain"
@@ -539,6 +540,7 @@ w3c/nist-renderingmodel2: nicht im Teilumfang von pdx: Bild über das Netz, pdx 
 w3c/nist-renderingmodel3: nicht im Teilumfang von pdx: 10:9: fo:character wird noch nicht unterstützt
 w3c/nist-renderingmodel5: nicht im Teilumfang von pdx: Eigenschaft visibility="hidden"
 w3c/nist-tafowritingm1: nicht im Teilumfang von pdx: Eigenschaft writing-mode="tb-rl"
+w3c/nist-tcfoempty2: nicht im Teilumfang von pdx: Eigenschaft empty-cells="hide"
 w3c/nist-tcofovisibilityh: nicht im Teilumfang von pdx: Eigenschaft visibility="hidden"
 w3c/xep-Charents: nicht im Teilumfang von pdx: Eigenschaft word-spacing="2pt"
 w3c/xep-Pushkin: nicht im Teilumfang von pdx: Eigenschaft column-count="2"

@@ -1008,7 +1008,7 @@ func rowHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 // minHeight liest die Mindesthöhe aus height oder block-progression-dimension
 // (XSL 1.1 7.15.3, 7.15.6).
 func minHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
-	for _, name := range []string{"height", "block-progression-dimension", "block-progression-dimension.minimum"} {
+	for _, name := range []string{"height", "block-progression-dimension", "block-progression-dimension.optimum", "block-progression-dimension.minimum"} {
 		if v, ok := n.Attr(name); ok && v != "auto" {
 			l, err := props.EvalLength(v, fs, -1, nil)
 			if err != nil {

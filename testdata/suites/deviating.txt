@@ -47,12 +47,10 @@ fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-posit
 fop/page-sequence_force-page-count_auto: offen, erste Abweichung: Seiten: pdx 11, FOP 13
 fop/simple-page-master_unmapped_flow-name: offen, erste Abweichung: Seiten: pdx 2, FOP 3
 fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-border-separate3: offen, erste Abweichung: Seite 1: "cell6" verschoben um 0.00 pt waagerecht, 5.00 pt senkrecht
 fop/table-cell_block_keep-with-next: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "line1"
 fop/table-cell_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-cell_breaks: offen, erste Abweichung: Seiten: pdx 3, FOP 4
 fop/table-cell_display-align_page-break: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "cell3"
-fop/table-cell_height: offen, erste Abweichung: Seite 1: "cell10a" verschoben um 0.00 pt waagerecht, -6.00 pt senkrecht
 fop/table-cell_keep-together: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_keep-with-next: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-cell_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
@@ -62,9 +60,9 @@ fop/table-cell_row-span_breaks: offen, erste Abweichung: Seite 1: Zeile nur in p
 fop/table-column_column-width_proportional-column-width: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-header_in_list_bug: offen, erste Abweichung: Seite 1: "Header" verschoben um -12.01 pt waagerecht, -0.00 pt senkrecht
 fop/table-header_table-footer_4: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "content content content"
-fop/table-row_break-before_break-after_2: offen, erste Abweichung: Seite 3: "cell1" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
+fop/table-row_break-before_break-after_2: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-row_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
-fop/table-row_break-before_row-span: offen, erste Abweichung: Seite 2: "Cell 1.1" verschoben um 0.00 pt waagerecht, 4.00 pt senkrecht
+fop/table-row_break-before_row-span: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-row_break-inside-span: offen, erste Abweichung: Seiten: pdx 2, FOP 1
 fop/table-row_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-row_keep-with-next_3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
@@ -89,7 +87,7 @@ w3c/fopc-simple: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten un
 w3c/nist-adp-height1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-height2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-height3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-adp-width1: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "that"
+w3c/nist-adp-width1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-adp-width3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-bcfobordercolor2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
