@@ -285,7 +285,7 @@ func (s *sequence) newPage(m *master) *areatree.Container {
 			s.e.recordDest(id, s.page, areatree.Point{})
 		}
 	}
-	region := &areatree.Container{Kind: areatree.KindRegion, Rect: m.body, Source: m.bodyNode.Label()}
+	region := &areatree.Container{Kind: areatree.KindRegion, Rect: m.body, Source: m.bodyNode.Label(), ID: m.bodyNode.TemplateID()}
 	s.page.Areas = append(s.page.Areas, region)
 	return region
 }
@@ -301,7 +301,7 @@ func (s *sequence) finishPage() error {
 		if err != nil {
 			return err
 		}
-		cont := &areatree.Container{Kind: areatree.KindRegion, Rect: r.rect, Source: r.node.Label()}
+		cont := &areatree.Container{Kind: areatree.KindRegion, Rect: r.rect, Source: r.node.Label(), ID: r.node.TemplateID()}
 		s.page.Areas = append(s.page.Areas, cont)
 		g := newGalley(s.e, r.rect.W, s.page.Number)
 		g.page = s.page

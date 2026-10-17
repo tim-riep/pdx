@@ -114,6 +114,9 @@ type piece struct {
 	deferred *tree.Node
 	// ids sind IDs von Inline-Elementen, deren Inhalt mit diesem Stück beginnt.
 	ids []string
+	// tid ist die Vorlagen-ID des innersten Elements mit pdx:id, in dem das
+	// Stück liegt.
+	tid string
 	// link ist bei Inhalt eines fo:basic-link gesetzt.
 	link *linkRef
 	// leader beschreibt einen fo:leader.
@@ -238,7 +241,24 @@ func (pa *paragraph) style(n *tree.Node, p *props.Computed, f *font.Face) (*styl
 }
 
 // add nimmt einen Text- oder Inlineknoten auf.
+// add hängt die Stücke eines Knotens an. Trägt der Knoten eine Vorlagen-ID,
+// erhalten seine Stücke sie, soweit kein inneres Element eine eigene hat.
 func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
+	before := len(pa.pieces)
+	err := pa.addNode(n, p)
+	if n.Kind == tree.Element {
+		if id := n.Attrs["{"+tree.NSPDX+"}id"]; id != "" {
+			for i := before; i < len(pa.pieces); i++ {
+				if pa.pieces[i].tid == "" {
+					pa.pieces[i].tid = id
+				}
+			}
+		}
+	}
+	return err
+}
+
+func (pa *paragraph) addNode(n *tree.Node, p *props.Computed) error {
 	if n.Kind == tree.Text {
 		return pa.text(n, p, n.Data, true)
 	}
@@ -876,6 +896,15 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	baseline := above
 	line := &lineBox{h: h, w: avail, x: x0}
 
+	// Runs tragen eine eigene Vorlagen-ID nur, wenn sie von der des Absatzes
+	// abweicht, etwa bei einem Feld in einem Text.
+	blockID := pa.node.TemplateID()
+	runID := func(tid string) string {
+		if tid == blockID {
+			return ""
+		}
+		return tid
+	}
 	var run *areatree.GlyphRun
 	var runStyle *style
 	frags := &decoFrags{}
@@ -890,9 +919,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			run = nil
 			x += adjust(it)
 		case pText, pSpace:
-			if run == nil || runStyle != pc.st || pc.deferred != nil {
+			if run == nil || runStyle != pc.st || pc.deferred != nil || run.ID != runID(pc.tid) {
 				run = &areatree.GlyphRun{Origin: areatree.Point{X: x, Y: baseline}, Font: pc.st.fontID,
-					Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc}
+					Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc, ID: runID(pc.tid)}
 				runStyle = pc.st
 				line.areas = append(line.areas, run)
 				if pc.deferred != nil {
@@ -918,7 +947,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		case pGraphic:
 			run = nil
 			if pc.code != nil {
-				line.areas = append(line.areas, pc.code.path(x, baseline-pc.height, pc.width, pc.height))
+				path := pc.code.path(x, baseline-pc.height, pc.width, pc.height)
+				path.ID = pc.tid
+				line.areas = append(line.areas, path)
 				x += pc.width
 				continue
 			}
@@ -926,11 +957,12 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 				if p := b.p; hasDeco(p) {
 					line.areas = append(line.areas, &areatree.Container{Kind: areatree.KindInline,
 						Rect:       areatree.Rect{X: x, Y: baseline - pc.height, W: pc.width, H: pc.height},
-						Background: p.Background, Border: p.Border, Source: b.n.Label()})
+						Background: p.Background, Border: p.Border, Source: b.n.Label(), ID: b.n.TemplateID()})
 				}
 				line.areas = append(line.areas, &areatree.Image{
 					Rect:  areatree.Rect{X: x + b.start, Y: baseline - pc.height + b.before, W: b.imgW, H: b.imgH},
 					Image: pc.img,
+					ID:    pc.tid,
 				})
 				x += pc.width
 				continue
@@ -938,6 +970,7 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			line.areas = append(line.areas, &areatree.Image{
 				Rect:  areatree.Rect{X: x, Y: baseline - pc.height, W: pc.width, H: pc.height},
 				Image: pc.img,
+				ID:    pc.tid,
 			})
 			x += pc.width
 		}
@@ -1098,7 +1131,7 @@ func (f *decoFrags) areas(baseline areatree.Length) []areatree.Area {
 		}
 		out = append(out, &areatree.Container{Kind: areatree.KindInline,
 			Rect:       areatree.Rect{X: fr.x0, Y: top, W: fr.x1 - fr.x0, H: bottom - top},
-			Background: p.Background, Border: border, Source: d.n.Label()})
+			Background: p.Background, Border: border, Source: d.n.Label(), ID: d.n.TemplateID()})
 	}
 	return out
 }

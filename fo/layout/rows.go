@@ -101,7 +101,7 @@ func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y ar
 			items = c.cellRange(ca, cb)
 		}
 
-		cont := &areatree.Container{Kind: areatree.KindBlock, Background: c.p.Background, Source: c.node.Label()}
+		cont := &areatree.Container{Kind: areatree.KindBlock, Background: c.p.Background, Source: c.node.Label(), ID: c.node.TemplateID()}
 		half := func(s int) areatree.Length {
 			if c.border[s].Visible() {
 				return c.border[s].Width / 2

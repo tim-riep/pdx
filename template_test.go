@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/internal/testutil"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
@@ -112,5 +113,55 @@ func BenchmarkRenderInvoice(b *testing.B) {
 		if _, err := tpl.Render(data, opts); err != nil {
 			b.Fatal(err)
 		}
+	}
+}
+
+// TestTemplateIDsInAreaTree prüft, dass die Bereiche die IDs ihrer
+// Vorlagenelemente tragen, auch Felder innerhalb eines Textes.
+func TestTemplateIDsInAreaTree(t *testing.T) {
+	p, data := loadMuster(t)
+	res, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	containers := map[string]bool{}
+	runs := map[string]string{} // ID des Runs zu seinem Text
+	paths := map[string]bool{}
+	var walk func(as []areatree.Area)
+	walk = func(as []areatree.Area) {
+		for _, a := range as {
+			switch v := a.(type) {
+			case *areatree.Container:
+				containers[v.ID] = true
+				walk(v.Children)
+			case *areatree.GlyphRun:
+				if v.ID != "" {
+					var s strings.Builder
+					for _, g := range v.Glyphs {
+						s.WriteString(g.Text)
+					}
+					runs[v.ID] += s.String()
+				}
+			case *areatree.Path:
+				paths[v.ID] = true
+			}
+		}
+	}
+	for _, pg := range res.Tree.Pages {
+		walk(pg.Areas)
+	}
+	for _, id := range []string{"positionen", "z-leistung", "adressfenster", "summen", "netto"} {
+		if !containers[id] {
+			t.Errorf("kein Container mit ID %q", id)
+		}
+	}
+	if got := runs["netto-wert"]; !strings.ContainsAny(got, "0123456789") {
+		t.Errorf("Feld netto-wert: Run mit Text %q, erwartet einen Betrag", got)
+	}
+	if _, ok := runs["netto"]; ok {
+		t.Error("Runs des Absatzes netto tragen eine eigene ID, erwartet leer")
+	}
+	if !paths["girocode"] {
+		t.Error("Barcode ohne ID girocode")
 	}
 }

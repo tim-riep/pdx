@@ -286,6 +286,9 @@ type Container struct {
 	Role string
 	// Source verweist auf den Ursprung im Eingabedokument, etwa "fo:block@12:5".
 	Source string
+	// ID ist die ID des Vorlagenelements (pdx:id im FO), geerbt vom nächsten
+	// Vorfahren. Leer bei FO ohne Vorlage.
+	ID string
 }
 
 // Glyph ist eine positionierte Glyphe.
@@ -310,6 +313,9 @@ type GlyphRun struct {
 	Glyphs []Glyph
 	// Ascent und Descent (positiv) begrenzen den Run vertikal.
 	Ascent, Descent Length
+	// ID ist die ID des Vorlagenelements, wenn sie von der des umgebenden
+	// Containers abweicht, etwa bei einem Feld in einem Text. Sonst leer.
+	ID string
 }
 
 // Width ist die Summe der Vorschübe.
@@ -330,6 +336,8 @@ func (g *GlyphRun) Bounds() Rect {
 type Image struct {
 	Rect
 	Image ImageID
+	// ID ist die ID des Vorlagenelements wie bei GlyphRun.
+	ID string
 }
 
 // Line ist eine gerade Linie.
@@ -372,6 +380,8 @@ type Path struct {
 	Rects []Rect
 	// Source beschreibt den Inhalt für Dump und Designer, etwa "qr:…".
 	Source string
+	// ID ist die ID des Vorlagenelements wie bei GlyphRun.
+	ID string
 }
 
 func (*Path) isArea() {}

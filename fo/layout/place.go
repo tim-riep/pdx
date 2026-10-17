@@ -207,7 +207,7 @@ func (pl *placer) sync(path []*blockCtx, edge edgeKind) {
 		ctx := path[i]
 		p := ctx.p
 		first := edge == edgeTop && i == len(path)-1
-		c := &areatree.Container{Kind: areatree.KindBlock, Background: p.Background, Border: p.Border, Source: ctx.node.Label()}
+		c := &areatree.Container{Kind: areatree.KindBlock, Background: p.Background, Border: p.Border, Source: ctx.node.Label(), ID: ctx.node.TemplateID()}
 		c.X = pl.ref.X + ctx.x
 		c.W = ctx.w
 		c.Y = pl.y
@@ -304,7 +304,7 @@ func (pl *placer) absolute(a *absAnchor) error {
 	if v, _ := a.node.Attr("overflow"); v == "hidden" || v == "error-if-overflow" {
 		kind = areatree.KindViewport
 	}
-	cont := &areatree.Container{Kind: kind, Background: p.Background, Border: p.Border, Source: a.node.Label()}
+	cont := &areatree.Container{Kind: kind, Background: p.Background, Border: p.Border, Source: a.node.Label(), ID: a.node.TemplateID()}
 	cont.X, cont.Y = inner.X-padL, inner.Y-padT
 	cont.W = contentW + padL + padR
 	pl.page.Areas = append(pl.page.Areas, cont)

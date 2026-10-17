@@ -86,6 +86,9 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			if v.Source != "" {
 				fmt.Fprintf(b, " src=%s", v.Source)
 			}
+			if v.ID != "" {
+				fmt.Fprintf(b, " id=%s", strconv.Quote(v.ID))
+			}
 			b.WriteByte('\n')
 			dumpAreas(b, v.Children, depth+1)
 		case *GlyphRun:
@@ -93,8 +96,12 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			for _, g := range v.Glyphs {
 				txt.WriteString(g.Text)
 			}
-			fmt.Fprintf(b, "text %s,%s font=%d size=%s color=%s asc=%s desc=%s %s\n",
+			fmt.Fprintf(b, "text %s,%s font=%d size=%s color=%s asc=%s desc=%s %s",
 				v.Origin.X, v.Origin.Y, v.Font, v.Size, color(v.Color), v.Ascent, v.Descent, strconv.Quote(txt.String()))
+			if v.ID != "" {
+				fmt.Fprintf(b, " id=%s", strconv.Quote(v.ID))
+			}
+			b.WriteByte('\n')
 			b.WriteString(ind)
 			b.WriteString("  glyphs")
 			for _, g := range v.Glyphs {
@@ -105,7 +112,11 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			}
 			b.WriteByte('\n')
 		case *Image:
-			fmt.Fprintf(b, "image %s id=%d\n", rect(v.Rect), v.Image)
+			fmt.Fprintf(b, "image %s id=%d", rect(v.Rect), v.Image)
+			if v.ID != "" {
+				fmt.Fprintf(b, " tid=%s", strconv.Quote(v.ID))
+			}
+			b.WriteByte('\n')
 		case *Line:
 			fmt.Fprintf(b, "line %s,%s %s,%s %s\n", v.From.X, v.From.Y, v.To.X, v.To.Y,
 				border(Border{Width: v.Width, Style: v.Style, Color: v.Color}))
@@ -113,6 +124,9 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			fmt.Fprintf(b, "path %s fill=%s rects=%d", rect(v.Rect), color(v.Fill), len(v.Rects))
 			if v.Source != "" {
 				fmt.Fprintf(b, " src=%s", strconv.Quote(v.Source))
+			}
+			if v.ID != "" {
+				fmt.Fprintf(b, " id=%s", strconv.Quote(v.ID))
 			}
 			b.WriteByte('\n')
 		case *Link:

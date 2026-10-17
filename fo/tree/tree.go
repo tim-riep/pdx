@@ -73,6 +73,19 @@ func (n *Node) Attr(name string) (string, bool) {
 	return v, ok
 }
 
+// TemplateID liefert die ID des Vorlagenelements (pdx:id) des Knotens oder
+// seines nächsten Vorfahren. Leer, wenn das FO nicht aus einer Vorlage stammt.
+func (n *Node) TemplateID() string {
+	for m := n; m != nil; m = m.Parent {
+		if m.Kind == Element {
+			if v := m.Attrs["{"+NSPDX+"}id"]; v != "" {
+				return v
+			}
+		}
+	}
+	return ""
+}
+
 // Label beschreibt den Knoten für Fehlermeldungen, etwa "fo:block@12:5".
 func (n *Node) Label() string {
 	prefix := "{" + n.Space + "}"
