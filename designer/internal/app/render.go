@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"maps"
 	"net/http"
 	"strings"
 	"time"
@@ -41,6 +42,7 @@ type renderer struct {
 	timer  *time.Timer
 	cancel context.CancelFunc
 	latest Manifest
+	gen    uint64 // Zähler der Läufe, nur der neueste wird gemeldet
 }
 
 // SetView wählt Ansicht und Beispieldatensatz (Pfad unter samples/, leer für
@@ -86,6 +88,8 @@ func (c *Core) render() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	c.r.cancel = cancel
+	c.r.gen++
+	gen := c.r.gen
 	p := c.doc.Pkg
 	sample := c.r.sample
 	if sample == "" {
@@ -94,10 +98,17 @@ func (c *Core) render() {
 		}
 	}
 	data, ok := p.Files[sample]
+	if c.r.view == ViewDesign || !ok {
+		// Entwurf, oder Vorschau ohne Beispieldaten: Platzhalter aus dem XSD.
+		if sc, err := c.schemaLocked(); err == nil && sc != nil {
+			data, sample, ok = sc.Placeholder(), "", true
+		}
+	}
 	if !ok {
 		data, sample = []byte("<daten/>"), ""
 	}
-	in := pipeline.Input{Canon: template.Write(p.Template), Files: p.Files, Data: data}
+	// Die Dateiliste kopieren: Befehle ändern sie, während gesetzt wird.
+	in := pipeline.Input{Canon: template.Write(p.Template), Files: maps.Clone(p.Files), Data: data}
 	rev, view := c.doc.Rev(), c.r.view
 	c.mu.Unlock()
 
@@ -107,7 +118,7 @@ func (c *Core) render() {
 	}
 	m := Manifest{View: view, Rev: rev, Sample: sample, Result: *res}
 	c.mu.Lock()
-	if c.doc != nil && c.doc.Rev() == rev {
+	if c.doc != nil && c.doc.Rev() == rev && c.r.gen == gen {
 		c.r.latest = m
 		c.emit.Emit(EventRenderPages, m)
 	}

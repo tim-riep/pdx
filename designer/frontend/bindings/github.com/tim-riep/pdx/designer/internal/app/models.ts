@@ -13,6 +13,62 @@ import * as model$0 from "../model/models.js";
 import * as pipeline$0 from "../pipeline/models.js";
 
 /**
+ * Drop beschreibt, wohin ein Datenknoten gezogen wurde.
+ */
+export class Drop {
+    /**
+     * Path ist der Pfad des Datenknotens im Datenbaum.
+     */
+    "path": string;
+
+    /**
+     * Parent ist das Vorlagenelement, das den neuen Inhalt aufnimmt.
+     */
+    "parent": string;
+
+    /**
+     * Index ist die Position unter den Kindern, -1 hängt an.
+     */
+    "index": number;
+
+    /**
+     * X und Y sind bei positionierten Eltern die Lage in Millimetern relativ
+     * zum Elternelement.
+     */
+    "x": number;
+    "y": number;
+
+    /** Creates a new Drop instance. */
+    constructor($$source: Partial<Drop> = {}) {
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("parent" in $$source)) {
+            this["parent"] = "";
+        }
+        if (!("index" in $$source)) {
+            this["index"] = 0;
+        }
+        if (!("x" in $$source)) {
+            this["x"] = 0;
+        }
+        if (!("y" in $$source)) {
+            this["y"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Drop instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Drop {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Drop($$parsedSource as Partial<Drop>);
+    }
+}
+
+/**
  * Info beschreibt die Anwendung für Titelleiste und „Über“.
  */
 export class Info {

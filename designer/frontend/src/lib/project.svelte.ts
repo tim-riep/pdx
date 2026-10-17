@@ -33,7 +33,7 @@ async function run(f: () => Promise<ProjectState>): Promise<boolean> {
   }
 }
 
-function askPath(title: string): Promise<string | null> {
+export function askPath(title: string): Promise<string | null> {
   return new Promise((resolve) => (ui.pathPrompt = { title, resolve }));
 }
 

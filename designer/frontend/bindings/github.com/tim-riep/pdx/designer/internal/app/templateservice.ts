@@ -38,6 +38,18 @@ export function Catalog(): $CancellablePromise<model$0.Catalog> {
 }
 
 /**
+ * Drop fügt für einen gezogenen Datenknoten das passende gebundene Element
+ * ein: Datum als Datumsfeld mit Format, Dezimalzahl als Betragsfeld,
+ * wiederholter Knoten als Tabelle mit Spalten aus den Kindknoten, optionaler
+ * Knoten mit Präsenzbedingung.
+ */
+export function Drop(drop: $models.Drop): $CancellablePromise<$models.Result> {
+    return $Call.ByID(3087403498, drop).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * History liefert die Beschriftungen für Undo und Redo.
  */
 export function History(): $CancellablePromise<model$0.History> {

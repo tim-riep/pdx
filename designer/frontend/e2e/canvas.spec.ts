@@ -2,8 +2,7 @@ import { expect, test } from "@playwright/test";
 import { openMuster } from "./helpers";
 
 test("Canvas zeigt die Seiten aus der Engine", async ({ page }) => {
-  await openMuster(page);
-  await expect(page.locator("[data-page]")).toHaveCount(3);
+  await openMuster(page, true);
   await expect(page.getByTestId("render-info")).toContainText("3 Seiten");
   // Die erste Seite ist gezeichnet: das Canvas hat Pixel ungleich Weiß.
   const inked = await page.locator('[data-page="1"] canvas').evaluate((c: HTMLCanvasElement) => {
@@ -14,8 +13,9 @@ test("Canvas zeigt die Seiten aus der Engine", async ({ page }) => {
   });
   expect(inked).toBeGreaterThan(1000);
 
-  await page.getByRole("tab", { name: "Vorschau" }).click();
-  await expect(page.locator("[data-page]")).toHaveCount(3);
+  // Der Entwurf zeigt Platzhalter mit drei Positionen, also eine Seite.
+  await page.getByRole("tab", { name: "Entwurf" }).click();
+  await expect(page.locator("[data-page]")).toHaveCount(1);
   const before = await page.getByTestId("zoom").textContent();
   await page.getByRole("button", { name: "Vergrößern" }).click();
   await expect(page.getByTestId("zoom")).not.toHaveText(before!);

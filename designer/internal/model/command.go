@@ -18,6 +18,8 @@ import (
 //	remove   Ref               Element entfernen
 //	move     Ref, Parent, Index  Element verschieben
 //	batch    Cmds              mehrere Befehle als ein Schritt
+//	setFile  Name              Datei im Paket setzen oder entfernen (nur
+//	                           im Backend, die Daten trägt Data)
 //
 // Index zählt die Kinder des Elternelements, bei gemischtem Inhalt
 // einschließlich der Texte. -1 hängt an.
@@ -33,6 +35,9 @@ type Command struct {
 
 	// nodes trägt bei Inversen von remove die entfernten Knoten selbst.
 	nodes []*template.Node
+	// Data ist der Inhalt bei setFile, nil entfernt die Datei. Er wird nicht
+	// als JSON übertragen.
+	Data []byte `json:"-"`
 }
 
 // entry ist ein Schritt der Historie.
@@ -115,7 +120,7 @@ func (d *Document) History() History {
 // Fehler ist die Vorlage unverändert.
 func (d *Document) apply(c Command) (Command, error) {
 	t := d.Pkg.Template
-	inv, err := exec(t, c)
+	inv, err := exec(t, d.Pkg.Files, c)
 	if err != nil {
 		return Command{}, err
 	}
@@ -127,7 +132,7 @@ func (d *Document) apply(c Command) (Command, error) {
 		_, err = pkg.New(t, d.Pkg.Files)
 	}
 	if err != nil {
-		if _, rerr := exec(t, inv); rerr != nil {
+		if _, rerr := exec(t, d.Pkg.Files, inv); rerr != nil {
 			return Command{}, fmt.Errorf("%v (Zurücknehmen fehlgeschlagen: %v)", err, rerr)
 		}
 		t.Reindex()
@@ -137,8 +142,23 @@ func (d *Document) apply(c Command) (Command, error) {
 }
 
 // exec führt einen Befehl ohne Prüfung aus und liefert das Inverse.
-func exec(t *template.Template, c Command) (Command, error) {
+func exec(t *template.Template, files map[string][]byte, c Command) (Command, error) {
 	switch c.Op {
+	case "setFile":
+		if c.Name == "" || c.Name == "template.xml" {
+			return Command{}, fmt.Errorf("Datei %q ist im Paket nicht zulässig", c.Name)
+		}
+		old, had := files[c.Name]
+		if c.Data == nil {
+			delete(files, c.Name)
+		} else {
+			files[c.Name] = c.Data
+		}
+		inv := Command{Op: "setFile", Name: c.Name}
+		if had {
+			inv.Data = old
+		}
+		return inv, nil
 	case "setAttr":
 		n, err := Resolve(t, c.Ref)
 		if err != nil {
@@ -242,10 +262,10 @@ func exec(t *template.Template, c Command) (Command, error) {
 	case "batch":
 		var inv []Command
 		for _, sub := range c.Cmds {
-			u, err := exec(t, sub)
+			u, err := exec(t, files, sub)
 			if err != nil {
 				for k := len(inv) - 1; k >= 0; k-- {
-					exec(t, inv[k])
+					exec(t, files, inv[k])
 				}
 				return Command{}, err
 			}

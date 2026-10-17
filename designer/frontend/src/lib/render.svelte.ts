@@ -54,6 +54,7 @@ let latest = -1;
 
 async function apply(m: Manifest) {
   if (!m || !m.pages) return;
+  if (render.view !== "pdf" && m.view && m.view !== render.view) return; // veraltete Ansicht
   const seq = ++latest;
   await loadFonts(m);
   const pages = await Promise.all(m.pages.map((r) => page(r.hash)));

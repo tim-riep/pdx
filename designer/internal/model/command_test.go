@@ -165,3 +165,28 @@ func TestValueMessages(t *testing.T) {
 		}
 	}
 }
+
+func TestSetFile(t *testing.T) {
+	d := muster(t)
+	xsd := d.Pkg.Files["schema/invoice.xsd"]
+	if err := d.Apply("Schema", Command{Op: "batch", Cmds: []Command{
+		{Op: "setFile", Name: "schema/neu.xsd", Data: xsd},
+		{Op: "setAttr", Ref: "musterrechnung", Name: "schema", Value: "schema/neu.xsd"},
+	}}); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := d.Pkg.Files["schema/neu.xsd"]; !ok {
+		t.Fatal("Datei fehlt")
+	}
+	// Eine Datei außerhalb der Paketordner scheitert und ändert nichts.
+	if err := d.Apply("x", Command{Op: "setFile", Name: "geheim.txt", Data: []byte("x")}); err == nil {
+		t.Error("Datei außerhalb der Paketordner angenommen")
+	}
+	if _, ok := d.Pkg.Files["geheim.txt"]; ok {
+		t.Error("ungültige Datei nicht zurückgenommen")
+	}
+	d.Undo()
+	if _, ok := d.Pkg.Files["schema/neu.xsd"]; ok || d.Pkg.Template.Root.Get("schema", "") != "schema/invoice.xsd" {
+		t.Error("Undo stellt Paket und Vorlage nicht her")
+	}
+}

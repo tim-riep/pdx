@@ -124,3 +124,28 @@ func inserted(d *model.Document, cmd model.Command) string {
 
 // Catalog liefert die Elementtypen mit ihren Eigenschaften für den Inspektor.
 func (s *TemplateService) Catalog() (model.Catalog, error) { return model.LoadCatalog() }
+
+// Drop fügt für einen gezogenen Datenknoten das passende gebundene Element
+// ein: Datum als Datumsfeld mit Format, Dezimalzahl als Betragsfeld,
+// wiederholter Knoten als Tabelle mit Spalten aus den Kindknoten, optionaler
+// Knoten mit Präsenzbedingung.
+func (s *TemplateService) Drop(drop Drop) (Result, error) {
+	return s.change(func(d *model.Document) (string, error) {
+		sc, err := s.c.schemaLocked()
+		if err != nil {
+			return "", err
+		}
+		cmd, id, err := buildDrop(d.Pkg.Template, sc, drop)
+		if err != nil {
+			return "", err
+		}
+		label := "Feld einfügen"
+		if n := sc.Find(drop.Path); n != nil {
+			label = n.Name + " einfügen"
+		}
+		if err := d.Apply(label, cmd); err != nil {
+			return "", err
+		}
+		return id, nil
+	})
+}

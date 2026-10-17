@@ -7,6 +7,9 @@ export * as AppAPI from "../../bindings/github.com/tim-riep/pdx/designer/interna
 export * as ProjectAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/projectservice";
 export * as RenderAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/renderservice";
 export * as TemplateAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/templateservice";
+export * as SchemaAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/schemaservice";
+export type { Schema as DataSchema, Node as DataNode } from "../../bindings/github.com/tim-riep/pdx/designer/internal/schema/models";
+export type { Drop } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 export type {
   Snapshot,
   ViewNode,

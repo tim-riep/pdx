@@ -4,15 +4,18 @@
 import * as AppService from "./appservice.js";
 import * as ProjectService from "./projectservice.js";
 import * as RenderService from "./renderservice.js";
+import * as SchemaService from "./schemaservice.js";
 import * as TemplateService from "./templateservice.js";
 export {
     AppService,
     ProjectService,
     RenderService,
+    SchemaService,
     TemplateService
 };
 
 export {
+    Drop,
     Info,
     Manifest,
     ProjectState,

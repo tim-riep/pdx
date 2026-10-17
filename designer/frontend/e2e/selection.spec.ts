@@ -18,7 +18,7 @@ test("Klick im Canvas wählt das Vorlagenelement", async ({ page }) => {
 });
 
 test("Auswahl in der Hierarchie zeigt Eigenschaften und alle Vorkommen", async ({ page }) => {
-  await openMuster(page);
+  await openMuster(page, true);
   const tree = page.getByTestId("hierarchy");
   await tree.getByRole("treeitem").filter({ hasText: "Inhalt" }).getByRole("button", { name: "Aufklappen" }).click();
   await tree.getByRole("button", { name: /Tabelle\s*positionen/ }).click();

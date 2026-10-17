@@ -8,6 +8,7 @@
   import Tabs from "./components/Tabs.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
+  import DataPanel from "./components/DataPanel.svelte";
   import { clearSelection, selection } from "./lib/selection.svelte";
   import { apply, node, redo, tpl, undo } from "./lib/template.svelte";
   import { label } from "./lib/i18n";
@@ -110,7 +111,7 @@
   </header>
   <aside class="left">
     <Tabs tabs={[["data", t("panel.data")], ["hierarchy", t("panel.hierarchy")]]} bind:active={leftTab}>
-      {#if leftTab === "hierarchy"}<Hierarchy />{:else}<p class="soon">{t("panel.data")}</p>{/if}
+      {#if leftTab === "hierarchy"}<Hierarchy />{:else}<DataPanel />{/if}
     </Tabs>
   </aside>
   <main class="canvas" data-testid="canvas">

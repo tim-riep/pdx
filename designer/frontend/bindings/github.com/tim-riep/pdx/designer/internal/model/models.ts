@@ -60,6 +60,8 @@ export class Child {
  * 	remove   Ref               Element entfernen
  * 	move     Ref, Parent, Index  Element verschieben
  * 	batch    Cmds              mehrere Befehle als ein Schritt
+ * 	setFile  Name              Datei im Paket setzen oder entfernen (nur
+ * 	                           im Backend, die Daten trägt Data)
  * 
  * Index zählt die Kinder des Elternelements, bei gemischtem Inhalt
  * einschließlich der Texte. -1 hängt an.

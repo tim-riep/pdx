@@ -180,5 +180,21 @@
   "action.undo": "Rückgängig",
   "action.redo": "Wiederholen",
   "action.undoLabel": "Rückgängig: {label}",
-  "action.redoLabel": "Wiederholen: {label}"
+  "action.redoLabel": "Wiederholen: {label}",
+  "data.load": "XSD laden",
+  "data.path": "Pfad des Daten-XSD",
+  "data.search": "Daten suchen",
+  "data.none": "Die Vorlage hat noch kein Daten-XSD.",
+  "data.repeated": "wiederholt",
+  "data.optional": "optional",
+  "data.recursive": "wiederholt sich rekursiv",
+  "data.dragHint": "Auf den Canvas ziehen, um ein gebundenes Element einzufügen",
+  "data.type.string": "Text",
+  "data.type.decimal": "Dezimalzahl",
+  "data.type.date": "Datum",
+  "data.type.dateTime": "Datum und Uhrzeit",
+  "data.type.integer": "Ganzzahl",
+  "data.type.boolean": "Wahrheitswert",
+  "data.type.complex": "Gruppe",
+  "drop.none": "Hier lässt sich nichts einfügen"
 }
