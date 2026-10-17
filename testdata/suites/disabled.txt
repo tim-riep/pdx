@@ -417,6 +417,7 @@ fop/table-row_break-inside-span: noch nicht umgesetzt: Seitenumbruch innerhalb v
 fop/table_background-image: braucht Dateien aus dem Testverzeichnis: ../resources/images/bgimg300dpi.jpg
 fop/table_backgrounds: braucht Dateien aus dem Testverzeichnis: ../resources/images/fop-logo-gray-8bit.png
 fop/table_border-collapse_collapse_conditionals: nicht im Teilumfang von pdx: Eigenschaft border-before-width.conditionality="retain"
+fop/table_border-collapse_collapse_omitHF: noch nicht umgesetzt: Seitenumbruch innerhalb von Zeilen mit number-rows-spanned, pdx hält überspannte Zeilen zusammen
 fop/table_border-collapse_separate_conditionals: nicht im Teilumfang von pdx: Eigenschaft padding-after.conditionality="retain"
 fop/table_border-width_conditionality: in FOP 2.11 deaktiviert: The code should be ok, but the test case uses shorthands and therefore is probably not expressing the indended outcome according to the spec. The test case shou…
 fop/table_border_padding_2: nicht im Teilumfang von pdx: Eigenschaft padding-before.conditionality="retain"

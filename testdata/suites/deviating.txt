@@ -50,8 +50,7 @@ fop/table-row_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5
 fop/table-row_keep-with-next_3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-row_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table-row_keep-with-previous_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-stepper_colspan_border-before: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 2.1"
-fop/table_border-collapse_collapse_omitHF: offen, erste Abweichung: Seite 1: Zeile nur in pdx: "Cell 1.2"
+fop/table-stepper_colspan_border-before: begründet, ohne keep-together darf die Zeile nach XSL 1.1 4.8 innerhalb umbrechen, pdx teilt nach dem ersten Block von Zelle 2.1, FOP schiebt die ganze Zeile auf die nächste Seite, ohne Überlauf
 fop/table_break-before_break-after: begründet, der erste Bereich einer Tabelle behält border-before (Konditionalität discard gilt nur für Folgebereiche, XSL 1.1 7.8.12), FOP lässt ihn nach break-before weg
 fop/table_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
 fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
