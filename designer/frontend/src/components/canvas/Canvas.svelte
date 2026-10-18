@@ -5,6 +5,8 @@
   import { t } from "../../lib/i18n";
   import PageView from "./PageView.svelte";
   import Palette from "./Palette.svelte";
+  import PageThumbs from "./PageThumbs.svelte";
+  import { view } from "../../lib/units.svelte";
 
   const gap = 24;
   let zoom = $state(1);
@@ -32,6 +34,13 @@
       y += p.h * zoom + gap;
       return top;
     });
+  });
+
+  // Die Seite, die den oberen Teil des Bereichs füllt.
+  const currentPage = $derived.by(() => {
+    let cur = 0;
+    for (let i = 0; i < tops.length; i++) if (tops[i] <= scrollTop + height / 3) cur = i;
+    return cur;
   });
 
   function visible(i: number): boolean {
@@ -87,6 +96,9 @@
 <div class="canvas-tools">
   {#if render.view === "design"}<Palette /><span class="sep"></span>{/if}
   <label class="grid"><input type="checkbox" bind:checked={grid} /> {t("canvas.grid")}</label>
+  <label class="grid"><input type="checkbox" bind:checked={view.rulers} /> {t("canvas.rulers")}</label>
+  <label class="grid"><input type="checkbox" bind:checked={view.pages} /> {t("canvas.pages")}</label>
+  <select aria-label={t("canvas.unit")} bind:value={view.unit}><option value="mm">mm</option><option value="pt">pt</option></select>
   <button onclick={() => setZoom(zoom / 1.25)} aria-label={t("canvas.zoomOut")}>−</button>
   <span data-testid="zoom">{Math.round(zoom * 100)} %</span>
   <button onclick={() => setZoom(zoom * 1.25)} aria-label={t("canvas.zoomIn")}>+</button>
@@ -95,6 +107,8 @@
     <span class="info" data-testid="render-info">{t(render.pages.length === 1 ? "canvas.infoOne" : "canvas.info", { pages: render.pages.length, ms: render.manifest.millis })}</span>
   {/if}
 </div>
+<div class="body">
+{#if view.pages}<PageThumbs current={currentPage} {image} onpick={(i) => viewport?.scrollTo({ top: tops[i] - gap })} />{/if}
 <div class="viewport" data-viewport bind:this={viewport} bind:clientHeight={height} bind:clientWidth={width} onwheel={wheel}
   onscroll={(e) => (scrollTop = (e.currentTarget as HTMLElement).scrollTop)}>
   <div class="pages" style="padding: {gap}px; gap: {gap}px">
@@ -103,8 +117,14 @@
     {/each}
   </div>
 </div>
+</div>
 
 <style>
+  .body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
   .canvas-tools {
     display: flex;
     align-items: center;

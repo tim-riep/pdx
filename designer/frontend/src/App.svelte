@@ -8,7 +8,8 @@
   import { label } from "./lib/i18n";
   import { askPath } from "./lib/project.svelte";
   import { apply, isPositioned, node } from "./lib/template.svelte";
-  import { fmtMM, toMM } from "./lib/geometry";
+  import { toMM } from "./lib/geometry";
+  import { fmtLen, step as stepLen } from "./lib/units.svelte";
   import { t } from "./lib/i18n";
   import { newProject, openProject, project, save, saveAs, ui } from "./lib/project.svelte";
   import Modal from "./components/Modal.svelte";
@@ -121,8 +122,8 @@
     const x = toMM(n.attrs.x ?? "0mm"), y = toMM(n.attrs.y ?? "0mm");
     if (x === null || y === null) return false; // etwa ein Token
     const cmds = [];
-    if (dx) cmds.push({ op: "setAttr", ref: n.ref, name: "x", value: fmtMM(Math.max(0, x + dx)) });
-    if (dy) cmds.push({ op: "setAttr", ref: n.ref, name: "y", value: fmtMM(Math.max(0, y + dy)) });
+    if (dx) cmds.push({ op: "setAttr", ref: n.ref, name: "x", value: fmtLen(Math.max(0, x + dx)) });
+    if (dy) cmds.push({ op: "setAttr", ref: n.ref, name: "y", value: fmtLen(Math.max(0, y + dy)) });
     apply(t("cmd.nudge"), { op: "batch", cmds: cmds as never });
     return true;
   }
@@ -141,10 +142,11 @@
       return;
     }
     if (palette.open) return;
-    // Pfeile verschieben positionierte Elemente um 1 mm, mit Umschalt um 10 mm.
+    // Pfeile verschieben positionierte Elemente um 1 mm (oder 1 pt), mit
+    // Umschalt um 10.
     const arrows: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
     if (arrows[e.key] && !e.altKey && !e.metaKey && !e.ctrlKey && !editing(e) && selection.ref && render.view === "design") {
-      const step = e.shiftKey ? 10 : 1;
+      const step = stepLen(e.shiftKey ? 10 : 1);
       if (nudge(arrows[e.key][0] * step, arrows[e.key][1] * step)) {
         e.preventDefault();
         return;

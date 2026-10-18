@@ -4,7 +4,8 @@
   import { apply, isPositioned, node } from "../lib/template.svelte";
   import { selection } from "../lib/selection.svelte";
   import { render } from "../lib/render.svelte";
-  import { PT_PER_MM, fmtMM, toMM } from "../lib/geometry";
+  import { PT_PER_MM, toMM } from "../lib/geometry";
+  import { fmtLen } from "../lib/units.svelte";
   import { align, distribute, type AlignKind, type Box, type Move } from "../lib/align";
 
   let { n }: { n: ViewNode } = $props();
@@ -46,8 +47,8 @@
   async function run(label: string, moves: Move[]) {
     const cmds = [];
     for (const m of moves) {
-      if (m.x !== undefined) cmds.push({ op: "setAttr", ref: m.ref, name: "x", value: fmtMM(Math.max(0, m.x)) });
-      if (m.y !== undefined) cmds.push({ op: "setAttr", ref: m.ref, name: "y", value: fmtMM(Math.max(0, m.y)) });
+      if (m.x !== undefined) cmds.push({ op: "setAttr", ref: m.ref, name: "x", value: fmtLen(Math.max(0, m.x)) });
+      if (m.y !== undefined) cmds.push({ op: "setAttr", ref: m.ref, name: "y", value: fmtLen(Math.max(0, m.y)) });
     }
     if (cmds.length) await apply(label, { op: "batch", cmds: cmds as never });
   }

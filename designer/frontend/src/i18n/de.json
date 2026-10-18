@@ -385,5 +385,10 @@
   "align.hintOne": "Am Elternelement. Umschalt+Klick im Canvas wählt weitere Elemente.",
   "align.hintMany": "{n} Elemente, am gemeinsamen Rahmen",
   "cmd.align": "Ausrichten",
-  "cmd.distribute": "Verteilen"
+  "cmd.distribute": "Verteilen",
+  "canvas.rulers": "Lineale",
+  "canvas.unit": "Einheit",
+  "canvas.pages": "Seiten",
+  "canvas.pagesTitle": "Seitenübersicht",
+  "canvas.page": "Seite {n}"
 }

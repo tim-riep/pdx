@@ -1,6 +1,7 @@
 <script lang="ts">
   import { openElementMenu } from "../../lib/menu.svelte";
   import ContentEditor from "../ContentEditor.svelte";
+  import Ruler from "./Ruler.svelte";
   import type { Area, Page, Rect } from "../../lib/canvas/model";
   import { drawPage, type ImageSource } from "../../lib/canvas/render";
   import { HitIndex } from "../../lib/canvas/hit";
@@ -8,7 +9,8 @@
   import { DATA_MIME } from "../../lib/data.svelte";
   import { ELEMENT_MIME, elementName, insertElement, type Kind } from "../../lib/insert";
   import { dropTarget, type Target } from "../../lib/drop";
-  import { PT_PER_MM, fmtMM, gaps, snap, toMM, type Guide } from "../../lib/geometry";
+  import { PT_PER_MM, gaps, snap, toMM, type Guide } from "../../lib/geometry";
+  import { fmtLen, view } from "../../lib/units.svelte";
   import { apply, isPositioned, node, tpl, typeOf } from "../../lib/template.svelte";
   import { render } from "../../lib/render.svelte";
   import { TemplateAPI, message, type ViewNode } from "../../lib/api";
@@ -189,7 +191,7 @@
     const [x, y, w, h] = d.live, [ox, oy, ow, oh] = d.rect;
     const mm = (v: number) => v / PT_PER_MM;
     const cmds: { op: string; ref: string; name: string; value: string }[] = [];
-    const set = (name: string, v: number) => cmds.push({ op: "setAttr", ref: d.ref, name, value: fmtMM(v) });
+    const set = (name: string, v: number) => cmds.push({ op: "setAttr", ref: d.ref, name, value: fmtLen(v) });
     if (Math.abs(x - ox) > 0.01) set("x", d.orig.x + mm(x - ox));
     if (Math.abs(y - oy) > 0.01) set("y", d.orig.y + mm(y - oy));
     if (d.mode === "resize") {
@@ -314,6 +316,10 @@
   onmousemove={move} onmouseleave={() => (selection.hover = "")} onmousedown={down} oncontextmenu={contextmenu} ondblclick={dblclick} role="presentation"
   ondragover={dragover} ondragleave={() => (target = null)} ondrop={drop}>
   {#if visible}<canvas bind:this={canvas}></canvas>{/if}
+  {#if view.rulers && visible}
+    <Ruler axis="x" length={page.w} {zoom} unit={view.unit} band={current ? [current[0], current[0] + current[2]] : null} />
+    <Ruler axis="y" length={page.h} {zoom} unit={view.unit} band={current ? [current[1], current[1] + current[3]] : null} />
+  {/if}
   {#if editing}
     <div class="inline-edit" style="{box(editing.r)};font-size:{Math.max(11, 12.5 * zoom)}px" role="presentation" data-testid="inline-edit"
       onmousedown={(e) => e.stopPropagation()} ondblclick={(e) => e.stopPropagation()}>
@@ -350,7 +356,7 @@
       {/each}
       {#each spacing as s}
         <div class="gap" style="left:{Math.min(s.from[0], s.to[0]) * zoom}px;top:{Math.min(s.from[1], s.to[1]) * zoom}px;width:{Math.abs(s.to[0] - s.from[0]) * zoom}px;height:{Math.abs(s.to[1] - s.from[1]) * zoom}px">
-          <span>{fmtMM(s.mm)}</span>
+          <span>{fmtLen(s.mm)}</span>
         </div>
       {/each}
       {#if drag.target}
