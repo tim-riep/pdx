@@ -37,6 +37,8 @@ var ErrNoDialogs = errors.New("Dateidialoge sind hier nicht verfügbar")
 type Dialogs interface {
 	OpenFile(title string, filters []Filter, dirs bool) (string, error)
 	SaveFile(title, name string, filters []Filter) (string, error)
+	// Show öffnet eine Datei mit dem Programm des Systems, etwa ein PDF.
+	Show(path string) error
 }
 
 // Ereignisse an die Oberfläche.

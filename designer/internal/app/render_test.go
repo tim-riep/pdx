@@ -2,8 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -101,5 +104,44 @@ func TestServePDF(t *testing.T) {
 	h.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/pdx/pdf/3", nil))
 	if w.Code != http.StatusUnprocessableEntity || !strings.Contains(w.Body.String(), "[titel]") {
 		t.Fatalf("Fehler: %d %q", w.Code, w.Body.String())
+	}
+}
+
+// fakeDialogs antwortet mit festen Pfaden und merkt sich Geöffnetes.
+type fakeDialogs struct {
+	save  string
+	shown []string
+}
+
+func (f *fakeDialogs) OpenFile(string, []Filter, bool) (string, error) { return "", nil }
+func (f *fakeDialogs) SaveFile(string, string, []Filter) (string, error) {
+	return f.save, nil
+}
+func (f *fakeDialogs) Show(path string) error {
+	f.shown = append(f.shown, path)
+	return nil
+}
+
+func TestExportAndOpenPDF(t *testing.T) {
+	dir := t.TempDir()
+	fd := &fakeDialogs{save: filepath.Join(dir, "rechnung")}
+	c := NewCore(nil, fd, dir)
+	if _, err := NewProjectService(c).Open(muster); err != nil {
+		t.Fatal(err)
+	}
+	rs := NewRenderService(c)
+	path, err := rs.ExportPDFDialog()
+	if err != nil || path != filepath.Join(dir, "rechnung.pdf") {
+		t.Fatalf("Export: %q %v", path, err)
+	}
+	if b, _ := os.ReadFile(path); !strings.HasPrefix(string(b), "%PDF-") {
+		t.Fatal("kein PDF geschrieben")
+	}
+	if err := rs.OpenPDF(); err != nil || len(fd.shown) != 1 || !strings.HasSuffix(fd.shown[0], "vorschau.pdf") {
+		t.Fatalf("Öffnen: %v %v", err, fd.shown)
+	}
+	// Ohne Dialoge (Servermodus) gibt es eine verständliche Meldung.
+	if err := NewRenderService(NewCore(nil, nil, dir)).OpenPDF(); !errors.Is(err, ErrNoDialogs) {
+		t.Fatalf("ohne Dialoge: %v", err)
 	}
 }

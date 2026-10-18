@@ -319,7 +319,6 @@
   "pdf.pages": "{n} Seiten, PDF/A-3b",
   "pdf.page": "1 Seite, PDF/A-3b",
   "pdf.error": "Das PDF ließ sich nicht erzeugen",
-  "pdf.open": "PDF in neuem Fenster",
   "panel.samples": "Beispiele",
   "samples.title": "Beispieldaten",
   "samples.hint": "Die Auswahl gilt für Vorschau, PDF und Konformität.",
@@ -395,5 +394,9 @@
   "about.text": "Dokumente gegen ein XSD gestalten. Lizenz Apache 2.0.",
   "about.notices": "Drittanbieterhinweise",
   "about.close": "Schließen",
-  "about.open": "Über pdx Designer"
+  "about.open": "Über pdx Designer",
+  "pdf.save": "PDF speichern …",
+  "pdf.show": "Im PDF-Programm öffnen",
+  "pdf.path": "Pfad für das PDF",
+  "pdf.saved": "PDF gespeichert: {path}"
 }

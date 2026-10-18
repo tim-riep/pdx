@@ -2,8 +2,11 @@ package app
 
 import (
 	"context"
+	"errors"
 	"maps"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -167,22 +170,41 @@ func (a *Assets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// servePDF erzeugt das PDF/A-3b des aktuellen Stands mit den Daten der
-// Vorschau. Fehler beim Erzeugen kommen als Text mit Status 422.
-func (a *Assets) servePDF(w http.ResponseWriter, r *http.Request) {
-	c := a.c
+// currentPDF erzeugt das PDF/A-3b des aktuellen Stands mit den Daten der
+// Vorschau. Befunde stehen in probs, err meldet einen Abbruch.
+func (c *Core) currentPDF(ctx context.Context) (pdf []byte, probs []pipeline.Problem, err error) {
 	c.mu.Lock()
 	if c.doc == nil {
 		c.mu.Unlock()
-		http.Error(w, "keine Vorlage geöffnet", http.StatusNotFound)
-		return
+		return nil, nil, errors.New("keine Vorlage geöffnet")
 	}
 	data, _ := c.previewDataLocked()
 	in := pipeline.Input{Canon: template.Write(c.doc.Pkg.Template), Files: maps.Clone(c.doc.Pkg.Files), Data: data}
 	c.mu.Unlock()
-	pdf, probs, err := c.r.pipe.PDF(r.Context(), in, time.Now().UTC().Truncate(time.Second), nil)
+	return c.r.pipe.PDF(ctx, in, time.Now().UTC().Truncate(time.Second), nil)
+}
+
+// pdfError fasst Befunde beim Erzeugen zu einem Fehler zusammen.
+func pdfError(probs []pipeline.Problem) error {
+	var b strings.Builder
+	b.WriteString("Das PDF ließ sich nicht erzeugen:")
+	for _, p := range probs {
+		b.WriteString(" ")
+		if p.ID != "" {
+			b.WriteString("[" + p.ID + "] ")
+		}
+		b.WriteString(p.Msg)
+	}
+	return errors.New(b.String())
+}
+
+// servePDF liefert das PDF des aktuellen Stands. Fehler beim Erzeugen kommen
+// als Text mit Status 422.
+func (a *Assets) servePDF(w http.ResponseWriter, r *http.Request) {
+	pdf, probs, err := a.c.currentPDF(r.Context())
 	if err != nil {
-		return // abgebrochen
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
 	if len(probs) > 0 {
 		var b strings.Builder
@@ -200,4 +222,55 @@ func (a *Assets) servePDF(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/pdf")
 	w.Header().Set("Cache-Control", "no-store")
 	w.Write(pdf)
+}
+
+// ExportPDF schreibt das PDF des aktuellen Stands in eine Datei.
+func (s *RenderService) ExportPDF(path string) error {
+	pdf, probs, err := s.c.currentPDF(context.Background())
+	if err != nil {
+		return err
+	}
+	if len(probs) > 0 {
+		return pdfError(probs)
+	}
+	return os.WriteFile(path, pdf, 0o644)
+}
+
+// ExportPDFDialog fragt nach dem Ziel und schreibt das PDF. Ein
+// abgebrochener Dialog liefert einen leeren Pfad.
+func (s *RenderService) ExportPDFDialog() (string, error) {
+	if s.c.dialogs == nil {
+		return "", ErrNoDialogs
+	}
+	s.c.mu.Lock()
+	name := "dokument"
+	if s.c.doc != nil && s.c.doc.Path != "" {
+		name = strings.TrimSuffix(filepath.Base(s.c.doc.Path), filepath.Ext(s.c.doc.Path))
+	}
+	s.c.mu.Unlock()
+	path, err := s.c.dialogs.SaveFile("PDF speichern", name+".pdf", []Filter{{Name: "PDF (*.pdf)", Pattern: "*.pdf"}})
+	if err != nil || path == "" {
+		return "", err
+	}
+	if !strings.HasSuffix(strings.ToLower(path), ".pdf") {
+		path += ".pdf"
+	}
+	return path, s.ExportPDF(path)
+}
+
+// OpenPDF schreibt das PDF in das Datenverzeichnis und öffnet es mit dem
+// PDF-Programm des Systems.
+func (s *RenderService) OpenPDF() error {
+	if s.c.dialogs == nil {
+		return ErrNoDialogs
+	}
+	dir := filepath.Join(s.c.dataDir, "pdf")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	path := filepath.Join(dir, "vorschau.pdf")
+	if err := s.ExportPDF(path); err != nil {
+		return err
+	}
+	return s.c.dialogs.Show(path)
 }

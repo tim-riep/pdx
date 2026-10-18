@@ -172,6 +172,9 @@ func (d dialogs) OpenFile(title string, filters []app.Filter, dirs bool) (string
 	return noDialogs(dlg.PromptForSingleSelection())
 }
 
+// Show öffnet eine Datei mit dem Programm des Systems.
+func (d dialogs) Show(path string) error { return d.app().Browser.OpenFile(path) }
+
 func (d dialogs) SaveFile(title, name string, filters []app.Filter) (string, error) {
 	dlg := d.app().Dialog.SaveFile().SetFilename(name)
 	for _, f := range filters {

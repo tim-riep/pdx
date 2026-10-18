@@ -22,6 +22,18 @@ test("Ansicht PDF zeigt das erzeugte PDF mit pdf.js", async ({ page }) => {
   });
   expect(inked).toBeGreaterThan(500);
   expect(external).toEqual([]);
+
+  // Speichern: im Browser über die Pfadabfrage.
+  const { mkdtempSync, existsSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const out = join(mkdtempSync(join(tmpdir(), "pdx-pdf-")), "rechnung.pdf");
+  await view.getByRole("button", { name: "PDF speichern …" }).click();
+  const box = page.getByRole("dialog").getByRole("textbox");
+  await box.fill(out);
+  await box.press("Enter");
+  await expect(page.getByTestId("status")).toContainText("PDF gespeichert");
+  expect(existsSync(out)).toBe(true);
   await page.getByRole("tab", { name: "Entwurf" }).click();
   await expect(page.locator('[data-page="1"] canvas')).toBeVisible();
 });

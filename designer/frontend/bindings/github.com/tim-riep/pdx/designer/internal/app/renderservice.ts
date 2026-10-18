@@ -15,12 +15,35 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 import * as $models from "./models.js";
 
 /**
+ * ExportPDF schreibt das PDF des aktuellen Stands in eine Datei.
+ */
+export function ExportPDF(path: string): $CancellablePromise<void> {
+    return $Call.ByID(2103422847, path);
+}
+
+/**
+ * ExportPDFDialog fragt nach dem Ziel und schreibt das PDF. Ein
+ * abgebrochener Dialog liefert einen leeren Pfad.
+ */
+export function ExportPDFDialog(): $CancellablePromise<string> {
+    return $Call.ByID(1586766443);
+}
+
+/**
  * Latest liefert das zuletzt gesetzte Manifest.
  */
 export function Latest(): $CancellablePromise<$models.Manifest> {
     return $Call.ByID(1942259250).then(($result: any) => {
         return $$createType0($result);
     });
+}
+
+/**
+ * OpenPDF schreibt das PDF in das Datenverzeichnis und öffnet es mit dem
+ * PDF-Programm des Systems.
+ */
+export function OpenPDF(): $CancellablePromise<void> {
+    return $Call.ByID(1737103997);
 }
 
 /**

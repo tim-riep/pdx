@@ -4,7 +4,41 @@
   import { getDocument, GlobalWorkerOptions, type PDFDocumentLoadingTask, type PDFDocumentProxy } from "pdfjs-dist";
   import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
   import { t } from "../lib/i18n";
-  import { project } from "../lib/project.svelte";
+  import { askPath, project, ui } from "../lib/project.svelte";
+  import { RenderAPI, message } from "../lib/api";
+
+  const unavailable = (e: unknown) => message(e).includes("nicht verfügbar");
+
+  // Speichern über den Dialog des Systems, im Browser über die Pfadabfrage.
+  async function savePDF() {
+    try {
+      const path = await RenderAPI.ExportPDFDialog();
+      if (path) ui.notice = t("pdf.saved", { path });
+      ui.error = "";
+    } catch (e) {
+      if (!unavailable(e)) return void (ui.error = message(e));
+      const path = await askPath(t("pdf.path"));
+      if (!path) return;
+      try {
+        await RenderAPI.ExportPDF(path);
+        ui.notice = t("pdf.saved", { path });
+        ui.error = "";
+      } catch (e2) {
+        ui.error = message(e2);
+      }
+    }
+  }
+
+  // Öffnen mit dem PDF-Programm des Systems, im Browser in einem neuen Tab.
+  async function showPDF() {
+    try {
+      await RenderAPI.OpenPDF();
+      ui.error = "";
+    } catch (e) {
+      if (unavailable(e)) window.open(`/pdx/pdf/${project.rev}`, "_blank", "noopener");
+      else ui.error = message(e);
+    }
+  }
 
   GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -87,7 +121,8 @@
   <div class="bar">
     {#if status === "loading"}<span class="muted">{t("pdf.loading")}</span>
     {:else if status === "ok"}<span class="muted" data-testid="pdf-info">{pages === 1 ? t("pdf.page") : t("pdf.pages", { n: pages })}</span>
-      <a href={`/pdx/pdf/${project.rev}`} target="_blank" rel="noopener">{t("pdf.open")}</a>
+      <button onclick={savePDF}>{t("pdf.save")}</button>
+      <button onclick={showPDF}>{t("pdf.show")}</button>
     {/if}
   </div>
   {#if status === "error"}
@@ -119,6 +154,10 @@
   }
   .muted {
     color: var(--text-muted);
+  }
+  .bar button {
+    font-size: 12px;
+    padding: 2px 8px;
   }
   .pages {
     display: flex;
