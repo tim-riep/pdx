@@ -1,4 +1,12 @@
-*.pdf binary
+# Textdateien überall mit LF auschecken, auch unter Windows. Eingebettete
+# Dateien (Lizenzen, Schemas, Trennmuster) und Golden Files müssen auf allen
+# Systemen dieselben Bytes haben.
+* text=auto eol=lf
+
 *.ttf binary
 *.otf binary
+*.pdf binary
+*.png binary
+*.jpg binary
 *.icc binary
+*.zip binary

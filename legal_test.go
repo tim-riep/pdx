@@ -50,3 +50,12 @@ func TestLegalTexts(t *testing.T) {
 		t.Error("voller Text der OFL fehlt")
 	}
 }
+
+// Mit CRLF ausgecheckte Hinweise ergeben dieselben Abschnitte.
+func TestComponentsCRLF(t *testing.T) {
+	lf := Components(ThirdPartyNotices)
+	crlf := Components(strings.ReplaceAll(ThirdPartyNotices, "\n", "\r\n"))
+	if len(lf) == 0 || len(crlf) != len(lf) || crlf[0].License != lf[0].License {
+		t.Errorf("%d Abschnitte mit LF, %d mit CRLF", len(lf), len(crlf))
+	}
+}

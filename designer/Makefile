@@ -5,9 +5,12 @@ WAILS := $(GO) run github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-beta.30
 OUT := ../out
 EXE := $(if $(filter Windows_NT,$(OS)),.exe,)
 # macOS: gleiche Mindestversion für Go und die Objective-C-Teile von Wails.
+# Nur dort, gcc unter Linux und Windows kennt die Option nicht.
+ifeq ($(shell uname -s 2>/dev/null),Darwin)
 export MACOSX_DEPLOYMENT_TARGET ?= 11.0
 export CGO_CFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 export CGO_LDFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+endif
 
 .PHONY: all deps bindings frontend build server test check e2e smoke clean notices notices-check
 

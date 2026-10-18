@@ -36,6 +36,8 @@ const sectionRule = "===========================================================
 // Components zerlegt Drittanbieterhinweise in ihre Abschnitte. Der Kopf
 // vor dem ersten Abschnitt entfällt.
 func Components(notices string) []Component {
+	// Unter Windows kann Git die Datei mit CRLF auschecken.
+	notices = strings.ReplaceAll(notices, "\r\n", "\n")
 	parts := strings.Split(notices, "\n"+sectionRule+"\n")
 	var out []Component
 	// Auf jede Überschrift folgt eine weitere Linie, dann der Text.
