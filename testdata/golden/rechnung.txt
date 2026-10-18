@@ -14,52 +14,52 @@ document title="Rechnung RE-2026-0001" author="Beispiel GmbH" subject="Rechnung 
             glyphs 41:6.108 190:5.562 85:3.33 3:2.778 88:5.562 81:5.562 86:5 72:5.562 85:3.33 72:5.562 3:2.778 47:5.562 72:5.562 76:2.222 86:5 87:2.778 88:5.562 81:5.562 74:5.562 72:5.562 81:5.562 3:2.778 76:2.222 80:8.33 3:2.778 39:7.222 72:5.562 93:5 72:5.562 80:8.33 69:5.562 72:5.562 85:3.33 3:2.778 21:5.562 19:5.562 21:5.562 24:5.562 3:2.778 69:5.562 72:5.562 85:3.33 72:5.562 70:5 75:5.562 81:5.562 72:5.562 81:5.562 3:2.778 90:7.222 76:2.222 85:3.33 3:2.778 44:2.778 75:5.562 81:5.562 72:5.562 81:5.562 29:2.778
       block 70.866,343.012 467.717x86.641 src=fo:table@36:7
         box 70.866,343.012 467.717x21.504 fill=rgb(0.1216,0.3059,0.4745)
-        block 70.866,343.012 34.016x21.504 src=fo:table-cell@43:25
+        block 70.866,343.012 34.016x21.504 row=1/header src=fo:table-cell@43:25
           block 73.701,347.264 28.346x13 src=fo:block@43:60
             line 73.701,347.264 28.346x13
               text 80.929,356.352 font=0 size=10 color=gray(1) asc=7.28 desc=2.104 "Pos."
                 glyphs 51:6.67 82:6.108 86:5.562 17:2.778
-        block 104.882,343.012 226.772x21.504 src=fo:table-cell@43:118
+        block 104.882,343.012 226.772x21.504 row=1/header src=fo:table-cell@43:118
           block 107.717,347.264 221.102x13 src=fo:block@43:153
             line 107.717,347.264 221.102x13
               text 107.717,356.352 font=0 size=10 color=gray(1) asc=7.28 desc=2.104 "Leistung"
                 glyphs 47:6.108 72:5.562 76:2.778 86:5.562 87:3.33 88:6.108 81:6.108 74:6.108
-        block 331.654,343.012 56.693x21.504 src=fo:table-cell@43:217
+        block 331.654,343.012 56.693x21.504 row=1/header src=fo:table-cell@43:217
           block 334.489,347.264 51.023x13 src=fo:block@43:252
             line 334.489,347.264 51.023x13
               text 353.842,356.352 font=0 size=10 color=gray(1) asc=7.28 desc=2.104 "Menge"
                 glyphs 48:8.33 72:5.562 81:6.108 74:6.108 72:5.562
-        block 388.347,343.012 70.866x21.504 src=fo:table-cell@43:311
+        block 388.347,343.012 70.866x21.504 row=1/header src=fo:table-cell@43:311
           block 391.182,347.264 65.196x13 src=fo:block@43:346
             line 391.182,347.264 65.196x13
               text 403.58,356.352 font=0 size=10 color=gray(1) asc=7.28 desc=2.104 "Einzelpreis"
                 glyphs 40:6.67 76:2.778 81:6.108 93:5 72:5.562 79:2.778 83:6.108 85:3.892 72:5.562 76:2.778 86:5.562
-        block 459.213,343.012 79.37x21.504 src=fo:table-cell@43:411
+        block 459.213,343.012 79.37x21.504 row=1/header src=fo:table-cell@43:411
           block 462.048,347.264 73.7x13 src=fo:block@43:446
             line 462.048,347.264 73.7x13
               text 504.072,356.352 font=0 size=10 color=gray(1) asc=7.28 desc=2.104 "Betrag"
                 glyphs 37:7.222 72:5.562 87:3.33 85:3.892 68:5.562 74:6.108
-        block 70.866,364.516 34.016x21.504 src=fo:table-cell@46:62
+        block 70.866,364.516 34.016x21.504 row=2/body src=fo:table-cell@46:62
           block 73.701,368.768 28.346x13 src=fo:block@46:97
             line 73.701,368.768 28.346x13
               text 96.485,377.856 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "1"
                 glyphs 20:5.562
-        block 104.882,364.516 226.772x21.504 src=fo:table-cell@46:152
+        block 104.882,364.516 226.772x21.504 row=2/body src=fo:table-cell@46:152
           block 107.717,368.768 221.102x13 src=fo:block@46:187
             line 107.717,368.768 221.102x13
               text 107.717,377.856 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Konzeptphase"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 83:5.562 75:5.562 68:5.562 86:5 72:5.562
-        block 331.654,364.516 56.693x21.504 src=fo:table-cell@46:264
+        block 331.654,364.516 56.693x21.504 row=2/body src=fo:table-cell@46:264
           block 334.489,368.768 51.023x13 src=fo:block@46:299
             line 334.489,368.768 51.023x13
               text 371.61,377.856 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "8 h"
                 glyphs 27:5.562 3:2.778 75:5.562
-        block 388.347,364.516 70.866x21.504 src=fo:table-cell@46:356
+        block 388.347,364.516 70.866x21.504 row=2/body src=fo:table-cell@46:356
           block 391.182,368.768 65.196x13 src=fo:block@46:391
             line 391.182,368.768 65.196x13
               text 423.012,377.856 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "95,00 €"
                 glyphs 28:5.562 24:5.562 15:2.778 19:5.562 19:5.562 3:2.778 2088:5.562
-        block 459.213,364.516 79.37x21.504 src=fo:table-cell@46:454
+        block 459.213,364.516 79.37x21.504 row=2/body src=fo:table-cell@46:454
           block 462.048,368.768 73.7x13 src=fo:block@46:508
             line 462.048,368.768 73.7x13
               text 496.82,377.856 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "760,00 €"
@@ -69,27 +69,27 @@ document title="Rechnung RE-2026-0001" author="Beispiel GmbH" subject="Rechnung 
         line 331.654,386.145 388.347,386.145 0.25/solid/gray(0.8)
         line 388.347,386.145 459.213,386.145 0.25/solid/gray(0.8)
         line 459.213,386.145 538.583,386.145 0.25/solid/gray(0.8)
-        block 70.866,386.27 34.016x21.504 src=fo:table-cell@47:62
+        block 70.866,386.27 34.016x21.504 row=3/body src=fo:table-cell@47:62
           block 73.701,390.522 28.346x13 src=fo:block@47:97
             line 73.701,390.522 28.346x13
               text 96.485,399.61 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "2"
                 glyphs 21:5.562
-        block 104.882,386.27 226.772x21.504 src=fo:table-cell@47:152
+        block 104.882,386.27 226.772x21.504 row=3/body src=fo:table-cell@47:152
           block 107.717,390.522 221.102x13 src=fo:block@47:187
             line 107.717,390.522 221.102x13
               text 107.717,399.61 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Workshop vor Ort"
                 glyphs 58:9.258 82:5.562 85:3.33 78:5 86:5 75:5.562 82:5.562 83:5.562 3:2.778 89:5 82:5.562 85:3.33 3:2.778 50:7.778 85:3.33 87:2.778
-        block 331.654,386.27 56.693x21.504 src=fo:table-cell@47:259
+        block 331.654,386.27 56.693x21.504 row=3/body src=fo:table-cell@47:259
           block 334.489,390.522 51.023x13 src=fo:block@47:294
             line 334.489,390.522 51.023x13
               text 361.048,399.61 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "1 Tag"
                 glyphs 20:5.562 3:2.778 55:5 68:5.562 74:5.562
-        block 388.347,386.27 70.866x21.504 src=fo:table-cell@47:353
+        block 388.347,386.27 70.866x21.504 row=3/body src=fo:table-cell@47:353
           block 391.182,390.522 65.196x13 src=fo:block@47:388
             line 391.182,390.522 65.196x13
               text 417.45,399.61 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "180,00 €"
                 glyphs 20:5.562 27:5.562 19:5.562 15:2.778 19:5.562 19:5.562 3:2.778 2088:5.562
-        block 459.213,386.27 79.37x21.504 src=fo:table-cell@47:452
+        block 459.213,386.27 79.37x21.504 row=3/body src=fo:table-cell@47:452
           block 462.048,390.522 73.7x13 src=fo:block@47:506
             line 462.048,390.522 73.7x13
               text 496.82,399.61 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "180,00 €"
@@ -104,27 +104,27 @@ document title="Rechnung RE-2026-0001" author="Beispiel GmbH" subject="Rechnung 
         line 388.347,407.899 459.213,407.899 0.25/solid/gray(0.8)
         line 459.213,386.145 538.583,386.145 0.25/solid/gray(0.8)
         line 459.213,407.899 538.583,407.899 0.25/solid/gray(0.8)
-        block 70.866,408.024 34.016x21.504 src=fo:table-cell@48:62
+        block 70.866,408.024 34.016x21.504 row=4/body src=fo:table-cell@48:62
           block 73.701,412.276 28.346x13 src=fo:block@48:97
             line 73.701,412.276 28.346x13
               text 96.485,421.364 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "3"
                 glyphs 22:5.562
-        block 104.882,408.024 226.772x21.504 src=fo:table-cell@48:152
+        block 104.882,408.024 226.772x21.504 row=4/body src=fo:table-cell@48:152
           block 107.717,412.276 221.102x13 src=fo:block@48:187
             line 107.717,412.276 221.102x13
               text 107.717,421.364 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten pauschal"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 83:5.562 68:5.562 88:5.562 86:5 70:5 75:5.562 68:5.562 79:2.222
-        block 331.654,408.024 56.693x21.504 src=fo:table-cell@48:263
+        block 331.654,408.024 56.693x21.504 row=4/body src=fo:table-cell@48:263
           block 334.489,412.276 51.023x13 src=fo:block@48:298
             line 334.489,412.276 51.023x13
               text 379.95,421.364 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "1"
                 glyphs 20:5.562
-        block 388.347,408.024 70.866x21.504 src=fo:table-cell@48:353
+        block 388.347,408.024 70.866x21.504 row=4/body src=fo:table-cell@48:353
           block 391.182,412.276 65.196x13 src=fo:block@48:388
             line 391.182,412.276 65.196x13
               text 423.012,421.364 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "60,00 €"
                 glyphs 25:5.562 19:5.562 15:2.778 19:5.562 19:5.562 3:2.778 2088:5.562
-        block 459.213,408.024 79.37x21.504 src=fo:table-cell@48:451
+        block 459.213,408.024 79.37x21.504 row=4/body src=fo:table-cell@48:451
           block 462.048,412.276 73.7x13 src=fo:block@48:505
             line 462.048,412.276 73.7x13
               text 502.382,421.364 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "60,00 €"
@@ -140,37 +140,37 @@ document title="Rechnung RE-2026-0001" author="Beispiel GmbH" subject="Rechnung 
         line 459.213,407.899 538.583,407.899 0.25/solid/gray(0.8)
         line 459.213,429.653 538.583,429.653 0.25/solid/gray(0.8)
       block 70.866,440.992 467.717x66.762 src=fo:table@51:7
-        block 70.866,440.992 260.788x21.504 src=fo:table-cell@56:25
-        block 331.654,440.992 127.559x21.504 src=fo:table-cell@56:67
+        block 70.866,440.992 260.788x21.504 row=5/body src=fo:table-cell@56:25
+        block 331.654,440.992 127.559x21.504 row=5/body src=fo:table-cell@56:67
           block 334.489,445.244 121.889x13 src=fo:block@56:102
             line 334.489,445.244 121.889x13
               text 334.489,454.332 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Nettobetrag"
                 glyphs 49:7.222 72:5.562 87:2.778 87:2.778 82:5.562 69:5.562 72:5.562 87:2.778 85:3.33 68:5.562 74:5.562
-        block 459.213,440.992 79.37x21.504 src=fo:table-cell@56:169
+        block 459.213,440.992 79.37x21.504 row=5/body src=fo:table-cell@56:169
           block 462.048,445.244 73.7x13 src=fo:block@56:204
             line 462.048,445.244 73.7x13
               text 488.48,454.332 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "1.000,00 €"
                 glyphs 20:5.562 17:2.778 19:5.562 19:5.562 19:5.562 15:2.778 19:5.562 19:5.562 3:2.778 2088:5.562
-        block 70.866,462.496 260.788x22.004 src=fo:table-cell@57:25
-        block 331.654,462.496 127.559x21.504 src=fo:table-cell@57:67
+        block 70.866,462.496 260.788x22.004 row=6/body src=fo:table-cell@57:25
+        block 331.654,462.496 127.559x21.504 row=6/body src=fo:table-cell@57:67
           block 334.489,466.748 121.889x13 src=fo:block@57:102
             line 334.489,466.748 121.889x13
               text 334.489,475.836 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsatzsteuer 19 %"
                 glyphs 56:7.222 80:8.33 86:5 68:5.562 87:2.778 93:5 86:5 87:2.778 72:5.562 88:5.562 72:5.562 85:3.33 3:2.778 20:5.562 28:5.562 3:2.778 8:8.892
-        block 459.213,462.496 79.37x21.504 src=fo:table-cell@57:175
+        block 459.213,462.496 79.37x21.504 row=6/body src=fo:table-cell@57:175
           block 462.048,466.748 73.7x13 src=fo:block@57:210
             line 462.048,466.748 73.7x13
               text 496.82,475.836 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "190,00 €"
                 glyphs 20:5.562 28:5.562 19:5.562 15:2.778 19:5.562 19:5.562 3:2.778 2088:5.562
         line 331.654,484.5 459.213,484.5 1/solid/gray(0)
         line 459.213,484.5 538.583,484.5 1/solid/gray(0)
-        block 70.866,484.5 260.788x23.254 src=fo:table-cell@58:44
-        block 331.654,485 127.559x21.504 src=fo:table-cell@58:86
+        block 70.866,484.5 260.788x23.254 row=7/body src=fo:table-cell@58:44
+        block 331.654,485 127.559x21.504 row=7/body src=fo:table-cell@58:86
           block 334.489,489.252 121.889x13 src=fo:block@58:185
             line 334.489,489.252 121.889x13
               text 334.489,498.34 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Gesamtbetrag"
                 glyphs 42:7.778 72:5.562 86:5.562 68:5.562 80:8.892 87:3.33 69:6.108 72:5.562 87:3.33 85:3.892 68:5.562 74:6.108
-        block 459.213,485 79.37x21.504 src=fo:table-cell@58:253
+        block 459.213,485 79.37x21.504 row=7/body src=fo:table-cell@58:253
           block 462.048,489.252 73.7x13 src=fo:block@58:352
             line 462.048,489.252 73.7x13
               text 488.48,498.34 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "1.190,00 €"

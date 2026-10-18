@@ -34,6 +34,9 @@ type Options struct {
 }
 
 type engine struct {
+	// rowNums nummeriert Tabellenzeilen und Listenpunkte für Tagged PDF.
+	rowNums map[*rowLayout]int
+
 	opts       Options
 	doc        *areatree.Document
 	masters    map[string]*master

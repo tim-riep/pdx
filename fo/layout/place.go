@@ -28,6 +28,7 @@ type deferredRow struct {
 	r      *rowLayout
 	y      areatree.Length
 	parent *areatree.Container
+	repeat bool // wiederholter Kopf auf einer Folgeseite
 }
 
 // openFrag ist das Fragment eines Blocks auf der aktuellen Seite.
@@ -95,7 +96,7 @@ func (pl *placer) place(items []item) error {
 		if err != nil {
 			return err
 		}
-		if err := pl.drawRowIn(d.parent, nr, 0, nr.h, d.y); err != nil {
+		if err := pl.drawRowIn(d.parent, nr, 0, nr.h, d.y, rowRef{key: d.r, repeat: d.repeat}); err != nil {
 			return err
 		}
 	}
@@ -208,6 +209,7 @@ func (pl *placer) sync(path []*blockCtx, edge edgeKind) {
 		p := ctx.p
 		first := edge == edgeTop && i == len(path)-1
 		c := &areatree.Container{Kind: areatree.KindBlock, Background: p.Background, Border: p.Border, Source: ctx.node.Label(), ID: ctx.node.TemplateID()}
+		setTag(c, ctx.node)
 		c.X = pl.ref.X + ctx.x
 		c.W = ctx.w
 		c.Y = pl.y
@@ -305,6 +307,7 @@ func (pl *placer) absolute(a *absAnchor) error {
 		kind = areatree.KindViewport
 	}
 	cont := &areatree.Container{Kind: kind, Background: p.Background, Border: p.Border, Source: a.node.Label(), ID: a.node.TemplateID()}
+	setTag(cont, a.node)
 	cont.X, cont.Y = inner.X-padL, inner.Y-padT
 	cont.W = contentW + padL + padR
 	pl.page.Areas = append(pl.page.Areas, cont)

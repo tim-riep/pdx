@@ -83,6 +83,29 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			if v.Role != "" {
 				fmt.Fprintf(b, " role=%s", v.Role)
 			}
+			if t := v.Tag; t != nil {
+				if t.Alt != "" {
+					fmt.Fprintf(b, " alt=%s", strconv.Quote(t.Alt))
+				}
+				if t.Lang != "" {
+					fmt.Fprintf(b, " lang=%s", t.Lang)
+				}
+				if t.Scope != "" {
+					fmt.Fprintf(b, " scope=%s", t.Scope)
+				}
+				if t.Order != 0 {
+					fmt.Fprintf(b, " order=%d", t.Order)
+				}
+				if t.Artifact {
+					b.WriteString(" artifact")
+				}
+				if t.Repeat {
+					b.WriteString(" repeat")
+				}
+				if t.Row != 0 {
+					fmt.Fprintf(b, " row=%d/%s", t.Row, t.Section)
+				}
+			}
 			if v.Source != "" {
 				fmt.Fprintf(b, " src=%s", v.Source)
 			}
@@ -106,6 +129,9 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			b.WriteString("  glyphs")
 			for _, g := range v.Glyphs {
 				fmt.Fprintf(b, " %d:%s", g.ID, g.Advance)
+				if g.Hyphen {
+					b.WriteString("-")
+				}
 				if g.XOffset != 0 || g.YOffset != 0 {
 					fmt.Fprintf(b, "@%s,%s", g.XOffset, g.YOffset)
 				}

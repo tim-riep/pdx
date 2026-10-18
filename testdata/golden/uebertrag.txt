@@ -24,507 +24,507 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
           text 56.693,169.706 font=0 size=14 color=gray(0) asc=10.192 desc=2.946 "Positionen"
             glyphs 51:9.338 82:8.552 86:7.786 76:3.89 87:4.662 76:3.89 82:8.552 81:8.552 72:7.786 81:8.552
       block 56.693,185.822 481.89x560.5 src=fo:table@27:7
-        block 56.693,218.322 34.016x16 src=fo:table-cell@50:13
+        block 56.693,218.322 34.016x16 row=1/body src=fo:table-cell@50:13
           block 58.693,220.322 30.016x12 src=fo:block@50:169
             line 58.693,220.322 30.016x12
               text 83.147,228.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "1"
                 glyphs 20:5.562
-        block 90.709,218.322 348.661x16 src=fo:table-cell@51:13
+        block 90.709,218.322 348.661x16 row=1/body src=fo:table-cell@51:13
           block 92.709,220.322 344.661x12 src=fo:block@51:42
             line 92.709,220.322 344.661x12
               text 92.709,228.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 1"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562
-        block 439.37,218.322 99.213x16 src=fo:table-cell@52:13
+        block 439.37,218.322 99.213x16 row=1/body src=fo:table-cell@52:13
           block 441.37,220.322 95.213x12 src=fo:block@52:42
             line 441.37,220.322 95.213x12
               text 503.217,228.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "89,19 €"
                 glyphs 27:5.562 28:5.562 15:2.778 20:5.562 28:5.562 3:2.778 2088:5.562
-        block 56.693,234.322 34.016x16 src=fo:table-cell@55:13
+        block 56.693,234.322 34.016x16 row=2/body src=fo:table-cell@55:13
           block 58.693,236.322 30.016x12 src=fo:block@55:171
             line 58.693,236.322 30.016x12
               text 83.147,244.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "2"
                 glyphs 21:5.562
-        block 90.709,234.322 348.661x16 src=fo:table-cell@56:13
+        block 90.709,234.322 348.661x16 row=2/body src=fo:table-cell@56:13
           block 92.709,236.322 344.661x12 src=fo:block@56:42
             line 92.709,236.322 344.661x12
               text 92.709,244.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 2"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562
-        block 439.37,234.322 99.213x16 src=fo:table-cell@57:13
+        block 439.37,234.322 99.213x16 row=2/body src=fo:table-cell@57:13
           block 441.37,236.322 95.213x12 src=fo:block@57:42
             line 441.37,236.322 95.213x12
               text 497.655,244.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "168,38 €"
                 glyphs 20:5.562 25:5.562 27:5.562 15:2.778 22:5.562 27:5.562 3:2.778 2088:5.562
-        block 56.693,250.322 34.016x16 src=fo:table-cell@60:13
+        block 56.693,250.322 34.016x16 row=3/body src=fo:table-cell@60:13
           block 58.693,252.322 30.016x12 src=fo:block@60:172
             line 58.693,252.322 30.016x12
               text 83.147,260.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "3"
                 glyphs 22:5.562
-        block 90.709,250.322 348.661x16 src=fo:table-cell@61:13
+        block 90.709,250.322 348.661x16 row=3/body src=fo:table-cell@61:13
           block 92.709,252.322 344.661x12 src=fo:block@61:42
             line 92.709,252.322 344.661x12
               text 92.709,260.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 3"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562
-        block 439.37,250.322 99.213x16 src=fo:table-cell@62:13
+        block 439.37,250.322 99.213x16 row=3/body src=fo:table-cell@62:13
           block 441.37,252.322 95.213x12 src=fo:block@62:42
             line 441.37,252.322 95.213x12
               text 497.655,260.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "247,57 €"
                 glyphs 21:5.562 23:5.562 26:5.562 15:2.778 24:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,266.322 34.016x16 src=fo:table-cell@65:13
+        block 56.693,266.322 34.016x16 row=4/body src=fo:table-cell@65:13
           block 58.693,268.322 30.016x12 src=fo:block@65:172
             line 58.693,268.322 30.016x12
               text 83.147,276.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "4"
                 glyphs 23:5.562
-        block 90.709,266.322 348.661x16 src=fo:table-cell@66:13
+        block 90.709,266.322 348.661x16 row=4/body src=fo:table-cell@66:13
           block 92.709,268.322 344.661x12 src=fo:block@66:42
             line 92.709,268.322 344.661x12
               text 92.709,276.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 4"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562
-        block 439.37,266.322 99.213x16 src=fo:table-cell@67:13
+        block 439.37,266.322 99.213x16 row=4/body src=fo:table-cell@67:13
           block 441.37,268.322 95.213x12 src=fo:block@67:42
             line 441.37,268.322 95.213x12
               text 497.655,276.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "326,76 €"
                 glyphs 22:5.562 21:5.562 25:5.562 15:2.778 26:5.562 25:5.562 3:2.778 2088:5.562
-        block 56.693,282.322 34.016x16 src=fo:table-cell@70:13
+        block 56.693,282.322 34.016x16 row=5/body src=fo:table-cell@70:13
           block 58.693,284.322 30.016x12 src=fo:block@70:174
             line 58.693,284.322 30.016x12
               text 83.147,292.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "5"
                 glyphs 24:5.562
-        block 90.709,282.322 348.661x16 src=fo:table-cell@71:13
+        block 90.709,282.322 348.661x16 row=5/body src=fo:table-cell@71:13
           block 92.709,284.322 344.661x12 src=fo:block@71:42
             line 92.709,284.322 344.661x12
               text 92.709,292.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 5"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562
-        block 439.37,282.322 99.213x16 src=fo:table-cell@72:13
+        block 439.37,282.322 99.213x16 row=5/body src=fo:table-cell@72:13
           block 441.37,284.322 95.213x12 src=fo:block@72:42
             line 441.37,284.322 95.213x12
               text 497.655,292.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "405,95 €"
                 glyphs 23:5.562 19:5.562 24:5.562 15:2.778 28:5.562 24:5.562 3:2.778 2088:5.562
-        block 56.693,298.322 34.016x16 src=fo:table-cell@75:13
+        block 56.693,298.322 34.016x16 row=6/body src=fo:table-cell@75:13
           block 58.693,300.322 30.016x12 src=fo:block@75:176
             line 58.693,300.322 30.016x12
               text 83.147,308.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "6"
                 glyphs 25:5.562
-        block 90.709,298.322 348.661x16 src=fo:table-cell@76:13
+        block 90.709,298.322 348.661x16 row=6/body src=fo:table-cell@76:13
           block 92.709,300.322 344.661x12 src=fo:block@76:42
             line 92.709,300.322 344.661x12
               text 92.709,308.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 6"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562
-        block 439.37,298.322 99.213x16 src=fo:table-cell@77:13
+        block 439.37,298.322 99.213x16 row=6/body src=fo:table-cell@77:13
           block 441.37,300.322 95.213x12 src=fo:block@77:42
             line 441.37,300.322 95.213x12
               text 497.655,308.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "485,14 €"
                 glyphs 23:5.562 27:5.562 24:5.562 15:2.778 20:5.562 23:5.562 3:2.778 2088:5.562
-        block 56.693,314.322 34.016x16 src=fo:table-cell@80:13
+        block 56.693,314.322 34.016x16 row=7/body src=fo:table-cell@80:13
           block 58.693,316.322 30.016x12 src=fo:block@80:176
             line 58.693,316.322 30.016x12
               text 83.147,324.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "7"
                 glyphs 26:5.562
-        block 90.709,314.322 348.661x16 src=fo:table-cell@81:13
+        block 90.709,314.322 348.661x16 row=7/body src=fo:table-cell@81:13
           block 92.709,316.322 344.661x12 src=fo:block@81:42
             line 92.709,316.322 344.661x12
               text 92.709,324.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 7"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 26:5.562
-        block 439.37,314.322 99.213x16 src=fo:table-cell@82:13
+        block 439.37,314.322 99.213x16 row=7/body src=fo:table-cell@82:13
           block 441.37,316.322 95.213x12 src=fo:block@82:42
             line 441.37,316.322 95.213x12
               text 497.655,324.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "564,33 €"
                 glyphs 24:5.562 25:5.562 23:5.562 15:2.778 22:5.562 22:5.562 3:2.778 2088:5.562
-        block 56.693,330.322 34.016x16 src=fo:table-cell@85:13
+        block 56.693,330.322 34.016x16 row=8/body src=fo:table-cell@85:13
           block 58.693,332.322 30.016x12 src=fo:block@85:176
             line 58.693,332.322 30.016x12
               text 83.147,340.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "8"
                 glyphs 27:5.562
-        block 90.709,330.322 348.661x16 src=fo:table-cell@86:13
+        block 90.709,330.322 348.661x16 row=8/body src=fo:table-cell@86:13
           block 92.709,332.322 344.661x12 src=fo:block@86:42
             line 92.709,332.322 344.661x12
               text 92.709,340.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 8"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 27:5.562
-        block 439.37,330.322 99.213x16 src=fo:table-cell@87:13
+        block 439.37,330.322 99.213x16 row=8/body src=fo:table-cell@87:13
           block 441.37,332.322 95.213x12 src=fo:block@87:42
             line 441.37,332.322 95.213x12
               text 497.655,340.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "643,52 €"
                 glyphs 25:5.562 23:5.562 22:5.562 15:2.778 24:5.562 21:5.562 3:2.778 2088:5.562
-        block 56.693,346.322 34.016x16 src=fo:table-cell@90:13
+        block 56.693,346.322 34.016x16 row=9/body src=fo:table-cell@90:13
           block 58.693,348.322 30.016x12 src=fo:block@90:176
             line 58.693,348.322 30.016x12
               text 83.147,356.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "9"
                 glyphs 28:5.562
-        block 90.709,346.322 348.661x16 src=fo:table-cell@91:13
+        block 90.709,346.322 348.661x16 row=9/body src=fo:table-cell@91:13
           block 92.709,348.322 344.661x12 src=fo:block@91:42
             line 92.709,348.322 344.661x12
               text 92.709,356.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 9"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 28:5.562
-        block 439.37,346.322 99.213x16 src=fo:table-cell@92:13
+        block 439.37,346.322 99.213x16 row=9/body src=fo:table-cell@92:13
           block 441.37,348.322 95.213x12 src=fo:block@92:42
             line 441.37,348.322 95.213x12
               text 497.655,356.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "722,71 €"
                 glyphs 26:5.562 21:5.562 21:5.562 15:2.778 26:5.562 20:5.562 3:2.778 2088:5.562
-        block 56.693,362.322 34.016x16 src=fo:table-cell@95:13
+        block 56.693,362.322 34.016x16 row=10/body src=fo:table-cell@95:13
           block 58.693,364.322 30.016x12 src=fo:block@95:176
             line 58.693,364.322 30.016x12
               text 77.585,372.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "10"
                 glyphs 20:5.562 19:5.562
-        block 90.709,362.322 348.661x16 src=fo:table-cell@96:13
+        block 90.709,362.322 348.661x16 row=10/body src=fo:table-cell@96:13
           block 92.709,364.322 344.661x12 src=fo:block@96:42
             line 92.709,364.322 344.661x12
               text 92.709,372.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 10"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 19:5.562
-        block 439.37,362.322 99.213x16 src=fo:table-cell@97:13
+        block 439.37,362.322 99.213x16 row=10/body src=fo:table-cell@97:13
           block 441.37,364.322 95.213x12 src=fo:block@97:42
             line 441.37,364.322 95.213x12
               text 497.655,372.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "801,90 €"
                 glyphs 27:5.562 19:5.562 20:5.562 15:2.778 28:5.562 19:5.562 3:2.778 2088:5.562
-        block 56.693,378.322 34.016x16 src=fo:table-cell@100:13
+        block 56.693,378.322 34.016x16 row=11/body src=fo:table-cell@100:13
           block 58.693,380.322 30.016x12 src=fo:block@100:176
             line 58.693,380.322 30.016x12
               text 77.585,388.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "11"
                 glyphs 20:5.562 20:5.562
-        block 90.709,378.322 348.661x16 src=fo:table-cell@101:13
+        block 90.709,378.322 348.661x16 row=11/body src=fo:table-cell@101:13
           block 92.709,380.322 344.661x12 src=fo:block@101:42
             line 92.709,380.322 344.661x12
               text 92.709,388.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 11"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 20:5.562
-        block 439.37,378.322 99.213x16 src=fo:table-cell@102:13
+        block 439.37,378.322 99.213x16 row=11/body src=fo:table-cell@102:13
           block 441.37,380.322 95.213x12 src=fo:block@102:42
             line 441.37,380.322 95.213x12
               text 497.655,388.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "881,09 €"
                 glyphs 27:5.562 27:5.562 20:5.562 15:2.778 19:5.562 28:5.562 3:2.778 2088:5.562
-        block 56.693,394.322 34.016x16 src=fo:table-cell@105:13
+        block 56.693,394.322 34.016x16 row=12/body src=fo:table-cell@105:13
           block 58.693,396.322 30.016x12 src=fo:block@105:176
             line 58.693,396.322 30.016x12
               text 77.585,404.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "12"
                 glyphs 20:5.562 21:5.562
-        block 90.709,394.322 348.661x16 src=fo:table-cell@106:13
+        block 90.709,394.322 348.661x16 row=12/body src=fo:table-cell@106:13
           block 92.709,396.322 344.661x12 src=fo:block@106:42
             line 92.709,396.322 344.661x12
               text 92.709,404.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 12"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 21:5.562
-        block 439.37,394.322 99.213x16 src=fo:table-cell@107:13
+        block 439.37,394.322 99.213x16 row=12/body src=fo:table-cell@107:13
           block 441.37,396.322 95.213x12 src=fo:block@107:42
             line 441.37,396.322 95.213x12
               text 503.217,404.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "60,28 €"
                 glyphs 25:5.562 19:5.562 15:2.778 21:5.562 27:5.562 3:2.778 2088:5.562
-        block 56.693,410.322 34.016x16 src=fo:table-cell@110:13
+        block 56.693,410.322 34.016x16 row=13/body src=fo:table-cell@110:13
           block 58.693,412.322 30.016x12 src=fo:block@110:176
             line 58.693,412.322 30.016x12
               text 77.585,420.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "13"
                 glyphs 20:5.562 22:5.562
-        block 90.709,410.322 348.661x16 src=fo:table-cell@111:13
+        block 90.709,410.322 348.661x16 row=13/body src=fo:table-cell@111:13
           block 92.709,412.322 344.661x12 src=fo:block@111:42
             line 92.709,412.322 344.661x12
               text 92.709,420.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 13"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 22:5.562
-        block 439.37,410.322 99.213x16 src=fo:table-cell@112:13
+        block 439.37,410.322 99.213x16 row=13/body src=fo:table-cell@112:13
           block 441.37,412.322 95.213x12 src=fo:block@112:42
             line 441.37,412.322 95.213x12
               text 497.655,420.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "139,47 €"
                 glyphs 20:5.562 22:5.562 28:5.562 15:2.778 23:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,426.322 34.016x16 src=fo:table-cell@115:13
+        block 56.693,426.322 34.016x16 row=14/body src=fo:table-cell@115:13
           block 58.693,428.322 30.016x12 src=fo:block@115:176
             line 58.693,428.322 30.016x12
               text 77.585,436.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "14"
                 glyphs 20:5.562 23:5.562
-        block 90.709,426.322 348.661x16 src=fo:table-cell@116:13
+        block 90.709,426.322 348.661x16 row=14/body src=fo:table-cell@116:13
           block 92.709,428.322 344.661x12 src=fo:block@116:42
             line 92.709,428.322 344.661x12
               text 92.709,436.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 14"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 23:5.562
-        block 439.37,426.322 99.213x16 src=fo:table-cell@117:13
+        block 439.37,426.322 99.213x16 row=14/body src=fo:table-cell@117:13
           block 441.37,428.322 95.213x12 src=fo:block@117:42
             line 441.37,428.322 95.213x12
               text 497.655,436.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "218,66 €"
                 glyphs 21:5.562 20:5.562 27:5.562 15:2.778 25:5.562 25:5.562 3:2.778 2088:5.562
-        block 56.693,442.322 34.016x16 src=fo:table-cell@120:13
+        block 56.693,442.322 34.016x16 row=15/body src=fo:table-cell@120:13
           block 58.693,444.322 30.016x12 src=fo:block@120:176
             line 58.693,444.322 30.016x12
               text 77.585,452.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "15"
                 glyphs 20:5.562 24:5.562
-        block 90.709,442.322 348.661x16 src=fo:table-cell@121:13
+        block 90.709,442.322 348.661x16 row=15/body src=fo:table-cell@121:13
           block 92.709,444.322 344.661x12 src=fo:block@121:42
             line 92.709,444.322 344.661x12
               text 92.709,452.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 15"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 24:5.562
-        block 439.37,442.322 99.213x16 src=fo:table-cell@122:13
+        block 439.37,442.322 99.213x16 row=15/body src=fo:table-cell@122:13
           block 441.37,444.322 95.213x12 src=fo:block@122:42
             line 441.37,444.322 95.213x12
               text 497.655,452.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "297,85 €"
                 glyphs 21:5.562 28:5.562 26:5.562 15:2.778 27:5.562 24:5.562 3:2.778 2088:5.562
-        block 56.693,458.322 34.016x16 src=fo:table-cell@125:13
+        block 56.693,458.322 34.016x16 row=16/body src=fo:table-cell@125:13
           block 58.693,460.322 30.016x12 src=fo:block@125:176
             line 58.693,460.322 30.016x12
               text 77.585,468.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "16"
                 glyphs 20:5.562 25:5.562
-        block 90.709,458.322 348.661x16 src=fo:table-cell@126:13
+        block 90.709,458.322 348.661x16 row=16/body src=fo:table-cell@126:13
           block 92.709,460.322 344.661x12 src=fo:block@126:42
             line 92.709,460.322 344.661x12
               text 92.709,468.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 16"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 25:5.562
-        block 439.37,458.322 99.213x16 src=fo:table-cell@127:13
+        block 439.37,458.322 99.213x16 row=16/body src=fo:table-cell@127:13
           block 441.37,460.322 95.213x12 src=fo:block@127:42
             line 441.37,460.322 95.213x12
               text 497.655,468.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "377,04 €"
                 glyphs 22:5.562 26:5.562 26:5.562 15:2.778 19:5.562 23:5.562 3:2.778 2088:5.562
-        block 56.693,474.322 34.016x16 src=fo:table-cell@130:13
+        block 56.693,474.322 34.016x16 row=17/body src=fo:table-cell@130:13
           block 58.693,476.322 30.016x12 src=fo:block@130:176
             line 58.693,476.322 30.016x12
               text 77.585,484.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "17"
                 glyphs 20:5.562 26:5.562
-        block 90.709,474.322 348.661x16 src=fo:table-cell@131:13
+        block 90.709,474.322 348.661x16 row=17/body src=fo:table-cell@131:13
           block 92.709,476.322 344.661x12 src=fo:block@131:42
             line 92.709,476.322 344.661x12
               text 92.709,484.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 17"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 26:5.562
-        block 439.37,474.322 99.213x16 src=fo:table-cell@132:13
+        block 439.37,474.322 99.213x16 row=17/body src=fo:table-cell@132:13
           block 441.37,476.322 95.213x12 src=fo:block@132:42
             line 441.37,476.322 95.213x12
               text 497.655,484.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "456,23 €"
                 glyphs 23:5.562 24:5.562 25:5.562 15:2.778 21:5.562 22:5.562 3:2.778 2088:5.562
-        block 56.693,490.322 34.016x16 src=fo:table-cell@135:13
+        block 56.693,490.322 34.016x16 row=18/body src=fo:table-cell@135:13
           block 58.693,492.322 30.016x12 src=fo:block@135:176
             line 58.693,492.322 30.016x12
               text 77.585,500.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "18"
                 glyphs 20:5.562 27:5.562
-        block 90.709,490.322 348.661x16 src=fo:table-cell@136:13
+        block 90.709,490.322 348.661x16 row=18/body src=fo:table-cell@136:13
           block 92.709,492.322 344.661x12 src=fo:block@136:42
             line 92.709,492.322 344.661x12
               text 92.709,500.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 18"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 27:5.562
-        block 439.37,490.322 99.213x16 src=fo:table-cell@137:13
+        block 439.37,490.322 99.213x16 row=18/body src=fo:table-cell@137:13
           block 441.37,492.322 95.213x12 src=fo:block@137:42
             line 441.37,492.322 95.213x12
               text 497.655,500.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "535,42 €"
                 glyphs 24:5.562 22:5.562 24:5.562 15:2.778 23:5.562 21:5.562 3:2.778 2088:5.562
-        block 56.693,506.322 34.016x16 src=fo:table-cell@140:13
+        block 56.693,506.322 34.016x16 row=19/body src=fo:table-cell@140:13
           block 58.693,508.322 30.016x12 src=fo:block@140:176
             line 58.693,508.322 30.016x12
               text 77.585,516.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "19"
                 glyphs 20:5.562 28:5.562
-        block 90.709,506.322 348.661x16 src=fo:table-cell@141:13
+        block 90.709,506.322 348.661x16 row=19/body src=fo:table-cell@141:13
           block 92.709,508.322 344.661x12 src=fo:block@141:42
             line 92.709,508.322 344.661x12
               text 92.709,516.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 19"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 20:5.562 28:5.562
-        block 439.37,506.322 99.213x16 src=fo:table-cell@142:13
+        block 439.37,506.322 99.213x16 row=19/body src=fo:table-cell@142:13
           block 441.37,508.322 95.213x12 src=fo:block@142:42
             line 441.37,508.322 95.213x12
               text 497.655,516.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "614,61 €"
                 glyphs 25:5.562 20:5.562 23:5.562 15:2.778 25:5.562 20:5.562 3:2.778 2088:5.562
-        block 56.693,522.322 34.016x16 src=fo:table-cell@145:13
+        block 56.693,522.322 34.016x16 row=20/body src=fo:table-cell@145:13
           block 58.693,524.322 30.016x12 src=fo:block@145:176
             line 58.693,524.322 30.016x12
               text 77.585,532.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "20"
                 glyphs 21:5.562 19:5.562
-        block 90.709,522.322 348.661x16 src=fo:table-cell@146:13
+        block 90.709,522.322 348.661x16 row=20/body src=fo:table-cell@146:13
           block 92.709,524.322 344.661x12 src=fo:block@146:42
             line 92.709,524.322 344.661x12
               text 92.709,532.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 20"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 19:5.562
-        block 439.37,522.322 99.213x16 src=fo:table-cell@147:13
+        block 439.37,522.322 99.213x16 row=20/body src=fo:table-cell@147:13
           block 441.37,524.322 95.213x12 src=fo:block@147:42
             line 441.37,524.322 95.213x12
               text 497.655,532.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "693,80 €"
                 glyphs 25:5.562 28:5.562 22:5.562 15:2.778 27:5.562 19:5.562 3:2.778 2088:5.562
-        block 56.693,538.322 34.016x16 src=fo:table-cell@150:13
+        block 56.693,538.322 34.016x16 row=21/body src=fo:table-cell@150:13
           block 58.693,540.322 30.016x12 src=fo:block@150:176
             line 58.693,540.322 30.016x12
               text 77.585,548.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "21"
                 glyphs 21:5.562 20:5.562
-        block 90.709,538.322 348.661x16 src=fo:table-cell@151:13
+        block 90.709,538.322 348.661x16 row=21/body src=fo:table-cell@151:13
           block 92.709,540.322 344.661x12 src=fo:block@151:42
             line 92.709,540.322 344.661x12
               text 92.709,548.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 21"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 20:5.562
-        block 439.37,538.322 99.213x16 src=fo:table-cell@152:13
+        block 439.37,538.322 99.213x16 row=21/body src=fo:table-cell@152:13
           block 441.37,540.322 95.213x12 src=fo:block@152:42
             line 441.37,540.322 95.213x12
               text 497.655,548.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "772,99 €"
                 glyphs 26:5.562 26:5.562 21:5.562 15:2.778 28:5.562 28:5.562 3:2.778 2088:5.562
-        block 56.693,554.322 34.016x16 src=fo:table-cell@155:13
+        block 56.693,554.322 34.016x16 row=22/body src=fo:table-cell@155:13
           block 58.693,556.322 30.016x12 src=fo:block@155:177
             line 58.693,556.322 30.016x12
               text 77.585,564.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "22"
                 glyphs 21:5.562 21:5.562
-        block 90.709,554.322 348.661x16 src=fo:table-cell@156:13
+        block 90.709,554.322 348.661x16 row=22/body src=fo:table-cell@156:13
           block 92.709,556.322 344.661x12 src=fo:block@156:42
             line 92.709,556.322 344.661x12
               text 92.709,564.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 22"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 21:5.562
-        block 439.37,554.322 99.213x16 src=fo:table-cell@157:13
+        block 439.37,554.322 99.213x16 row=22/body src=fo:table-cell@157:13
           block 441.37,556.322 95.213x12 src=fo:block@157:42
             line 441.37,556.322 95.213x12
               text 497.655,564.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "852,18 €"
                 glyphs 27:5.562 24:5.562 21:5.562 15:2.778 20:5.562 27:5.562 3:2.778 2088:5.562
-        block 56.693,570.322 34.016x16 src=fo:table-cell@160:13
+        block 56.693,570.322 34.016x16 row=23/body src=fo:table-cell@160:13
           block 58.693,572.322 30.016x12 src=fo:block@160:178
             line 58.693,572.322 30.016x12
               text 77.585,580.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "23"
                 glyphs 21:5.562 22:5.562
-        block 90.709,570.322 348.661x16 src=fo:table-cell@161:13
+        block 90.709,570.322 348.661x16 row=23/body src=fo:table-cell@161:13
           block 92.709,572.322 344.661x12 src=fo:block@161:42
             line 92.709,572.322 344.661x12
               text 92.709,580.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 23"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 22:5.562
-        block 439.37,570.322 99.213x16 src=fo:table-cell@162:13
+        block 439.37,570.322 99.213x16 row=23/body src=fo:table-cell@162:13
           block 441.37,572.322 95.213x12 src=fo:block@162:42
             line 441.37,572.322 95.213x12
               text 503.217,580.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "31,37 €"
                 glyphs 22:5.562 20:5.562 15:2.778 22:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,586.322 34.016x16 src=fo:table-cell@165:13
+        block 56.693,586.322 34.016x16 row=24/body src=fo:table-cell@165:13
           block 58.693,588.322 30.016x12 src=fo:block@165:178
             line 58.693,588.322 30.016x12
               text 77.585,596.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "24"
                 glyphs 21:5.562 23:5.562
-        block 90.709,586.322 348.661x16 src=fo:table-cell@166:13
+        block 90.709,586.322 348.661x16 row=24/body src=fo:table-cell@166:13
           block 92.709,588.322 344.661x12 src=fo:block@166:42
             line 92.709,588.322 344.661x12
               text 92.709,596.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 24"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 23:5.562
-        block 439.37,586.322 99.213x16 src=fo:table-cell@167:13
+        block 439.37,586.322 99.213x16 row=24/body src=fo:table-cell@167:13
           block 441.37,588.322 95.213x12 src=fo:block@167:42
             line 441.37,588.322 95.213x12
               text 497.655,596.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "110,56 €"
                 glyphs 20:5.562 20:5.562 19:5.562 15:2.778 24:5.562 25:5.562 3:2.778 2088:5.562
-        block 56.693,602.322 34.016x16 src=fo:table-cell@170:13
+        block 56.693,602.322 34.016x16 row=25/body src=fo:table-cell@170:13
           block 58.693,604.322 30.016x12 src=fo:block@170:178
             line 58.693,604.322 30.016x12
               text 77.585,612.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "25"
                 glyphs 21:5.562 24:5.562
-        block 90.709,602.322 348.661x16 src=fo:table-cell@171:13
+        block 90.709,602.322 348.661x16 row=25/body src=fo:table-cell@171:13
           block 92.709,604.322 344.661x12 src=fo:block@171:42
             line 92.709,604.322 344.661x12
               text 92.709,612.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 25"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 24:5.562
-        block 439.37,602.322 99.213x16 src=fo:table-cell@172:13
+        block 439.37,602.322 99.213x16 row=25/body src=fo:table-cell@172:13
           block 441.37,604.322 95.213x12 src=fo:block@172:42
             line 441.37,604.322 95.213x12
               text 497.655,612.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "189,75 €"
                 glyphs 20:5.562 27:5.562 28:5.562 15:2.778 26:5.562 24:5.562 3:2.778 2088:5.562
-        block 56.693,618.322 34.016x16 src=fo:table-cell@175:13
+        block 56.693,618.322 34.016x16 row=26/body src=fo:table-cell@175:13
           block 58.693,620.322 30.016x12 src=fo:block@175:178
             line 58.693,620.322 30.016x12
               text 77.585,628.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "26"
                 glyphs 21:5.562 25:5.562
-        block 90.709,618.322 348.661x16 src=fo:table-cell@176:13
+        block 90.709,618.322 348.661x16 row=26/body src=fo:table-cell@176:13
           block 92.709,620.322 344.661x12 src=fo:block@176:42
             line 92.709,620.322 344.661x12
               text 92.709,628.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 26"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 25:5.562
-        block 439.37,618.322 99.213x16 src=fo:table-cell@177:13
+        block 439.37,618.322 99.213x16 row=26/body src=fo:table-cell@177:13
           block 441.37,620.322 95.213x12 src=fo:block@177:42
             line 441.37,620.322 95.213x12
               text 497.655,628.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "268,94 €"
                 glyphs 21:5.562 25:5.562 27:5.562 15:2.778 28:5.562 23:5.562 3:2.778 2088:5.562
-        block 56.693,634.322 34.016x16 src=fo:table-cell@180:13
+        block 56.693,634.322 34.016x16 row=27/body src=fo:table-cell@180:13
           block 58.693,636.322 30.016x12 src=fo:block@180:178
             line 58.693,636.322 30.016x12
               text 77.585,644.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "27"
                 glyphs 21:5.562 26:5.562
-        block 90.709,634.322 348.661x16 src=fo:table-cell@181:13
+        block 90.709,634.322 348.661x16 row=27/body src=fo:table-cell@181:13
           block 92.709,636.322 344.661x12 src=fo:block@181:42
             line 92.709,636.322 344.661x12
               text 92.709,644.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 27"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 26:5.562
-        block 439.37,634.322 99.213x16 src=fo:table-cell@182:13
+        block 439.37,634.322 99.213x16 row=27/body src=fo:table-cell@182:13
           block 441.37,636.322 95.213x12 src=fo:block@182:42
             line 441.37,636.322 95.213x12
               text 497.655,644.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "348,13 €"
                 glyphs 22:5.562 23:5.562 27:5.562 15:2.778 20:5.562 22:5.562 3:2.778 2088:5.562
-        block 56.693,650.322 34.016x16 src=fo:table-cell@185:13
+        block 56.693,650.322 34.016x16 row=28/body src=fo:table-cell@185:13
           block 58.693,652.322 30.016x12 src=fo:block@185:178
             line 58.693,652.322 30.016x12
               text 77.585,660.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "28"
                 glyphs 21:5.562 27:5.562
-        block 90.709,650.322 348.661x16 src=fo:table-cell@186:13
+        block 90.709,650.322 348.661x16 row=28/body src=fo:table-cell@186:13
           block 92.709,652.322 344.661x12 src=fo:block@186:42
             line 92.709,652.322 344.661x12
               text 92.709,660.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 28"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 27:5.562
-        block 439.37,650.322 99.213x16 src=fo:table-cell@187:13
+        block 439.37,650.322 99.213x16 row=28/body src=fo:table-cell@187:13
           block 441.37,652.322 95.213x12 src=fo:block@187:42
             line 441.37,652.322 95.213x12
               text 497.655,660.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "427,32 €"
                 glyphs 23:5.562 21:5.562 26:5.562 15:2.778 22:5.562 21:5.562 3:2.778 2088:5.562
-        block 56.693,666.322 34.016x16 src=fo:table-cell@190:13
+        block 56.693,666.322 34.016x16 row=29/body src=fo:table-cell@190:13
           block 58.693,668.322 30.016x12 src=fo:block@190:178
             line 58.693,668.322 30.016x12
               text 77.585,676.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "29"
                 glyphs 21:5.562 28:5.562
-        block 90.709,666.322 348.661x16 src=fo:table-cell@191:13
+        block 90.709,666.322 348.661x16 row=29/body src=fo:table-cell@191:13
           block 92.709,668.322 344.661x12 src=fo:block@191:42
             line 92.709,668.322 344.661x12
               text 92.709,676.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 29"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 21:5.562 28:5.562
-        block 439.37,666.322 99.213x16 src=fo:table-cell@192:13
+        block 439.37,666.322 99.213x16 row=29/body src=fo:table-cell@192:13
           block 441.37,668.322 95.213x12 src=fo:block@192:42
             line 441.37,668.322 95.213x12
               text 497.655,676.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "506,51 €"
                 glyphs 24:5.562 19:5.562 25:5.562 15:2.778 24:5.562 20:5.562 3:2.778 2088:5.562
-        block 56.693,682.322 34.016x16 src=fo:table-cell@195:13
+        block 56.693,682.322 34.016x16 row=30/body src=fo:table-cell@195:13
           block 58.693,684.322 30.016x12 src=fo:block@195:178
             line 58.693,684.322 30.016x12
               text 77.585,692.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "30"
                 glyphs 22:5.562 19:5.562
-        block 90.709,682.322 348.661x16 src=fo:table-cell@196:13
+        block 90.709,682.322 348.661x16 row=30/body src=fo:table-cell@196:13
           block 92.709,684.322 344.661x12 src=fo:block@196:42
             line 92.709,684.322 344.661x12
               text 92.709,692.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 30"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 19:5.562
-        block 439.37,682.322 99.213x16 src=fo:table-cell@197:13
+        block 439.37,682.322 99.213x16 row=30/body src=fo:table-cell@197:13
           block 441.37,684.322 95.213x12 src=fo:block@197:42
             line 441.37,684.322 95.213x12
               text 497.655,692.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "585,70 €"
                 glyphs 24:5.562 27:5.562 24:5.562 15:2.778 26:5.562 19:5.562 3:2.778 2088:5.562
-        block 56.693,698.322 34.016x16 src=fo:table-cell@200:13
+        block 56.693,698.322 34.016x16 row=31/body src=fo:table-cell@200:13
           block 58.693,700.322 30.016x12 src=fo:block@200:178
             line 58.693,700.322 30.016x12
               text 77.585,708.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "31"
                 glyphs 22:5.562 20:5.562
-        block 90.709,698.322 348.661x16 src=fo:table-cell@201:13
+        block 90.709,698.322 348.661x16 row=31/body src=fo:table-cell@201:13
           block 92.709,700.322 344.661x12 src=fo:block@201:42
             line 92.709,700.322 344.661x12
               text 92.709,708.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 31"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 20:5.562
-        block 439.37,698.322 99.213x16 src=fo:table-cell@202:13
+        block 439.37,698.322 99.213x16 row=31/body src=fo:table-cell@202:13
           block 441.37,700.322 95.213x12 src=fo:block@202:42
             line 441.37,700.322 95.213x12
               text 497.655,708.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "664,89 €"
                 glyphs 25:5.562 25:5.562 23:5.562 15:2.778 27:5.562 28:5.562 3:2.778 2088:5.562
-        block 56.693,714.322 34.016x16 src=fo:table-cell@205:13
+        block 56.693,714.322 34.016x16 row=32/body src=fo:table-cell@205:13
           block 58.693,716.322 30.016x12 src=fo:block@205:178
             line 58.693,716.322 30.016x12
               text 77.585,724.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "32"
                 glyphs 22:5.562 21:5.562
-        block 90.709,714.322 348.661x16 src=fo:table-cell@206:13
+        block 90.709,714.322 348.661x16 row=32/body src=fo:table-cell@206:13
           block 92.709,716.322 344.661x12 src=fo:block@206:42
             line 92.709,716.322 344.661x12
               text 92.709,724.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 32"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 21:5.562
-        block 439.37,714.322 99.213x16 src=fo:table-cell@207:13
+        block 439.37,714.322 99.213x16 row=32/body src=fo:table-cell@207:13
           block 441.37,716.322 95.213x12 src=fo:block@207:42
             line 441.37,716.322 95.213x12
               text 497.655,724.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "744,08 €"
                 glyphs 26:5.562 23:5.562 23:5.562 15:2.778 19:5.562 27:5.562 3:2.778 2088:5.562
-        block 56.693,730.322 34.016x16 src=fo:table-cell@210:13
+        block 56.693,730.322 34.016x16 row=33/body src=fo:table-cell@210:13
           block 58.693,732.322 30.016x12 src=fo:block@210:178
             line 58.693,732.322 30.016x12
               text 77.585,740.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "33"
                 glyphs 22:5.562 22:5.562
-        block 90.709,730.322 348.661x16 src=fo:table-cell@211:13
+        block 90.709,730.322 348.661x16 row=33/body src=fo:table-cell@211:13
           block 92.709,732.322 344.661x12 src=fo:block@211:42
             line 92.709,732.322 344.661x12
               text 92.709,740.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 33"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 22:5.562
-        block 439.37,730.322 99.213x16 src=fo:table-cell@212:13
+        block 439.37,730.322 99.213x16 row=33/body src=fo:table-cell@212:13
           block 441.37,732.322 95.213x12 src=fo:block@212:42
             line 441.37,732.322 95.213x12
               text 497.655,740.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "823,27 €"
                 glyphs 27:5.562 21:5.562 22:5.562 15:2.778 21:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,746.572 382.677x16 src=fo:table-cell@44:13
+        block 56.693,746.572 382.677x16 repeat row=34/footer src=fo:table-cell@44:13
           block 58.693,748.572 378.677x12 src=fo:block@44:100
             line 58.693,748.572 378.677x12
               text 356.788,757.16 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Zwischensumme"
                 glyphs 61:6.108 90:7.778 76:2.778 86:5.562 70:5.562 75:6.108 72:5.562 81:6.108 86:5.562 88:6.108 80:8.892 80:8.892 72:5.562
-        block 439.37,746.572 99.213x16 src=fo:table-cell@45:13
+        block 439.37,746.572 99.213x16 repeat row=34/footer src=fo:table-cell@45:13
           block 441.37,748.572 95.213x12 src=fo:block@45:73
             line 441.37,748.572 95.213x12
               text 483.753,757.16 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "15.055,59 €"
@@ -532,17 +532,17 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,746.322 439.37,746.322 0.5/solid/gray(0)
         line 439.37,746.322 538.583,746.322 0.5/solid/gray(0)
         box 56.693,185.822 481.89x16.25 fill=rgb(0.9098,0.9333,0.9608)
-        block 56.693,185.822 34.016x16 src=fo:table-cell@33:13
+        block 56.693,185.822 34.016x16 row=35/header src=fo:table-cell@33:13
           block 58.693,187.822 30.016x12 src=fo:block@33:76
             line 58.693,187.822 30.016x12
               text 67.591,196.41 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Pos."
                 glyphs 51:6.67 82:6.108 86:5.562 17:2.778
-        block 90.709,185.822 348.661x16 src=fo:table-cell@34:13
+        block 90.709,185.822 348.661x16 row=35/header src=fo:table-cell@34:13
           block 92.709,187.822 344.661x12 src=fo:block@34:76
             line 92.709,187.822 344.661x12
               text 92.709,196.41 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Leistung"
                 glyphs 47:6.108 72:5.562 76:2.778 86:5.562 87:3.33 88:6.108 81:6.108 74:6.108
-        block 439.37,185.822 99.213x16 src=fo:table-cell@35:13
+        block 439.37,185.822 99.213x16 row=35/header src=fo:table-cell@35:13
           block 441.37,187.822 95.213x12 src=fo:block@35:76
             line 441.37,187.822 95.213x12
               text 504.907,196.41 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Betrag"
@@ -550,12 +550,12 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,202.072 90.709,202.072 0.5/solid/gray(0)
         line 90.709,202.072 439.37,202.072 0.5/solid/gray(0)
         line 439.37,202.072 538.583,202.072 0.5/solid/gray(0)
-        block 56.693,202.322 382.677x16 src=fo:table-cell@38:13
+        block 56.693,202.322 382.677x16 row=36/header src=fo:table-cell@38:13
           block 58.693,204.322 378.677x12 src=fo:block@38:69
             line 58.693,204.322 378.677x12
               text 398.462,212.924 font=2 size=10 color=gray(0) asc=7.28 desc=2.075 "Übertrag"
                 glyphs 158:7.222 69:5.562 72:5.562 85:3.33 87:2.778 85:3.33 68:5.562 74:5.562
-        block 439.37,202.322 99.213x16 src=fo:table-cell@39:13
+        block 439.37,202.322 99.213x16 row=36/header src=fo:table-cell@39:13
           block 441.37,204.322 95.213x12 src=fo:block@39:42
             line 441.37,204.322 95.213x12
               text 508.779,212.924 font=2 size=10 color=gray(0) asc=7.28 desc=2.075 "0,00 €"
@@ -581,557 +581,557 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
   page 2 595.276x841.89
     region 56.693,76.536 481.89x688.818 src=fo:region-body@8:7
       block 56.693,76.536 481.89x641 src=fo:table@27:7
-        block 56.693,109.036 34.016x16 src=fo:table-cell@215:13
+        block 56.693,109.036 34.016x16 row=37/body src=fo:table-cell@215:13
           block 58.693,111.036 30.016x12 src=fo:block@215:178
             line 58.693,111.036 30.016x12
               text 77.585,119.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "34"
                 glyphs 22:5.562 23:5.562
-        block 90.709,109.036 348.661x16 src=fo:table-cell@216:13
+        block 90.709,109.036 348.661x16 row=37/body src=fo:table-cell@216:13
           block 92.709,111.036 344.661x12 src=fo:block@216:42
             line 92.709,111.036 344.661x12
               text 92.709,119.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 34"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 23:5.562
-        block 439.37,109.036 99.213x16 src=fo:table-cell@217:13
+        block 439.37,109.036 99.213x16 row=37/body src=fo:table-cell@217:13
           block 441.37,111.036 95.213x12 src=fo:block@217:42
             line 441.37,111.036 95.213x12
               text 497.655,119.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "902,46 €"
                 glyphs 28:5.562 19:5.562 21:5.562 15:2.778 23:5.562 25:5.562 3:2.778 2088:5.562
-        block 56.693,125.036 34.016x16 src=fo:table-cell@220:13
+        block 56.693,125.036 34.016x16 row=38/body src=fo:table-cell@220:13
           block 58.693,127.036 30.016x12 src=fo:block@220:178
             line 58.693,127.036 30.016x12
               text 77.585,135.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "35"
                 glyphs 22:5.562 24:5.562
-        block 90.709,125.036 348.661x16 src=fo:table-cell@221:13
+        block 90.709,125.036 348.661x16 row=38/body src=fo:table-cell@221:13
           block 92.709,127.036 344.661x12 src=fo:block@221:42
             line 92.709,127.036 344.661x12
               text 92.709,135.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 35"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 24:5.562
-        block 439.37,125.036 99.213x16 src=fo:table-cell@222:13
+        block 439.37,125.036 99.213x16 row=38/body src=fo:table-cell@222:13
           block 441.37,127.036 95.213x12 src=fo:block@222:42
             line 441.37,127.036 95.213x12
               text 503.217,135.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "81,65 €"
                 glyphs 27:5.562 20:5.562 15:2.778 25:5.562 24:5.562 3:2.778 2088:5.562
-        block 56.693,141.036 34.016x16 src=fo:table-cell@225:13
+        block 56.693,141.036 34.016x16 row=39/body src=fo:table-cell@225:13
           block 58.693,143.036 30.016x12 src=fo:block@225:178
             line 58.693,143.036 30.016x12
               text 77.585,151.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "36"
                 glyphs 22:5.562 25:5.562
-        block 90.709,141.036 348.661x16 src=fo:table-cell@226:13
+        block 90.709,141.036 348.661x16 row=39/body src=fo:table-cell@226:13
           block 92.709,143.036 344.661x12 src=fo:block@226:42
             line 92.709,143.036 344.661x12
               text 92.709,151.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 36"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 25:5.562
-        block 439.37,141.036 99.213x16 src=fo:table-cell@227:13
+        block 439.37,141.036 99.213x16 row=39/body src=fo:table-cell@227:13
           block 441.37,143.036 95.213x12 src=fo:block@227:42
             line 441.37,143.036 95.213x12
               text 497.655,151.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "160,84 €"
                 glyphs 20:5.562 25:5.562 19:5.562 15:2.778 27:5.562 23:5.562 3:2.778 2088:5.562
-        block 56.693,157.036 34.016x16 src=fo:table-cell@230:13
+        block 56.693,157.036 34.016x16 row=40/body src=fo:table-cell@230:13
           block 58.693,159.036 30.016x12 src=fo:block@230:178
             line 58.693,159.036 30.016x12
               text 77.585,167.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "37"
                 glyphs 22:5.562 26:5.562
-        block 90.709,157.036 348.661x16 src=fo:table-cell@231:13
+        block 90.709,157.036 348.661x16 row=40/body src=fo:table-cell@231:13
           block 92.709,159.036 344.661x12 src=fo:block@231:42
             line 92.709,159.036 344.661x12
               text 92.709,167.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 37"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 26:5.562
-        block 439.37,157.036 99.213x16 src=fo:table-cell@232:13
+        block 439.37,157.036 99.213x16 row=40/body src=fo:table-cell@232:13
           block 441.37,159.036 95.213x12 src=fo:block@232:42
             line 441.37,159.036 95.213x12
               text 497.655,167.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "240,03 €"
                 glyphs 21:5.562 23:5.562 19:5.562 15:2.778 19:5.562 22:5.562 3:2.778 2088:5.562
-        block 56.693,173.036 34.016x16 src=fo:table-cell@235:13
+        block 56.693,173.036 34.016x16 row=41/body src=fo:table-cell@235:13
           block 58.693,175.036 30.016x12 src=fo:block@235:178
             line 58.693,175.036 30.016x12
               text 77.585,183.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "38"
                 glyphs 22:5.562 27:5.562
-        block 90.709,173.036 348.661x16 src=fo:table-cell@236:13
+        block 90.709,173.036 348.661x16 row=41/body src=fo:table-cell@236:13
           block 92.709,175.036 344.661x12 src=fo:block@236:42
             line 92.709,175.036 344.661x12
               text 92.709,183.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 38"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 27:5.562
-        block 439.37,173.036 99.213x16 src=fo:table-cell@237:13
+        block 439.37,173.036 99.213x16 row=41/body src=fo:table-cell@237:13
           block 441.37,175.036 95.213x12 src=fo:block@237:42
             line 441.37,175.036 95.213x12
               text 497.655,183.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "319,22 €"
                 glyphs 22:5.562 20:5.562 28:5.562 15:2.778 21:5.562 21:5.562 3:2.778 2088:5.562
-        block 56.693,189.036 34.016x16 src=fo:table-cell@240:13
+        block 56.693,189.036 34.016x16 row=42/body src=fo:table-cell@240:13
           block 58.693,191.036 30.016x12 src=fo:block@240:178
             line 58.693,191.036 30.016x12
               text 77.585,199.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "39"
                 glyphs 22:5.562 28:5.562
-        block 90.709,189.036 348.661x16 src=fo:table-cell@241:13
+        block 90.709,189.036 348.661x16 row=42/body src=fo:table-cell@241:13
           block 92.709,191.036 344.661x12 src=fo:block@241:42
             line 92.709,191.036 344.661x12
               text 92.709,199.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 39"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 22:5.562 28:5.562
-        block 439.37,189.036 99.213x16 src=fo:table-cell@242:13
+        block 439.37,189.036 99.213x16 row=42/body src=fo:table-cell@242:13
           block 441.37,191.036 95.213x12 src=fo:block@242:42
             line 441.37,191.036 95.213x12
               text 497.655,199.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "398,41 €"
                 glyphs 22:5.562 28:5.562 27:5.562 15:2.778 23:5.562 20:5.562 3:2.778 2088:5.562
-        block 56.693,205.036 34.016x16 src=fo:table-cell@245:13
+        block 56.693,205.036 34.016x16 row=43/body src=fo:table-cell@245:13
           block 58.693,207.036 30.016x12 src=fo:block@245:178
             line 58.693,207.036 30.016x12
               text 77.585,215.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "40"
                 glyphs 23:5.562 19:5.562
-        block 90.709,205.036 348.661x16 src=fo:table-cell@246:13
+        block 90.709,205.036 348.661x16 row=43/body src=fo:table-cell@246:13
           block 92.709,207.036 344.661x12 src=fo:block@246:42
             line 92.709,207.036 344.661x12
               text 92.709,215.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 40"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 19:5.562
-        block 439.37,205.036 99.213x16 src=fo:table-cell@247:13
+        block 439.37,205.036 99.213x16 row=43/body src=fo:table-cell@247:13
           block 441.37,207.036 95.213x12 src=fo:block@247:42
             line 441.37,207.036 95.213x12
               text 497.655,215.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "477,60 €"
                 glyphs 23:5.562 26:5.562 26:5.562 15:2.778 25:5.562 19:5.562 3:2.778 2088:5.562
-        block 56.693,221.036 34.016x16 src=fo:table-cell@250:13
+        block 56.693,221.036 34.016x16 row=44/body src=fo:table-cell@250:13
           block 58.693,223.036 30.016x12 src=fo:block@250:178
             line 58.693,223.036 30.016x12
               text 77.585,231.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "41"
                 glyphs 23:5.562 20:5.562
-        block 90.709,221.036 348.661x16 src=fo:table-cell@251:13
+        block 90.709,221.036 348.661x16 row=44/body src=fo:table-cell@251:13
           block 92.709,223.036 344.661x12 src=fo:block@251:42
             line 92.709,223.036 344.661x12
               text 92.709,231.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 41"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 20:5.562
-        block 439.37,221.036 99.213x16 src=fo:table-cell@252:13
+        block 439.37,221.036 99.213x16 row=44/body src=fo:table-cell@252:13
           block 441.37,223.036 95.213x12 src=fo:block@252:42
             line 441.37,223.036 95.213x12
               text 497.655,231.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "556,79 €"
                 glyphs 24:5.562 24:5.562 25:5.562 15:2.778 26:5.562 28:5.562 3:2.778 2088:5.562
-        block 56.693,237.036 34.016x16 src=fo:table-cell@255:13
+        block 56.693,237.036 34.016x16 row=45/body src=fo:table-cell@255:13
           block 58.693,239.036 30.016x12 src=fo:block@255:178
             line 58.693,239.036 30.016x12
               text 77.585,247.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "42"
                 glyphs 23:5.562 21:5.562
-        block 90.709,237.036 348.661x16 src=fo:table-cell@256:13
+        block 90.709,237.036 348.661x16 row=45/body src=fo:table-cell@256:13
           block 92.709,239.036 344.661x12 src=fo:block@256:42
             line 92.709,239.036 344.661x12
               text 92.709,247.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 42"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 21:5.562
-        block 439.37,237.036 99.213x16 src=fo:table-cell@257:13
+        block 439.37,237.036 99.213x16 row=45/body src=fo:table-cell@257:13
           block 441.37,239.036 95.213x12 src=fo:block@257:42
             line 441.37,239.036 95.213x12
               text 497.655,247.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "635,98 €"
                 glyphs 25:5.562 22:5.562 24:5.562 15:2.778 28:5.562 27:5.562 3:2.778 2088:5.562
-        block 56.693,253.036 34.016x16 src=fo:table-cell@260:13
+        block 56.693,253.036 34.016x16 row=46/body src=fo:table-cell@260:13
           block 58.693,255.036 30.016x12 src=fo:block@260:178
             line 58.693,255.036 30.016x12
               text 77.585,263.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "43"
                 glyphs 23:5.562 22:5.562
-        block 90.709,253.036 348.661x16 src=fo:table-cell@261:13
+        block 90.709,253.036 348.661x16 row=46/body src=fo:table-cell@261:13
           block 92.709,255.036 344.661x12 src=fo:block@261:42
             line 92.709,255.036 344.661x12
               text 92.709,263.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 43"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 22:5.562
-        block 439.37,253.036 99.213x16 src=fo:table-cell@262:13
+        block 439.37,253.036 99.213x16 row=46/body src=fo:table-cell@262:13
           block 441.37,255.036 95.213x12 src=fo:block@262:42
             line 441.37,255.036 95.213x12
               text 497.655,263.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "715,17 €"
                 glyphs 26:5.562 20:5.562 24:5.562 15:2.778 20:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,269.036 34.016x16 src=fo:table-cell@265:13
+        block 56.693,269.036 34.016x16 row=47/body src=fo:table-cell@265:13
           block 58.693,271.036 30.016x12 src=fo:block@265:178
             line 58.693,271.036 30.016x12
               text 77.585,279.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "44"
                 glyphs 23:5.562 23:5.562
-        block 90.709,269.036 348.661x16 src=fo:table-cell@266:13
+        block 90.709,269.036 348.661x16 row=47/body src=fo:table-cell@266:13
           block 92.709,271.036 344.661x12 src=fo:block@266:42
             line 92.709,271.036 344.661x12
               text 92.709,279.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 44"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 23:5.562
-        block 439.37,269.036 99.213x16 src=fo:table-cell@267:13
+        block 439.37,269.036 99.213x16 row=47/body src=fo:table-cell@267:13
           block 441.37,271.036 95.213x12 src=fo:block@267:42
             line 441.37,271.036 95.213x12
               text 497.655,279.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "794,36 €"
                 glyphs 26:5.562 28:5.562 23:5.562 15:2.778 22:5.562 25:5.562 3:2.778 2088:5.562
-        block 56.693,285.036 34.016x16 src=fo:table-cell@270:13
+        block 56.693,285.036 34.016x16 row=48/body src=fo:table-cell@270:13
           block 58.693,287.036 30.016x12 src=fo:block@270:178
             line 58.693,287.036 30.016x12
               text 77.585,295.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "45"
                 glyphs 23:5.562 24:5.562
-        block 90.709,285.036 348.661x16 src=fo:table-cell@271:13
+        block 90.709,285.036 348.661x16 row=48/body src=fo:table-cell@271:13
           block 92.709,287.036 344.661x12 src=fo:block@271:42
             line 92.709,287.036 344.661x12
               text 92.709,295.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 45"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 24:5.562
-        block 439.37,285.036 99.213x16 src=fo:table-cell@272:13
+        block 439.37,285.036 99.213x16 row=48/body src=fo:table-cell@272:13
           block 441.37,287.036 95.213x12 src=fo:block@272:42
             line 441.37,287.036 95.213x12
               text 497.655,295.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "873,55 €"
                 glyphs 27:5.562 26:5.562 22:5.562 15:2.778 24:5.562 24:5.562 3:2.778 2088:5.562
-        block 56.693,301.036 34.016x16 src=fo:table-cell@275:13
+        block 56.693,301.036 34.016x16 row=49/body src=fo:table-cell@275:13
           block 58.693,303.036 30.016x12 src=fo:block@275:178
             line 58.693,303.036 30.016x12
               text 77.585,311.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "46"
                 glyphs 23:5.562 25:5.562
-        block 90.709,301.036 348.661x16 src=fo:table-cell@276:13
+        block 90.709,301.036 348.661x16 row=49/body src=fo:table-cell@276:13
           block 92.709,303.036 344.661x12 src=fo:block@276:42
             line 92.709,303.036 344.661x12
               text 92.709,311.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 46"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 25:5.562
-        block 439.37,301.036 99.213x16 src=fo:table-cell@277:13
+        block 439.37,301.036 99.213x16 row=49/body src=fo:table-cell@277:13
           block 441.37,303.036 95.213x12 src=fo:block@277:42
             line 441.37,303.036 95.213x12
               text 503.217,311.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "52,74 €"
                 glyphs 24:5.562 21:5.562 15:2.778 26:5.562 23:5.562 3:2.778 2088:5.562
-        block 56.693,317.036 34.016x16 src=fo:table-cell@280:13
+        block 56.693,317.036 34.016x16 row=50/body src=fo:table-cell@280:13
           block 58.693,319.036 30.016x12 src=fo:block@280:178
             line 58.693,319.036 30.016x12
               text 77.585,327.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "47"
                 glyphs 23:5.562 26:5.562
-        block 90.709,317.036 348.661x16 src=fo:table-cell@281:13
+        block 90.709,317.036 348.661x16 row=50/body src=fo:table-cell@281:13
           block 92.709,319.036 344.661x12 src=fo:block@281:42
             line 92.709,319.036 344.661x12
               text 92.709,327.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 47"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 26:5.562
-        block 439.37,317.036 99.213x16 src=fo:table-cell@282:13
+        block 439.37,317.036 99.213x16 row=50/body src=fo:table-cell@282:13
           block 441.37,319.036 95.213x12 src=fo:block@282:42
             line 441.37,319.036 95.213x12
               text 497.655,327.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "131,93 €"
                 glyphs 20:5.562 22:5.562 20:5.562 15:2.778 28:5.562 22:5.562 3:2.778 2088:5.562
-        block 56.693,333.036 34.016x16 src=fo:table-cell@285:13
+        block 56.693,333.036 34.016x16 row=51/body src=fo:table-cell@285:13
           block 58.693,335.036 30.016x12 src=fo:block@285:178
             line 58.693,335.036 30.016x12
               text 77.585,343.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "48"
                 glyphs 23:5.562 27:5.562
-        block 90.709,333.036 348.661x16 src=fo:table-cell@286:13
+        block 90.709,333.036 348.661x16 row=51/body src=fo:table-cell@286:13
           block 92.709,335.036 344.661x12 src=fo:block@286:42
             line 92.709,335.036 344.661x12
               text 92.709,343.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 48"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 27:5.562
-        block 439.37,333.036 99.213x16 src=fo:table-cell@287:13
+        block 439.37,333.036 99.213x16 row=51/body src=fo:table-cell@287:13
           block 441.37,335.036 95.213x12 src=fo:block@287:42
             line 441.37,335.036 95.213x12
               text 497.655,343.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "211,12 €"
                 glyphs 21:5.562 20:5.562 20:5.562 15:2.778 20:5.562 21:5.562 3:2.778 2088:5.562
-        block 56.693,349.036 34.016x16 src=fo:table-cell@290:13
+        block 56.693,349.036 34.016x16 row=52/body src=fo:table-cell@290:13
           block 58.693,351.036 30.016x12 src=fo:block@290:178
             line 58.693,351.036 30.016x12
               text 77.585,359.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "49"
                 glyphs 23:5.562 28:5.562
-        block 90.709,349.036 348.661x16 src=fo:table-cell@291:13
+        block 90.709,349.036 348.661x16 row=52/body src=fo:table-cell@291:13
           block 92.709,351.036 344.661x12 src=fo:block@291:42
             line 92.709,351.036 344.661x12
               text 92.709,359.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 49"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 23:5.562 28:5.562
-        block 439.37,349.036 99.213x16 src=fo:table-cell@292:13
+        block 439.37,349.036 99.213x16 row=52/body src=fo:table-cell@292:13
           block 441.37,351.036 95.213x12 src=fo:block@292:42
             line 441.37,351.036 95.213x12
               text 497.655,359.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "290,31 €"
                 glyphs 21:5.562 28:5.562 19:5.562 15:2.778 22:5.562 20:5.562 3:2.778 2088:5.562
-        block 56.693,365.036 34.016x16 src=fo:table-cell@295:13
+        block 56.693,365.036 34.016x16 row=53/body src=fo:table-cell@295:13
           block 58.693,367.036 30.016x12 src=fo:block@295:178
             line 58.693,367.036 30.016x12
               text 77.585,375.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "50"
                 glyphs 24:5.562 19:5.562
-        block 90.709,365.036 348.661x16 src=fo:table-cell@296:13
+        block 90.709,365.036 348.661x16 row=53/body src=fo:table-cell@296:13
           block 92.709,367.036 344.661x12 src=fo:block@296:42
             line 92.709,367.036 344.661x12
               text 92.709,375.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 50"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 19:5.562
-        block 439.37,365.036 99.213x16 src=fo:table-cell@297:13
+        block 439.37,365.036 99.213x16 row=53/body src=fo:table-cell@297:13
           block 441.37,367.036 95.213x12 src=fo:block@297:42
             line 441.37,367.036 95.213x12
               text 497.655,375.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "369,50 €"
                 glyphs 22:5.562 25:5.562 28:5.562 15:2.778 24:5.562 19:5.562 3:2.778 2088:5.562
-        block 56.693,381.036 34.016x16 src=fo:table-cell@300:13
+        block 56.693,381.036 34.016x16 row=54/body src=fo:table-cell@300:13
           block 58.693,383.036 30.016x12 src=fo:block@300:178
             line 58.693,383.036 30.016x12
               text 77.585,391.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "51"
                 glyphs 24:5.562 20:5.562
-        block 90.709,381.036 348.661x16 src=fo:table-cell@301:13
+        block 90.709,381.036 348.661x16 row=54/body src=fo:table-cell@301:13
           block 92.709,383.036 344.661x12 src=fo:block@301:42
             line 92.709,383.036 344.661x12
               text 92.709,391.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 51"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 20:5.562
-        block 439.37,381.036 99.213x16 src=fo:table-cell@302:13
+        block 439.37,381.036 99.213x16 row=54/body src=fo:table-cell@302:13
           block 441.37,383.036 95.213x12 src=fo:block@302:42
             line 441.37,383.036 95.213x12
               text 497.655,391.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "448,69 €"
                 glyphs 23:5.562 23:5.562 27:5.562 15:2.778 25:5.562 28:5.562 3:2.778 2088:5.562
-        block 56.693,397.036 34.016x16 src=fo:table-cell@305:13
+        block 56.693,397.036 34.016x16 row=55/body src=fo:table-cell@305:13
           block 58.693,399.036 30.016x12 src=fo:block@305:178
             line 58.693,399.036 30.016x12
               text 77.585,407.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "52"
                 glyphs 24:5.562 21:5.562
-        block 90.709,397.036 348.661x16 src=fo:table-cell@306:13
+        block 90.709,397.036 348.661x16 row=55/body src=fo:table-cell@306:13
           block 92.709,399.036 344.661x12 src=fo:block@306:42
             line 92.709,399.036 344.661x12
               text 92.709,407.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 52"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 21:5.562
-        block 439.37,397.036 99.213x16 src=fo:table-cell@307:13
+        block 439.37,397.036 99.213x16 row=55/body src=fo:table-cell@307:13
           block 441.37,399.036 95.213x12 src=fo:block@307:42
             line 441.37,399.036 95.213x12
               text 497.655,407.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "527,88 €"
                 glyphs 24:5.562 21:5.562 26:5.562 15:2.778 27:5.562 27:5.562 3:2.778 2088:5.562
-        block 56.693,413.036 34.016x16 src=fo:table-cell@310:13
+        block 56.693,413.036 34.016x16 row=56/body src=fo:table-cell@310:13
           block 58.693,415.036 30.016x12 src=fo:block@310:178
             line 58.693,415.036 30.016x12
               text 77.585,423.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "53"
                 glyphs 24:5.562 22:5.562
-        block 90.709,413.036 348.661x16 src=fo:table-cell@311:13
+        block 90.709,413.036 348.661x16 row=56/body src=fo:table-cell@311:13
           block 92.709,415.036 344.661x12 src=fo:block@311:42
             line 92.709,415.036 344.661x12
               text 92.709,423.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 53"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 22:5.562
-        block 439.37,413.036 99.213x16 src=fo:table-cell@312:13
+        block 439.37,413.036 99.213x16 row=56/body src=fo:table-cell@312:13
           block 441.37,415.036 95.213x12 src=fo:block@312:42
             line 441.37,415.036 95.213x12
               text 497.655,423.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "607,07 €"
                 glyphs 25:5.562 19:5.562 26:5.562 15:2.778 19:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,429.036 34.016x16 src=fo:table-cell@315:13
+        block 56.693,429.036 34.016x16 row=57/body src=fo:table-cell@315:13
           block 58.693,431.036 30.016x12 src=fo:block@315:178
             line 58.693,431.036 30.016x12
               text 77.585,439.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "54"
                 glyphs 24:5.562 23:5.562
-        block 90.709,429.036 348.661x16 src=fo:table-cell@316:13
+        block 90.709,429.036 348.661x16 row=57/body src=fo:table-cell@316:13
           block 92.709,431.036 344.661x12 src=fo:block@316:42
             line 92.709,431.036 344.661x12
               text 92.709,439.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 54"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 23:5.562
-        block 439.37,429.036 99.213x16 src=fo:table-cell@317:13
+        block 439.37,429.036 99.213x16 row=57/body src=fo:table-cell@317:13
           block 441.37,431.036 95.213x12 src=fo:block@317:42
             line 441.37,431.036 95.213x12
               text 497.655,439.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "686,26 €"
                 glyphs 25:5.562 27:5.562 25:5.562 15:2.778 21:5.562 25:5.562 3:2.778 2088:5.562
-        block 56.693,445.036 34.016x16 src=fo:table-cell@320:13
+        block 56.693,445.036 34.016x16 row=58/body src=fo:table-cell@320:13
           block 58.693,447.036 30.016x12 src=fo:block@320:178
             line 58.693,447.036 30.016x12
               text 77.585,455.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "55"
                 glyphs 24:5.562 24:5.562
-        block 90.709,445.036 348.661x16 src=fo:table-cell@321:13
+        block 90.709,445.036 348.661x16 row=58/body src=fo:table-cell@321:13
           block 92.709,447.036 344.661x12 src=fo:block@321:42
             line 92.709,447.036 344.661x12
               text 92.709,455.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 55"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 24:5.562
-        block 439.37,445.036 99.213x16 src=fo:table-cell@322:13
+        block 439.37,445.036 99.213x16 row=58/body src=fo:table-cell@322:13
           block 441.37,447.036 95.213x12 src=fo:block@322:42
             line 441.37,447.036 95.213x12
               text 497.655,455.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "765,45 €"
                 glyphs 26:5.562 25:5.562 24:5.562 15:2.778 23:5.562 24:5.562 3:2.778 2088:5.562
-        block 56.693,461.036 34.016x16 src=fo:table-cell@325:13
+        block 56.693,461.036 34.016x16 row=59/body src=fo:table-cell@325:13
           block 58.693,463.036 30.016x12 src=fo:block@325:178
             line 58.693,463.036 30.016x12
               text 77.585,471.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "56"
                 glyphs 24:5.562 25:5.562
-        block 90.709,461.036 348.661x16 src=fo:table-cell@326:13
+        block 90.709,461.036 348.661x16 row=59/body src=fo:table-cell@326:13
           block 92.709,463.036 344.661x12 src=fo:block@326:42
             line 92.709,463.036 344.661x12
               text 92.709,471.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 56"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 25:5.562
-        block 439.37,461.036 99.213x16 src=fo:table-cell@327:13
+        block 439.37,461.036 99.213x16 row=59/body src=fo:table-cell@327:13
           block 441.37,463.036 95.213x12 src=fo:block@327:42
             line 441.37,463.036 95.213x12
               text 497.655,471.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "844,64 €"
                 glyphs 27:5.562 23:5.562 23:5.562 15:2.778 25:5.562 23:5.562 3:2.778 2088:5.562
-        block 56.693,477.036 34.016x16 src=fo:table-cell@330:13
+        block 56.693,477.036 34.016x16 row=60/body src=fo:table-cell@330:13
           block 58.693,479.036 30.016x12 src=fo:block@330:178
             line 58.693,479.036 30.016x12
               text 77.585,487.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "57"
                 glyphs 24:5.562 26:5.562
-        block 90.709,477.036 348.661x16 src=fo:table-cell@331:13
+        block 90.709,477.036 348.661x16 row=60/body src=fo:table-cell@331:13
           block 92.709,479.036 344.661x12 src=fo:block@331:42
             line 92.709,479.036 344.661x12
               text 92.709,487.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 57"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 26:5.562
-        block 439.37,477.036 99.213x16 src=fo:table-cell@332:13
+        block 439.37,477.036 99.213x16 row=60/body src=fo:table-cell@332:13
           block 441.37,479.036 95.213x12 src=fo:block@332:42
             line 441.37,479.036 95.213x12
               text 503.217,487.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "23,83 €"
                 glyphs 21:5.562 22:5.562 15:2.778 27:5.562 22:5.562 3:2.778 2088:5.562
-        block 56.693,493.036 34.016x16 src=fo:table-cell@335:13
+        block 56.693,493.036 34.016x16 row=61/body src=fo:table-cell@335:13
           block 58.693,495.036 30.016x12 src=fo:block@335:178
             line 58.693,495.036 30.016x12
               text 77.585,503.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "58"
                 glyphs 24:5.562 27:5.562
-        block 90.709,493.036 348.661x16 src=fo:table-cell@336:13
+        block 90.709,493.036 348.661x16 row=61/body src=fo:table-cell@336:13
           block 92.709,495.036 344.661x12 src=fo:block@336:42
             line 92.709,495.036 344.661x12
               text 92.709,503.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 58"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 27:5.562
-        block 439.37,493.036 99.213x16 src=fo:table-cell@337:13
+        block 439.37,493.036 99.213x16 row=61/body src=fo:table-cell@337:13
           block 441.37,495.036 95.213x12 src=fo:block@337:42
             line 441.37,495.036 95.213x12
               text 497.655,503.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "103,02 €"
                 glyphs 20:5.562 19:5.562 22:5.562 15:2.778 19:5.562 21:5.562 3:2.778 2088:5.562
-        block 56.693,509.036 34.016x16 src=fo:table-cell@340:13
+        block 56.693,509.036 34.016x16 row=62/body src=fo:table-cell@340:13
           block 58.693,511.036 30.016x12 src=fo:block@340:178
             line 58.693,511.036 30.016x12
               text 77.585,519.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "59"
                 glyphs 24:5.562 28:5.562
-        block 90.709,509.036 348.661x16 src=fo:table-cell@341:13
+        block 90.709,509.036 348.661x16 row=62/body src=fo:table-cell@341:13
           block 92.709,511.036 344.661x12 src=fo:block@341:42
             line 92.709,511.036 344.661x12
               text 92.709,519.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 59"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 24:5.562 28:5.562
-        block 439.37,509.036 99.213x16 src=fo:table-cell@342:13
+        block 439.37,509.036 99.213x16 row=62/body src=fo:table-cell@342:13
           block 441.37,511.036 95.213x12 src=fo:block@342:42
             line 441.37,511.036 95.213x12
               text 497.655,519.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "182,21 €"
                 glyphs 20:5.562 27:5.562 21:5.562 15:2.778 21:5.562 20:5.562 3:2.778 2088:5.562
-        block 56.693,525.036 34.016x16 src=fo:table-cell@345:13
+        block 56.693,525.036 34.016x16 row=63/body src=fo:table-cell@345:13
           block 58.693,527.036 30.016x12 src=fo:block@345:178
             line 58.693,527.036 30.016x12
               text 77.585,535.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "60"
                 glyphs 25:5.562 19:5.562
-        block 90.709,525.036 348.661x16 src=fo:table-cell@346:13
+        block 90.709,525.036 348.661x16 row=63/body src=fo:table-cell@346:13
           block 92.709,527.036 344.661x12 src=fo:block@346:42
             line 92.709,527.036 344.661x12
               text 92.709,535.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 60"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 19:5.562
-        block 439.37,525.036 99.213x16 src=fo:table-cell@347:13
+        block 439.37,525.036 99.213x16 row=63/body src=fo:table-cell@347:13
           block 441.37,527.036 95.213x12 src=fo:block@347:42
             line 441.37,527.036 95.213x12
               text 497.655,535.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "261,40 €"
                 glyphs 21:5.562 25:5.562 20:5.562 15:2.778 23:5.562 19:5.562 3:2.778 2088:5.562
-        block 56.693,541.036 34.016x16 src=fo:table-cell@350:13
+        block 56.693,541.036 34.016x16 row=64/body src=fo:table-cell@350:13
           block 58.693,543.036 30.016x12 src=fo:block@350:178
             line 58.693,543.036 30.016x12
               text 77.585,551.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "61"
                 glyphs 25:5.562 20:5.562
-        block 90.709,541.036 348.661x16 src=fo:table-cell@351:13
+        block 90.709,541.036 348.661x16 row=64/body src=fo:table-cell@351:13
           block 92.709,543.036 344.661x12 src=fo:block@351:42
             line 92.709,543.036 344.661x12
               text 92.709,551.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 61"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 20:5.562
-        block 439.37,541.036 99.213x16 src=fo:table-cell@352:13
+        block 439.37,541.036 99.213x16 row=64/body src=fo:table-cell@352:13
           block 441.37,543.036 95.213x12 src=fo:block@352:42
             line 441.37,543.036 95.213x12
               text 497.655,551.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "340,59 €"
                 glyphs 22:5.562 23:5.562 19:5.562 15:2.778 24:5.562 28:5.562 3:2.778 2088:5.562
-        block 56.693,557.036 34.016x16 src=fo:table-cell@355:13
+        block 56.693,557.036 34.016x16 row=65/body src=fo:table-cell@355:13
           block 58.693,559.036 30.016x12 src=fo:block@355:178
             line 58.693,559.036 30.016x12
               text 77.585,567.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "62"
                 glyphs 25:5.562 21:5.562
-        block 90.709,557.036 348.661x16 src=fo:table-cell@356:13
+        block 90.709,557.036 348.661x16 row=65/body src=fo:table-cell@356:13
           block 92.709,559.036 344.661x12 src=fo:block@356:42
             line 92.709,559.036 344.661x12
               text 92.709,567.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 62"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 21:5.562
-        block 439.37,557.036 99.213x16 src=fo:table-cell@357:13
+        block 439.37,557.036 99.213x16 row=65/body src=fo:table-cell@357:13
           block 441.37,559.036 95.213x12 src=fo:block@357:42
             line 441.37,559.036 95.213x12
               text 497.655,567.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "419,78 €"
                 glyphs 23:5.562 20:5.562 28:5.562 15:2.778 26:5.562 27:5.562 3:2.778 2088:5.562
-        block 56.693,573.036 34.016x16 src=fo:table-cell@360:13
+        block 56.693,573.036 34.016x16 row=66/body src=fo:table-cell@360:13
           block 58.693,575.036 30.016x12 src=fo:block@360:178
             line 58.693,575.036 30.016x12
               text 77.585,583.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "63"
                 glyphs 25:5.562 22:5.562
-        block 90.709,573.036 348.661x16 src=fo:table-cell@361:13
+        block 90.709,573.036 348.661x16 row=66/body src=fo:table-cell@361:13
           block 92.709,575.036 344.661x12 src=fo:block@361:42
             line 92.709,575.036 344.661x12
               text 92.709,583.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Lizenzgebühr Abschnitt 63"
                 glyphs 47:5.562 76:2.222 93:5 72:5.562 81:5.562 93:5 74:5.562 72:5.562 69:5.562 190:5.562 75:5.562 85:3.33 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 22:5.562
-        block 439.37,573.036 99.213x16 src=fo:table-cell@362:13
+        block 439.37,573.036 99.213x16 row=66/body src=fo:table-cell@362:13
           block 441.37,575.036 95.213x12 src=fo:block@362:42
             line 441.37,575.036 95.213x12
               text 497.655,583.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "498,97 €"
                 glyphs 23:5.562 28:5.562 27:5.562 15:2.778 28:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,589.036 34.016x16 src=fo:table-cell@365:13
+        block 56.693,589.036 34.016x16 row=67/body src=fo:table-cell@365:13
           block 58.693,591.036 30.016x12 src=fo:block@365:178
             line 58.693,591.036 30.016x12
               text 77.585,599.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "64"
                 glyphs 25:5.562 23:5.562
-        block 90.709,589.036 348.661x16 src=fo:table-cell@366:13
+        block 90.709,589.036 348.661x16 row=67/body src=fo:table-cell@366:13
           block 92.709,591.036 344.661x12 src=fo:block@366:42
             line 92.709,591.036 344.661x12
               text 92.709,599.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Beratung Abschnitt 64"
                 glyphs 37:6.67 72:5.562 85:3.33 68:5.562 87:2.778 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 23:5.562
-        block 439.37,589.036 99.213x16 src=fo:table-cell@367:13
+        block 439.37,589.036 99.213x16 row=67/body src=fo:table-cell@367:13
           block 441.37,591.036 95.213x12 src=fo:block@367:42
             line 441.37,591.036 95.213x12
               text 497.655,599.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "578,16 €"
                 glyphs 24:5.562 26:5.562 27:5.562 15:2.778 20:5.562 25:5.562 3:2.778 2088:5.562
-        block 56.693,605.036 34.016x16 src=fo:table-cell@370:13
+        block 56.693,605.036 34.016x16 row=68/body src=fo:table-cell@370:13
           block 58.693,607.036 30.016x12 src=fo:block@370:178
             line 58.693,607.036 30.016x12
               text 77.585,615.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "65"
                 glyphs 25:5.562 24:5.562
-        block 90.709,605.036 348.661x16 src=fo:table-cell@371:13
+        block 90.709,605.036 348.661x16 row=68/body src=fo:table-cell@371:13
           block 92.709,607.036 344.661x12 src=fo:block@371:42
             line 92.709,607.036 344.661x12
               text 92.709,615.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Konzeption Abschnitt 65"
                 glyphs 46:6.67 82:5.562 81:5.562 93:5 72:5.562 83:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 24:5.562
-        block 439.37,605.036 99.213x16 src=fo:table-cell@372:13
+        block 439.37,605.036 99.213x16 row=68/body src=fo:table-cell@372:13
           block 441.37,607.036 95.213x12 src=fo:block@372:42
             line 441.37,607.036 95.213x12
               text 497.655,615.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "657,35 €"
                 glyphs 25:5.562 24:5.562 26:5.562 15:2.778 22:5.562 24:5.562 3:2.778 2088:5.562
-        block 56.693,621.036 34.016x16 src=fo:table-cell@375:13
+        block 56.693,621.036 34.016x16 row=69/body src=fo:table-cell@375:13
           block 58.693,623.036 30.016x12 src=fo:block@375:178
             line 58.693,623.036 30.016x12
               text 77.585,631.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "66"
                 glyphs 25:5.562 25:5.562
-        block 90.709,621.036 348.661x16 src=fo:table-cell@376:13
+        block 90.709,621.036 348.661x16 row=69/body src=fo:table-cell@376:13
           block 92.709,623.036 344.661x12 src=fo:block@376:42
             line 92.709,623.036 344.661x12
               text 92.709,631.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Umsetzung Modul Abschnitt 66"
                 glyphs 56:7.222 80:8.33 86:5 72:5.562 87:2.778 93:5 88:5.562 81:5.562 74:5.562 3:2.778 48:8.33 82:5.562 71:5.562 88:5.562 79:2.222 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 25:5.562
-        block 439.37,621.036 99.213x16 src=fo:table-cell@377:13
+        block 439.37,621.036 99.213x16 row=69/body src=fo:table-cell@377:13
           block 441.37,623.036 95.213x12 src=fo:block@377:42
             line 441.37,623.036 95.213x12
               text 497.655,631.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "736,54 €"
                 glyphs 26:5.562 22:5.562 25:5.562 15:2.778 24:5.562 23:5.562 3:2.778 2088:5.562
-        block 56.693,637.036 34.016x16 src=fo:table-cell@380:13
+        block 56.693,637.036 34.016x16 row=70/body src=fo:table-cell@380:13
           block 58.693,639.036 30.016x12 src=fo:block@380:178
             line 58.693,639.036 30.016x12
               text 77.585,647.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "67"
                 glyphs 25:5.562 26:5.562
-        block 90.709,637.036 348.661x16 src=fo:table-cell@381:13
+        block 90.709,637.036 348.661x16 row=70/body src=fo:table-cell@381:13
           block 92.709,639.036 344.661x12 src=fo:block@381:42
             line 92.709,639.036 344.661x12
               text 92.709,647.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Test und Abnahme Abschnitt 67"
                 glyphs 55:5 72:5.562 86:5 87:2.778 3:2.778 88:5.562 81:5.562 71:5.562 3:2.778 36:6.67 69:5.562 81:5.562 68:5.562 75:5.562 80:8.33 72:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 26:5.562
-        block 439.37,637.036 99.213x16 src=fo:table-cell@382:13
+        block 439.37,637.036 99.213x16 row=70/body src=fo:table-cell@382:13
           block 441.37,639.036 95.213x12 src=fo:block@382:42
             line 441.37,639.036 95.213x12
               text 497.655,647.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "815,73 €"
                 glyphs 27:5.562 20:5.562 24:5.562 15:2.778 26:5.562 22:5.562 3:2.778 2088:5.562
-        block 56.693,653.036 34.016x16 src=fo:table-cell@385:13
+        block 56.693,653.036 34.016x16 row=71/body src=fo:table-cell@385:13
           block 58.693,655.036 30.016x12 src=fo:block@385:178
             line 58.693,655.036 30.016x12
               text 77.585,663.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "68"
                 glyphs 25:5.562 27:5.562
-        block 90.709,653.036 348.661x16 src=fo:table-cell@386:13
+        block 90.709,653.036 348.661x16 row=71/body src=fo:table-cell@386:13
           block 92.709,655.036 344.661x12 src=fo:block@386:42
             line 92.709,655.036 344.661x12
               text 92.709,663.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Schulung Abschnitt 68"
                 glyphs 54:6.67 70:5 75:5.562 88:5.562 79:2.222 88:5.562 81:5.562 74:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 27:5.562
-        block 439.37,653.036 99.213x16 src=fo:table-cell@387:13
+        block 439.37,653.036 99.213x16 row=71/body src=fo:table-cell@387:13
           block 441.37,655.036 95.213x12 src=fo:block@387:42
             line 441.37,655.036 95.213x12
               text 497.655,663.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "894,92 €"
                 glyphs 27:5.562 28:5.562 23:5.562 15:2.778 28:5.562 21:5.562 3:2.778 2088:5.562
-        block 56.693,669.036 34.016x16 src=fo:table-cell@390:13
+        block 56.693,669.036 34.016x16 row=72/body src=fo:table-cell@390:13
           block 58.693,671.036 30.016x12 src=fo:block@390:178
             line 58.693,671.036 30.016x12
               text 77.585,679.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "69"
                 glyphs 25:5.562 28:5.562
-        block 90.709,669.036 348.661x16 src=fo:table-cell@391:13
+        block 90.709,669.036 348.661x16 row=72/body src=fo:table-cell@391:13
           block 92.709,671.036 344.661x12 src=fo:block@391:42
             line 92.709,671.036 344.661x12
               text 92.709,679.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Dokumentation Abschnitt 69"
                 glyphs 39:7.222 82:5.562 78:5 88:5.562 80:8.33 72:5.562 81:5.562 87:2.778 68:5.562 87:2.778 76:2.222 82:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 25:5.562 28:5.562
-        block 439.37,669.036 99.213x16 src=fo:table-cell@392:13
+        block 439.37,669.036 99.213x16 row=72/body src=fo:table-cell@392:13
           block 441.37,671.036 95.213x12 src=fo:block@392:42
             line 441.37,671.036 95.213x12
               text 503.217,679.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "74,11 €"
                 glyphs 26:5.562 23:5.562 15:2.778 20:5.562 20:5.562 3:2.778 2088:5.562
-        block 56.693,685.036 34.016x16 src=fo:table-cell@395:13
+        block 56.693,685.036 34.016x16 row=73/body src=fo:table-cell@395:13
           block 58.693,687.036 30.016x12 src=fo:block@395:178
             line 58.693,687.036 30.016x12
               text 77.585,695.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "70"
                 glyphs 26:5.562 19:5.562
-        block 90.709,685.036 348.661x16 src=fo:table-cell@396:13
+        block 90.709,685.036 348.661x16 row=73/body src=fo:table-cell@396:13
           block 92.709,687.036 344.661x12 src=fo:block@396:42
             line 92.709,687.036 344.661x12
               text 92.709,695.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "Reisekosten Abschnitt 70"
                 glyphs 53:7.222 72:5.562 76:2.222 86:5 72:5.562 78:5 82:5.562 86:5 87:2.778 72:5.562 81:5.562 3:2.778 36:6.67 69:5.562 86:5 70:5 75:5.562 81:5.562 76:2.222 87:2.778 87:2.778 3:2.778 26:5.562 19:5.562
-        block 439.37,685.036 99.213x16 src=fo:table-cell@397:13
+        block 439.37,685.036 99.213x16 row=73/body src=fo:table-cell@397:13
           block 441.37,687.036 95.213x12 src=fo:block@397:42
             line 441.37,687.036 95.213x12
               text 497.655,695.624 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "153,30 €"
@@ -1139,12 +1139,12 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,701.286 90.709,701.286 0.5/solid/gray(0)
         line 90.709,701.286 439.37,701.286 0.5/solid/gray(0)
         line 439.37,701.286 538.583,701.286 0.5/solid/gray(0)
-        block 56.693,701.536 382.677x16 src=fo:table-cell@44:13
+        block 56.693,701.536 382.677x16 row=34/footer src=fo:table-cell@44:13
           block 58.693,703.536 378.677x12 src=fo:block@44:100
             line 58.693,703.536 378.677x12
               text 356.788,712.124 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Zwischensumme"
                 glyphs 61:6.108 90:7.778 76:2.778 86:5.562 70:5.562 75:6.108 72:5.562 81:6.108 86:5.562 88:6.108 80:8.892 80:8.892 72:5.562
-        block 439.37,701.536 99.213x16 src=fo:table-cell@45:13
+        block 439.37,701.536 99.213x16 row=34/footer src=fo:table-cell@45:13
           block 441.37,703.536 95.213x12 src=fo:block@45:73
             line 441.37,703.536 95.213x12
               text 483.753,712.124 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "31.887,15 €"
@@ -1152,17 +1152,17 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,701.286 439.37,701.286 0.5/solid/gray(0)
         line 439.37,701.286 538.583,701.286 0.5/solid/gray(0)
         box 56.693,76.536 481.89x16.25 fill=rgb(0.9098,0.9333,0.9608)
-        block 56.693,76.536 34.016x16 src=fo:table-cell@33:13
+        block 56.693,76.536 34.016x16 repeat row=74/header src=fo:table-cell@33:13
           block 58.693,78.536 30.016x12 src=fo:block@33:76
             line 58.693,78.536 30.016x12
               text 67.591,87.124 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Pos."
                 glyphs 51:6.67 82:6.108 86:5.562 17:2.778
-        block 90.709,76.536 348.661x16 src=fo:table-cell@34:13
+        block 90.709,76.536 348.661x16 repeat row=74/header src=fo:table-cell@34:13
           block 92.709,78.536 344.661x12 src=fo:block@34:76
             line 92.709,78.536 344.661x12
               text 92.709,87.124 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Leistung"
                 glyphs 47:6.108 72:5.562 76:2.778 86:5.562 87:3.33 88:6.108 81:6.108 74:6.108
-        block 439.37,76.536 99.213x16 src=fo:table-cell@35:13
+        block 439.37,76.536 99.213x16 repeat row=74/header src=fo:table-cell@35:13
           block 441.37,78.536 95.213x12 src=fo:block@35:76
             line 441.37,78.536 95.213x12
               text 504.907,87.124 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Betrag"
@@ -1170,12 +1170,12 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,92.786 90.709,92.786 0.5/solid/gray(0)
         line 90.709,92.786 439.37,92.786 0.5/solid/gray(0)
         line 439.37,92.786 538.583,92.786 0.5/solid/gray(0)
-        block 56.693,93.036 382.677x16 src=fo:table-cell@38:13
+        block 56.693,93.036 382.677x16 repeat row=75/header src=fo:table-cell@38:13
           block 58.693,95.036 378.677x12 src=fo:block@38:69
             line 58.693,95.036 378.677x12
               text 398.462,103.638 font=2 size=10 color=gray(0) asc=7.28 desc=2.075 "Übertrag"
                 glyphs 158:7.222 69:5.562 72:5.562 85:3.33 87:2.778 85:3.33 68:5.562 74:5.562
-        block 439.37,93.036 99.213x16 src=fo:table-cell@39:13
+        block 439.37,93.036 99.213x16 repeat row=75/header src=fo:table-cell@39:13
           block 441.37,95.036 95.213x12 src=fo:block@39:42
             line 441.37,95.036 95.213x12
               text 483.753,103.638 font=2 size=10 color=gray(0) asc=7.28 desc=2.075 "15.055,59 €"

@@ -33,16 +33,16 @@ func (pl *placer) flushRow() error {
 		r = nr
 	}
 	// Der Abstand am Anfang der ersten Scheibe steht als Glue davor.
-	return pl.drawRow(r, r.slices[f.s0]+r.skip[f.s0], r.slices[f.s1], f.y)
+	return pl.drawRow(r, r.slices[f.s0]+r.skip[f.s0], r.slices[f.s1], f.y, rowRef{key: f.r})
 }
 
-// drawRows zeichnet ganze Zeilen ab der aktuellen Position, etwa einen
-// wiederholten Tabellenkopf.
+// drawRows zeichnet ganze Zeilen ab der aktuellen Position: wiederholte
+// Tabellenköpfe und -füße auf Folgeseiten.
 func (pl *placer) drawRows(rows []*rowLayout) error {
 	for _, r := range rows {
 		if t := r.tbl; t != nil && t.dynamic {
 			if r.sec == secHeader {
-				pl.deferred = append(pl.deferred, deferredRow{r: r, y: pl.y, parent: pl.parent()})
+				pl.deferred = append(pl.deferred, deferredRow{r: r, y: pl.y, parent: pl.parent(), repeat: true})
 				pl.y += r.h
 				continue
 			}
@@ -50,13 +50,13 @@ func (pl *placer) drawRows(rows []*rowLayout) error {
 			if err != nil {
 				return err
 			}
-			if err := pl.drawRow(nr, 0, nr.h, pl.y); err != nil {
+			if err := pl.drawRow(nr, 0, nr.h, pl.y, rowRef{key: r, repeat: true}); err != nil {
 				return err
 			}
 			pl.y += r.h
 			continue
 		}
-		if err := pl.drawRow(r, 0, r.h, pl.y); err != nil {
+		if err := pl.drawRow(r, 0, r.h, pl.y, rowRef{key: r, repeat: true}); err != nil {
 			return err
 		}
 		pl.y += r.h
@@ -65,12 +65,12 @@ func (pl *placer) drawRows(rows []*rowLayout) error {
 }
 
 // drawRow zeichnet den Bereich [a, b) einer Zeile mit Oberkante y.
-func (pl *placer) drawRow(r *rowLayout, a, b, y areatree.Length) error {
-	return pl.drawRowIn(pl.parent(), r, a, b, y)
+func (pl *placer) drawRow(r *rowLayout, a, b, y areatree.Length, ref rowRef) error {
+	return pl.drawRowIn(pl.parent(), r, a, b, y, ref)
 }
 
 // drawRowIn zeichnet in einen bestimmten Container.
-func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y areatree.Length) error {
+func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y areatree.Length, ref rowRef) error {
 	whole := a == 0 && b == r.h
 	pl.rowIDs(r, a, y)
 	if r.bg != nil {
@@ -102,6 +102,7 @@ func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y ar
 		}
 
 		cont := &areatree.Container{Kind: areatree.KindBlock, Background: c.p.Background, Source: c.node.Label(), ID: c.node.TemplateID()}
+		pl.cellTag(cont, c.node, r, ref)
 		half := func(s int) areatree.Length {
 			if c.border[s].Visible() {
 				return c.border[s].Width / 2

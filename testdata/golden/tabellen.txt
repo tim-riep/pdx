@@ -10,22 +10,22 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             glyphs 51:9.338 82:8.552 86:7.786 76:3.89 87:4.662 76:3.89 82:8.552 81:8.552 72:7.786 81:8.552
       block 56.693,70.659 481.89x663.25 src=fo:table@18:7
         box 56.693,70.659 481.89x17.65 fill=rgb(0.1216,0.3059,0.4745)
-        block 56.943,70.909 33.766x17.4 src=fo:table-cell@25:13
+        block 56.943,70.909 33.766x17.4 row=1/header src=fo:table-cell@25:13
           block 59.943,73.909 27.766x11.4 src=fo:block@25:42
             line 59.943,73.909 27.766x11.4
               text 67.648,82.067 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Pos."
                 glyphs 51:6.336 82:5.803 86:5.283 17:2.639
-        block 90.709,70.909 276.378x17.4 src=fo:table-cell@26:13
+        block 90.709,70.909 276.378x17.4 row=1/header src=fo:table-cell@26:13
           block 93.709,73.909 270.378x11.4 src=fo:block@26:42
             line 93.709,73.909 270.378x11.4
               text 93.709,82.067 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Leistung"
                 glyphs 47:5.803 72:5.283 76:2.639 86:5.283 87:3.164 88:5.803 81:5.803 74:5.803
-        block 367.087,70.909 92.126x17.4 src=fo:table-cell@27:13
+        block 367.087,70.909 92.126x17.4 row=1/header src=fo:table-cell@27:13
           block 370.087,73.909 86.126x11.4 src=fo:block@27:42
             line 370.087,73.909 86.126x11.4
               text 426.127,82.067 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Menge"
                 glyphs 48:7.914 72:5.283 81:5.803 74:5.803 72:5.283
-        block 459.213,70.909 79.12x17.4 src=fo:table-cell@28:13
+        block 459.213,70.909 79.12x17.4 row=1/header src=fo:table-cell@28:13
           block 462.213,73.909 73.12x11.4 src=fo:block@28:42
             line 462.213,73.909 73.12x11.4
               text 505.242,82.067 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Betrag"
@@ -36,12 +36,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 367.087,70.659 459.213,70.659 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 459.213,70.659 538.833,70.659 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,70.659 538.583,88.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,88.309 33.766x26.8 src=fo:table-cell@38:11
+        block 56.943,88.309 33.766x26.8 row=2/body src=fo:table-cell@38:11
           block 59.943,90.309 27.766x11.4 src=fo:block@38:44
             line 59.943,90.309 27.766x11.4
               text 82.426,98.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 90.709,88.309 276.378x26.8 src=fo:table-cell@39:11
+        block 90.709,88.309 276.378x26.8 row=2/body src=fo:table-cell@39:11
           block 93.709,90.309 270.378x22.8 src=fo:block@39:44
             line 93.709,90.309 270.378x11.4
               text 93.709,98.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -49,12 +49,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,101.709 270.378x11.4
               text 93.709,109.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,88.309 92.126x26.8 src=fo:table-cell@40:11
+        block 367.087,88.309 92.126x26.8 row=2/body src=fo:table-cell@40:11
           block 370.087,90.309 86.126x11.4 src=fo:block@40:44
             line 370.087,90.309 86.126x11.4
               text 432.975,98.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,88.309 79.12x26.8 src=fo:table-cell@41:11
+        block 459.213,88.309 79.12x26.8 row=2/body src=fo:table-cell@41:11
           block 462.213,90.309 73.12x11.4 src=fo:block@41:44
             line 462.213,90.309 73.12x11.4
               text 490.435,98.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
@@ -62,44 +62,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,88.309 56.693,115.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,88.309 538.583,115.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,115.109 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,115.109 33.766x15.4 src=fo:table-cell@44:11
+        block 56.943,115.109 33.766x15.4 row=3/body src=fo:table-cell@44:11
           block 59.943,117.109 27.766x11.4 src=fo:block@44:44
             line 59.943,117.109 27.766x11.4
               text 82.426,125.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2"
                 glyphs 21:5.283
-        block 90.709,115.109 276.378x15.4 src=fo:table-cell@45:11
+        block 90.709,115.109 276.378x15.4 row=3/body src=fo:table-cell@45:11
           block 93.709,117.109 270.378x11.4 src=fo:block@45:44
             line 93.709,117.109 270.378x11.4
               text 93.709,125.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,115.109 92.126x15.4 src=fo:table-cell@46:11
+        block 367.087,115.109 92.126x15.4 row=3/body src=fo:table-cell@46:11
           block 370.087,117.109 86.126x11.4 src=fo:block@46:44
             line 370.087,117.109 86.126x11.4
               text 450.93,125.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,115.109 79.12x15.4 src=fo:table-cell@47:11
+        block 459.213,115.109 79.12x15.4 row=3/body src=fo:table-cell@47:11
           block 462.213,117.109 73.12x11.4 src=fo:block@47:44
             line 462.213,117.109 73.12x11.4
               text 503.64,125.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
                 glyphs 25:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,115.109 56.693,130.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,115.109 538.583,130.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,130.509 33.766x15.4 src=fo:table-cell@50:11
+        block 56.943,130.509 33.766x15.4 row=4/body src=fo:table-cell@50:11
           block 59.943,132.509 27.766x11.4 src=fo:block@50:44
             line 59.943,132.509 27.766x11.4
               text 82.426,140.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 90.709,130.509 276.378x15.4 src=fo:table-cell@51:11
+        block 90.709,130.509 276.378x15.4 row=4/body src=fo:table-cell@51:11
           block 93.709,132.509 270.378x11.4 src=fo:block@51:44
             line 93.709,132.509 270.378x11.4
               text 93.709,140.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,130.509 92.126x15.4 src=fo:table-cell@52:11
+        block 367.087,130.509 92.126x15.4 row=4/body src=fo:table-cell@52:11
           block 370.087,132.509 86.126x11.4 src=fo:block@52:44
             line 370.087,132.509 86.126x11.4
               text 450.93,140.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,130.509 79.12x15.4 src=fo:table-cell@53:11
+        block 459.213,130.509 79.12x15.4 row=4/body src=fo:table-cell@53:11
           block 462.213,132.509 73.12x11.4 src=fo:block@53:44
             line 462.213,132.509 73.12x11.4
               text 498.357,140.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
@@ -107,44 +107,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,130.509 56.693,145.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,130.509 538.583,145.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,145.909 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,145.909 33.766x15.4 src=fo:table-cell@56:11
+        block 56.943,145.909 33.766x15.4 row=5/body src=fo:table-cell@56:11
           block 59.943,147.909 27.766x11.4 src=fo:block@56:44
             line 59.943,147.909 27.766x11.4
               text 82.426,156.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "4"
                 glyphs 23:5.283
-        block 90.709,145.909 276.378x15.4 src=fo:table-cell@57:11
+        block 90.709,145.909 276.378x15.4 row=5/body src=fo:table-cell@57:11
           block 93.709,147.909 270.378x11.4 src=fo:block@57:44
             line 93.709,147.909 270.378x11.4
               text 93.709,156.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,145.909 92.126x15.4 src=fo:table-cell@58:11
+        block 367.087,145.909 92.126x15.4 row=5/body src=fo:table-cell@58:11
           block 370.087,147.909 86.126x11.4 src=fo:block@58:44
             line 370.087,147.909 86.126x11.4
               text 427.692,156.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,145.909 79.12x15.4 src=fo:table-cell@59:11
+        block 459.213,145.909 79.12x15.4 row=5/body src=fo:table-cell@59:11
           block 462.213,147.909 73.12x11.4 src=fo:block@59:44
             line 462.213,147.909 73.12x11.4
               text 490.435,156.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
                 glyphs 20:5.283 17:2.639 28:5.283 19:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,145.909 56.693,161.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,145.909 538.583,161.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,161.309 33.766x15.4 src=fo:table-cell@62:11
+        block 56.943,161.309 33.766x15.4 row=6/body src=fo:table-cell@62:11
           block 59.943,163.309 27.766x11.4 src=fo:block@62:44
             line 59.943,163.309 27.766x11.4
               text 82.426,171.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "5"
                 glyphs 24:5.283
-        block 90.709,161.309 276.378x15.4 src=fo:table-cell@63:11
+        block 90.709,161.309 276.378x15.4 row=6/body src=fo:table-cell@63:11
           block 93.709,163.309 270.378x11.4 src=fo:block@63:44
             line 93.709,163.309 270.378x11.4
               text 93.709,171.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,161.309 92.126x15.4 src=fo:table-cell@64:11
+        block 367.087,161.309 92.126x15.4 row=6/body src=fo:table-cell@64:11
           block 370.087,163.309 86.126x11.4 src=fo:block@64:44
             line 370.087,163.309 86.126x11.4
               text 443.008,171.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,161.309 79.12x15.4 src=fo:table-cell@65:11
+        block 459.213,161.309 79.12x15.4 row=6/body src=fo:table-cell@65:11
           block 462.213,163.309 73.12x11.4 src=fo:block@65:44
             line 462.213,163.309 73.12x11.4
               text 503.64,171.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
@@ -152,12 +152,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,161.309 56.693,176.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,161.309 538.583,176.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,176.709 481.89x26.8 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,176.709 33.766x26.8 src=fo:table-cell@68:11
+        block 56.943,176.709 33.766x26.8 row=7/body src=fo:table-cell@68:11
           block 59.943,178.709 27.766x11.4 src=fo:block@68:44
             line 59.943,178.709 27.766x11.4
               text 82.426,186.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "6"
                 glyphs 25:5.283
-        block 90.709,176.709 276.378x26.8 src=fo:table-cell@69:11
+        block 90.709,176.709 276.378x26.8 row=7/body src=fo:table-cell@69:11
           block 93.709,178.709 270.378x22.8 src=fo:block@69:44
             line 93.709,178.709 270.378x11.4
               text 93.709,186.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -165,34 +165,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,190.109 270.378x11.4
               text 93.709,198.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,176.709 92.126x26.8 src=fo:table-cell@70:11
+        block 367.087,176.709 92.126x26.8 row=7/body src=fo:table-cell@70:11
           block 370.087,178.709 86.126x11.4 src=fo:block@70:44
             line 370.087,178.709 86.126x11.4
               text 432.975,186.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,176.709 79.12x26.8 src=fo:table-cell@71:11
+        block 459.213,176.709 79.12x26.8 row=7/body src=fo:table-cell@71:11
           block 462.213,178.709 73.12x11.4 src=fo:block@71:44
             line 462.213,178.709 73.12x11.4
               text 490.435,186.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
                 glyphs 20:5.283 17:2.639 20:5.283 27:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,176.709 56.693,203.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,176.709 538.583,203.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,203.509 33.766x15.4 src=fo:table-cell@74:11
+        block 56.943,203.509 33.766x15.4 row=8/body src=fo:table-cell@74:11
           block 59.943,205.509 27.766x11.4 src=fo:block@74:44
             line 59.943,205.509 27.766x11.4
               text 82.426,213.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "7"
                 glyphs 26:5.283
-        block 90.709,203.509 276.378x15.4 src=fo:table-cell@75:11
+        block 90.709,203.509 276.378x15.4 row=8/body src=fo:table-cell@75:11
           block 93.709,205.509 270.378x11.4 src=fo:block@75:44
             line 93.709,205.509 270.378x11.4
               text 93.709,213.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,203.509 92.126x15.4 src=fo:table-cell@76:11
+        block 367.087,203.509 92.126x15.4 row=8/body src=fo:table-cell@76:11
           block 370.087,205.509 86.126x11.4 src=fo:block@76:44
             line 370.087,205.509 86.126x11.4
               text 450.93,213.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,203.509 79.12x15.4 src=fo:table-cell@77:11
+        block 459.213,203.509 79.12x15.4 row=8/body src=fo:table-cell@77:11
           block 462.213,205.509 73.12x11.4 src=fo:block@77:44
             line 462.213,205.509 73.12x11.4
               text 503.64,213.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
@@ -200,44 +200,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,203.509 56.693,218.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,203.509 538.583,218.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,218.909 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,218.909 33.766x15.4 src=fo:table-cell@80:11
+        block 56.943,218.909 33.766x15.4 row=9/body src=fo:table-cell@80:11
           block 59.943,220.909 27.766x11.4 src=fo:block@80:44
             line 59.943,220.909 27.766x11.4
               text 82.426,229.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8"
                 glyphs 27:5.283
-        block 90.709,218.909 276.378x15.4 src=fo:table-cell@81:11
+        block 90.709,218.909 276.378x15.4 row=9/body src=fo:table-cell@81:11
           block 93.709,220.909 270.378x11.4 src=fo:block@81:44
             line 93.709,220.909 270.378x11.4
               text 93.709,229.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,218.909 92.126x15.4 src=fo:table-cell@82:11
+        block 367.087,218.909 92.126x15.4 row=9/body src=fo:table-cell@82:11
           block 370.087,220.909 86.126x11.4 src=fo:block@82:44
             line 370.087,220.909 86.126x11.4
               text 450.93,229.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,218.909 79.12x15.4 src=fo:table-cell@83:11
+        block 459.213,218.909 79.12x15.4 row=9/body src=fo:table-cell@83:11
           block 462.213,220.909 73.12x11.4 src=fo:block@83:44
             line 462.213,220.909 73.12x11.4
               text 498.357,229.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
                 glyphs 21:5.283 23:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,218.909 56.693,234.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,218.909 538.583,234.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,234.309 33.766x15.4 src=fo:table-cell@86:11
+        block 56.943,234.309 33.766x15.4 row=10/body src=fo:table-cell@86:11
           block 59.943,236.309 27.766x11.4 src=fo:block@86:44
             line 59.943,236.309 27.766x11.4
               text 82.426,244.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "9"
                 glyphs 28:5.283
-        block 90.709,234.309 276.378x15.4 src=fo:table-cell@87:11
+        block 90.709,234.309 276.378x15.4 row=10/body src=fo:table-cell@87:11
           block 93.709,236.309 270.378x11.4 src=fo:block@87:44
             line 93.709,236.309 270.378x11.4
               text 93.709,244.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,234.309 92.126x15.4 src=fo:table-cell@88:11
+        block 367.087,234.309 92.126x15.4 row=10/body src=fo:table-cell@88:11
           block 370.087,236.309 86.126x11.4 src=fo:block@88:44
             line 370.087,236.309 86.126x11.4
               text 427.692,244.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,234.309 79.12x15.4 src=fo:table-cell@89:11
+        block 459.213,234.309 79.12x15.4 row=10/body src=fo:table-cell@89:11
           block 462.213,236.309 73.12x11.4 src=fo:block@89:44
             line 462.213,236.309 73.12x11.4
               text 490.435,244.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
@@ -245,34 +245,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,234.309 56.693,249.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,234.309 538.583,249.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,249.709 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,249.709 33.766x15.4 src=fo:table-cell@92:11
+        block 56.943,249.709 33.766x15.4 row=11/body src=fo:table-cell@92:11
           block 59.943,251.709 27.766x11.4 src=fo:block@92:44
             line 59.943,251.709 27.766x11.4
               text 77.143,259.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "10"
                 glyphs 20:5.283 19:5.283
-        block 90.709,249.709 276.378x15.4 src=fo:table-cell@93:11
+        block 90.709,249.709 276.378x15.4 row=11/body src=fo:table-cell@93:11
           block 93.709,251.709 270.378x11.4 src=fo:block@93:44
             line 93.709,251.709 270.378x11.4
               text 93.709,259.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,249.709 92.126x15.4 src=fo:table-cell@94:11
+        block 367.087,249.709 92.126x15.4 row=11/body src=fo:table-cell@94:11
           block 370.087,251.709 86.126x11.4 src=fo:block@94:44
             line 370.087,251.709 86.126x11.4
               text 443.008,259.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,249.709 79.12x15.4 src=fo:table-cell@95:11
+        block 459.213,249.709 79.12x15.4 row=11/body src=fo:table-cell@95:11
           block 462.213,251.709 73.12x11.4 src=fo:block@95:44
             line 462.213,251.709 73.12x11.4
               text 503.64,259.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
                 glyphs 28:5.283 24:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,249.709 56.693,265.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,249.709 538.583,265.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,265.109 33.766x26.8 src=fo:table-cell@98:11
+        block 56.943,265.109 33.766x26.8 row=12/body src=fo:table-cell@98:11
           block 59.943,267.109 27.766x11.4 src=fo:block@98:44
             line 59.943,267.109 27.766x11.4
               text 77.143,275.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "11"
                 glyphs 20:5.283 20:5.283
-        block 90.709,265.109 276.378x26.8 src=fo:table-cell@99:11
+        block 90.709,265.109 276.378x26.8 row=12/body src=fo:table-cell@99:11
           block 93.709,267.109 270.378x22.8 src=fo:block@99:44
             line 93.709,267.109 270.378x11.4
               text 93.709,275.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -280,12 +280,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,278.509 270.378x11.4
               text 93.709,286.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,265.109 92.126x26.8 src=fo:table-cell@100:11
+        block 367.087,265.109 92.126x26.8 row=12/body src=fo:table-cell@100:11
           block 370.087,267.109 86.126x11.4 src=fo:block@100:44
             line 370.087,267.109 86.126x11.4
               text 432.975,275.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,265.109 79.12x26.8 src=fo:table-cell@101:11
+        block 459.213,265.109 79.12x26.8 row=12/body src=fo:table-cell@101:11
           block 462.213,267.109 73.12x11.4 src=fo:block@101:44
             line 462.213,267.109 73.12x11.4
               text 490.435,275.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
@@ -293,44 +293,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,265.109 56.693,291.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,265.109 538.583,291.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,291.909 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,291.909 33.766x15.4 src=fo:table-cell@104:11
+        block 56.943,291.909 33.766x15.4 row=13/body src=fo:table-cell@104:11
           block 59.943,293.909 27.766x11.4 src=fo:block@104:44
             line 59.943,293.909 27.766x11.4
               text 77.143,302.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "12"
                 glyphs 20:5.283 21:5.283
-        block 90.709,291.909 276.378x15.4 src=fo:table-cell@105:11
+        block 90.709,291.909 276.378x15.4 row=13/body src=fo:table-cell@105:11
           block 93.709,293.909 270.378x11.4 src=fo:block@105:44
             line 93.709,293.909 270.378x11.4
               text 93.709,302.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,291.909 92.126x15.4 src=fo:table-cell@106:11
+        block 367.087,291.909 92.126x15.4 row=13/body src=fo:table-cell@106:11
           block 370.087,293.909 86.126x11.4 src=fo:block@106:44
             line 370.087,293.909 86.126x11.4
               text 450.93,302.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,291.909 79.12x15.4 src=fo:table-cell@107:11
+        block 459.213,291.909 79.12x15.4 row=13/body src=fo:table-cell@107:11
           block 462.213,293.909 73.12x11.4 src=fo:block@107:44
             line 462.213,293.909 73.12x11.4
               text 503.64,302.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
                 glyphs 25:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,291.909 56.693,307.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,291.909 538.583,307.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,307.309 33.766x15.4 src=fo:table-cell@110:11
+        block 56.943,307.309 33.766x15.4 row=14/body src=fo:table-cell@110:11
           block 59.943,309.309 27.766x11.4 src=fo:block@110:44
             line 59.943,309.309 27.766x11.4
               text 77.143,317.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "13"
                 glyphs 20:5.283 22:5.283
-        block 90.709,307.309 276.378x15.4 src=fo:table-cell@111:11
+        block 90.709,307.309 276.378x15.4 row=14/body src=fo:table-cell@111:11
           block 93.709,309.309 270.378x11.4 src=fo:block@111:44
             line 93.709,309.309 270.378x11.4
               text 93.709,317.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,307.309 92.126x15.4 src=fo:table-cell@112:11
+        block 367.087,307.309 92.126x15.4 row=14/body src=fo:table-cell@112:11
           block 370.087,309.309 86.126x11.4 src=fo:block@112:44
             line 370.087,309.309 86.126x11.4
               text 450.93,317.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,307.309 79.12x15.4 src=fo:table-cell@113:11
+        block 459.213,307.309 79.12x15.4 row=14/body src=fo:table-cell@113:11
           block 462.213,309.309 73.12x11.4 src=fo:block@113:44
             line 462.213,309.309 73.12x11.4
               text 498.357,317.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
@@ -338,44 +338,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,307.309 56.693,322.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,307.309 538.583,322.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,322.709 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,322.709 33.766x15.4 src=fo:table-cell@116:11
+        block 56.943,322.709 33.766x15.4 row=15/body src=fo:table-cell@116:11
           block 59.943,324.709 27.766x11.4 src=fo:block@116:44
             line 59.943,324.709 27.766x11.4
               text 77.143,332.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "14"
                 glyphs 20:5.283 23:5.283
-        block 90.709,322.709 276.378x15.4 src=fo:table-cell@117:11
+        block 90.709,322.709 276.378x15.4 row=15/body src=fo:table-cell@117:11
           block 93.709,324.709 270.378x11.4 src=fo:block@117:44
             line 93.709,324.709 270.378x11.4
               text 93.709,332.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,322.709 92.126x15.4 src=fo:table-cell@118:11
+        block 367.087,322.709 92.126x15.4 row=15/body src=fo:table-cell@118:11
           block 370.087,324.709 86.126x11.4 src=fo:block@118:44
             line 370.087,324.709 86.126x11.4
               text 427.692,332.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,322.709 79.12x15.4 src=fo:table-cell@119:11
+        block 459.213,322.709 79.12x15.4 row=15/body src=fo:table-cell@119:11
           block 462.213,324.709 73.12x11.4 src=fo:block@119:44
             line 462.213,324.709 73.12x11.4
               text 490.435,332.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
                 glyphs 20:5.283 17:2.639 28:5.283 19:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,322.709 56.693,338.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,322.709 538.583,338.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,338.109 33.766x15.4 src=fo:table-cell@122:11
+        block 56.943,338.109 33.766x15.4 row=16/body src=fo:table-cell@122:11
           block 59.943,340.109 27.766x11.4 src=fo:block@122:44
             line 59.943,340.109 27.766x11.4
               text 77.143,348.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "15"
                 glyphs 20:5.283 24:5.283
-        block 90.709,338.109 276.378x15.4 src=fo:table-cell@123:11
+        block 90.709,338.109 276.378x15.4 row=16/body src=fo:table-cell@123:11
           block 93.709,340.109 270.378x11.4 src=fo:block@123:44
             line 93.709,340.109 270.378x11.4
               text 93.709,348.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,338.109 92.126x15.4 src=fo:table-cell@124:11
+        block 367.087,338.109 92.126x15.4 row=16/body src=fo:table-cell@124:11
           block 370.087,340.109 86.126x11.4 src=fo:block@124:44
             line 370.087,340.109 86.126x11.4
               text 443.008,348.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,338.109 79.12x15.4 src=fo:table-cell@125:11
+        block 459.213,338.109 79.12x15.4 row=16/body src=fo:table-cell@125:11
           block 462.213,340.109 73.12x11.4 src=fo:block@125:44
             line 462.213,340.109 73.12x11.4
               text 503.64,348.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
@@ -383,12 +383,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,338.109 56.693,353.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,338.109 538.583,353.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,353.509 481.89x26.8 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,353.509 33.766x26.8 src=fo:table-cell@128:11
+        block 56.943,353.509 33.766x26.8 row=17/body src=fo:table-cell@128:11
           block 59.943,355.509 27.766x11.4 src=fo:block@128:44
             line 59.943,355.509 27.766x11.4
               text 77.143,363.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "16"
                 glyphs 20:5.283 25:5.283
-        block 90.709,353.509 276.378x26.8 src=fo:table-cell@129:11
+        block 90.709,353.509 276.378x26.8 row=17/body src=fo:table-cell@129:11
           block 93.709,355.509 270.378x22.8 src=fo:block@129:44
             line 93.709,355.509 270.378x11.4
               text 93.709,363.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -396,34 +396,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,366.909 270.378x11.4
               text 93.709,375.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,353.509 92.126x26.8 src=fo:table-cell@130:11
+        block 367.087,353.509 92.126x26.8 row=17/body src=fo:table-cell@130:11
           block 370.087,355.509 86.126x11.4 src=fo:block@130:44
             line 370.087,355.509 86.126x11.4
               text 432.975,363.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,353.509 79.12x26.8 src=fo:table-cell@131:11
+        block 459.213,353.509 79.12x26.8 row=17/body src=fo:table-cell@131:11
           block 462.213,355.509 73.12x11.4 src=fo:block@131:44
             line 462.213,355.509 73.12x11.4
               text 490.435,363.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
                 glyphs 20:5.283 17:2.639 20:5.283 27:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,353.509 56.693,380.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,353.509 538.583,380.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,380.309 33.766x15.4 src=fo:table-cell@134:11
+        block 56.943,380.309 33.766x15.4 row=18/body src=fo:table-cell@134:11
           block 59.943,382.309 27.766x11.4 src=fo:block@134:44
             line 59.943,382.309 27.766x11.4
               text 77.143,390.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "17"
                 glyphs 20:5.283 26:5.283
-        block 90.709,380.309 276.378x15.4 src=fo:table-cell@135:11
+        block 90.709,380.309 276.378x15.4 row=18/body src=fo:table-cell@135:11
           block 93.709,382.309 270.378x11.4 src=fo:block@135:44
             line 93.709,382.309 270.378x11.4
               text 93.709,390.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,380.309 92.126x15.4 src=fo:table-cell@136:11
+        block 367.087,380.309 92.126x15.4 row=18/body src=fo:table-cell@136:11
           block 370.087,382.309 86.126x11.4 src=fo:block@136:44
             line 370.087,382.309 86.126x11.4
               text 450.93,390.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,380.309 79.12x15.4 src=fo:table-cell@137:11
+        block 459.213,380.309 79.12x15.4 row=18/body src=fo:table-cell@137:11
           block 462.213,382.309 73.12x11.4 src=fo:block@137:44
             line 462.213,382.309 73.12x11.4
               text 503.64,390.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
@@ -431,44 +431,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,380.309 56.693,395.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,380.309 538.583,395.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,395.709 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,395.709 33.766x15.4 src=fo:table-cell@140:11
+        block 56.943,395.709 33.766x15.4 row=19/body src=fo:table-cell@140:11
           block 59.943,397.709 27.766x11.4 src=fo:block@140:44
             line 59.943,397.709 27.766x11.4
               text 77.143,405.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "18"
                 glyphs 20:5.283 27:5.283
-        block 90.709,395.709 276.378x15.4 src=fo:table-cell@141:11
+        block 90.709,395.709 276.378x15.4 row=19/body src=fo:table-cell@141:11
           block 93.709,397.709 270.378x11.4 src=fo:block@141:44
             line 93.709,397.709 270.378x11.4
               text 93.709,405.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,395.709 92.126x15.4 src=fo:table-cell@142:11
+        block 367.087,395.709 92.126x15.4 row=19/body src=fo:table-cell@142:11
           block 370.087,397.709 86.126x11.4 src=fo:block@142:44
             line 370.087,397.709 86.126x11.4
               text 450.93,405.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,395.709 79.12x15.4 src=fo:table-cell@143:11
+        block 459.213,395.709 79.12x15.4 row=19/body src=fo:table-cell@143:11
           block 462.213,397.709 73.12x11.4 src=fo:block@143:44
             line 462.213,397.709 73.12x11.4
               text 498.357,405.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
                 glyphs 21:5.283 23:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,395.709 56.693,411.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,395.709 538.583,411.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,411.109 33.766x15.4 src=fo:table-cell@146:11
+        block 56.943,411.109 33.766x15.4 row=20/body src=fo:table-cell@146:11
           block 59.943,413.109 27.766x11.4 src=fo:block@146:44
             line 59.943,413.109 27.766x11.4
               text 77.143,421.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "19"
                 glyphs 20:5.283 28:5.283
-        block 90.709,411.109 276.378x15.4 src=fo:table-cell@147:11
+        block 90.709,411.109 276.378x15.4 row=20/body src=fo:table-cell@147:11
           block 93.709,413.109 270.378x11.4 src=fo:block@147:44
             line 93.709,413.109 270.378x11.4
               text 93.709,421.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,411.109 92.126x15.4 src=fo:table-cell@148:11
+        block 367.087,411.109 92.126x15.4 row=20/body src=fo:table-cell@148:11
           block 370.087,413.109 86.126x11.4 src=fo:block@148:44
             line 370.087,413.109 86.126x11.4
               text 427.692,421.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,411.109 79.12x15.4 src=fo:table-cell@149:11
+        block 459.213,411.109 79.12x15.4 row=20/body src=fo:table-cell@149:11
           block 462.213,413.109 73.12x11.4 src=fo:block@149:44
             line 462.213,413.109 73.12x11.4
               text 490.435,421.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
@@ -476,34 +476,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,411.109 56.693,426.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,411.109 538.583,426.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,426.509 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,426.509 33.766x15.4 src=fo:table-cell@152:11
+        block 56.943,426.509 33.766x15.4 row=21/body src=fo:table-cell@152:11
           block 59.943,428.509 27.766x11.4 src=fo:block@152:44
             line 59.943,428.509 27.766x11.4
               text 77.143,436.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "20"
                 glyphs 21:5.283 19:5.283
-        block 90.709,426.509 276.378x15.4 src=fo:table-cell@153:11
+        block 90.709,426.509 276.378x15.4 row=21/body src=fo:table-cell@153:11
           block 93.709,428.509 270.378x11.4 src=fo:block@153:44
             line 93.709,428.509 270.378x11.4
               text 93.709,436.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,426.509 92.126x15.4 src=fo:table-cell@154:11
+        block 367.087,426.509 92.126x15.4 row=21/body src=fo:table-cell@154:11
           block 370.087,428.509 86.126x11.4 src=fo:block@154:44
             line 370.087,428.509 86.126x11.4
               text 443.008,436.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,426.509 79.12x15.4 src=fo:table-cell@155:11
+        block 459.213,426.509 79.12x15.4 row=21/body src=fo:table-cell@155:11
           block 462.213,428.509 73.12x11.4 src=fo:block@155:44
             line 462.213,428.509 73.12x11.4
               text 503.64,436.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
                 glyphs 28:5.283 24:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,426.509 56.693,441.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,426.509 538.583,441.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,441.909 33.766x26.8 src=fo:table-cell@158:11
+        block 56.943,441.909 33.766x26.8 row=22/body src=fo:table-cell@158:11
           block 59.943,443.909 27.766x11.4 src=fo:block@158:44
             line 59.943,443.909 27.766x11.4
               text 77.143,452.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "21"
                 glyphs 21:5.283 20:5.283
-        block 90.709,441.909 276.378x26.8 src=fo:table-cell@159:11
+        block 90.709,441.909 276.378x26.8 row=22/body src=fo:table-cell@159:11
           block 93.709,443.909 270.378x22.8 src=fo:block@159:44
             line 93.709,443.909 270.378x11.4
               text 93.709,452.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -511,12 +511,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,455.309 270.378x11.4
               text 93.709,463.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,441.909 92.126x26.8 src=fo:table-cell@160:11
+        block 367.087,441.909 92.126x26.8 row=22/body src=fo:table-cell@160:11
           block 370.087,443.909 86.126x11.4 src=fo:block@160:44
             line 370.087,443.909 86.126x11.4
               text 432.975,452.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,441.909 79.12x26.8 src=fo:table-cell@161:11
+        block 459.213,441.909 79.12x26.8 row=22/body src=fo:table-cell@161:11
           block 462.213,443.909 73.12x11.4 src=fo:block@161:44
             line 462.213,443.909 73.12x11.4
               text 490.435,452.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
@@ -524,44 +524,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,441.909 56.693,468.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,441.909 538.583,468.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,468.709 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,468.709 33.766x15.4 src=fo:table-cell@164:11
+        block 56.943,468.709 33.766x15.4 row=23/body src=fo:table-cell@164:11
           block 59.943,470.709 27.766x11.4 src=fo:block@164:44
             line 59.943,470.709 27.766x11.4
               text 77.143,478.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "22"
                 glyphs 21:5.283 21:5.283
-        block 90.709,468.709 276.378x15.4 src=fo:table-cell@165:11
+        block 90.709,468.709 276.378x15.4 row=23/body src=fo:table-cell@165:11
           block 93.709,470.709 270.378x11.4 src=fo:block@165:44
             line 93.709,470.709 270.378x11.4
               text 93.709,478.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,468.709 92.126x15.4 src=fo:table-cell@166:11
+        block 367.087,468.709 92.126x15.4 row=23/body src=fo:table-cell@166:11
           block 370.087,470.709 86.126x11.4 src=fo:block@166:44
             line 370.087,470.709 86.126x11.4
               text 450.93,478.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,468.709 79.12x15.4 src=fo:table-cell@167:11
+        block 459.213,468.709 79.12x15.4 row=23/body src=fo:table-cell@167:11
           block 462.213,470.709 73.12x11.4 src=fo:block@167:44
             line 462.213,470.709 73.12x11.4
               text 503.64,478.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
                 glyphs 25:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,468.709 56.693,484.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,468.709 538.583,484.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,484.109 33.766x15.4 src=fo:table-cell@170:11
+        block 56.943,484.109 33.766x15.4 row=24/body src=fo:table-cell@170:11
           block 59.943,486.109 27.766x11.4 src=fo:block@170:44
             line 59.943,486.109 27.766x11.4
               text 77.143,494.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "23"
                 glyphs 21:5.283 22:5.283
-        block 90.709,484.109 276.378x15.4 src=fo:table-cell@171:11
+        block 90.709,484.109 276.378x15.4 row=24/body src=fo:table-cell@171:11
           block 93.709,486.109 270.378x11.4 src=fo:block@171:44
             line 93.709,486.109 270.378x11.4
               text 93.709,494.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,484.109 92.126x15.4 src=fo:table-cell@172:11
+        block 367.087,484.109 92.126x15.4 row=24/body src=fo:table-cell@172:11
           block 370.087,486.109 86.126x11.4 src=fo:block@172:44
             line 370.087,486.109 86.126x11.4
               text 450.93,494.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,484.109 79.12x15.4 src=fo:table-cell@173:11
+        block 459.213,484.109 79.12x15.4 row=24/body src=fo:table-cell@173:11
           block 462.213,486.109 73.12x11.4 src=fo:block@173:44
             line 462.213,486.109 73.12x11.4
               text 498.357,494.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
@@ -569,44 +569,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,484.109 56.693,499.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,484.109 538.583,499.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,499.509 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,499.509 33.766x15.4 src=fo:table-cell@176:11
+        block 56.943,499.509 33.766x15.4 row=25/body src=fo:table-cell@176:11
           block 59.943,501.509 27.766x11.4 src=fo:block@176:44
             line 59.943,501.509 27.766x11.4
               text 77.143,509.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "24"
                 glyphs 21:5.283 23:5.283
-        block 90.709,499.509 276.378x15.4 src=fo:table-cell@177:11
+        block 90.709,499.509 276.378x15.4 row=25/body src=fo:table-cell@177:11
           block 93.709,501.509 270.378x11.4 src=fo:block@177:44
             line 93.709,501.509 270.378x11.4
               text 93.709,509.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,499.509 92.126x15.4 src=fo:table-cell@178:11
+        block 367.087,499.509 92.126x15.4 row=25/body src=fo:table-cell@178:11
           block 370.087,501.509 86.126x11.4 src=fo:block@178:44
             line 370.087,501.509 86.126x11.4
               text 427.692,509.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,499.509 79.12x15.4 src=fo:table-cell@179:11
+        block 459.213,499.509 79.12x15.4 row=25/body src=fo:table-cell@179:11
           block 462.213,501.509 73.12x11.4 src=fo:block@179:44
             line 462.213,501.509 73.12x11.4
               text 490.435,509.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
                 glyphs 20:5.283 17:2.639 28:5.283 19:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,499.509 56.693,514.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,499.509 538.583,514.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,514.909 33.766x15.4 src=fo:table-cell@182:11
+        block 56.943,514.909 33.766x15.4 row=26/body src=fo:table-cell@182:11
           block 59.943,516.909 27.766x11.4 src=fo:block@182:44
             line 59.943,516.909 27.766x11.4
               text 77.143,525.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "25"
                 glyphs 21:5.283 24:5.283
-        block 90.709,514.909 276.378x15.4 src=fo:table-cell@183:11
+        block 90.709,514.909 276.378x15.4 row=26/body src=fo:table-cell@183:11
           block 93.709,516.909 270.378x11.4 src=fo:block@183:44
             line 93.709,516.909 270.378x11.4
               text 93.709,525.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,514.909 92.126x15.4 src=fo:table-cell@184:11
+        block 367.087,514.909 92.126x15.4 row=26/body src=fo:table-cell@184:11
           block 370.087,516.909 86.126x11.4 src=fo:block@184:44
             line 370.087,516.909 86.126x11.4
               text 443.008,525.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,514.909 79.12x15.4 src=fo:table-cell@185:11
+        block 459.213,514.909 79.12x15.4 row=26/body src=fo:table-cell@185:11
           block 462.213,516.909 73.12x11.4 src=fo:block@185:44
             line 462.213,516.909 73.12x11.4
               text 503.64,525.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
@@ -614,12 +614,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,514.909 56.693,530.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,514.909 538.583,530.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,530.309 481.89x26.8 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,530.309 33.766x26.8 src=fo:table-cell@188:11
+        block 56.943,530.309 33.766x26.8 row=27/body src=fo:table-cell@188:11
           block 59.943,532.309 27.766x11.4 src=fo:block@188:44
             line 59.943,532.309 27.766x11.4
               text 77.143,540.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "26"
                 glyphs 21:5.283 25:5.283
-        block 90.709,530.309 276.378x26.8 src=fo:table-cell@189:11
+        block 90.709,530.309 276.378x26.8 row=27/body src=fo:table-cell@189:11
           block 93.709,532.309 270.378x22.8 src=fo:block@189:44
             line 93.709,532.309 270.378x11.4
               text 93.709,540.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -627,34 +627,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,543.709 270.378x11.4
               text 93.709,551.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,530.309 92.126x26.8 src=fo:table-cell@190:11
+        block 367.087,530.309 92.126x26.8 row=27/body src=fo:table-cell@190:11
           block 370.087,532.309 86.126x11.4 src=fo:block@190:44
             line 370.087,532.309 86.126x11.4
               text 432.975,540.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,530.309 79.12x26.8 src=fo:table-cell@191:11
+        block 459.213,530.309 79.12x26.8 row=27/body src=fo:table-cell@191:11
           block 462.213,532.309 73.12x11.4 src=fo:block@191:44
             line 462.213,532.309 73.12x11.4
               text 490.435,540.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
                 glyphs 20:5.283 17:2.639 20:5.283 27:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,530.309 56.693,557.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,530.309 538.583,557.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,557.109 33.766x15.4 src=fo:table-cell@194:11
+        block 56.943,557.109 33.766x15.4 row=28/body src=fo:table-cell@194:11
           block 59.943,559.109 27.766x11.4 src=fo:block@194:44
             line 59.943,559.109 27.766x11.4
               text 77.143,567.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "27"
                 glyphs 21:5.283 26:5.283
-        block 90.709,557.109 276.378x15.4 src=fo:table-cell@195:11
+        block 90.709,557.109 276.378x15.4 row=28/body src=fo:table-cell@195:11
           block 93.709,559.109 270.378x11.4 src=fo:block@195:44
             line 93.709,559.109 270.378x11.4
               text 93.709,567.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,557.109 92.126x15.4 src=fo:table-cell@196:11
+        block 367.087,557.109 92.126x15.4 row=28/body src=fo:table-cell@196:11
           block 370.087,559.109 86.126x11.4 src=fo:block@196:44
             line 370.087,559.109 86.126x11.4
               text 450.93,567.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,557.109 79.12x15.4 src=fo:table-cell@197:11
+        block 459.213,557.109 79.12x15.4 row=28/body src=fo:table-cell@197:11
           block 462.213,559.109 73.12x11.4 src=fo:block@197:44
             line 462.213,559.109 73.12x11.4
               text 503.64,567.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
@@ -662,44 +662,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,557.109 56.693,572.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,557.109 538.583,572.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,572.509 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,572.509 33.766x15.4 src=fo:table-cell@200:11
+        block 56.943,572.509 33.766x15.4 row=29/body src=fo:table-cell@200:11
           block 59.943,574.509 27.766x11.4 src=fo:block@200:44
             line 59.943,574.509 27.766x11.4
               text 77.143,582.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "28"
                 glyphs 21:5.283 27:5.283
-        block 90.709,572.509 276.378x15.4 src=fo:table-cell@201:11
+        block 90.709,572.509 276.378x15.4 row=29/body src=fo:table-cell@201:11
           block 93.709,574.509 270.378x11.4 src=fo:block@201:44
             line 93.709,574.509 270.378x11.4
               text 93.709,582.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,572.509 92.126x15.4 src=fo:table-cell@202:11
+        block 367.087,572.509 92.126x15.4 row=29/body src=fo:table-cell@202:11
           block 370.087,574.509 86.126x11.4 src=fo:block@202:44
             line 370.087,574.509 86.126x11.4
               text 450.93,582.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,572.509 79.12x15.4 src=fo:table-cell@203:11
+        block 459.213,572.509 79.12x15.4 row=29/body src=fo:table-cell@203:11
           block 462.213,574.509 73.12x11.4 src=fo:block@203:44
             line 462.213,574.509 73.12x11.4
               text 498.357,582.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
                 glyphs 21:5.283 23:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,572.509 56.693,587.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,572.509 538.583,587.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,587.909 33.766x15.4 src=fo:table-cell@206:11
+        block 56.943,587.909 33.766x15.4 row=30/body src=fo:table-cell@206:11
           block 59.943,589.909 27.766x11.4 src=fo:block@206:44
             line 59.943,589.909 27.766x11.4
               text 77.143,598.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "29"
                 glyphs 21:5.283 28:5.283
-        block 90.709,587.909 276.378x15.4 src=fo:table-cell@207:11
+        block 90.709,587.909 276.378x15.4 row=30/body src=fo:table-cell@207:11
           block 93.709,589.909 270.378x11.4 src=fo:block@207:44
             line 93.709,589.909 270.378x11.4
               text 93.709,598.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,587.909 92.126x15.4 src=fo:table-cell@208:11
+        block 367.087,587.909 92.126x15.4 row=30/body src=fo:table-cell@208:11
           block 370.087,589.909 86.126x11.4 src=fo:block@208:44
             line 370.087,589.909 86.126x11.4
               text 427.692,598.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,587.909 79.12x15.4 src=fo:table-cell@209:11
+        block 459.213,587.909 79.12x15.4 row=30/body src=fo:table-cell@209:11
           block 462.213,589.909 73.12x11.4 src=fo:block@209:44
             line 462.213,589.909 73.12x11.4
               text 490.435,598.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
@@ -707,34 +707,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,587.909 56.693,603.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,587.909 538.583,603.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,603.309 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,603.309 33.766x15.4 src=fo:table-cell@212:11
+        block 56.943,603.309 33.766x15.4 row=31/body src=fo:table-cell@212:11
           block 59.943,605.309 27.766x11.4 src=fo:block@212:44
             line 59.943,605.309 27.766x11.4
               text 77.143,613.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "30"
                 glyphs 22:5.283 19:5.283
-        block 90.709,603.309 276.378x15.4 src=fo:table-cell@213:11
+        block 90.709,603.309 276.378x15.4 row=31/body src=fo:table-cell@213:11
           block 93.709,605.309 270.378x11.4 src=fo:block@213:44
             line 93.709,605.309 270.378x11.4
               text 93.709,613.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,603.309 92.126x15.4 src=fo:table-cell@214:11
+        block 367.087,603.309 92.126x15.4 row=31/body src=fo:table-cell@214:11
           block 370.087,605.309 86.126x11.4 src=fo:block@214:44
             line 370.087,605.309 86.126x11.4
               text 443.008,613.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,603.309 79.12x15.4 src=fo:table-cell@215:11
+        block 459.213,603.309 79.12x15.4 row=31/body src=fo:table-cell@215:11
           block 462.213,605.309 73.12x11.4 src=fo:block@215:44
             line 462.213,605.309 73.12x11.4
               text 503.64,613.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
                 glyphs 28:5.283 24:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,603.309 56.693,618.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,603.309 538.583,618.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,618.709 33.766x26.8 src=fo:table-cell@218:11
+        block 56.943,618.709 33.766x26.8 row=32/body src=fo:table-cell@218:11
           block 59.943,620.709 27.766x11.4 src=fo:block@218:44
             line 59.943,620.709 27.766x11.4
               text 77.143,628.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "31"
                 glyphs 22:5.283 20:5.283
-        block 90.709,618.709 276.378x26.8 src=fo:table-cell@219:11
+        block 90.709,618.709 276.378x26.8 row=32/body src=fo:table-cell@219:11
           block 93.709,620.709 270.378x22.8 src=fo:block@219:44
             line 93.709,620.709 270.378x11.4
               text 93.709,628.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -742,12 +742,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,632.109 270.378x11.4
               text 93.709,640.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,618.709 92.126x26.8 src=fo:table-cell@220:11
+        block 367.087,618.709 92.126x26.8 row=32/body src=fo:table-cell@220:11
           block 370.087,620.709 86.126x11.4 src=fo:block@220:44
             line 370.087,620.709 86.126x11.4
               text 432.975,628.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,618.709 79.12x26.8 src=fo:table-cell@221:11
+        block 459.213,618.709 79.12x26.8 row=32/body src=fo:table-cell@221:11
           block 462.213,620.709 73.12x11.4 src=fo:block@221:44
             line 462.213,620.709 73.12x11.4
               text 490.435,628.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
@@ -755,44 +755,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,618.709 56.693,645.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,618.709 538.583,645.509 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,645.509 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,645.509 33.766x15.4 src=fo:table-cell@224:11
+        block 56.943,645.509 33.766x15.4 row=33/body src=fo:table-cell@224:11
           block 59.943,647.509 27.766x11.4 src=fo:block@224:44
             line 59.943,647.509 27.766x11.4
               text 77.143,655.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "32"
                 glyphs 22:5.283 21:5.283
-        block 90.709,645.509 276.378x15.4 src=fo:table-cell@225:11
+        block 90.709,645.509 276.378x15.4 row=33/body src=fo:table-cell@225:11
           block 93.709,647.509 270.378x11.4 src=fo:block@225:44
             line 93.709,647.509 270.378x11.4
               text 93.709,655.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,645.509 92.126x15.4 src=fo:table-cell@226:11
+        block 367.087,645.509 92.126x15.4 row=33/body src=fo:table-cell@226:11
           block 370.087,647.509 86.126x11.4 src=fo:block@226:44
             line 370.087,647.509 86.126x11.4
               text 450.93,655.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,645.509 79.12x15.4 src=fo:table-cell@227:11
+        block 459.213,645.509 79.12x15.4 row=33/body src=fo:table-cell@227:11
           block 462.213,647.509 73.12x11.4 src=fo:block@227:44
             line 462.213,647.509 73.12x11.4
               text 503.64,655.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
                 glyphs 25:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,645.509 56.693,660.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,645.509 538.583,660.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,660.909 33.766x15.4 src=fo:table-cell@230:11
+        block 56.943,660.909 33.766x15.4 row=34/body src=fo:table-cell@230:11
           block 59.943,662.909 27.766x11.4 src=fo:block@230:44
             line 59.943,662.909 27.766x11.4
               text 77.143,671.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "33"
                 glyphs 22:5.283 22:5.283
-        block 90.709,660.909 276.378x15.4 src=fo:table-cell@231:11
+        block 90.709,660.909 276.378x15.4 row=34/body src=fo:table-cell@231:11
           block 93.709,662.909 270.378x11.4 src=fo:block@231:44
             line 93.709,662.909 270.378x11.4
               text 93.709,671.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,660.909 92.126x15.4 src=fo:table-cell@232:11
+        block 367.087,660.909 92.126x15.4 row=34/body src=fo:table-cell@232:11
           block 370.087,662.909 86.126x11.4 src=fo:block@232:44
             line 370.087,662.909 86.126x11.4
               text 450.93,671.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,660.909 79.12x15.4 src=fo:table-cell@233:11
+        block 459.213,660.909 79.12x15.4 row=34/body src=fo:table-cell@233:11
           block 462.213,662.909 73.12x11.4 src=fo:block@233:44
             line 462.213,662.909 73.12x11.4
               text 498.357,671.067 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
@@ -800,44 +800,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,660.909 56.693,676.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,660.909 538.583,676.309 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,676.309 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,676.309 33.766x15.4 src=fo:table-cell@236:11
+        block 56.943,676.309 33.766x15.4 row=35/body src=fo:table-cell@236:11
           block 59.943,678.309 27.766x11.4 src=fo:block@236:44
             line 59.943,678.309 27.766x11.4
               text 77.143,686.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "34"
                 glyphs 22:5.283 23:5.283
-        block 90.709,676.309 276.378x15.4 src=fo:table-cell@237:11
+        block 90.709,676.309 276.378x15.4 row=35/body src=fo:table-cell@237:11
           block 93.709,678.309 270.378x11.4 src=fo:block@237:44
             line 93.709,678.309 270.378x11.4
               text 93.709,686.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,676.309 92.126x15.4 src=fo:table-cell@238:11
+        block 367.087,676.309 92.126x15.4 row=35/body src=fo:table-cell@238:11
           block 370.087,678.309 86.126x11.4 src=fo:block@238:44
             line 370.087,678.309 86.126x11.4
               text 427.692,686.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,676.309 79.12x15.4 src=fo:table-cell@239:11
+        block 459.213,676.309 79.12x15.4 row=35/body src=fo:table-cell@239:11
           block 462.213,678.309 73.12x11.4 src=fo:block@239:44
             line 462.213,678.309 73.12x11.4
               text 490.435,686.467 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
                 glyphs 20:5.283 17:2.639 28:5.283 19:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,676.309 56.693,691.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,676.309 538.583,691.709 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,691.709 33.766x15.4 src=fo:table-cell@242:11
+        block 56.943,691.709 33.766x15.4 row=36/body src=fo:table-cell@242:11
           block 59.943,693.709 27.766x11.4 src=fo:block@242:44
             line 59.943,693.709 27.766x11.4
               text 77.143,701.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "35"
                 glyphs 22:5.283 24:5.283
-        block 90.709,691.709 276.378x15.4 src=fo:table-cell@243:11
+        block 90.709,691.709 276.378x15.4 row=36/body src=fo:table-cell@243:11
           block 93.709,693.709 270.378x11.4 src=fo:block@243:44
             line 93.709,693.709 270.378x11.4
               text 93.709,701.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,691.709 92.126x15.4 src=fo:table-cell@244:11
+        block 367.087,691.709 92.126x15.4 row=36/body src=fo:table-cell@244:11
           block 370.087,693.709 86.126x11.4 src=fo:block@244:44
             line 370.087,693.709 86.126x11.4
               text 443.008,701.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,691.709 79.12x15.4 src=fo:table-cell@245:11
+        block 459.213,691.709 79.12x15.4 row=36/body src=fo:table-cell@245:11
           block 462.213,693.709 73.12x11.4 src=fo:block@245:44
             line 462.213,693.709 73.12x11.4
               text 503.64,701.867 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
@@ -845,12 +845,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,691.709 56.693,707.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,691.709 538.583,707.109 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,707.109 481.89x26.8 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,707.109 33.766x26.8 src=fo:table-cell@248:11
+        block 56.943,707.109 33.766x26.8 row=37/body src=fo:table-cell@248:11
           block 59.943,709.109 27.766x11.4 src=fo:block@248:44
             line 59.943,709.109 27.766x11.4
               text 77.143,717.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "36"
                 glyphs 22:5.283 25:5.283
-        block 90.709,707.109 276.378x26.8 src=fo:table-cell@249:11
+        block 90.709,707.109 276.378x26.8 row=37/body src=fo:table-cell@249:11
           block 93.709,709.109 270.378x22.8 src=fo:block@249:44
             line 93.709,709.109 270.378x11.4
               text 93.709,717.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -858,19 +858,19 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,720.509 270.378x11.4
               text 93.709,728.667 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,707.109 92.126x26.8 src=fo:table-cell@250:11
+        block 367.087,707.109 92.126x26.8 row=37/body src=fo:table-cell@250:11
           block 370.087,709.109 86.126x11.4 src=fo:block@250:44
             line 370.087,709.109 86.126x11.4
               text 432.975,717.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,707.109 79.12x26.8 src=fo:table-cell@251:11
+        block 459.213,707.109 79.12x26.8 row=37/body src=fo:table-cell@251:11
           block 462.213,709.109 73.12x11.4 src=fo:block@251:44
             line 462.213,709.109 73.12x11.4
               text 490.435,717.267 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
                 glyphs 20:5.283 17:2.639 20:5.283 27:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,707.109 56.693,733.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,707.109 538.583,733.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,734.159 481.39x17.4 src=fo:table-cell@33:13
+        block 56.943,734.159 481.39x17.4 repeat row=38/footer src=fo:table-cell@33:13
           block 59.943,737.159 475.39x11.4 src=fo:block@33:102
             line 59.943,737.159 475.39x11.4
               text 387.476,745.331 font=2 size=9.5 color=gray(0) asc=6.916 desc=1.971 "Fortsetzung auf der nächsten Seite"
@@ -890,22 +890,22 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
     region 56.693,42.52 481.89x722.834 src=fo:region-body@7:7
       block 56.693,42.52 481.89x338 src=fo:table@18:7
         box 56.693,42.52 481.89x17.65 fill=rgb(0.1216,0.3059,0.4745)
-        block 56.943,42.77 33.766x17.4 src=fo:table-cell@25:13
+        block 56.943,42.77 33.766x17.4 repeat row=1/header src=fo:table-cell@25:13
           block 59.943,45.77 27.766x11.4 src=fo:block@25:42
             line 59.943,45.77 27.766x11.4
               text 67.648,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Pos."
                 glyphs 51:6.336 82:5.803 86:5.283 17:2.639
-        block 90.709,42.77 276.378x17.4 src=fo:table-cell@26:13
+        block 90.709,42.77 276.378x17.4 repeat row=1/header src=fo:table-cell@26:13
           block 93.709,45.77 270.378x11.4 src=fo:block@26:42
             line 93.709,45.77 270.378x11.4
               text 93.709,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Leistung"
                 glyphs 47:5.803 72:5.283 76:2.639 86:5.283 87:3.164 88:5.803 81:5.803 74:5.803
-        block 367.087,42.77 92.126x17.4 src=fo:table-cell@27:13
+        block 367.087,42.77 92.126x17.4 repeat row=1/header src=fo:table-cell@27:13
           block 370.087,45.77 86.126x11.4 src=fo:block@27:42
             line 370.087,45.77 86.126x11.4
               text 426.127,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Menge"
                 glyphs 48:7.914 72:5.283 81:5.803 74:5.803 72:5.283
-        block 459.213,42.77 79.12x17.4 src=fo:table-cell@28:13
+        block 459.213,42.77 79.12x17.4 repeat row=1/header src=fo:table-cell@28:13
           block 462.213,45.77 73.12x11.4 src=fo:block@28:42
             line 462.213,45.77 73.12x11.4
               text 505.242,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Betrag"
@@ -916,22 +916,22 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 367.087,42.52 459.213,42.52 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 459.213,42.52 538.833,42.52 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,42.52 538.583,60.17 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,60.17 33.766x15.4 src=fo:table-cell@254:11
+        block 56.943,60.17 33.766x15.4 row=39/body src=fo:table-cell@254:11
           block 59.943,62.17 27.766x11.4 src=fo:block@254:44
             line 59.943,62.17 27.766x11.4
               text 77.143,70.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "37"
                 glyphs 22:5.283 26:5.283
-        block 90.709,60.17 276.378x15.4 src=fo:table-cell@255:11
+        block 90.709,60.17 276.378x15.4 row=39/body src=fo:table-cell@255:11
           block 93.709,62.17 270.378x11.4 src=fo:block@255:44
             line 93.709,62.17 270.378x11.4
               text 93.709,70.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,60.17 92.126x15.4 src=fo:table-cell@256:11
+        block 367.087,60.17 92.126x15.4 row=39/body src=fo:table-cell@256:11
           block 370.087,62.17 86.126x11.4 src=fo:block@256:44
             line 370.087,62.17 86.126x11.4
               text 450.93,70.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,60.17 79.12x15.4 src=fo:table-cell@257:11
+        block 459.213,60.17 79.12x15.4 row=39/body src=fo:table-cell@257:11
           block 462.213,62.17 73.12x11.4 src=fo:block@257:44
             line 462.213,62.17 73.12x11.4
               text 503.64,70.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
@@ -939,44 +939,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,60.17 56.693,75.57 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,60.17 538.583,75.57 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,75.57 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,75.57 33.766x15.4 src=fo:table-cell@260:11
+        block 56.943,75.57 33.766x15.4 row=40/body src=fo:table-cell@260:11
           block 59.943,77.57 27.766x11.4 src=fo:block@260:44
             line 59.943,77.57 27.766x11.4
               text 77.143,85.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "38"
                 glyphs 22:5.283 27:5.283
-        block 90.709,75.57 276.378x15.4 src=fo:table-cell@261:11
+        block 90.709,75.57 276.378x15.4 row=40/body src=fo:table-cell@261:11
           block 93.709,77.57 270.378x11.4 src=fo:block@261:44
             line 93.709,77.57 270.378x11.4
               text 93.709,85.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,75.57 92.126x15.4 src=fo:table-cell@262:11
+        block 367.087,75.57 92.126x15.4 row=40/body src=fo:table-cell@262:11
           block 370.087,77.57 86.126x11.4 src=fo:block@262:44
             line 370.087,77.57 86.126x11.4
               text 450.93,85.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,75.57 79.12x15.4 src=fo:table-cell@263:11
+        block 459.213,75.57 79.12x15.4 row=40/body src=fo:table-cell@263:11
           block 462.213,77.57 73.12x11.4 src=fo:block@263:44
             line 462.213,77.57 73.12x11.4
               text 498.357,85.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
                 glyphs 21:5.283 23:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,75.57 56.693,90.97 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,75.57 538.583,90.97 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,90.97 33.766x15.4 src=fo:table-cell@266:11
+        block 56.943,90.97 33.766x15.4 row=41/body src=fo:table-cell@266:11
           block 59.943,92.97 27.766x11.4 src=fo:block@266:44
             line 59.943,92.97 27.766x11.4
               text 77.143,101.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "39"
                 glyphs 22:5.283 28:5.283
-        block 90.709,90.97 276.378x15.4 src=fo:table-cell@267:11
+        block 90.709,90.97 276.378x15.4 row=41/body src=fo:table-cell@267:11
           block 93.709,92.97 270.378x11.4 src=fo:block@267:44
             line 93.709,92.97 270.378x11.4
               text 93.709,101.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,90.97 92.126x15.4 src=fo:table-cell@268:11
+        block 367.087,90.97 92.126x15.4 row=41/body src=fo:table-cell@268:11
           block 370.087,92.97 86.126x11.4 src=fo:block@268:44
             line 370.087,92.97 86.126x11.4
               text 427.692,101.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,90.97 79.12x15.4 src=fo:table-cell@269:11
+        block 459.213,90.97 79.12x15.4 row=41/body src=fo:table-cell@269:11
           block 462.213,92.97 73.12x11.4 src=fo:block@269:44
             line 462.213,92.97 73.12x11.4
               text 490.435,101.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
@@ -984,34 +984,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,90.97 56.693,106.37 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,90.97 538.583,106.37 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,106.37 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,106.37 33.766x15.4 src=fo:table-cell@272:11
+        block 56.943,106.37 33.766x15.4 row=42/body src=fo:table-cell@272:11
           block 59.943,108.37 27.766x11.4 src=fo:block@272:44
             line 59.943,108.37 27.766x11.4
               text 77.143,116.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "40"
                 glyphs 23:5.283 19:5.283
-        block 90.709,106.37 276.378x15.4 src=fo:table-cell@273:11
+        block 90.709,106.37 276.378x15.4 row=42/body src=fo:table-cell@273:11
           block 93.709,108.37 270.378x11.4 src=fo:block@273:44
             line 93.709,108.37 270.378x11.4
               text 93.709,116.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,106.37 92.126x15.4 src=fo:table-cell@274:11
+        block 367.087,106.37 92.126x15.4 row=42/body src=fo:table-cell@274:11
           block 370.087,108.37 86.126x11.4 src=fo:block@274:44
             line 370.087,108.37 86.126x11.4
               text 443.008,116.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,106.37 79.12x15.4 src=fo:table-cell@275:11
+        block 459.213,106.37 79.12x15.4 row=42/body src=fo:table-cell@275:11
           block 462.213,108.37 73.12x11.4 src=fo:block@275:44
             line 462.213,108.37 73.12x11.4
               text 503.64,116.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
                 glyphs 28:5.283 24:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,106.37 56.693,121.77 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,106.37 538.583,121.77 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,121.77 33.766x26.8 src=fo:table-cell@278:11
+        block 56.943,121.77 33.766x26.8 row=43/body src=fo:table-cell@278:11
           block 59.943,123.77 27.766x11.4 src=fo:block@278:44
             line 59.943,123.77 27.766x11.4
               text 77.143,131.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "41"
                 glyphs 23:5.283 20:5.283
-        block 90.709,121.77 276.378x26.8 src=fo:table-cell@279:11
+        block 90.709,121.77 276.378x26.8 row=43/body src=fo:table-cell@279:11
           block 93.709,123.77 270.378x22.8 src=fo:block@279:44
             line 93.709,123.77 270.378x11.4
               text 93.709,131.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Workshop vor Ort mit Vorbereitung, Durchführung und"
@@ -1019,12 +1019,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,135.17 270.378x11.4
               text 93.709,143.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nachbereitung"
                 glyphs 49:6.861 68:5.283 70:4.75 75:5.283 69:5.283 72:5.283 85:3.164 72:5.283 76:2.111 87:2.639 88:5.283 81:5.283 74:5.283
-        block 367.087,121.77 92.126x26.8 src=fo:table-cell@280:11
+        block 367.087,121.77 92.126x26.8 row=43/body src=fo:table-cell@280:11
           block 370.087,123.77 86.126x11.4 src=fo:block@280:44
             line 370.087,123.77 86.126x11.4
               text 432.975,131.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1 Tag"
                 glyphs 20:5.283 3:2.639 55:4.75 68:5.283 74:5.283
-        block 459.213,121.77 79.12x26.8 src=fo:table-cell@281:11
+        block 459.213,121.77 79.12x26.8 row=43/body src=fo:table-cell@281:11
           block 462.213,123.77 73.12x11.4 src=fo:block@281:44
             line 462.213,123.77 73.12x11.4
               text 490.435,131.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.180,00 €"
@@ -1032,44 +1032,44 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,121.77 56.693,148.57 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,121.77 538.583,148.57 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,148.57 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,148.57 33.766x15.4 src=fo:table-cell@284:11
+        block 56.943,148.57 33.766x15.4 row=44/body src=fo:table-cell@284:11
           block 59.943,150.57 27.766x11.4 src=fo:block@284:44
             line 59.943,150.57 27.766x11.4
               text 77.143,158.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "42"
                 glyphs 23:5.283 21:5.283
-        block 90.709,148.57 276.378x15.4 src=fo:table-cell@285:11
+        block 90.709,148.57 276.378x15.4 row=44/body src=fo:table-cell@285:11
           block 93.709,150.57 270.378x11.4 src=fo:block@285:44
             line 93.709,150.57 270.378x11.4
               text 93.709,158.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Reisekosten pauschal"
                 glyphs 53:6.861 72:5.283 76:2.111 86:4.75 72:5.283 78:4.75 82:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 83:5.283 68:5.283 88:5.283 86:4.75 70:4.75 75:5.283 68:5.283 79:2.111
-        block 367.087,148.57 92.126x15.4 src=fo:table-cell@286:11
+        block 367.087,148.57 92.126x15.4 row=44/body src=fo:table-cell@286:11
           block 370.087,150.57 86.126x11.4 src=fo:block@286:44
             line 370.087,150.57 86.126x11.4
               text 450.93,158.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1"
                 glyphs 20:5.283
-        block 459.213,148.57 79.12x15.4 src=fo:table-cell@287:11
+        block 459.213,148.57 79.12x15.4 row=44/body src=fo:table-cell@287:11
           block 462.213,150.57 73.12x11.4 src=fo:block@287:44
             line 462.213,150.57 73.12x11.4
               text 503.64,158.728 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "60,00 €"
                 glyphs 25:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,148.57 56.693,163.97 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,148.57 538.583,163.97 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,163.97 33.766x15.4 src=fo:table-cell@290:11
+        block 56.943,163.97 33.766x15.4 row=45/body src=fo:table-cell@290:11
           block 59.943,165.97 27.766x11.4 src=fo:block@290:44
             line 59.943,165.97 27.766x11.4
               text 77.143,174.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "43"
                 glyphs 23:5.283 22:5.283
-        block 90.709,163.97 276.378x15.4 src=fo:table-cell@291:11
+        block 90.709,163.97 276.378x15.4 row=45/body src=fo:table-cell@291:11
           block 93.709,165.97 270.378x11.4 src=fo:block@291:44
             line 93.709,165.97 270.378x11.4
               text 93.709,174.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Lizenz Dokumentdesigner"
                 glyphs 47:5.283 76:2.111 93:4.75 72:5.283 81:5.283 93:4.75 3:2.639 39:6.861 82:5.283 78:4.75 88:5.283 80:7.914 72:5.283 81:5.283 87:2.639 71:5.283 72:5.283 86:4.75 76:2.111 74:5.283 81:5.283 72:5.283 85:3.164
-        block 367.087,163.97 92.126x15.4 src=fo:table-cell@292:11
+        block 367.087,163.97 92.126x15.4 row=45/body src=fo:table-cell@292:11
           block 370.087,165.97 86.126x11.4 src=fo:block@292:44
             line 370.087,165.97 86.126x11.4
               text 450.93,174.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3"
                 glyphs 22:5.283
-        block 459.213,163.97 79.12x15.4 src=fo:table-cell@293:11
+        block 459.213,163.97 79.12x15.4 row=45/body src=fo:table-cell@293:11
           block 462.213,165.97 73.12x11.4 src=fo:block@293:44
             line 462.213,165.97 73.12x11.4
               text 498.357,174.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "240,00 €"
@@ -1077,56 +1077,56 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,163.97 56.693,179.37 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,163.97 538.583,179.37 0.5/solid/rgb(0.1216,0.3059,0.4745)
         box 56.693,179.37 481.89x15.4 fill=rgb(0.9529,0.9647,0.9804)
-        block 56.943,179.37 33.766x15.4 src=fo:table-cell@296:11
+        block 56.943,179.37 33.766x15.4 row=46/body src=fo:table-cell@296:11
           block 59.943,181.37 27.766x11.4 src=fo:block@296:44
             line 59.943,181.37 27.766x11.4
               text 77.143,189.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "44"
                 glyphs 23:5.283 23:5.283
-        block 90.709,179.37 276.378x15.4 src=fo:table-cell@297:11
+        block 90.709,179.37 276.378x15.4 row=46/body src=fo:table-cell@297:11
           block 93.709,181.37 270.378x11.4 src=fo:block@297:44
             line 93.709,181.37 270.378x11.4
               text 93.709,189.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Schulung Anwender"
                 glyphs 54:6.336 70:4.75 75:5.283 88:5.283 79:2.111 88:5.283 81:5.283 74:5.283 3:2.639 36:6.336 81:5.283 90:6.861 72:5.283 81:5.283 71:5.283 72:5.283 85:3.164
-        block 367.087,179.37 92.126x15.4 src=fo:table-cell@298:11
+        block 367.087,179.37 92.126x15.4 row=46/body src=fo:table-cell@298:11
           block 370.087,181.37 86.126x11.4 src=fo:block@298:44
             line 370.087,181.37 86.126x11.4
               text 427.692,189.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "2 Tage"
                 glyphs 21:5.283 3:2.639 55:4.75 68:5.283 74:5.283 72:5.283
-        block 459.213,179.37 79.12x15.4 src=fo:table-cell@299:11
+        block 459.213,179.37 79.12x15.4 row=46/body src=fo:table-cell@299:11
           block 462.213,181.37 73.12x11.4 src=fo:block@299:44
             line 462.213,181.37 73.12x11.4
               text 490.435,189.528 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "1.900,00 €"
                 glyphs 20:5.283 17:2.639 28:5.283 19:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,179.37 56.693,194.77 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,179.37 538.583,194.77 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,194.77 33.766x15.4 src=fo:table-cell@302:11
+        block 56.943,194.77 33.766x15.4 row=47/body src=fo:table-cell@302:11
           block 59.943,196.77 27.766x11.4 src=fo:block@302:44
             line 59.943,196.77 27.766x11.4
               text 77.143,204.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "45"
                 glyphs 23:5.283 24:5.283
-        block 90.709,194.77 276.378x15.4 src=fo:table-cell@303:11
+        block 90.709,194.77 276.378x15.4 row=47/body src=fo:table-cell@303:11
           block 93.709,196.77 270.378x11.4 src=fo:block@303:44
             line 93.709,196.77 270.378x11.4
               text 93.709,204.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Beratung Konzeptphase"
                 glyphs 37:6.336 72:5.283 85:3.164 68:5.283 87:2.639 88:5.283 81:5.283 74:5.283 3:2.639 46:6.336 82:5.283 81:5.283 93:4.75 72:5.283 83:5.283 87:2.639 83:5.283 75:5.283 68:5.283 86:4.75 72:5.283
-        block 367.087,194.77 92.126x15.4 src=fo:table-cell@304:11
+        block 367.087,194.77 92.126x15.4 row=47/body src=fo:table-cell@304:11
           block 370.087,196.77 86.126x11.4 src=fo:block@304:44
             line 370.087,196.77 86.126x11.4
               text 443.008,204.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "8 h"
                 glyphs 27:5.283 3:2.639 75:5.283
-        block 459.213,194.77 79.12x15.4 src=fo:table-cell@305:11
+        block 459.213,194.77 79.12x15.4 row=47/body src=fo:table-cell@305:11
           block 462.213,196.77 73.12x11.4 src=fo:block@305:44
             line 462.213,196.77 73.12x11.4
               text 503.64,204.928 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "95,00 €"
                 glyphs 28:5.283 24:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,194.77 56.693,210.17 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,194.77 538.583,210.17 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,210.17 33.766x152.2 src=fo:table-cell@308:11
+        block 56.943,210.17 33.766x152.2 row=48/body src=fo:table-cell@308:11
           block 59.943,212.17 27.766x11.4 src=fo:block@308:44
             line 59.943,212.17 27.766x11.4
               text 77.143,220.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "46"
                 glyphs 23:5.283 25:5.283
-        block 90.709,210.17 368.504x152.2 src=fo:table-cell@309:11
+        block 90.709,210.17 368.504x152.2 row=48/body src=fo:table-cell@309:11
           block 93.709,212.17 362.504x148.2 src=fo:block@309:71
             line 93.709,212.17 362.504x11.4
               text 93.709,220.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Diese Zeile hat einen langen Text, der über viele Zeilen läuft. Eine Tabellenzeile darf"
@@ -1167,7 +1167,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 93.709,348.97 362.504x11.4
               text 93.709,357.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "werden, an der jede Zelle eine erlaubte Umbruchstelle hat."
                 glyphs 90:6.861 72:5.283 85:3.164 71:5.283 72:5.283 81:5.283 15:2.639 3:2.639 68:5.283 81:5.283 3:2.639 71:5.283 72:5.283 85:3.164 3:2.639 77:2.111 72:5.283 71:5.283 72:5.283 3:2.639 61:5.803 72:5.283 79:2.111 79:2.111 72:5.283 3:2.639 72:5.283 76:2.111 81:5.283 72:5.283 3:2.639 72:5.283 85:3.164 79:2.111 68:5.283 88:5.283 69:5.283 87:2.639 72:5.283 3:2.639 56:6.861 80:7.914 69:5.283 85:3.164 88:5.283 70:4.75 75:5.283 86:4.75 87:2.639 72:5.283 79:2.111 79:2.111 72:5.283 3:2.639 75:5.283 68:5.283 87:2.639 17:2.639
-        block 459.213,210.17 79.12x152.2 src=fo:table-cell@310:11
+        block 459.213,210.17 79.12x152.2 row=48/body src=fo:table-cell@310:11
           block 462.213,348.97 73.12x11.4 src=fo:block@310:66
             line 462.213,348.97 73.12x11.4
               text 508.923,357.128 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "0,00 €"
@@ -1177,7 +1177,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 90.709,362.62 459.213,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 459.213,362.62 538.833,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,210.17 538.583,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,362.87 481.39x17.4 src=fo:table-cell@33:13
+        block 56.943,362.87 481.39x17.4 row=38/footer src=fo:table-cell@33:13
           block 59.943,365.87 475.39x11.4 src=fo:block@33:102
             line 59.943,365.87 475.39x11.4
               text 387.476,374.042 font=2 size=9.5 color=gray(0) asc=6.916 desc=1.971 "Fortsetzung auf der nächsten Seite"
@@ -1191,7 +1191,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
           text 56.693,415.22 font=0 size=14 color=gray(0) asc=10.192 desc=2.946 "Verbund und getrennte Rahmen"
             glyphs 57:8.565 72:7.786 85:5.448 69:8.552 88:8.552 81:8.552 71:8.552 3:3.89 88:8.552 81:8.552 71:8.552 3:3.89 74:8.552 72:7.786 87:4.662 85:5.448 72:7.786 81:8.552 81:8.552 87:4.662 72:7.786 3:3.89 53:10.11 68:7.786 75:8.552 80:12.448 72:7.786 81:8.552
       block 56.693,429.501 481.89x60.2 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) src=fo:table@315:7
-        block 59.193,432.001 108.386x55.2 bg=rgb(0.9922,0.9137,0.9137) top=1/solid/rgb(0.7529,0,0) right=1/solid/rgb(0.7529,0,0) bottom=1/solid/rgb(0.7529,0,0) left=1/solid/rgb(0.7529,0,0) src=fo:table-cell@321:13
+        block 59.193,432.001 108.386x55.2 bg=rgb(0.9922,0.9137,0.9137) top=1/solid/rgb(0.7529,0,0) right=1/solid/rgb(0.7529,0,0) bottom=1/solid/rgb(0.7529,0,0) left=1/solid/rgb(0.7529,0,0) row=49/body src=fo:table-cell@321:13
           block 63.193,448.201 100.386x22.8 src=fo:block@321:143
             line 63.193,448.201 100.386x11.4
               text 63.193,456.359 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Zwei Zeilen hoch,"
@@ -1199,12 +1199,12 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 63.193,459.601 100.386x11.4
               text 63.193,467.759 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "senkrecht zentriert"
                 glyphs 86:4.75 72:5.283 81:5.283 78:4.75 85:3.164 72:5.283 70:4.75 75:5.283 87:2.639 3:2.639 93:4.75 72:5.283 81:5.283 87:2.639 85:3.164 76:2.111 72:5.283 85:3.164 87:2.639
-        block 172.579,432.001 108.386x30.8 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) src=fo:table-cell@322:13
+        block 172.579,432.001 108.386x30.8 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) row=49/body src=fo:table-cell@322:13
           block 176.579,436.001 100.386x11.4 src=fo:block@322:69
             line 176.579,436.001 100.386x11.4
               text 176.579,444.159 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "B1"
                 glyphs 37:6.336 20:5.283
-        block 285.965,432.001 250.118x30.8 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) src=fo:table-cell@323:13
+        block 285.965,432.001 250.118x30.8 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) row=49/body src=fo:table-cell@323:13
           block 289.965,436.001 242.118x22.8 src=fo:block@323:69
             line 289.965,436.001 242.118x11.4
               text 289.965,444.159 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "C1 mit etwas mehr Text, der in der breiten Spalte"
@@ -1212,7 +1212,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 289.965,447.401 242.118x11.4
               text 289.965,455.559 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "umbricht und die Zeile höher macht."
                 glyphs 88:5.283 80:7.914 69:5.283 85:3.164 76:2.111 70:4.75 75:5.283 87:2.639 3:2.639 88:5.283 81:5.283 71:5.283 3:2.639 71:5.283 76:2.111 72:5.283 3:2.639 61:5.803 72:5.283 76:2.111 79:2.111 72:5.283 3:2.639 75:5.283 184:5.283 75:5.283 72:5.283 85:3.164 3:2.639 80:7.914 68:5.283 70:4.75 75:5.283 87:2.639 17:2.639
-        block 172.579,467.801 363.504x19.4 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) src=fo:table-cell@326:13
+        block 172.579,467.801 363.504x19.4 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) row=50/body src=fo:table-cell@326:13
           block 176.579,471.801 355.504x11.4 src=fo:block@326:96
             line 176.579,471.801 355.504x11.4
               text 176.579,479.959 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "B2 und C2 verbunden"
@@ -1223,23 +1223,23 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             glyphs 47:8.552 76:3.89 86:7.786 87:4.662 72:7.786 81:8.552
       block 56.693,538.682 481.89x72.4 src=fo:list-block@331:7
         block 56.693,538.682 481.89x11.4 src=fo:list-item@332:9
-          block 56.693,538.682 17.008x11.4 src=fo:list-item-label@333:11
+          block 56.693,538.682 17.008x11.4 row=51/item src=fo:list-item-label@333:11
             block 56.693,538.682 17.008x11.4 src=fo:block@333:56
               line 56.693,538.682 17.008x11.4
                 text 56.693,546.84 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "•"
                   glyphs 2030:3.326
-          block 79.37,538.682 459.213x11.4 src=fo:list-item-body@334:11
+          block 79.37,538.682 459.213x11.4 row=51/item src=fo:list-item-body@334:11
             block 79.37,538.682 459.213x11.4 src=fo:block@334:58
               line 79.37,538.682 459.213x11.4
                 text 79.37,546.84 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Aufzählungspunkt mit kurzem Text."
                   glyphs 36:6.336 88:5.283 73:2.639 93:4.75 166:5.283 75:5.283 79:2.111 88:5.283 81:5.283 74:5.283 86:4.75 83:5.283 88:5.283 81:5.283 78:4.75 87:2.639 3:2.639 80:7.914 76:2.111 87:2.639 3:2.639 78:4.75 88:5.283 85:3.164 93:4.75 72:5.283 80:7.914 3:2.639 55:4.75 72:5.283 91:4.75 87:2.639 17:2.639
         block 56.693,552.082 481.89x45.6 src=fo:list-item@336:9
-          block 56.693,552.082 17.008x45.6 src=fo:list-item-label@337:11
+          block 56.693,552.082 17.008x45.6 row=52/item src=fo:list-item-label@337:11
             block 56.693,552.082 17.008x11.4 src=fo:block@337:56
               line 56.693,552.082 17.008x11.4
                 text 56.693,560.24 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "•"
                   glyphs 2030:3.326
-          block 79.37,552.082 459.213x45.6 src=fo:list-item-body@338:11
+          block 79.37,552.082 459.213x45.6 row=52/item src=fo:list-item-body@338:11
             block 79.37,552.082 459.213x22.8 src=fo:block@338:58
               line 79.37,552.082 459.213x11.4
                 text 79.37,560.24 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Ein längerer Punkt, dessen Text über mehr als eine Zeile läuft, damit man sieht, dass der Body bündig unter"
@@ -1249,34 +1249,34 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
                   glyphs 86:4.75 76:2.111 70:4.75 75:5.283 3:2.639 73:2.639 82:5.283 85:3.164 87:2.639 74:5.283 72:5.283 86:4.75 72:5.283 87:2.639 93:4.75 87:2.639 3:2.639 90:6.861 76:2.111 85:3.164 71:5.283 3:2.639 88:5.283 81:5.283 71:5.283 3:2.639 71:5.283 68:5.283 86:4.75 3:2.639 47:5.283 68:5.283 69:5.283 72:5.283 79:2.111 3:2.639 82:5.283 69:5.283 72:5.283 81:5.283 3:2.639 86:4.75 87:2.639 72:5.283 75:5.283 87:2.639 17:2.639
             block 79.37,574.882 459.213x22.8 src=fo:list-block@339:13
               block 79.37,574.882 459.213x11.4 src=fo:list-item@340:15
-                block 79.37,574.882 22.677x11.4 src=fo:list-item-label@341:17
+                block 79.37,574.882 22.677x11.4 row=53/item src=fo:list-item-label@341:17
                   block 79.37,574.882 22.677x11.4 src=fo:block@341:62
                     line 79.37,574.882 22.677x11.4
                       text 93.6,583.04 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "a)"
                         glyphs 68:5.283 12:3.164
-                block 107.716,574.882 430.867x11.4 src=fo:list-item-body@342:17
+                block 107.716,574.882 430.867x11.4 row=53/item src=fo:list-item-body@342:17
                   block 107.716,574.882 430.867x11.4 src=fo:block@342:64
                     line 107.716,574.882 430.867x11.4
                       text 107.716,583.04 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Verschachtelte Liste, Label rechtsbündig."
                         glyphs 57:5.812 72:5.283 85:3.164 86:4.75 70:4.75 75:5.283 68:5.283 70:4.75 75:5.283 87:2.639 72:5.283 79:2.111 87:2.639 72:5.283 3:2.639 47:5.283 76:2.111 86:4.75 87:2.639 72:5.283 15:2.639 3:2.639 47:5.283 68:5.283 69:5.283 72:5.283 79:2.111 3:2.639 85:3.164 72:5.283 70:4.75 75:5.283 87:2.639 86:4.75 69:5.283 190:5.283 81:5.283 71:5.283 76:2.111 74:5.283 17:2.639
               block 79.37,586.282 459.213x11.4 src=fo:list-item@344:15
-                block 79.37,586.282 22.677x11.4 src=fo:list-item-label@345:17
+                block 79.37,586.282 22.677x11.4 row=54/item src=fo:list-item-label@345:17
                   block 79.37,586.282 22.677x11.4 src=fo:block@345:62
                     line 79.37,586.282 22.677x11.4
                       text 93.6,594.44 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "b)"
                         glyphs 69:5.283 12:3.164
-                block 107.716,586.282 430.867x11.4 src=fo:list-item-body@346:17
+                block 107.716,586.282 430.867x11.4 row=54/item src=fo:list-item-body@346:17
                   block 107.716,586.282 430.867x11.4 src=fo:block@346:64
                     line 107.716,586.282 430.867x11.4
                       text 107.716,594.44 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Zweiter Unterpunkt."
                         glyphs 61:5.803 90:6.861 72:5.283 76:2.111 87:2.639 72:5.283 85:3.164 3:2.639 56:6.861 81:5.283 87:2.639 72:5.283 85:3.164 83:5.283 88:5.283 81:5.283 78:4.75 87:2.639 17:2.639
         block 56.693,599.682 481.89x11.4 src=fo:list-item@351:9
-          block 56.693,599.682 17.008x11.4 src=fo:list-item-label@352:11
+          block 56.693,599.682 17.008x11.4 row=55/item src=fo:list-item-label@352:11
             block 56.693,599.682 17.008x11.4 src=fo:block@352:56
               line 56.693,599.682 17.008x11.4
                 text 56.693,607.84 font=0 size=9.5 color=gray(0) asc=6.916 desc=1.999 "3."
                   glyphs 22:5.283 17:2.639
-          block 79.37,599.682 459.213x11.4 src=fo:list-item-body@353:11
+          block 79.37,599.682 459.213x11.4 row=55/item src=fo:list-item-body@353:11
             block 79.37,599.682 459.213x11.4 src=fo:block@353:58
               line 79.37,599.682 459.213x11.4
                 text 79.37,607.84 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nummerierter Punkt mit Ausdruck im Einzug."

@@ -97,6 +97,16 @@ type Document struct {
 	Dests map[string]Dest
 	// Bookmarks sind die Lesezeichen (fo:bookmark-tree).
 	Bookmarks []Bookmark
+	// Inline enthält Rolle und Angaben für Tagged PDF von Inline-Elementen
+	// (Spans, Felder, Verweise) nach Vorlagen-ID. Ihre Glyphen tragen die ID,
+	// einen eigenen Container haben sie nur mit Hintergrund oder Rahmen.
+	Inline map[string]InlineTag
+}
+
+// InlineTag sind Rolle und Angaben eines Inline-Elements.
+type InlineTag struct {
+	Role string
+	Tag  Tag
 }
 
 // Dest ist ein Sprungziel: Seitenindex (ab 0) und Punkt auf der Seite.
@@ -282,13 +292,37 @@ type Container struct {
 	Background *Color
 	Border     [4]Border
 	Children   []Area
-	// Role ist für Tagging in Phase 3 vorgesehen und bleibt vorerst leer.
+	// Role ist die semantische Rolle aus der Vorlage (FO-Attribut role),
+	// Grundlage des Strukturtyps im Strukturbaum.
 	Role string
+	// Tag trägt weitere Angaben für Tagged PDF, nil ohne solche Angaben.
+	Tag *Tag
 	// Source verweist auf den Ursprung im Eingabedokument, etwa "fo:block@12:5".
 	Source string
 	// ID ist die ID des Vorlagenelements (pdx:id im FO), geerbt vom nächsten
 	// Vorfahren. Leer bei FO ohne Vorlage.
 	ID string
+}
+
+// Tag beschreibt einen Container für Tagged PDF über die Rolle hinaus.
+type Tag struct {
+	// Alt ist der Alternativtext, Lang die Sprache, wenn sie abweicht,
+	// Scope der Bezug einer Kopfzelle (Column, Row oder Both).
+	Alt, Lang, Scope string
+	// Order ist die Stelle in der Lesereihenfolge unter positionierten
+	// Geschwistern, 0 ohne Angabe.
+	Order int
+	// Artifact nimmt den Bereich mit allen Kindern aus dem Strukturbaum.
+	Artifact bool
+	// Repeat markiert eine Wiederholung: Tabellenkopf oder -fuß auf einer
+	// Folgeseite oder den Inhalt eines abgerufenen Markers. Wiederholungen
+	// sind Artefakte, damit Vorlesen sie nicht mehrfach liest.
+	Repeat bool
+	// Row nummeriert die Zeilen einer Tabelle oder Liste je Dokument, Zellen
+	// derselben Zeile tragen dieselbe Nummer. Section ist header, body,
+	// footer oder item (Listenpunkt).
+	Row     int
+	Section string
 }
 
 // Glyph ist eine positionierte Glyphe.
@@ -301,6 +335,9 @@ type Glyph struct {
 	// Text ist der Unicode-Text, den die Glyphe darstellt. Bei Ligaturen
 	// trägt die erste Glyphe den ganzen Cluster, Folgeglyphen bleiben leer.
 	Text string
+	// Hyphen markiert den Trennstrich der automatischen Silbentrennung. Er
+	// gehört nicht zum Text des Wortes.
+	Hyphen bool
 }
 
 // GlyphRun ist eine Folge von Glyphen einer Schrift auf einer Grundlinie.

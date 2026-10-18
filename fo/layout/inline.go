@@ -253,6 +253,9 @@ func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 					pa.pieces[i].tid = id
 				}
 			}
+			if n != pa.node {
+				pa.g.e.noteInline(id, n)
+			}
 		}
 	}
 	return err
@@ -984,7 +987,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 				Size: hy.st.p.FontSize, Color: hy.st.p.Color, Ascent: hy.st.asc, Descent: hy.st.desc}
 			line.areas = append(line.areas, run)
 		}
-		run.Glyphs = append(run.Glyphs, hy.glyph)
+		g := hy.glyph
+		g.Hyphen = true
+		run.Glyphs = append(run.Glyphs, g)
 	}
 	for _, it := range seg {
 		if it.Payload >= 0 {
