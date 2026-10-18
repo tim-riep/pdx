@@ -2,12 +2,14 @@ package app
 
 import (
 	"context"
+	"encoding/xml"
 	"errors"
 	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/tim-riep/pdx"
@@ -166,10 +168,38 @@ func (c *Core) previewDataLocked() ([]byte, string) {
 	if s := p.Samples(); len(s) > 0 {
 		return p.Files[s[0]], s[0]
 	}
+	return c.placeholderLocked(), ""
+}
+
+// placeholderLocked liefert Platzhalterdaten: aus dem Daten-XSD, sonst ein
+// leeres Wurzelelement nach template/@dataRoot mit seinem Namespace, damit
+// die Transformation die erwartete Wurzel findet.
+func (c *Core) placeholderLocked() []byte {
 	if sc, err := c.schemaLocked(); err == nil && sc != nil {
-		return sc.Placeholder(), ""
+		return sc.Placeholder()
 	}
-	return []byte("<daten/>"), ""
+	root := c.doc.Pkg.Template.Root
+	name := root.Get("dataRoot", "")
+	if name == "" {
+		return []byte("<daten/>")
+	}
+	prefix, _, ok := strings.Cut(name, ":")
+	if !ok {
+		return []byte("<" + name + "/>")
+	}
+	uri := ""
+	if nss := root.First("namespaces"); nss != nil {
+		for _, ns := range nss.Elements("ns") {
+			if ns.Get("prefix", "") == prefix {
+				uri = ns.Get("uri", "")
+			}
+		}
+	}
+	var b strings.Builder
+	b.WriteString("<" + name + " xmlns:" + prefix + `="`)
+	xml.EscapeText(&b, []byte(uri))
+	b.WriteString(`"/>`)
+	return []byte(b.String())
 }
 
 func (c *Core) runConformance(ctx context.Context, gen int, in pipeline.Input, st Conformance) {

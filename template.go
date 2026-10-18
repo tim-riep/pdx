@@ -86,7 +86,7 @@ func RenderTemplate(p *pkg.Package, data []byte, opts TemplateOptions) (*Result,
 // Render setzt einen Datensatz. opts.Lang wird ignoriert, die Sprache steht
 // beim Kompilieren fest.
 func (t *Template) Render(data []byte, opts TemplateOptions) (*Result, error) {
-	fo, o, err := t.prepare(data, opts)
+	fo, o, err := t.prepare(data, opts, true)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (t *Template) Profile() string {
 // Layout setzt einen Datensatz und liefert nur den Area Tree, ohne PDF.
 // Profil und Erstellungsdatum werden nicht gebraucht.
 func (t *Template) Layout(data []byte, opts TemplateOptions) (*areatree.Document, error) {
-	fo, o, err := t.prepare(data, opts)
+	fo, o, err := t.prepare(data, opts, false)
 	if err != nil {
 		return nil, err
 	}
@@ -141,8 +141,10 @@ func (t *Template) Layout(data []byte, opts TemplateOptions) (*areatree.Document
 }
 
 // prepare prüft die Daten auf Wunsch, transformiert sie und stellt die
-// Optionen für das Paket zusammen.
-func (t *Template) prepare(data []byte, opts TemplateOptions) ([]byte, Options, error) {
+// Optionen für das Paket zusammen. pdf meldet, dass ein PDF entsteht: nur
+// dann wird eine E-Rechnung erkannt und eingebettet. Die Layout-Vorschau braucht das nicht und arbeitet auch
+// mit Platzhalterdaten.
+func (t *Template) prepare(data []byte, opts TemplateOptions, pdf bool) ([]byte, Options, error) {
 	if opts.Strict {
 		if err := t.Validate(data); err != nil {
 			return nil, Options{}, err
@@ -156,7 +158,7 @@ func (t *Template) prepare(data []byte, opts TemplateOptions) ([]byte, Options, 
 	// Eine E-Rechnung wird vor der Transformation erkannt, damit falsche
 	// Daten (etwa UBL) eine genaue Meldung bekommen.
 	var info *einvoice.Info
-	if e := t.Compiled.EInvoice; e != nil {
+	if e := t.Compiled.EInvoice; e != nil && pdf {
 		var err error
 		if info, err = einvoice.Detect(data); err != nil {
 			return nil, Options{}, &template.Error{ID: e.ID, Msg: err.Error()}

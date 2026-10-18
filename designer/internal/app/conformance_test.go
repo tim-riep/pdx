@@ -150,3 +150,17 @@ func TestConformanceVeraPDF(t *testing.T) {
 	}
 	t.Logf("%s, %d ms", st.Runner, st.Millis)
 }
+
+// Ohne Daten-XSD und Beispiele entsteht der Platzhalter aus der Datenwurzel
+// der Vorlage mit ihrem Namespace.
+func TestPlaceholderFromDataRoot(t *testing.T) {
+	c := NewCore(&recorder{}, nil, t.TempDir())
+	if _, err := NewProjectService(c).Open("../../../testdata/templates/cii-rechnung"); err != nil {
+		t.Fatal(err)
+	}
+	got := string(c.placeholderLocked())
+	want := `<rsm:CrossIndustryInvoice xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"/>`
+	if got != want {
+		t.Errorf("%s", got)
+	}
+}

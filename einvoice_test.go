@@ -56,6 +56,14 @@ func TestEInvoice(t *testing.T) {
 	if !errors.As(err, &e) || e.ID != "erechnung" {
 		t.Errorf("UBL nicht abgelehnt: %v", err)
 	}
+	// Die Layout-Vorschau braucht keine E-Rechnung und nimmt Platzhalter.
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := tpl.Layout([]byte(`<rsm:CrossIndustryInvoice xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"/>`), TemplateOptions{}); err != nil {
+		t.Errorf("Layout mit Platzhalter: %v", err)
+	}
 	if d := os.Getenv("PDX_OUT"); d != "" {
 		res, _ := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate}})
 		os.WriteFile(d+"/cii-rechnung.pdf", res.PDF, 0o644)

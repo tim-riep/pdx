@@ -101,10 +101,7 @@ func (c *Core) render() {
 	var data []byte
 	var sample string
 	if c.r.view == ViewDesign {
-		data = []byte("<daten/>")
-		if sc, err := c.schemaLocked(); err == nil && sc != nil {
-			data = sc.Placeholder()
-		}
+		data = c.placeholderLocked()
 	} else {
 		data, sample = c.previewDataLocked()
 	}
