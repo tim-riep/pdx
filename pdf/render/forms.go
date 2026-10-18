@@ -85,8 +85,12 @@ func (r *renderer) drFont(id areatree.FontID) (pdf.Name, error) {
 	return name, nil
 }
 
-// widget schreibt ein Formularfeld mit Widget und Erscheinungsbild.
+// widget schreibt ein Formularfeld mit Widget und Erscheinungsbild, beim
+// Abflachen nur das Erscheinungsbild als Seiteninhalt.
 func (pc *pageCtx) widget(w *areatree.Widget) error {
+	if pc.r.opts.Flatten {
+		return pc.flatWidget(w)
+	}
 	r := pc.r
 	fs := r.forms()
 	f := w.Field
@@ -441,4 +445,47 @@ func circle(c *pdf.Content, cx, cy, r float64) {
 	c.CurveTo(cx-r, cy-k, cx-k, cy-r, cx, cy-r)
 	c.CurveTo(cx+k, cy-r, cx+r, cy-k, cx+r, cy)
 	c.ClosePath()
+}
+
+// flatWidget zeichnet das Erscheinungsbild eines Felds im aktuellen Zustand
+// als Form XObject in den Seiteninhalt, markiert wie geplant.
+func (pc *pageCtx) flatWidget(w *areatree.Widget) error {
+	f := w.Field
+	state := ""
+	switch f.Type {
+	case "checkbox":
+		state = "off"
+		if f.Value == f.OnValue {
+			state = "on"
+		}
+	case "radio":
+		state = "off"
+		if f.Value == f.Export {
+			state = "on"
+		}
+	}
+	ref, err := pc.appearance(w, state)
+	if err != nil {
+		return err
+	}
+	pc.r.flat++
+	name := pdf.Name("Fm" + strconv.Itoa(pc.r.flat))
+	pc.res.xobjects.Set(name, ref)
+	if t := pc.r.tag; t != nil && !pc.noTag {
+		m := t.marks[w]
+		switch {
+		case m.artifact:
+			pc.c.BeginArtifact()
+		case m.actual != "":
+			pc.c.BeginMarkedText(m.tag, m.mcid, m.actual)
+		default:
+			pc.c.BeginMarked(m.tag, m.mcid)
+		}
+		defer pc.c.EndMarked()
+	}
+	pc.c.Save()
+	pc.c.Transform(1, 0, 0, 1, pc.x(w.X), pc.y(w.Y+w.H))
+	pc.c.XObject(name)
+	pc.c.Restore()
+	return nil
 }

@@ -289,3 +289,43 @@ func FuzzExtractData(f *testing.F) {
 		tpl.ExtractData(b, base)
 	})
 }
+
+// TestFlatten flacht ein ausgefülltes Formular ab: kein AcroForm mehr, die
+// Werte als Inhalt mit Ersatztext, konform in den barrierefreien Profilen.
+// Ungültige Eingaben werden nicht abgeflacht.
+func TestFlatten(t *testing.T) {
+	tpl, base := loadForm(t)
+	filled := strings.Replace(string(base), "<newsletter>false</newsletter>", "<newsletter>true</newsletter>", 1)
+	form, err := tpl.Render([]byte(filled), TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3a,pdfua-1"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, prof := range []string{"pdfa-3a,pdfua-1", "pdfa-4,pdfua-2", "pdfa-2b"} {
+		t.Run(prof, func(t *testing.T) {
+			res, err := tpl.Flatten(form.PDF, base, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: prof}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			f, err := reader.Open(res.PDF)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if f.Root()["AcroForm"] != nil || len(f.Fields()) != 0 {
+				t.Error("abgeflachtes PDF hat noch Felder")
+			}
+			if strings.Contains(prof, "pdfua") {
+				got := string(structure(t, res.PDF))
+				for _, want := range []string{`P "Erika Musterfrau"`, `P "Newsletter abonnieren: angekreuzt"`, `P "gewählt: Frau"`, `P "Tarif: Komfort"`} {
+					if !strings.Contains(got, want) {
+						t.Errorf("%q fehlt im Strukturbaum\n%s", want, got)
+					}
+				}
+			}
+			testutil.Conform(t, "formular-flach-"+strings.ReplaceAll(prof, ",", "-")+".pdf", res.PDF, prof)
+		})
+	}
+	bad, _ := tpl.Render([]byte(strings.Replace(string(base), "<land>DE</land>", "<land>FR</land>", 1)), TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3b"}})
+	if _, err := tpl.Flatten(bad.PDF, base, TemplateOptions{Options: Options{CreationDate: templateDate}}); err == nil {
+		t.Error("ungültige Eingaben abgeflacht")
+	}
+}

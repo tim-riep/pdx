@@ -58,6 +58,8 @@ type Options struct {
 	Tagged bool
 	// XMP sind zusätzliche XMP-Schemata, etwa fx der E-Rechnung.
 	XMP []areatree.XMPSchema
+	// Flatten zeichnet Formularfelder als festen Inhalt (pdx flatten).
+	Flatten bool
 }
 
 // Result enthält das PDF und den Area Tree.
@@ -88,6 +90,7 @@ func Render(fo io.Reader, opts Options) (*Result, error) {
 		Producer:     "pdx " + Version,
 		Trace:        opts.Trace,
 		Tagged:       opts.Tagged,
+		Flatten:      opts.Flatten,
 	})
 	if err != nil {
 		return nil, err

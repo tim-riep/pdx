@@ -263,7 +263,13 @@ func (f *File) Content(page Dict) (*PageContent, error) {
 					fr.marked = len(pc.Marked) - 1
 				}
 				if at, ok := f.Resolve(d["ActualText"]).(String); ok && !replaced() {
-					text(textString(at))
+					// Der Ersatztext gehört zur eigenen Folge, wenn sie eine
+					// MCID hat, sonst zur umgebenden.
+					if fr.marked >= 0 {
+						pc.Marked[fr.marked].Text += textString(at)
+					} else {
+						text(textString(at))
+					}
 					fr.actual = true
 				}
 			}

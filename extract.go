@@ -430,3 +430,16 @@ func IsExtractError(err error) (*ExtractError, bool) {
 	ok := errors.As(err, &e)
 	return e, ok
 }
+
+// Flatten wandelt ein ausgefülltes Formular in ein statisches PDF: Es liest
+// die Eingaben wie ExtractData und rendert die Vorlage damit erneut, die
+// Felder als fester Inhalt. Profil und Optionen kommen aus opts, ohne
+// Profil gilt das der Vorlage. Ungültige Daten werden nicht abgeflacht.
+func (t *Template) Flatten(pdf, base []byte, opts TemplateOptions) (*Result, error) {
+	data, err := t.ExtractData(pdf, base)
+	if err != nil {
+		return nil, err
+	}
+	opts.Flatten = true
+	return t.Render(data, opts)
+}

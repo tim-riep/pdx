@@ -58,6 +58,9 @@ type mark struct {
 	tag      pdf.Name
 	mcid     int
 	artifact bool
+	// actual ist ein Ersatztext für die ganze Folge, etwa bei
+	// abgeflachten Kontrollkästchen.
+	actual string
 	// hyphen: die letzte Glyphe ist ein Trennstrich aus dem Zeilenumbruch.
 	hyphen bool
 }
@@ -111,6 +114,8 @@ type tagger struct {
 	ids []idEntry
 	// texts sammelt den Text je Element für Analyze.
 	texts map[*structElem]*strings.Builder
+	// flatten: Widgets sind fester Seiteninhalt statt Annotationen.
+	flatten bool
 }
 
 type idEntry struct {
@@ -178,6 +183,10 @@ func (t *tagger) walk(pi int, a areatree.Area, c tagCtx, top bool) {
 		le.kids = append(le.kids, structKid{annot: v, page: pi})
 		t.annots[v] = 0
 	case *areatree.Widget:
+		if t.flatten {
+			t.flatWidget(pi, v, c)
+			return
+		}
 		if c.artifact {
 			t.artifactWidgets = append(t.artifactWidgets, v.ID)
 			return
@@ -853,4 +862,49 @@ func (r *renderer) tagWidget(w *areatree.Widget, annot *pdf.Dict, ref pdf.Ref) {
 	if label != "" {
 		annot.Set("Contents", pdf.TextString(label))
 	}
+}
+
+// flatWidget plant ein abgeflachtes Formularfeld als Inhalt seines
+// Absatzes. Weil der Text im Form XObject steht, trägt die Folge den Wert
+// als Ersatztext, Schaltflächen Bezeichnung und Zustand. Leere Felder und
+// Signaturfelder sind nur Gestaltung.
+func (t *tagger) flatWidget(pi int, v *areatree.Widget, c tagCtx) {
+	f := v.Field
+	empty := (f.Type == "text" || f.Type == "combo" || f.Type == "list") && strings.TrimSpace(f.Value) == ""
+	if c.artifact || f.Type == "signature" || empty {
+		t.marks[v] = mark{artifact: true}
+		return
+	}
+	// Der Inhalt gehört zum umgebenden Absatz, etwa zusammen mit dem Text
+	// einer Option.
+	m := t.content(pi, c.parent, v.Rect)
+	switch f.Type {
+	case "text":
+		m.actual = f.Value
+	case "checkbox":
+		state := "nicht angekreuzt"
+		if f.Value == f.OnValue {
+			state = "angekreuzt"
+		}
+		m.actual = strings.TrimSpace(f.Label + ": " + state)
+	case "radio":
+		// Der Text der Option folgt im selben Absatz.
+		m.actual = "nicht gewählt:"
+		if f.Value == f.Export {
+			m.actual = "gewählt:"
+		}
+	case "list", "combo":
+		m.actual = strings.TrimSpace(f.Label + ": " + optionLabelOf(f))
+	}
+	t.marks[v] = m
+}
+
+// optionLabelOf liefert den Text der gewählten Option.
+func optionLabelOf(f areatree.Field) string {
+	for _, o := range f.Options {
+		if o.Value == f.Value {
+			return o.Label
+		}
+	}
+	return f.Value
 }

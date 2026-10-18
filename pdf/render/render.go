@@ -27,6 +27,9 @@ type Options struct {
 	// Tagged schreibt Tagged PDF mit Strukturbaum. Profile, die Tagging
 	// verlangen (PDF/A Stufe A, PDF/UA), schalten es immer ein.
 	Tagged bool
+	// Flatten zeichnet Formularfelder als festen Seiteninhalt statt als
+	// ausfüllbare Felder (pdx flatten).
+	Flatten bool
 }
 
 // Trace ordnet Operatoren der Inhaltsströme den Vorlagenelementen zu, damit
@@ -95,8 +98,10 @@ type renderer struct {
 	tag *tagger
 	// claim ist der Anspruch des Profils mit PDF-Version.
 	claim profile.Claim
-	// form sammelt die Formularfelder, nil ohne Felder.
+	// form sammelt die Formularfelder, nil ohne Felder. flat zählt die
+	// abgeflachten Felder für Ressourcennamen.
 	form *formState
+	flat int
 }
 
 func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
@@ -118,6 +123,7 @@ func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
 	if strict := c.Level == "A" || c.UA > 0; opts.Tagged || strict {
 		r.tag = newTagger(doc)
 		r.tag.pdf2 = c.Version == "2.0"
+		r.tag.flatten = opts.Flatten
 		r.tag.plan()
 		if strict {
 			if err := r.tag.check(c); err != nil {

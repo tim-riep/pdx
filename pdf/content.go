@@ -186,6 +186,20 @@ func (c *Content) BeginMarked(tag Name, mcid int) {
 	c.op(b.String())
 }
 
+// BeginMarkedText beginnt markierten Inhalt mit MCID und Ersatztext:
+// /Tag <</MCID n /ActualText (…)>> BDC (ISO 32000-1 14.9.4). Der Ersatztext
+// ersetzt beim Vorlesen alles, was die Folge zeichnet.
+func (c *Content) BeginMarkedText(tag Name, mcid int, actual string) {
+	var b bytes.Buffer
+	tag.writePDF(&b)
+	b.WriteString(" <</MCID ")
+	b.WriteString(strconv.Itoa(mcid))
+	b.WriteString(" /ActualText ")
+	TextString(actual).writePDF(&b)
+	b.WriteString(">> BDC")
+	c.op(b.String())
+}
+
 // BeginArtifact beginnt einen Artefakt-Bereich: /Artifact BMC (ISO 32000-1
 // 14.8.2.2). Artefakte gehören nicht zum Strukturbaum.
 func (c *Content) BeginArtifact() { c.op("/Artifact BMC") }
