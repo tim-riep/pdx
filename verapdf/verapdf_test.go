@@ -81,7 +81,7 @@ func TestRunnerLive(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	rep, err := r.Validate(context.Background(), "../../pdf/render/testdata/text.pdf", "3b")
+	rep, err := r.Validate(context.Background(), "../pdf/render/testdata/text.pdf", "3b")
 	if err != nil {
 		t.Fatal(err)
 	}

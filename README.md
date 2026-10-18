@@ -1,8 +1,8 @@
 # pdx
 
-pdx erzeugt PDF-Dateien bis PDF/A-3 aus XSL-FO, komplett in Go und ohne cgo. Es ist die Engine eines Dokumentdesigners nach dem Vorbild von Adobe LiveCycle Designer. Ein XSD beschreibt die Datenschnittstelle, ein Desktop-Designer gestaltet das Dokument, die Engine setzt es. veraPDF ist die verbindliche Prüfinstanz für die Konformität.
+pdx erzeugt PDF-Dateien in PDF/A-2, PDF/A-3 und PDF/A-4, barrierefrei nach PDF/UA-1 und PDF/UA-2 sowie als E-Rechnung nach ZUGFeRD und Factur-X aus XSL-FO, komplett in Go und ohne cgo. Es ist die Engine eines Dokumentdesigners nach dem Vorbild von Adobe LiveCycle Designer. Ein XSD beschreibt die Datenschnittstelle, ein Desktop-Designer gestaltet das Dokument, die Engine setzt es. veraPDF ist die verbindliche Prüfinstanz für die Konformität.
 
-Stand: Phase 2. Der Desktop-Designer (Wails und Svelte) liegt in [`designer/`](designer/README.md), mit ihm lässt sich die Musterrechnung ohne XML nachbauen. Darunter die Layout-Engine für Geschäftsdokumente (Seitenfolgen, Tabellen, Listen, Keeps, Marker, Knuth-Plass, Silbentrennung, Links, Lesezeichen, Barcodes), Vorlagenformat v0 mit Compiler nach XSLT 3.0, Bindungsprüfung gegen das Daten-XSD, Vergleich mit Apache FOP, Design-Tokens im Vorlagenformat.
+Stand: Phase 3 (Konformität erweitert: PDF/A-2, -3, -4, PDF/UA-1, -2, Tagged PDF, E-Rechnung). Der Desktop-Designer (Wails und Svelte) liegt in [`designer/`](designer/README.md), mit ihm lässt sich die Musterrechnung ohne XML nachbauen. Darunter die Layout-Engine für Geschäftsdokumente (Seitenfolgen, Tabellen, Listen, Keeps, Marker, Knuth-Plass, Silbentrennung, Links, Lesezeichen, Barcodes), Vorlagenformat v0 mit Compiler nach XSLT 3.0, Bindungsprüfung gegen das Daten-XSD, Vergleich mit Apache FOP, Design-Tokens im Vorlagenformat.
 
 ## Aufruf
 
@@ -111,7 +111,31 @@ Unter `pdfa-3a` und `pdfua-1` prüft pdx vor dem Schreiben alles, was sich nicht
 
 Listen bekommen `ListNumbering` aus dem Text ihrer Marken (Ziffern Decimal, Buchstaben LowerAlpha oder UpperAlpha, sonst Disc bzw. Unordered unter PDF 2.0).
 
-In Arbeit (Phase 3): E-Rechnung.
+## Barrierefreiheit
+
+Mit `pdfa-3a`, `pdfua-1` oder `pdfua-2` (oder `--tagged`) schreibt pdx Tagged PDF. Der Strukturbaum entsteht aus den Rollen der Vorlage: Überschriften, Absätze, Tabellen mit Kopf, Rumpf, Fuß und Kopfzellen samt Bezug, Listen mit Marke und Inhalt, Abbildungen mit Alternativtext, Verweise mit Annotation. Die Lesereihenfolge folgt dem Fluss, frei platzierte Elemente ordnet `readingOrder`, sonst gilt oben nach unten und links nach rechts.
+
+In der Vorlage dienen dazu die Attribute `role`, `alt`, `altBind` (Alternativtext aus den Daten, etwa beim GiroCode), `lang`, `readingOrder`, `artifact` und an Zellen `scope`. `pdx structure ausgabe.pdf` zeigt den Baum mit Text in Lesereihenfolge.
+
+Was keine Software entscheiden kann, etwa ob ein Alternativtext inhaltlich stimmt, listet der Designer als Checkliste nach dem Matterhorn Protocol 1.1 (PDF Association, CC BY 4.0).
+
+### Kurztest mit Screenreader
+
+VoiceOver (macOS) mit Vorschau, geprüft am 18.10.2026 mit der Musterrechnung als `pdfa-3a,pdfua-1`:
+
+1. `pdx render --profile pdfa-3a,pdfua-1 --template testdata/templates/musterrechnung -o rechnung.pdf testdata/templates/musterrechnung/samples/rechnung.xml`
+2. Die Datei in Vorschau öffnen, VoiceOver mit Cmd+F5 einschalten, mit Ctrl+Option+Pfeil rechts durch das Dokument gehen.
+3. Erwartet: Briefkopf, Absenderzeile, Anschrift und Rechnungsdaten vor der Überschrift „Rechnung“ (als Überschrift angesagt), danach die Tabelle mit Zeilen und Zellen, Seitenzahlen und wiederholte Tabellenköpfe werden übersprungen, der GiroCode wird mit seinem Alternativtext angesagt.
+
+Ergebnis: Vorschau liefert VoiceOver die Überschrift, die Tabelle als Zeilen und Zellen und das Bild mit Alternativtext aus dem Strukturbaum, in der Reihenfolge des Baums. Dieselbe Rechnung ohne Tags (`pdfa-3b`) hat keine Überschrift, die Tabellenzeilen rät Vorschau dort aus dem Layout. Vorschau wertet nicht alles aus, was PDF/UA beschreibt, etwa den Bezug der Kopfzellen. Für eine vollständige Prüfung eignen sich NVDA mit Adobe Acrobat Reader unter Windows oder der PDF Accessibility Checker (PAC).
+
+NVDA (Windows): Datei in Acrobat Reader öffnen, mit H von Überschrift zu Überschrift springen, mit T zur Tabelle, in der Tabelle mit Strg+Alt+Pfeiltasten von Zelle zu Zelle. NVDA sagt dabei die Spaltenköpfe an.
+
+## E-Rechnung
+
+Eine Vorlage mit dem Element `einvoice` erzeugt hybride Rechnungen nach ZUGFeRD 2 und Factur-X 1.0. Die Daten müssen eine CII-Rechnung sein (`rsm:CrossIndustryInvoice`), UBL lehnt pdx mit Meldung ab. Die Stufe steht in den Daten (Guideline-ID, BT-24): MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED oder XRECHNUNG. pdx bettet die Daten als `factur-x.xml` ein (bei XRECHNUNG `xrechnung.xml`), mit `AFRelationship` Data für MINIMUM und BASIC WL, sonst Alternative (`afRelationship` am Element überschreibt das), und schreibt das XMP-Schema `fx`. Die Werte sind gegen die Referenzimplementierung Mustang geprüft.
+
+E-Rechnungen verlangen PDF/A-3, also `pdfa-3b`, `pdfa-3u` oder `pdfa-3a,pdfua-1`. Andere Profile lehnt pdx mit der ID des Elements ab. Eine Prüfung der Rechnungsdaten gegen die Schematron-Regeln von EN 16931 und XRechnung macht pdx nicht. Beispiel: `testdata/templates/cii-rechnung` mit Daten der Stufen EN 16931 und XRECHNUNG.
 
 ## FO-Teilumfang
 

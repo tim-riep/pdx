@@ -13,7 +13,7 @@ Das Fenster hat drei Spalten mit Tabs und einen Bereich unten.
 | links | Daten, Hierarchie, Beispiele | Datenbaum des XSD zum Ziehen, Baum der Vorlage, Beispieldaten und Randfälle |
 | Mitte | Entwurf, Vorschau, PDF | Canvas mit Platzhaltern oder Beispieldaten, das fertige PDF mit pdf.js |
 | rechts | Inspektor, Stile | Eigenschaften des gewählten Elements, Design-Tokens und Stile |
-| unten | Probleme, Konformität, XPath | laufende Prüfung, veraPDF, großer XPath-Editor |
+| unten | Probleme, Konformität, Barrierefreiheit, XPath | laufende Prüfung, veraPDF, Strukturbaum und Lesereihenfolge, großer XPath-Editor |
 
 Grundsätze:
 
@@ -22,7 +22,7 @@ Grundsätze:
 * **Bausteine** (Text, Teilformular positioniert oder fließend, Linie, Rechteck, Bild, Barcode, Seitenzahl, Tabelle) kommen aus der Leiste über dem Canvas, per Klick in die Auswahl oder per Ziehen an eine Stelle.
 * **Text mit Feldern** wird direkt bearbeitet: Doppelklick im Canvas oder Inhalt im Inspektor. Felder stehen als Chips im Text, `@` schlägt Datenknoten vor.
 * **Jede Änderung ist ein Befehl** mit Undo und Redo. Das Modell lebt nur im Backend, die Oberfläche zeigt eine Projektion.
-* **Prüfen läuft mit.** Die Problemliste meldet nach jeder Änderung Fehler aus Vorlage, Übersetzung, Bindungen und Beispieldaten. Die Konformität prüft auf Knopfdruck mit veraPDF und ordnet Befunde über Seite und Operator den Elementen zu.
+* **Prüfen läuft mit.** Die Problemliste meldet nach jeder Änderung Fehler aus Vorlage, Übersetzung, Bindungen und Beispieldaten. Die Konformität prüft auf Knopfdruck mit veraPDF gegen jede Norm des Ausgabeprofils und ordnet Befunde über Seite und Operator den Elementen zu.
 
 Weitere Werkzeuge:
 
@@ -32,6 +32,9 @@ Weitere Werkzeuge:
 * **Tokens und Stile:** Farben, Längen und Schriften benennen und mit `$name` verwenden, Umbenennen zieht alle Verweise mit.
 * **Schemaänderung:** Ein neues XSD zeigt erst die Unterschiede, stellt Bindungen auf umbenannte Knoten um und lässt eine Aufgabenliste für den Rest.
 * **Beispieldaten:** importieren, wählen, Randfälle erzeugen (minimal, maximal, lange Texte).
+* **Ausgabeprofil:** Die Vorlage wählt ihr Profil aus den zulässigen Kombinationen, etwa PDF/A-3a mit PDF/UA-1 oder PDF/A-4f mit PDF/UA-2, jeweils mit einem Satz Erklärung.
+* **Barrierefreiheit:** Der Inspektor hat eine eigene Gruppe für Rolle, Alternativtext (fest oder aus den Daten), Sprache, Lesereihenfolge, Dekoration und Kopfbezug. Das Panel Barrierefreiheit zeigt die Befunde der Vorprüfung und den Strukturbaum in Lesereihenfolge, blendet die Reihenfolge als Nummern auf der Seite ein, verschiebt frei platzierte Elemente mit Pfeilen und führt die manuellen Prüfpunkte nach Matterhorn 1.1 als Checkliste. Verlangt das Profil keine Barrierefreiheit, prüft es zur Vorschau nach PDF/A-3a mit PDF/UA-1.
+* **E-Rechnung:** Am Element E-Rechnung zeigt der Inspektor die aus den Beispieldaten erkannte Stufe, die eingebettete Datei und die Beziehung und warnt, wenn das Profil nicht PDF/A-3 ist.
 * **Ansicht:** Lineale in mm oder pt, Raster, Einrasten an Kanten und Mitten, Seitenübersicht, Ausrichten und Verteilen mit Mehrfachauswahl (Umschalt+Klick).
 
 ## Tastenkürzel
