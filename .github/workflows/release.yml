@@ -177,6 +177,6 @@ jobs:
           rm image.txt
           sha256sum * > SHA256SUMS
           git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
-          git tag -l --format='%(contents)' "$GITHUB_REF_NAME" | sed '/-----BEGIN/,$d' > ../notes.md
+          git tag -l --format='%(contents:body)' "$GITHUB_REF_NAME" | sed '/-----BEGIN/,$d' > ../notes.md
           printf '\n## Container\n\n```\ndocker pull %s\n```\n' "$image" >> ../notes.md
           gh release create "$GITHUB_REF_NAME" --title "pdx ${GITHUB_REF_NAME}" --notes-file ../notes.md *
