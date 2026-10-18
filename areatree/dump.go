@@ -105,6 +105,18 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 				if t.Row != 0 {
 					fmt.Fprintf(b, " row=%d/%s", t.Row, t.Section)
 				}
+				if t.Static {
+					b.WriteString(" static")
+				}
+				if t.Content {
+					b.WriteString(" content")
+				}
+				if t.Continued {
+					b.WriteString(" continued")
+				}
+				if t.Parent != "" {
+					fmt.Fprintf(b, " parent=%s", t.Parent)
+				}
 			}
 			if v.Source != "" {
 				fmt.Fprintf(b, " src=%s", v.Source)
@@ -123,6 +135,9 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 				v.Origin.X, v.Origin.Y, v.Font, v.Size, color(v.Color), v.Ascent, v.Descent, strconv.Quote(txt.String()))
 			if v.ID != "" {
 				fmt.Fprintf(b, " id=%s", strconv.Quote(v.ID))
+			}
+			if v.Link != "" {
+				fmt.Fprintf(b, " link=%s", v.Link)
 			}
 			b.WriteByte('\n')
 			b.WriteString(ind)
@@ -159,6 +174,9 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			target := "dest=" + strconv.Quote(v.Dest)
 			if v.URI != "" {
 				target = "uri=" + strconv.Quote(v.URI)
+			}
+			if v.Key != "" {
+				target += " key=" + v.Key
 			}
 			fmt.Fprintf(b, "link %s %s\n", rect(v.Rect), target)
 		case *Box:

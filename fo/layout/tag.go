@@ -22,7 +22,9 @@ func tagOf(n *tree.Node) (string, *areatree.Tag) {
 		Lang:     n.Attrs["xml:lang"],
 		Scope:    n.Attrs[pdxAttr("scope")],
 		Artifact: n.Attrs[pdxAttr("artifact")] == "true",
+		Content:  n.Attrs[pdxAttr("artifact")] == "false",
 		Repeat:   inMarker(n),
+		Static:   inStatic(n),
 	}
 	if v := n.Attrs[pdxAttr("reading-order")]; v != "" {
 		t.Order, _ = strconv.Atoi(v)
@@ -36,6 +38,37 @@ func tagOf(n *tree.Node) (string, *areatree.Tag) {
 
 // setTag überträgt Rolle und Angaben eines Knotens auf seinen Container.
 func setTag(c *areatree.Container, n *tree.Node) { c.Role, c.Tag = tagOf(n) }
+
+// inStatic meldet einen Knoten in fo:static-content.
+func inStatic(n *tree.Node) bool {
+	for m := n.Parent; m != nil; m = m.Parent {
+		if m.IsFO("static-content") {
+			return true
+		}
+	}
+	return false
+}
+
+// absParent liefert die Quelle des nächsten absolut positionierten
+// fo:block-container über einem Knoten, sonst leer.
+func absParent(n *tree.Node) string {
+	for m := n.Parent; m != nil; m = m.Parent {
+		if m.IsFO("block-container") {
+			if v, _ := m.Attr("absolute-position"); v == "absolute" || v == "fixed" {
+				return m.Label()
+			}
+		}
+	}
+	return ""
+}
+
+// ensureTag liefert das Tag eines Containers und legt es bei Bedarf an.
+func ensureTag(c *areatree.Container) *areatree.Tag {
+	if c.Tag == nil {
+		c.Tag = &areatree.Tag{}
+	}
+	return c.Tag
+}
 
 // inMarker meldet einen Knoten im Inhalt eines fo:marker.
 func inMarker(n *tree.Node) bool {
@@ -75,9 +108,7 @@ var sectionNames = map[section]string{secHeader: "header", secBody: "body", secF
 // Wiederholung. Ein Artefakt auf der Zeile gilt für ihre Zellen.
 func (pl *placer) cellTag(c *areatree.Container, cell *tree.Node, r *rowLayout, ref rowRef) {
 	setTag(c, cell)
-	if c.Tag == nil {
-		c.Tag = &areatree.Tag{}
-	}
+	ensureTag(c)
 	c.Tag.Row = pl.e.rowNumber(ref.key)
 	c.Tag.Section = "item"
 	if r.tbl != nil {
@@ -109,4 +140,17 @@ func (e *engine) noteInline(id string, n *tree.Node) {
 		it.Tag = *t
 	}
 	e.doc.Inline[id] = it
+}
+
+// started meldet, ob von einem Block schon ein Fragment gesetzt ist, und
+// vermerkt das aktuelle. Spätere Fragmente setzen den Block fort.
+func (e *engine) started(ctx *blockCtx) bool {
+	if e.begun == nil {
+		e.begun = map[*blockCtx]bool{}
+	}
+	if e.begun[ctx] {
+		return true
+	}
+	e.begun[ctx] = true
+	return false
 }

@@ -880,7 +880,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 56.693,733.909 56.693,751.809 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,733.909 538.583,751.809 0.5/solid/rgb(0.1216,0.3059,0.4745)
     region 56.693,776.693 481.89x22.677 src=fo:region-after@8:7
-      block 56.693,776.693 481.89x9.6 src=fo:block@15:53
+      block 56.693,776.693 481.89x9.6 static src=fo:block@15:53
         line 56.693,776.693 481.89x9.6
           text 285.185,783.563 font=1 size=8 color=gray(0) asc=5.824 desc=1.684 "Seite "
             glyphs 54:5.336 72:4.449 76:1.777 87:2.223 72:4.449 3:2.223
@@ -888,25 +888,25 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             glyphs 20:4.449
   page 2 595.276x841.89
     region 56.693,42.52 481.89x722.834 src=fo:region-body@7:7
-      block 56.693,42.52 481.89x338 src=fo:table@18:7
+      block 56.693,42.52 481.89x338 continued src=fo:table@18:7
         box 56.693,42.52 481.89x17.65 fill=rgb(0.1216,0.3059,0.4745)
         block 56.943,42.77 33.766x17.4 repeat row=1/header src=fo:table-cell@25:13
-          block 59.943,45.77 27.766x11.4 src=fo:block@25:42
+          block 59.943,45.77 27.766x11.4 continued src=fo:block@25:42
             line 59.943,45.77 27.766x11.4
               text 67.648,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Pos."
                 glyphs 51:6.336 82:5.803 86:5.283 17:2.639
         block 90.709,42.77 276.378x17.4 repeat row=1/header src=fo:table-cell@26:13
-          block 93.709,45.77 270.378x11.4 src=fo:block@26:42
+          block 93.709,45.77 270.378x11.4 continued src=fo:block@26:42
             line 93.709,45.77 270.378x11.4
               text 93.709,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Leistung"
                 glyphs 47:5.803 72:5.283 76:2.639 86:5.283 87:3.164 88:5.803 81:5.803 74:5.803
         block 367.087,42.77 92.126x17.4 repeat row=1/header src=fo:table-cell@27:13
-          block 370.087,45.77 86.126x11.4 src=fo:block@27:42
+          block 370.087,45.77 86.126x11.4 continued src=fo:block@27:42
             line 370.087,45.77 86.126x11.4
               text 426.127,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Menge"
                 glyphs 48:7.914 72:5.283 81:5.803 74:5.803 72:5.283
         block 459.213,42.77 79.12x17.4 repeat row=1/header src=fo:table-cell@28:13
-          block 462.213,45.77 73.12x11.4 src=fo:block@28:42
+          block 462.213,45.77 73.12x11.4 continued src=fo:block@28:42
             line 462.213,45.77 73.12x11.4
               text 505.242,53.928 font=0 size=9.5 color=gray(1) asc=6.916 desc=1.999 "Betrag"
                 glyphs 37:6.861 72:5.283 87:3.164 85:3.697 68:5.283 74:5.803
@@ -1178,7 +1178,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 459.213,362.62 538.833,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,210.17 538.583,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
         block 56.943,362.87 481.39x17.4 row=38/footer src=fo:table-cell@33:13
-          block 59.943,365.87 475.39x11.4 src=fo:block@33:102
+          block 59.943,365.87 475.39x11.4 continued src=fo:block@33:102
             line 59.943,365.87 475.39x11.4
               text 387.476,374.042 font=2 size=9.5 color=gray(0) asc=6.916 desc=1.971 "Fortsetzung auf der nächsten Seite"
                 glyphs 41:5.803 82:5.283 85:3.164 87:2.639 86:4.75 72:5.283 87:2.639 93:4.75 88:5.283 81:5.283 74:5.283 3:2.639 68:5.283 88:5.283 73:2.639 3:2.639 71:5.283 72:5.283 85:3.164 3:2.639 81:5.283 166:5.283 70:4.75 75:5.283 86:4.75 87:2.639 72:5.283 81:5.283 3:2.639 54:6.336 72:5.283 76:2.111 87:2.639 72:5.283
@@ -1282,7 +1282,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
                 text 79.37,607.84 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Nummerierter Punkt mit Ausdruck im Einzug."
                   glyphs 49:6.861 88:5.283 80:7.914 80:7.914 72:5.283 85:3.164 76:2.111 72:5.283 85:3.164 87:2.639 72:5.283 85:3.164 3:2.639 51:6.336 88:5.283 81:5.283 78:4.75 87:2.639 3:2.639 80:7.914 76:2.111 87:2.639 3:2.639 36:6.336 88:5.283 86:4.75 71:5.283 85:3.164 88:5.283 70:4.75 78:4.75 3:2.639 76:2.111 80:7.914 3:2.639 40:6.336 76:2.111 81:5.283 93:4.75 88:5.283 74:5.283 17:2.639
     region 56.693,776.693 481.89x22.677 src=fo:region-after@8:7
-      block 56.693,776.693 481.89x9.6 src=fo:block@15:53
+      block 56.693,776.693 481.89x9.6 static src=fo:block@15:53
         line 56.693,776.693 481.89x9.6
           text 285.185,783.563 font=1 size=8 color=gray(0) asc=5.824 desc=1.684 "Seite "
             glyphs 54:5.336 72:4.449 76:1.777 87:2.223 72:4.449 3:2.223

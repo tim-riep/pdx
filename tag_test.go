@@ -31,8 +31,10 @@ func TestLayoutTags(t *testing.T) {
 		fmt.Fprintf(&rows, `<fo:table-row><fo:table-cell><fo:block>Position %d</fo:block></fo:table-cell></fo:table-row>`, i)
 	}
 	fo := `<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
-<fo:layout-master-set><fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm"><fo:region-body/></fo:simple-page-master></fo:layout-master-set>
-<fo:page-sequence master-reference="A4"><fo:flow flow-name="xsl-region-body">
+<fo:layout-master-set><fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm"><fo:region-body margin-top="20mm"/><fo:region-before extent="15mm"/></fo:simple-page-master></fo:layout-master-set>
+<fo:page-sequence master-reference="A4"><fo:static-content flow-name="xsl-region-before"><fo:block pdx:id="kopf">Kopfzeile</fo:block>
+<fo:block-container pdx:id="anschrift" absolute-position="fixed" left="20mm" top="5mm" width="80mm" pdx:artifact="false"><fo:block-container pdx:id="zeile" absolute-position="absolute" left="0mm" top="0mm" width="80mm"><fo:block>Muster AG</fo:block></fo:block-container></fo:block-container>
+</fo:static-content><fo:flow flow-name="xsl-region-body">
 <fo:block pdx:id="h" role="H1">Titel</fo:block>
 <fo:block pdx:id="en" xml:lang="en-GB">English <fo:inline pdx:id="ref" role="Reference" xml:lang="fr">voir</fo:inline> <fo:basic-link pdx:id="lnk" external-destination="url('https://example.org')">Link</fo:basic-link></fo:block>
 <fo:block pdx:id="bild" pdx:alt="Firmenlogo">Logo</fo:block>
@@ -89,6 +91,27 @@ func TestLayoutTags(t *testing.T) {
 	}
 	if doc.Inline["lnk"].Role != "Link" {
 		t.Errorf("Verweis %+v", doc.Inline["lnk"])
+	}
+	// Kopf ist statisch, die Anschrift ausdrücklich Inhalt, die innere Zeile
+	// kennt ihren positionierten Vorfahren.
+	if tg := byID["kopf"].Tag; tg == nil || !tg.Static || tg.Content {
+		t.Errorf("Kopf %+v", tg)
+	}
+	if tg := byID["anschrift"].Tag; tg == nil || !tg.Static || !tg.Content {
+		t.Errorf("Anschrift %+v", tg)
+	}
+	if tg := byID["zeile"].Tag; tg == nil || !strings.HasPrefix(tg.Parent, "fo:block-container@") {
+		t.Errorf("Zeile %+v", tg)
+	}
+	// Die Tabelle geht über mehrere Seiten, ihre Fortsetzung ist markiert.
+	var tables []*areatree.Container
+	for _, c := range containers(doc) {
+		if c.ID == "tb" && strings.HasPrefix(c.Source, "fo:table@") {
+			tables = append(tables, c)
+		}
+	}
+	if len(tables) < 2 || (tables[0].Tag != nil && tables[0].Tag.Continued) || tables[1].Tag == nil || !tables[1].Tag.Continued {
+		t.Errorf("Fortsetzung der Tabelle: %d Fragmente", len(tables))
 	}
 	// Automatische Trennstriche sind markiert.
 	hyph := 0

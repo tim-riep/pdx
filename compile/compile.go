@@ -789,8 +789,9 @@ func (c *compiler) semantic(n *node) []string {
 	if _, dyn := n.Attr("altBind"); !dyn {
 		out = append(out, "pdx:alt", n.Get("alt", ""))
 	}
-	if n.Get("artifact", "false") == "true" {
-		out = append(out, "pdx:artifact", "true")
+	// artifact="false" macht Inhalt von Kopf und Fuß zu echtem Inhalt.
+	if v, ok := n.Attr("artifact"); ok {
+		out = append(out, "pdx:artifact", v)
 	}
 	return out
 }

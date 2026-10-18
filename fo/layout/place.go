@@ -210,6 +210,9 @@ func (pl *placer) sync(path []*blockCtx, edge edgeKind) {
 		first := edge == edgeTop && i == len(path)-1
 		c := &areatree.Container{Kind: areatree.KindBlock, Background: p.Background, Border: p.Border, Source: ctx.node.Label(), ID: ctx.node.TemplateID()}
 		setTag(c, ctx.node)
+		if pl.e.started(ctx) {
+			ensureTag(c).Continued = true
+		}
 		c.X = pl.ref.X + ctx.x
 		c.W = ctx.w
 		c.Y = pl.y
@@ -308,6 +311,9 @@ func (pl *placer) absolute(a *absAnchor) error {
 	}
 	cont := &areatree.Container{Kind: kind, Background: p.Background, Border: p.Border, Source: a.node.Label(), ID: a.node.TemplateID()}
 	setTag(cont, a.node)
+	if par := absParent(a.node); par != "" {
+		ensureTag(cont).Parent = par
+	}
 	cont.X, cont.Y = inner.X-padL, inner.Y-padT
 	cont.W = contentW + padL + padR
 	pl.page.Areas = append(pl.page.Areas, cont)

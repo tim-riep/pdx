@@ -48,6 +48,15 @@ type leaderSpec struct {
 // linkRef ist das Ziel eines fo:basic-link.
 type linkRef struct {
 	dest, uri string
+	key       string // Quelle des fo:basic-link, verbindet Text und Bereich
+}
+
+// linkKey liefert den Schlüssel eines Verweises, leer ohne Verweis.
+func linkKey(l *linkRef) string {
+	if l == nil {
+		return ""
+	}
+	return l.key
 }
 
 // hyphenPenalty ist der Strafwert einer Trennstelle wie bei Apache FOP
@@ -298,7 +307,7 @@ func (pa *paragraph) addNode(n *tree.Node, p *props.Computed) error {
 		if err != nil {
 			return err
 		}
-		ref := &linkRef{}
+		ref := &linkRef{key: n.Label()}
 		if id, ok := n.Attr("internal-destination"); ok && id != "" {
 			ref.dest = id
 			pa.g.e.links = append(pa.g.e.links, linkCheck{node: n, id: id})
@@ -922,9 +931,10 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			run = nil
 			x += adjust(it)
 		case pText, pSpace:
-			if run == nil || runStyle != pc.st || pc.deferred != nil || run.ID != runID(pc.tid) {
+			if run == nil || runStyle != pc.st || pc.deferred != nil || run.ID != runID(pc.tid) || run.Link != linkKey(pc.link) {
 				run = &areatree.GlyphRun{Origin: areatree.Point{X: x, Y: baseline}, Font: pc.st.fontID,
-					Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc, ID: runID(pc.tid)}
+					Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc, ID: runID(pc.tid),
+					Link: linkKey(pc.link)}
 				runStyle = pc.st
 				line.areas = append(line.areas, run)
 				if pc.deferred != nil {
@@ -1054,7 +1064,7 @@ func linkAreas(pa *paragraph, seg []linebreak.Item, x0 areatree.Length, align st
 	var startX areatree.Length
 	flush := func(end areatree.Length) {
 		if cur != nil && end > startX {
-			out = append(out, &areatree.Link{Rect: areatree.Rect{X: startX, Y: 0, W: end - startX, H: h}, Dest: cur.dest, URI: cur.uri})
+			out = append(out, &areatree.Link{Rect: areatree.Rect{X: startX, Y: 0, W: end - startX, H: h}, Dest: cur.dest, URI: cur.uri, Key: cur.key})
 		}
 		cur = nil
 	}

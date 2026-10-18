@@ -34,8 +34,10 @@ type Options struct {
 }
 
 type engine struct {
-	// rowNums nummeriert Tabellenzeilen und Listenpunkte für Tagged PDF.
+	// rowNums nummeriert Tabellenzeilen und Listenpunkte für Tagged PDF,
+	// begun merkt sich Blöcke, von denen schon ein Fragment gesetzt ist.
 	rowNums map[*rowLayout]int
+	begun   map[*blockCtx]bool
 
 	opts       Options
 	doc        *areatree.Document

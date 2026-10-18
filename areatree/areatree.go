@@ -323,6 +323,18 @@ type Tag struct {
 	// footer oder item (Listenpunkt).
 	Row     int
 	Section string
+	// Static markiert Inhalt aus fo:static-content (Kopf, Fuß, Seitenzahlen),
+	// der als Artefakt gilt. Content hebt das auf (artifact="false" in der
+	// Vorlage), etwa für Anschrift und Rechnungsdaten im Kopf der ersten Seite.
+	Static, Content bool
+	// Continued markiert ein Fragment, das einen Block oder eine Zelle von
+	// einer vorigen Seite fortsetzt.
+	Continued bool
+	// Parent ist bei absolut positionierten Containern die Quelle (Source)
+	// des nächsten absolut positionierten Vorfahren. Das Layout legt alle
+	// positionierten Container auf Seitenebene, Parent erhält die
+	// Verschachtelung für Struktur und Lesereihenfolge.
+	Parent string
 }
 
 // Glyph ist eine positionierte Glyphe.
@@ -353,6 +365,9 @@ type GlyphRun struct {
 	// ID ist die ID des Vorlagenelements, wenn sie von der des umgebenden
 	// Containers abweicht, etwa bei einem Feld in einem Text. Sonst leer.
 	ID string
+	// Link ist der Schlüssel des fo:basic-link, zu dessen Text der Run
+	// gehört (Link.Key), sonst leer.
+	Link string
 }
 
 // Width ist die Summe der Vorschübe.
@@ -405,6 +420,9 @@ type Link struct {
 	Rect
 	Dest string
 	URI  string
+	// Key kennzeichnet den fo:basic-link, die Glyphen seines Textes tragen
+	// denselben Schlüssel (GlyphRun.Link).
+	Key string
 }
 
 func (*Link) isArea() {}
