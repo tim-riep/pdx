@@ -16,6 +16,7 @@ import (
 	"encoding/asn1"
 	"io"
 	"math/big"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"sync"
@@ -40,12 +41,24 @@ type PKI struct {
 	TSA                      Identity
 	Server                   *httptest.Server
 
+	base   string
 	mu     sync.Mutex
 	serial int64
 }
 
 // TSAURL ist die Adresse des Zeitstempeldienstes.
-func (p *PKI) TSAURL() string { return p.Server.URL + "/tsa" }
+func (p *PKI) TSAURL() string { return p.base + "/tsa" }
+
+// Client ist ein HTTP-Client, der jede Adresse auf den Server der PKI
+// lenkt, auch die mit dem Rechnernamen aus NewForHost.
+func (p *PKI) Client() *http.Client {
+	addr := p.Server.Listener.Addr().String()
+	return &http.Client{Timeout: 30 * time.Second, Transport: &http.Transport{
+		DialContext: func(ctx context.Context, network, _ string) (net.Conn, error) {
+			return (&net.Dialer{}).DialContext(ctx, network, addr)
+		},
+	}}
+}
 
 // Chain liefert die Kette eines Endzertifikats ohne Wurzel.
 func (p *PKI) Chain(id Identity) []*x509.Certificate {
@@ -65,11 +78,24 @@ func (p *PKI) KeySigner(t testing.TB, id Identity) *sign.KeySigner {
 // New baut die PKI und startet den Server, der mit dem Test endet.
 func New(t testing.TB) *PKI {
 	t.Helper()
+	return NewForHost(t, "")
+}
+
+// NewForHost baut die PKI wie New, die Adressen in den Zertifikaten nutzen
+// aber den Rechnernamen host statt 127.0.0.1, damit etwa ein Container den
+// Server erreicht. Client löst host im Test auf den Server auf.
+func NewForHost(t testing.TB, host string) *PKI {
+	t.Helper()
 	p := &PKI{}
 	mux := http.NewServeMux()
 	p.Server = httptest.NewServer(mux)
 	t.Cleanup(p.Server.Close)
 	base := p.Server.URL
+	if host != "" {
+		_, port, _ := net.SplitHostPort(p.Server.Listener.Addr().String())
+		base = "http://" + net.JoinHostPort(host, port)
+	}
+	p.base = base
 	now := time.Now().Add(-time.Minute)
 
 	p.Root = p.issue(t, nil, &x509.Certificate{

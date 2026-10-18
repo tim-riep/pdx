@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tim-riep/pdx/dssval"
 	"github.com/tim-riep/pdx/internal/testpki"
 	"github.com/tim-riep/pdx/internal/testutil"
 	"github.com/tim-riep/pdx/pdf/reader"
@@ -271,5 +272,57 @@ func TestSignPDFRejects(t *testing.T) {
 				t.Errorf("Fehler %v, erwartet %q", err, c.want)
 			}
 		})
+	}
+}
+
+// TestSignDSS prüft jede Stufe mit dem EU DSS Validator (PDX_DSS=1, Image
+// aus dssval/build.sh). Vertrauensanker ist nur die Wurzel der Test-PKI.
+// Verlangt ist TOTAL_PASSED mit dem Format der Stufe, danach besteht auch
+// veraPDF.
+func TestSignDSS(t *testing.T) {
+	if !dssval.Enabled() {
+		t.Skip("DSS-Prüfung nur mit " + dssval.EnvEnable + "=1")
+	}
+	pki := testpki.NewForHost(t, dssval.HostAlias)
+	ctx := context.Background()
+	srv, err := dssval.Start(ctx, []*x509.Certificate{pki.Root.Cert})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(srv.Stop)
+	p, data := loadMuster(t)
+	for _, prof := range []string{"pdfa-3b", "pdfa-4f"} {
+		res, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: prof}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, lvl := range []sign.Level{sign.LevelB, sign.LevelT, sign.LevelLT, sign.LevelLTA} {
+			t.Run(prof+"/"+string(lvl), func(t *testing.T) {
+				out, err := sign.SignPDF(ctx, res.PDF, pki.KeySigner(t, pki.Signer), sign.PDFOptions{
+					Level: lvl, TSA: &sign.TSA{URL: pki.TSAURL(), Client: pki.Client()}, Client: pki.Client(),
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				sigs, err := srv.Validate(ctx, out)
+				if err != nil {
+					t.Fatal(err)
+				}
+				for _, s := range sigs {
+					t.Logf("%s %s %s %s %s", s.Type, s.Format, s.Indication, s.SubIndication, strings.Join(s.Errors, "; "))
+					switch s.Type {
+					case "Signature":
+						if s.Indication != "TOTAL_PASSED" || s.Format != "PAdES-BASELINE-"+strings.TrimPrefix(string(lvl), "B-") {
+							t.Errorf("Signatur: %s %s %s, Fehler %v", s.Format, s.Indication, s.SubIndication, s.Errors)
+						}
+					case "Timestamp":
+						if s.Indication != "PASSED" && s.Indication != "TOTAL_PASSED" {
+							t.Errorf("Zeitstempel: %s %s, Fehler %v", s.Indication, s.SubIndication, s.Errors)
+						}
+					}
+				}
+				testutil.Conform(t, "dss-"+prof+"-"+string(lvl)+".pdf", out, prof)
+			})
+		}
 	}
 }
