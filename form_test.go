@@ -6,6 +6,7 @@ import (
 
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/internal/testutil"
+	"github.com/tim-riep/pdx/pdf/reader"
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
@@ -82,4 +83,77 @@ func runText(r *areatree.GlyphRun) string {
 		b.WriteString(g.Text)
 	}
 	return b.String()
+}
+
+// formProfiles sind die Profile ohne Barrierefreiheit, in denen das
+// Formular gelten muss. PDF/A-4f verlangt einen Anhang und fehlt deshalb.
+var formProfiles = []string{"pdfa-3b", "pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-4", "pdf-1.7"}
+
+// TestFormRender schreibt das Formular in jedem Profil: AcroForm mit allen
+// Feldern, je Widget ein Erscheinungsbild, nie NeedAppearances. Mit
+// PDX_CONFORMANCE=1 prüft veraPDF jede Datei.
+func TestFormRender(t *testing.T) {
+	tpl, data := loadForm(t)
+	for _, prof := range formProfiles {
+		t.Run(prof, func(t *testing.T) {
+			res, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: prof}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := testutil.CheckStructure(res.PDF); err != nil {
+				t.Fatal(err)
+			}
+			f, err := reader.Open(res.PDF)
+			if err != nil {
+				t.Fatal(err)
+			}
+			acro := f.Dict(f.Root()["AcroForm"])
+			if acro == nil || acro["NeedAppearances"] != nil || acro["XFA"] != nil {
+				t.Fatalf("AcroForm %v", acro)
+			}
+			fields := f.Array(acro["Fields"])
+			// anrede (Gruppe), name, email, land, tarif, newsletter,
+			// bemerkung, zweimal vorname, unterschrift
+			if len(fields) != 10 {
+				t.Errorf("%d Felder, erwartet 10", len(fields))
+			}
+			types := map[string]int{}
+			var visit func(o reader.Object)
+			visit = func(o reader.Object) {
+				d := f.Dict(o)
+				if kids := f.Array(d["Kids"]); len(kids) > 0 {
+					for _, k := range kids {
+						visit(k)
+					}
+				}
+				if d["Subtype"] == reader.Name("Widget") {
+					ap := f.Dict(d["AP"])
+					if ap == nil || ap["N"] == nil || ap["D"] != nil || ap["R"] != nil {
+						t.Errorf("Widget ohne gültiges AP: %v", d)
+					}
+					if d["A"] != nil || d["AA"] != nil {
+						t.Errorf("Widget mit Aktion: %v", d)
+					}
+					ft := d["FT"]
+					if ft == nil {
+						ft = f.Dict(d["Parent"])["FT"]
+					}
+					types[string(ft.(reader.Name))]++
+				}
+			}
+			for _, fl := range fields {
+				visit(fl)
+			}
+			if types["Btn"] != 4 || types["Tx"] != 5 || types["Ch"] != 2 || types["Sig"] != 1 {
+				t.Errorf("Feldtypen %v", types)
+			}
+			if prof != "pdf-1.7" {
+				testutil.Conform(t, "formular-"+prof+".pdf", res.PDF, prof)
+			}
+		})
+	}
+	// PDF/A-4f ohne Anhang wird abgelehnt.
+	if _, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-4f"}}); err == nil {
+		t.Error("PDF/A-4f ohne Anhang angenommen")
+	}
 }

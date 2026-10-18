@@ -24,29 +24,33 @@ func newFontSet(r *renderer) *fontSet {
 
 // collect durchläuft alle Seiten und vermerkt jede genutzte Glyphe.
 func (fs *fontSet) collect() error {
-	var err error
 	for _, p := range fs.r.doc.Pages {
+		var runs []*areatree.GlyphRun
 		areatree.Walk(p.Areas, func(a areatree.Area) bool {
-			g, ok := a.(*areatree.GlyphRun)
-			if !ok || err != nil {
-				return err == nil
-			}
-			u, e := fs.usageFor(g.Font)
-			if e != nil {
-				err = e
-				return false
-			}
-			for _, gl := range g.Glyphs {
-				if gl.ID == 0 {
-					err = fmt.Errorf("Seite %d: Glyph-Run nutzt die .notdef-Glyphe", p.Number)
-					return false
-				}
-				u.Add(gl.ID, gl.Text)
+			switch v := a.(type) {
+			case *areatree.GlyphRun:
+				runs = append(runs, v)
+			case *areatree.Widget:
+				// Die Glyphen der Erscheinungsbilder gehören in dieselbe
+				// Teilmenge wie der Seitentext.
+				runs = append(runs, v.Runs...)
 			}
 			return true
 		})
+		for _, g := range runs {
+			u, err := fs.usageFor(g.Font)
+			if err != nil {
+				return err
+			}
+			for _, gl := range g.Glyphs {
+				if gl.ID == 0 {
+					return fmt.Errorf("Seite %d: Glyph-Run nutzt die .notdef-Glyphe", p.Number)
+				}
+				u.Add(gl.ID, gl.Text)
+			}
+		}
 	}
-	return err
+	return nil
 }
 
 func (fs *fontSet) usageFor(id areatree.FontID) (*font.Usage, error) {
@@ -107,6 +111,7 @@ func (pc *pageCtx) glyphs(g *areatree.GlyphRun) error {
 	}
 	pc.c.BeginText()
 	m, tagged := pc.r.tag.markOf(g)
+	tagged = tagged && !pc.noTag
 	if tagged {
 		pc.begin(m)
 	}

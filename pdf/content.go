@@ -90,6 +90,25 @@ func (c *Content) LineTo(x, y float64) { c.nums(x, y); c.op("l") }
 // Rect schreibt re.
 func (c *Content) Rect(x, y, w, h float64) { c.nums(x, y, w, h); c.op("re") }
 
+// CurveTo schreibt c, eine kubische Bézierkurve.
+func (c *Content) CurveTo(x1, y1, x2, y2, x3, y3 float64) {
+	c.nums(x1, y1, x2, y2, x3, y3)
+	c.op("c")
+}
+
+// ClosePath schreibt h.
+func (c *Content) ClosePath() { c.op("h") }
+
+// BeginTag beginnt eine markierte Inhaltsfolge ohne Eigenschaften: /Tag BMC.
+// Formularfelder umschließen ihren variablen Text mit /Tx BMC
+// (ISO 32000-1 12.7.3.3).
+func (c *Content) BeginTag(tag Name) {
+	var b bytes.Buffer
+	tag.writePDF(&b)
+	b.WriteString(" BMC")
+	c.op(b.String())
+}
+
 // Fill schreibt f.
 func (c *Content) Fill() { c.op("f") }
 

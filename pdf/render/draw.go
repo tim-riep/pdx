@@ -19,6 +19,11 @@ type pageCtx struct {
 	// der Seite und die Vorlagen-ID des aktuellen Containers.
 	trace *PageTrace
 	id    string
+	// ox und oy verschieben den Ursprung, etwa für Erscheinungsbilder von
+	// Formularfeldern, die in Koordinaten ihres Widgets zeichnen. noTag
+	// schaltet das Markieren für Tagged PDF ab.
+	ox, oy areatree.Length
+	noTag  bool
 }
 
 // areaID liefert die Vorlagen-ID eines Bereichs oder die des Containers.
@@ -40,8 +45,8 @@ func (pc *pageCtx) areaID(a areatree.Area) string {
 	return id
 }
 
-func (pc *pageCtx) x(l areatree.Length) float64 { return l.Pt() }
-func (pc *pageCtx) y(l areatree.Length) float64 { return pc.h - l.Pt() }
+func (pc *pageCtx) x(l areatree.Length) float64 { return (l - pc.ox).Pt() }
+func (pc *pageCtx) y(l areatree.Length) float64 { return pc.h - (l - pc.oy).Pt() }
 
 // box rechnet ein Rechteck in ein PDF-Array [llx lly urx ury] um.
 func (pc *pageCtx) box(r areatree.Rect) pdf.Array {
@@ -105,9 +110,9 @@ func (pc *pageCtx) draw(a areatree.Area) error {
 	// Im Tagged PDF wird jeder Blattbereich als Inhalt oder Artefakt
 	// markiert. Container markieren nur Hintergrund und Rahmen selbst, Text
 	// markiert innerhalb des Textobjekts wegen der Trennstriche.
-	if t := pc.r.tag; t != nil {
+	if t := pc.r.tag; t != nil && !pc.noTag {
 		switch a.(type) {
-		case *areatree.Container, *areatree.GlyphRun, *areatree.Link:
+		case *areatree.Container, *areatree.GlyphRun, *areatree.Link, *areatree.Widget:
 		default:
 			m := t.marks[a]
 			pc.begin(m)
@@ -127,6 +132,8 @@ func (pc *pageCtx) draw(a areatree.Area) error {
 		return pc.boxArea(v)
 	case *areatree.Link:
 		return pc.link(v)
+	case *areatree.Widget:
+		return pc.widget(v)
 	case *areatree.Path:
 		return pc.path(v)
 	}

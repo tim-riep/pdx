@@ -95,6 +95,8 @@ type renderer struct {
 	tag *tagger
 	// claim ist der Anspruch des Profils mit PDF-Version.
 	claim profile.Claim
+	// form sammelt die Formularfelder, nil ohne Felder.
+	form *formState
 }
 
 func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
@@ -168,6 +170,7 @@ func (r *renderer) build() error {
 	if r.doc.Meta.Lang != "" {
 		r.catalog.Set("Lang", pdf.TextString(r.doc.Meta.Lang))
 	}
+	r.writeForm()
 	if r.tag != nil {
 		r.tag.write(r)
 	}

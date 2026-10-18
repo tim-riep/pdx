@@ -236,31 +236,47 @@ func (st *scanState) scan(o Object) {
 	}
 }
 
-// isAction erkennt ein Aktions-Dictionary: Typ Action oder ohne Typ, mit
-// einem Namen in S. Strukturelemente tragen ebenfalls S, aber Typ StructElem.
-func isAction(d *Dict) (Name, bool) {
-	s, ok := d.Get("S").(Name)
-	if !ok {
-		return "", false
+// actionKeys sind die Einträge, deren Wert eine Aktion oder eine Liste von
+// Aktionen ist (ISO 32000-1 12.6.2, 12.3.3, 12.6.3). Andere Dictionaries mit
+// S, etwa Rahmenstile (BS) oder Strukturelemente, sind keine Aktionen.
+var actionKeys = []Name{"A", "OpenAction", "Next"}
+
+// noteAction vermerkt eine Aktion oder eine Liste von Aktionen.
+func (st *scanState) noteAction(o Object) {
+	switch v := o.(type) {
+	case *Dict:
+		if s, ok := v.Get("S").(Name); ok {
+			named, _ := v.Get("N").(Name)
+			st.actions = append(st.actions, action{s, named})
+		}
+	case Array:
+		for _, e := range v {
+			st.noteAction(e)
+		}
 	}
-	switch t, _ := d.Get("Type").(Name); t {
-	case "", "Action":
-		return s, true
-	}
-	return "", false
 }
 
 func (st *scanState) scanDict(d *Dict, isStream bool) {
 	found := st.found
-	if s, ok := isAction(d); ok {
-		named, _ := d.Get("N").(Name)
-		st.actions = append(st.actions, action{s, named})
-		if s == "JavaScript" {
-			found[JavaScript] = true
+	if n, ok := d.Get("S").(Name); ok && n == "JavaScript" {
+		found[JavaScript] = true
+	}
+	if t, _ := d.Get("Type").(Name); t == "Action" {
+		st.noteAction(d)
+	}
+	for _, k := range actionKeys {
+		// OpenAction kann auch ein Ziel sein (Array mit Seite), das enthält
+		// keine Dictionaries mit S. Doppelt gefundene Aktionen fasst
+		// checkActions zusammen.
+		if a := d.Get(k); a != nil {
+			st.noteAction(a)
 		}
 	}
 	if aa, ok := d.Get("AA").(*Dict); ok {
 		st.aa = append(st.aa, aaEntry{aaOwner(d), aa.Keys()})
+		for _, k := range aa.Keys() {
+			st.noteAction(aa.Get(k))
+		}
 	}
 	if sub, _ := d.Get("Subtype").(Name); sub == "Widget" && d.Has("A") {
 		st.widgetA++

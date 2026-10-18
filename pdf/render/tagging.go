@@ -810,3 +810,6 @@ func listNumbering(labels string, pdf2 bool) string {
 	}
 	return "Disc"
 }
+
+// tagWidget bindet ein Widget in den Strukturbaum ein. Folgt mit Schritt 5.
+func (r *renderer) tagWidget(w *areatree.Widget, annot *pdf.Dict, ref pdf.Ref) {}
