@@ -19,13 +19,16 @@ import (
 // Als Kommandozeilenargument wäre es in der Prozessliste sichtbar.
 const passwordEnv = "PDX_SIGN_PASSWORD"
 
+// tokenEnv ist die Umgebungsvariable für den Token eines Signaturdienstes.
+const tokenEnv = "PDX_SIGN_TOKEN"
+
 // cmdSign signiert ein fertiges PDF nach PAdES per inkrementellem Update.
 func cmdSign(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("sign", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	out := fs.String("o", "", "Ausgabedatei (Vorgabe: Eingabe mit Endung -signiert.pdf)")
 	level := fs.String("level", string(sign.LevelB), "PAdES-Stufe: B-B, B-T, B-LT oder B-LTA")
-	signer := fs.String("signer", "", "Schlüssel, etwa pkcs12:datei.p12 (Passwort aus "+passwordEnv+" oder Abfrage)")
+	signer := fs.String("signer", "", "Schlüssel: pkcs12:datei.p12 (Passwort aus "+passwordEnv+" oder Abfrage) oder remote:https://dienst (Token aus "+tokenEnv+")")
 	tsa := fs.String("tsa", "", "Adresse des Zeitstempeldienstes nach RFC 3161, Pflicht ab B-T")
 	field := fs.String("field", "", "vorhandenes Signaturfeld (Vorgabe: neues unsichtbares Feld)")
 	reason := fs.String("reason", "", "Grund der Signatur")
@@ -86,8 +89,10 @@ func loadSigner(spec string, stdin *os.File, stderr io.Writer) (sign.Signer, err
 			return nil, err
 		}
 		return sign.LoadPKCS12(data, pw)
+	case "remote":
+		return sign.NewRemoteSigner(context.Background(), loc, os.Getenv(tokenEnv), nil)
 	}
-	return nil, fmt.Errorf("Signer-Art %q ist unbekannt, erlaubt ist pkcs12", kind)
+	return nil, fmt.Errorf("Signer-Art %q ist unbekannt, erlaubt sind pkcs12 und remote", kind)
 }
 
 // password liest das Passwort aus der Umgebung oder fragt es am Terminal

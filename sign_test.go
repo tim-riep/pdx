@@ -373,3 +373,27 @@ func TestSignInvisibleUA(t *testing.T) {
 		})
 	}
 }
+
+// FuzzSignPDF signiert beliebige Bytes in B-B. Erlaubt ist ein Fehler,
+// verboten sind Absturz und eine Ausgabe, die die Eingabe verändert.
+func FuzzSignPDF(f *testing.F) {
+	p, data := loadMuster(f)
+	res, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3b"}})
+	if err != nil {
+		f.Fatal(err)
+	}
+	f.Add(res.PDF)
+	tpl, fdata := loadForm(f)
+	if r, err := tpl.Render(fdata, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-2b"}}); err == nil {
+		f.Add(r.PDF)
+	}
+	f.Add([]byte("%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF"))
+	pki := testpki.New(f)
+	s := pki.KeySigner(f, pki.Signer)
+	f.Fuzz(func(t *testing.T, in []byte) {
+		out, err := sign.SignPDF(context.Background(), in, s, sign.PDFOptions{})
+		if err == nil && !bytes.HasPrefix(out, in) {
+			t.Fatal("Eingabe verändert")
+		}
+	})
+}

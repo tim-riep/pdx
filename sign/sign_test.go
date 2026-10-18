@@ -5,11 +5,15 @@ import (
 	"context"
 	"crypto"
 	"crypto/ecdsa"
+	"crypto/rand"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/asn1"
+	"encoding/json"
 	"io"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -177,5 +181,66 @@ func TestLoadPKCS12(t *testing.T) {
 	}
 	if _, err := sign.LoadPKCS12(p12, "falsch"); err == nil {
 		t.Error("falsches Passwort nicht erkannt")
+	}
+}
+
+// remoteService ist ein Signaturdienst nach dem Protokoll von RemoteSigner.
+func remoteService(t *testing.T, pki *testpki.PKI, token string, bad bool) *httptest.Server {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer "+token {
+			http.Error(w, "nicht angemeldet", http.StatusUnauthorized)
+			return
+		}
+		switch r.URL.Path {
+		case "/certificates":
+			json.NewEncoder(w).Encode(map[string]any{"certificates": [][]byte{pki.Signer.Cert.Raw, pki.Inter.Cert.Raw}})
+		case "/sign":
+			var req struct {
+				Hash   string
+				Digest []byte
+			}
+			json.NewDecoder(r.Body).Decode(&req)
+			key := pki.Signer.Key
+			if bad {
+				key = pki.Revoked.Key
+			}
+			sig, _ := key.Sign(rand.Reader, req.Digest, crypto.SHA256)
+			json.NewEncoder(w).Encode(map[string]any{"signature": sig})
+		}
+	}))
+	t.Cleanup(srv.Close)
+	return srv
+}
+
+// RemoteSigner holt Kette und Signatur vom Dienst, prüft die Signatur und
+// nennt den Token in keiner Meldung.
+func TestRemoteSigner(t *testing.T) {
+	pki := testpki.New(t)
+	ctx := context.Background()
+	srv := remoteService(t, pki, "tok-123", false)
+	s, err := sign.NewRemoteSigner(ctx, srv.URL, "tok-123", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Certificates()) != 2 {
+		t.Fatalf("%d Zertifikate", len(s.Certificates()))
+	}
+	content := []byte("Inhalt")
+	der, err := sign.SignedData(ctx, s, content, sign.SignedOptions{Detached: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sd, _ := sign.ParseSignedData(der)
+	verify(t, sd.SignerInfos[0], pki.Signer.Cert, content)
+
+	if _, err := sign.NewRemoteSigner(ctx, srv.URL, "falsch", nil); err == nil || strings.Contains(err.Error(), "falsch") {
+		t.Errorf("falscher Token: %v", err)
+	}
+	if _, err := sign.NewRemoteSigner(ctx, "http://example.org", "", nil); err == nil {
+		t.Error("HTTP ohne TLS erlaubt")
+	}
+	bad, _ := sign.NewRemoteSigner(ctx, remoteService(t, pki, "t", true).URL, "t", nil)
+	if _, err := sign.SignedData(ctx, bad, content, sign.SignedOptions{}); err == nil {
+		t.Error("Signatur mit falschem Schlüssel angenommen")
 	}
 }

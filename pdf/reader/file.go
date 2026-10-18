@@ -133,10 +133,14 @@ func (f *File) xrefTable(l *lexer) (Dict, error) {
 				return nil, fmt.Errorf("Xref-Tabelle zu kurz")
 			}
 			num := int(start) + i
+			off, ok := o.(int64)
+			if !ok || off < 0 {
+				return nil, fmt.Errorf("Xref-Tabelle beschädigt")
+			}
 			if k == Operator("n") {
 				if _, dup := f.offs[num]; !dup {
 					if _, dup2 := f.inStm[num]; !dup2 {
-						f.offs[num] = int(o.(int64))
+						f.offs[num] = int(off)
 					}
 				}
 			}
@@ -153,10 +157,18 @@ func (f *File) xrefStream(s *Stream) error {
 	if len(w) != 3 {
 		return fmt.Errorf("Xref-Stream ohne gültiges /W")
 	}
+	// Jede Breite 0 bis 8 Bytes, eine Zeile mindestens ein Byte, sonst
+	// liefe die Schleife über Size ohne Daten zu verbrauchen.
 	var ws [3]int
 	for i := range ws {
 		v, _ := w[i].(int64)
+		if v < 0 || v > 8 {
+			return fmt.Errorf("Xref-Stream mit ungültigem /W")
+		}
 		ws[i] = int(v)
+	}
+	if ws[0]+ws[1]+ws[2] == 0 {
+		return fmt.Errorf("Xref-Stream mit ungültigem /W")
 	}
 	size, _ := s.Dict["Size"].(int64)
 	index := Array{int64(0), size}
