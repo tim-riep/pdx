@@ -123,7 +123,7 @@ func (*AppService) Info() Info {
 }
 
 // Version ist die Version des Designers.
-const Version = "0.1.0"
+const Version = "0.2.0"
 
 // Core hält den gemeinsamen Zustand aller Services: das geöffnete Projekt und
 // die Anbindung an die Oberfläche. Die Services sind Sichten darauf, damit
