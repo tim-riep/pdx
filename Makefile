@@ -8,7 +8,7 @@ TEMPLATES := $(wildcard testdata/templates/*/template.xml)
 PDFS      := $(patsubst testdata/fo/%.fo,$(OUT)/%.pdf,$(CORPUS)) \
              $(patsubst testdata/templates/%/template.xml,$(OUT)/vorlage-%.pdf,$(TEMPLATES))
 
-.PHONY: all build test vet fuzz golden conformance fop-compare fo-conformance fo-reference clean
+.PHONY: all build test vet fuzz golden conformance fop-compare fo-conformance fo-reference dss-image dss image clean
 
 all: vet test
 
@@ -30,6 +30,22 @@ fuzz:
 	$(GO) test -run=^$$ -fuzz=FuzzLoad -fuzztime=30s ./font
 	$(GO) test -run=^$$ -fuzz=FuzzTemplateParse -fuzztime=30s ./template
 	$(GO) test -run=^$$ -fuzz=FuzzCompile -fuzztime=30s ./compile
+	$(GO) test -run=^$$ -fuzz=FuzzExtractData -fuzztime=30s .
+	$(GO) test -run=^$$ -fuzz=FuzzSignPDF -fuzztime=30s .
+	$(GO) test -run=^$$ -fuzz=FuzzUpload -fuzztime=30s ./server
+	$(GO) test -run=^$$ -fuzz=FuzzRender -fuzztime=30s ./server
+
+# Baut das Image des EU DSS Validators lokal (lädt Quellen, Basisimages und
+# Maven-Abhängigkeiten) und prüft damit alle PAdES-Stufen.
+dss-image:
+	./dssval/build.sh
+
+dss:
+	PDX_DSS=1 $(GO) test -run TestSignDSS -v .
+
+# Baut das Image von pdx-server zweimal und vergleicht die Digests.
+image:
+	./deploy/build.sh --check
 
 # Rendert den Korpus und die Vorlagen mit ihren ersten Beispieldaten und prüft
 # jede Datei mit veraPDF.

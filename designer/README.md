@@ -35,6 +35,8 @@ Weitere Werkzeuge:
 * **Ausgabeprofil:** Die Vorlage wählt ihr Profil aus den zulässigen Kombinationen, etwa PDF/A-3a mit PDF/UA-1 oder PDF/A-4f mit PDF/UA-2, jeweils mit einem Satz Erklärung.
 * **Barrierefreiheit:** Der Inspektor hat eine eigene Gruppe für Rolle, Alternativtext (fest oder aus den Daten), Sprache, Lesereihenfolge, Dekoration und Kopfbezug. Das Panel Barrierefreiheit zeigt die Befunde der Vorprüfung und den Strukturbaum in Lesereihenfolge, blendet die Reihenfolge als Nummern auf der Seite ein, verschiebt frei platzierte Elemente mit Pfeilen und führt die manuellen Prüfpunkte nach Matterhorn 1.1 als Checkliste. Verlangt das Profil keine Barrierefreiheit, prüft es zur Vorschau nach PDF/A-3a mit PDF/UA-1.
 * **E-Rechnung:** Am Element E-Rechnung zeigt der Inspektor die aus den Beispieldaten erkannte Stufe, die eingebettete Datei und die Beziehung und warnt, wenn das Profil nicht PDF/A-3 ist.
+* **Formulare:** Textfelder, Kontrollkästchen, Optionsgruppen, Listen und Signaturfelder aus der Palette, Optionen aus der Enumeration des XSD, in der Vorschau ausfüllbar, Tab-Reihenfolge als Nummern auf der Seite.
+* **Veröffentlichen:** Der Dialog Veröffentlichen verbindet sich mit einem pdx-server (Adresse und API-Schlüssel mit Recht templates), vergleicht die Vorlage mit der aktiven Version auf dem Server Datei für Datei und `template.xml` Zeile für Zeile, lädt sie als neue Version hoch und aktiviert sie. Der Schlüssel bleibt nur im Speicher der Sitzung, gespeichert wird nur die Adresse.
 * **Ansicht:** Lineale in mm oder pt, Raster, Einrasten an Kanten und Mitten, Seitenübersicht, Ausrichten und Verteilen mit Mehrfachauswahl (Umschalt+Klick).
 
 ## Tastenkürzel

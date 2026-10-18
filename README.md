@@ -2,7 +2,7 @@
 
 pdx erzeugt PDF-Dateien in PDF/A-2, PDF/A-3 und PDF/A-4, barrierefrei nach PDF/UA-1 und PDF/UA-2 sowie als E-Rechnung nach ZUGFeRD und Factur-X aus XSL-FO, komplett in Go und ohne cgo. Es ist die Engine eines Dokumentdesigners nach dem Vorbild von Adobe LiveCycle Designer. Ein XSD beschreibt die Datenschnittstelle, ein Desktop-Designer gestaltet das Dokument, die Engine setzt es. veraPDF ist die verbindliche Prüfinstanz für die Konformität.
 
-Stand: Phase 3 (Konformität erweitert: PDF/A-2, -3, -4, PDF/UA-1, -2, Tagged PDF, E-Rechnung). Der Desktop-Designer (Wails und Svelte) liegt in [`designer/`](designer/README.md), mit ihm lässt sich die Musterrechnung ohne XML nachbauen. Darunter die Layout-Engine für Geschäftsdokumente (Seitenfolgen, Tabellen, Listen, Keeps, Marker, Knuth-Plass, Silbentrennung, Links, Lesezeichen, Barcodes), Vorlagenformat v0 mit Compiler nach XSLT 3.0, Bindungsprüfung gegen das Daten-XSD, Vergleich mit Apache FOP, Design-Tokens im Vorlagenformat.
+Stand: Phase 4 (ausfüllbare Formulare, PAdES-Signaturen bis B-LTA, Render-Dienst über HTTP). Davor Phase 3 mit PDF/A-2, -3, -4, PDF/UA-1, -2, Tagged PDF und E-Rechnung. Der Desktop-Designer (Wails und Svelte) liegt in [`designer/`](designer/README.md), mit ihm lässt sich die Musterrechnung ohne XML nachbauen. Darunter die Layout-Engine für Geschäftsdokumente (Seitenfolgen, Tabellen, Listen, Keeps, Marker, Knuth-Plass, Silbentrennung, Links, Lesezeichen, Barcodes), Vorlagenformat v0 mit Compiler nach XSLT 3.0, Bindungsprüfung gegen das Daten-XSD, Vergleich mit Apache FOP, Design-Tokens im Vorlagenformat.
 
 ## Aufruf
 
@@ -137,6 +137,121 @@ Eine Vorlage mit dem Element `einvoice` erzeugt hybride Rechnungen nach ZUGFeRD 
 
 E-Rechnungen verlangen PDF/A-3, also `pdfa-3b`, `pdfa-3u` oder `pdfa-3a,pdfua-1`. Andere Profile lehnt pdx mit der ID des Elements ab. Eine Prüfung der Rechnungsdaten gegen die Schematron-Regeln von EN 16931 und XRechnung macht pdx nicht. Beispiel: `testdata/templates/cii-rechnung` mit Daten der Stufen EN 16931 und XRECHNUNG.
 
+## Formulare
+
+Vorlagen können ausfüllbare Felder enthalten: `textField` (auch mehrzeilig, mit `maxLength`), `checkBox`, `radioGroup`, `listBox`, `comboBox` und `signatureField`. Jedes Feld ist an einen Datenpfad gebunden. Optionen kommen aus der Vorlage oder aus der Enumeration im Daten-XSD, die Höchstlänge aus `maxLength` der Vorlage oder der XSD-Facette. pdx schreibt AcroForm mit eigenem Erscheinungsbild je Widget und einer eingebetteten Standardschrift (DR), nie NeedAppearances, nie XFA und nie JavaScript, auch keine Aktionen an Feldern. In barrierefreien Profilen ist `label` Pflicht und wird zum zugänglichen Namen (TU, unter PDF/UA-2 zusätzlich Contents am Widget). Jedes Widget hängt als Form-Element im Strukturbaum, die Tab-Reihenfolge folgt der Struktur (`/Tabs /S`).
+
+```bash
+pdx extract-data formular.pdf --template vorlage.zip -o daten.xml
+```
+
+```bash
+pdx flatten formular.pdf --template vorlage.zip -o statisch.pdf --profile pdfa-3a,pdfua-1
+```
+
+`extract-data` liest die Feldwerte, setzt sie in die eingebetteten Originaldaten ein (oder in `--data`), ergänzt fehlende Knoten in der Reihenfolge des XSD und prüft das Ergebnis gegen das Daten-XSD, mit allen Befunden auf einmal. `flatten` rendert das Dokument mit diesen Daten neu und zeichnet die Felder als festen Inhalt, damit bleibt die Konformität durch Konstruktion erhalten. Ausfüllbare Formulare sind mit veraPDF geprüft unter PDF/A-3a mit PDF/UA-1 und PDF/A-4f mit PDF/UA-2.
+
+## Signaturen
+
+```bash
+PDX_SIGN_PASSWORD=… pdx sign rechnung.pdf -o signiert.pdf --level B-LTA --signer pkcs12:schluessel.p12 --tsa https://tsa.example.org --field unterschrift
+```
+
+`sign` signiert ein fertiges PDF nach PAdES baseline (ETSI EN 319 142-1) ausschließlich per inkrementellem Update, PDF/A-Konformität und frühere Signaturen bleiben erhalten.
+
+* B-B: CMS mit SubFilter ETSI.CAdES.detached, signierte Attribute content-type, message-digest und signing-certificate-v2, Zeit in /M, ByteRange über die ganze Datei außer Contents, genau ein SignerInfo mit Signaturzertifikat.
+* B-T: zusätzlich ein Zeitstempel nach RFC 3161 über den Signaturwert.
+* B-LT: zusätzlich ein DSS mit allen Zertifikaten bis zur Wurzel, OCSP-Antworten und CRLs für Signatur und Zeitstempeldienst, über AIA und CDP geholt.
+* B-LTA: zusätzlich ein Dokument-Zeitstempel (ETSI.RFC3161) und erneut der DSS.
+
+Ohne `--field` legt pdx ein unsichtbares Signaturfeld an. Ein Feld aus der Vorlage zeigt nach dem Signieren Unterzeichner, Datum, Grund und Ort in der Schrift des Formulars, mit demselben Text für Hilfstechnik. Abgelaufene und gesperrte Zertifikate werden abgelehnt.
+
+Signer: `pkcs12:datei.p12` mit Passwort aus `PDX_SIGN_PASSWORD` oder einer Abfrage am Terminal ohne Echo, oder `remote:https://dienst` für einen Signaturdienst mit Token aus `PDX_SIGN_TOKEN`. Der Signaturdienst bekommt nur den Hashwert (`GET /certificates`, `POST /sign` mit JSON), jede Antwort wird vor dem Einsetzen gegen das Zertifikat geprüft. Passwörter und Token sind nie Kommandozeilenargumente, Schlüssel bleiben im Speicher und erscheinen in keiner Ausgabe.
+
+Geprüft wird mit dem EU DSS Validator 6.5.1 (`dssval`, lokal gebautes Image aus `esig/dss-demonstrations`, Version, Commit und Basisimages gepinnt). Die Tests erzeugen eine eigene Test-PKI mit Wurzel, Zwischen-CA, OCSP, CRL und Zeitstempeldienst, echte Schlüssel gibt es im Repository nicht. Alle Stufen ergeben TOTAL_PASSED für die Musterrechnung in PDF/A-3b und PDF/A-4f, veraPDF besteht danach weiter.
+
+```bash
+make dss-image
+```
+
+```bash
+make dss
+```
+
+## Render-Dienst
+
+`pdx-server` rendert Vorlagen über HTTP, nur mit der Standardbibliothek von Go.
+
+```bash
+go build -o pdx-server ./cmd/pdx-server
+```
+
+```bash
+pdx-server hash-key < schluessel.txt
+```
+
+```bash
+pdx-server -config pdx-server.json
+```
+
+Die Konfiguration ist JSON. API-Schlüssel stehen darin nur als SHA-256-Hash mit Rechten je Schlüssel (`render`, `templates`, `verify`, `sign`), `hash-key` liest den Schlüssel von der Standardeingabe.
+
+```json
+{
+  "addr": ":8080",
+  "templateDir": "/var/lib/pdx/templates",
+  "maxConcurrent": 8,
+  "timeout": "30s",
+  "keys": [{"name": "anwendung", "sha256": "…", "rights": ["render"]}],
+  "verapdf": "docker",
+  "signer": "pkcs12:/etc/pdx-signer/schluessel.p12",
+  "tsa": "https://tsa.example.org"
+}
+```
+
+Weitere Grenzen: `maxBody` (Daten, 10 MiB), `maxTemplate` (Paket, 50 MiB), `maxPDF` (verify und sign, 50 MiB), `maxBatch` und `maxBatchEntries` (Stapel, 100 MiB und 1000 Datensätze), `queueWait` (Wartezeit auf einen freien Platz, 5 s), `batchTimeout` (10 min).
+
+| Endpunkt | Recht | Zweck |
+|---|---|---|
+| `POST /v1/render/{id}` | render | Daten-XML zu PDF, Parameter `version`, `profile`, `lang`, `strict`, `creationDate` |
+| `POST /v1/render/{id}/batch` | render | ZIP mit XML-Dateien zu ZIP mit PDFs und `ergebnis.json` |
+| `POST /v1/templates/{id}` | templates | Vorlagenpaket als neue Version, `activate=true` aktiviert sie |
+| `GET /v1/templates`, `GET /v1/templates/{id}/versions` | templates | Vorlagen und Versionen |
+| `GET /v1/templates/{id}/versions/{version}` | templates | Paket einer Version |
+| `PUT /v1/templates/{id}/active` | templates | Version aktivieren |
+| `POST /v1/verify` | verify | PDF mit veraPDF prüfen |
+| `POST /v1/sign` | sign | PDF nach PAdES signieren |
+| `GET /healthz`, `GET /readyz`, `GET /metrics`, `GET /openapi.json` | keines | Betrieb |
+
+Die Schnittstelle beschreibt `server/openapi.json` (OpenAPI 3.1), die Tests prüfen jede Antwort dagegen. Fehler kommen als Problem Details nach RFC 9457 mit allen Befunden und Vorlagen-IDs. Versionen sind unveränderlich und fortlaufend nummeriert, gleicher Inhalt ergibt keine neue Version. Die Ablage ist ein Verzeichnis, auch auf einem gemeinsamen Volume für mehrere Instanzen. Kompilierte Vorlagen liegen in einem LRU-Cache. `/metrics` liefert Anfragen und Dauer je Route und Status im Textformat von Prometheus.
+
+Der Designer veröffentlicht Vorlagen direkt: Adresse und Schlüssel eingeben, Vergleich mit der aktiven Version (Dateien und `template.xml` zeilenweise), hochladen, aktivieren.
+
+### Betrieb
+
+```bash
+make image
+```
+
+Das Image (`deploy/Dockerfile`) baut auf distroless static als Nutzer nonroot, Go ohne cgo mit `-trimpath`, Basisimages per Digest, für linux/amd64 und linux/arm64. Zweimal gebaut ergibt es denselben Digest. Es läuft mit schreibgeschütztem Dateisystem, die Konfiguration kommt nach `/etc/pdx/pdx-server.json`, die Ablage nach `/var/lib/pdx/templates`. `deploy/k8s` enthält ein Beispiel für Kubernetes mit Namespace unter Pod Security restricted, ConfigMap, gemeinsamem Volume (ReadWriteMany), Deployment ohne Rechte mit Proben, Service, NetworkPolicy, HPA und PodDisruptionBudget, geprüft in einem lokalen k3d-Cluster.
+
+Lasttest mit dem Lasttreiber `deploy/last` (Schlüssel aus `PDX_KEY`):
+
+```bash
+go run ./deploy/last -url http://127.0.0.1:8080 -id rechnung -data testdata/templates/musterrechnung/samples/rechnung.xml -c 8 -d 30s -p95 300ms -rate 30
+```
+
+Vereinbarte Zielwerte für die Musterrechnung (drei Seiten, PDF/A-3b) bei 8 parallelen Anfragen auf 4 CPUs: p95 unter 300 ms und mindestens 30 PDFs pro Sekunde. Gemessen im Container mit 4 CPUs und 1 GiB auf einem Apple M4 mit `GOGC=400` und `GOMEMLIMIT=800MiB` (so im Deployment): 43 bis 85 PDFs pro Sekunde, p95 135 bis 263 ms, je nach übriger Last des Rechners. Ohne diese Einstellungen 42 bis 56 PDFs pro Sekunde mit p95 bis 310 ms. Der Mac ist nicht die Zielumgebung, auf dem Zielsystem bitte erneut messen.
+
+### Sicherheit und Datenschutz
+
+* Keine Nutzdaten in Logs oder Metriken: Logs (JSON über `log/slog`) enthalten Methode, Muster der Route, Status, Dauer, Größe und den Namen des Schlüssels, nie Rümpfe, Abfragen oder Werte aus dem Pfad.
+* Nichts wird über die Anfrage hinaus gespeichert außer den Vorlagen. `verify` legt das PDF nur für die Dauer der Prüfung in einer temporären Datei ab.
+* API-Schlüssel nur als Hash, Vergleich in konstanter Zeit, Rechte je Schlüssel. Der Client und der Designer verlangen HTTPS außer für localhost. TLS gehört vor den Dienst (Ingress oder Proxy).
+* Passwort und Token des Signers nur aus der Umgebung, beim Start gelesen und dort entfernt. Im Kubernetes-Beispiel kommen sie aus einem Secret.
+* Grenzen für Größe, Parallelität und Laufzeit jeder Anfrage. Externe Entitäten in XML-Daten lehnt der Parser ab.
+* Fuzz-Targets für Hochladen, Rendern, Signieren und das Lesen von PDF.
+
 ## FO-Teilumfang
 
 Seitenaufbau: `fo:simple-page-master` mit allen fünf Regionen, `fo:page-sequence-master` mit `fo:single-page-master-reference`, `fo:repeatable-page-master-reference`, `fo:repeatable-page-master-alternatives` und `fo:conditional-page-master-reference` (`page-position`, `odd-or-even`, `blank-or-not-blank`), `force-page-count`, `initial-page-number`.
@@ -187,6 +302,7 @@ Musterrechnung (60 Positionen, drei Seiten, PDF/A-3b mit Anhang), Apple M4, Go 1
 |---|---|---|
 | `BenchmarkCompileInvoice` (Vorlage zu kompiliertem XSLT) | 1,4 ms | 0,7 MB |
 | `BenchmarkRenderInvoice` (Transformation, Layout, PDF) | 65 ms | 36 MB |
+| `BenchmarkParallelRender` mit 8 Kernen, je PDF | 11,5 ms | 35 MB |
 
 ```bash
 go test -run '^$' -bench Invoice -benchmem .
@@ -220,8 +336,10 @@ PDX_CONFORMANCE=1 go test ./...
 * `make fop-compare` vergleicht Korpus und Musterrechnung mit Apache FOP 2.11 (Docker, `PDX_FOP=1`). Toleranz: Positionen 1 pt, höchstens 0,5 % abweichende Pixel je Seite bei 72 dpi.
 * Mit `PDX_CONFORMANCE=1` rufen auch die Go-Tests veraPDF auf.
 * `make golden` schreibt Golden Files nach bewusster Änderung neu (`UPDATE_GOLDEN=1`).
-* `make fuzz` spielt die Fuzz-Targets `FuzzParse` (FO-Parser), `FuzzLoad` (Schriften), `FuzzTemplateParse` (Vorlagen) und `FuzzCompile` (Compiler) an.
+* `make fuzz` spielt die Fuzz-Targets `FuzzParse` (FO-Parser), `FuzzLoad` (Schriften), `FuzzTemplateParse` (Vorlagen), `FuzzCompile` (Compiler), `FuzzExtractData` (Formulare lesen), `FuzzSignPDF` (Signieren beliebiger Dateien), `FuzzUpload` und `FuzzRender` (Render-Dienst) an.
+* `make dss` prüft alle PAdES-Stufen mit dem EU DSS Validator (`PDX_DSS=1`, Image aus `make dss-image`).
+* `make image` baut das Image von pdx-server zweimal und vergleicht die Digests.
 
 ## Lizenz
 
-Apache License 2.0, siehe `LICENSE` und `NOTICE`. Die Liberation-Schriften und Source Serif 4 (nur Testdaten) stehen unter der SIL Open Font License 1.1. Das sRGB-Profil berechnet pdx selbst.
+Apache License 2.0, siehe `LICENSE` und `NOTICE` (dort auch alle Abhängigkeiten). Die Liberation-Schriften und Source Serif 4 (nur Testdaten) stehen unter der SIL Open Font License 1.1. Das sRGB-Profil berechnet pdx selbst.

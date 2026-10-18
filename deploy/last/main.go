@@ -5,7 +5,10 @@
 //	    -data testdata/templates/musterrechnung/samples/rechnung.xml \
 //	    -profile pdfa-3b -c 8 -d 30s
 //
-// Der Schlüssel kommt aus PDX_KEY, nie als Argument.
+// Der Schlüssel kommt aus PDX_KEY, nie als Argument. Mit -p95 und -rate
+// scheitert der Lauf (Exit-Code 1), wenn die Zielwerte verfehlt werden.
+// Vereinbart sind für die Musterrechnung bei 8 parallelen Anfragen auf
+// 4 CPUs: p95 unter 300 ms und mindestens 30 PDFs pro Sekunde.
 package main
 
 import (
@@ -15,6 +18,7 @@ import (
 	"net/url"
 	"os"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -29,6 +33,8 @@ func main() {
 	conc := flag.Int("c", 8, "parallele Anfragen")
 	dur := flag.Duration("d", 30*time.Second, "Dauer")
 	warm := flag.Duration("warmup", 3*time.Second, "Aufwärmen vor der Messung")
+	maxP95 := flag.Duration("p95", 0, "Zielwert: p95 höchstens so lang (0 ohne Prüfung)")
+	minRate := flag.Float64("rate", 0, "Zielwert: mindestens so viele PDFs pro Sekunde (0 ohne Prüfung)")
 	flag.Parse()
 	data, err := os.ReadFile(*dataPath)
 	if err != nil {
@@ -85,4 +91,22 @@ func main() {
 	fmt.Printf("Profil %s, %d parallel, %s\n", *prof, *conc, total.Round(time.Second))
 	fmt.Printf("PDFs: %d (%.1f/s), Fehler: %d, Größe im Mittel %d KB\n", len(lat), float64(len(lat))/total.Seconds(), errs, bytes/int64(max(1, len(lat)))/1024)
 	fmt.Printf("p50 %v, p95 %v, p99 %v, max %v\n", pct(0.50), pct(0.95), pct(0.99), pct(1))
+	rate := float64(len(lat)) / total.Seconds()
+	var failed []string
+	if errs > 0 {
+		failed = append(failed, fmt.Sprintf("%d Fehler", errs))
+	}
+	if *maxP95 > 0 && pct(0.95) > *maxP95 {
+		failed = append(failed, fmt.Sprintf("p95 %v über %v", pct(0.95), *maxP95))
+	}
+	if *minRate > 0 && rate < *minRate {
+		failed = append(failed, fmt.Sprintf("%.1f PDFs/s unter %.1f", rate, *minRate))
+	}
+	if len(failed) > 0 {
+		fmt.Println("Zielwerte verfehlt:", strings.Join(failed, ", "))
+		os.Exit(1)
+	}
+	if *maxP95 > 0 || *minRate > 0 {
+		fmt.Println("Zielwerte erreicht")
+	}
 }

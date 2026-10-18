@@ -8,12 +8,17 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/tim-riep/pdx"
+	"github.com/tim-riep/pdx/internal/testutil"
+	"github.com/tim-riep/pdx/pdf/profile"
 	"github.com/tim-riep/pdx/template/pkg"
+	"github.com/tim-riep/pdx/verapdf"
 )
 
 const (
@@ -232,5 +237,34 @@ func TestConfigCheck(t *testing.T) {
 		if !strings.Contains(err.Error(), want) {
 			t.Errorf("Befund %q fehlt in %v", want, err)
 		}
+	}
+}
+
+// Der Dienst rendert jedes Profil mit denselben Bytes wie die Bibliothek.
+// Profile, die die Musterrechnung nicht erfüllen kann (Datenanhang unter
+// PDF/A-2), lehnen beide mit Befund ab. Mit PDX_CONFORMANCE=1 prüft
+// veraPDF jedes Ergebnis.
+func TestRenderAllProfiles(t *testing.T) {
+	srv, data := newTest(t, testConfig(), nil)
+	p, _ := muster(t)
+	date := time.Date(2026, 1, 15, 9, 0, 0, 0, time.UTC)
+	for _, prof := range append(profile.Names(), "pdfa-3a,pdfua-1", "pdfa-4f,pdfua-2") {
+		t.Run(prof, func(t *testing.T) {
+			want, wantErr := pdx.RenderTemplate(p, data, pdx.TemplateOptions{Options: pdx.Options{Profile: prof, CreationDate: date}})
+			resp, b := post(t, srv.URL+"/v1/render/rechnung?creationDate=2026-01-15T09:00:00Z&profile="+url.QueryEscape(prof), keyRender, data)
+			if wantErr != nil {
+				pr := problem(t, resp, b, http.StatusUnprocessableEntity)
+				if len(pr.Findings) == 0 {
+					t.Error("Ablehnung ohne Befund")
+				}
+				return
+			}
+			if resp.StatusCode != http.StatusOK || !bytes.Equal(b, want.PDF) {
+				t.Fatalf("Status %d, gleiche Bytes: %v", resp.StatusCode, bytes.Equal(b, want.PDF))
+			}
+			if _, err := verapdf.Flavours(prof); err == nil {
+				testutil.Conform(t, "dienst-"+prof+".pdf", b, prof)
+			}
+		})
 	}
 }
