@@ -11,6 +11,7 @@ export * as ConformanceAPI from "../../bindings/github.com/tim-riep/pdx/designer
 export * as SampleAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/sampledataservice";
 export * as ValidationAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/validationservice";
 export * as SchemaAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/schemaservice";
+export * as PublishAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/publishservice";
 export type { Schema as DataSchema, Node as DataNode } from "../../bindings/github.com/tim-riep/pdx/designer/internal/schema/models";
 export type { Drop, TableOp, Insert, XPathInfo, XPathQuery, Field as DataField, Report, Problem, Conformance, ConformanceFinding, ConformanceItem, TokenOp, ChildInsert, Result, Segment, ContentEdit, Samples, Sample, SchemaDiff, SchemaChange, Rename } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 export type { Completion, Item as Suggestion, Result as XPathResult } from "../../bindings/github.com/tim-riep/pdx/designer/internal/xpath/models";
@@ -31,6 +32,11 @@ export type {
   ProjectState,
   RecentFile,
   Recovery,
+  PublishState,
+  PublishDiff,
+  PublishResult,
+  FileChange,
+  DiffLine,
 } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 
 // Namen der Ereignisse, wie in internal/app/app.go.

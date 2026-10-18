@@ -4,6 +4,7 @@
 import * as AppService from "./appservice.js";
 import * as ConformanceService from "./conformanceservice.js";
 import * as ProjectService from "./projectservice.js";
+import * as PublishService from "./publishservice.js";
 import * as RenderService from "./renderservice.js";
 import * as SampleDataService from "./sampledataservice.js";
 import * as SchemaService from "./schemaservice.js";
@@ -13,6 +14,7 @@ export {
     AppService,
     ConformanceService,
     ProjectService,
+    PublishService,
     RenderService,
     SampleDataService,
     SchemaService,
@@ -26,14 +28,19 @@ export {
     ConformanceFinding,
     ConformanceItem,
     ContentEdit,
+    DiffLine,
     Drop,
     EInvoice,
     Field,
+    FileChange,
     Info,
     Insert,
     Manifest,
     Problem,
     ProjectState,
+    PublishDiff,
+    PublishResult,
+    PublishState,
     RecentFile,
     Recovery,
     Rename,

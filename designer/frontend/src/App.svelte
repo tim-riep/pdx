@@ -23,6 +23,7 @@
   import PdfView from "./components/PdfView.svelte";
   import SamplesPanel from "./components/SamplesPanel.svelte";
   import SchemaDiffDialog from "./components/SchemaDiffDialog.svelte";
+  import PublishDialog from "./components/PublishDialog.svelte";
   import { sd } from "./lib/schemadiff.svelte";
   import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
@@ -52,6 +53,7 @@
     return () => clearTimeout(timer);
   });
   let about = $state(false);
+  let publish = $state(false);
   const problemCount = $derived(entries().length);
 
   AppAPI.Info().then((i) => (version = t("status.version", { version: i.version, engine: i.engine })));
@@ -80,6 +82,7 @@
     if (project.open) {
       items.push(
         { id: "save", label: t("action.save"), group: g("file"), shortcut: `${mod}S`, run: () => save() },
+        { id: "publish", label: t("publish.open"), group: g("file"), run: () => (publish = true) },
         { id: "saveAs", label: t("action.saveAs"), group: g("file"), shortcut: `${mod}⇧S`, run: () => saveAs() },
         { id: "undo", label: t("action.undo"), group: g("edit"), shortcut: `${mod}Z`, run: () => undo() },
         { id: "redo", label: t("action.redo"), group: g("edit"), shortcut: `${mod}⇧Z`, run: () => redo() },
@@ -224,6 +227,7 @@
       <button onclick={() => newProject()}>{t("action.new")}</button>
       <button onclick={() => openProject(false)}>{t("action.open")}</button>
       <button disabled={!project.open} onclick={() => save()}>{t("action.save")}</button>
+      <button disabled={!project.open} data-testid="publish-open" onclick={() => (publish = true)}>{t("publish.open")}</button>
     </div>
     <div class="group">
       <button disabled={!tpl.history.can[0]} aria-label={t("action.undo")}
@@ -285,6 +289,7 @@
 {#if palette.open}<CommandPalette items={paletteItems} />{/if}
 {#if about}<AboutDialog {version} onclose={() => (about = false)} />{/if}
 {#if sd.open}<SchemaDiffDialog />{/if}
+{#if publish}<PublishDialog onclose={() => (publish = false)} />{/if}
 
 {#if ui.pathPrompt}
   <Modal title={t("path.title")}>

@@ -277,6 +277,37 @@ export class ContentEdit {
 }
 
 /**
+ * DiffLine ist eine Zeile im Vergleich von template.xml.
+ */
+export class DiffLine {
+    /**
+     * Op ist " " (gleich), "+" (neu) oder "-" (entfernt).
+     */
+    "op": string;
+    "text": string;
+
+    /** Creates a new DiffLine instance. */
+    constructor($$source: Partial<DiffLine> = {}) {
+        if (!("op" in $$source)) {
+            this["op"] = "";
+        }
+        if (!("text" in $$source)) {
+            this["text"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new DiffLine instance from a string or object.
+     */
+    static createFrom($$source: any = {}): DiffLine {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new DiffLine($$parsedSource as Partial<DiffLine>);
+    }
+}
+
+/**
  * Drop beschreibt, wohin ein Datenknoten gezogen wurde.
  */
 export class Drop {
@@ -433,6 +464,38 @@ export class Field {
     static createFrom($$source: any = {}): Field {
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         return new Field($$parsedSource as Partial<Field>);
+    }
+}
+
+/**
+ * FileChange ist eine Datei, die sich gegenüber der aktiven Version ändert.
+ */
+export class FileChange {
+    "name": string;
+
+    /**
+     * Kind ist added, removed oder changed.
+     */
+    "kind": string;
+
+    /** Creates a new FileChange instance. */
+    constructor($$source: Partial<FileChange> = {}) {
+        if (!("name" in $$source)) {
+            this["name"] = "";
+        }
+        if (!("kind" in $$source)) {
+            this["kind"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new FileChange instance from a string or object.
+     */
+    static createFrom($$source: any = {}): FileChange {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new FileChange($$parsedSource as Partial<FileChange>);
     }
 }
 
@@ -699,6 +762,131 @@ export class ProjectState {
 }
 
 /**
+ * PublishDiff vergleicht die Vorlage mit der aktiven Version auf dem Server.
+ */
+export class PublishDiff {
+    "id": string;
+
+    /**
+     * Active ist die aktive Version, leer, wenn es die Vorlage noch nicht
+     * gibt oder keine Version aktiv ist.
+     */
+    "active": string;
+    "versions": number;
+    "same": boolean;
+    "files": FileChange[];
+    "template": DiffLine[];
+
+    /** Creates a new PublishDiff instance. */
+    constructor($$source: Partial<PublishDiff> = {}) {
+        if (!("id" in $$source)) {
+            this["id"] = "";
+        }
+        if (!("active" in $$source)) {
+            this["active"] = "";
+        }
+        if (!("versions" in $$source)) {
+            this["versions"] = 0;
+        }
+        if (!("same" in $$source)) {
+            this["same"] = false;
+        }
+        if (!("files" in $$source)) {
+            this["files"] = [];
+        }
+        if (!("template" in $$source)) {
+            this["template"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new PublishDiff instance from a string or object.
+     */
+    static createFrom($$source: any = {}): PublishDiff {
+        const $$createField4_0 = $$createType14;
+        const $$createField5_0 = $$createType16;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("files" in $$parsedSource) {
+            $$parsedSource["files"] = $$createField4_0($$parsedSource["files"]);
+        }
+        if ("template" in $$parsedSource) {
+            $$parsedSource["template"] = $$createField5_0($$parsedSource["template"]);
+        }
+        return new PublishDiff($$parsedSource as Partial<PublishDiff>);
+    }
+}
+
+/**
+ * PublishResult ist das Ergebnis des Hochladens.
+ */
+export class PublishResult {
+    "version": string;
+    "created": boolean;
+    "active": boolean;
+
+    /** Creates a new PublishResult instance. */
+    constructor($$source: Partial<PublishResult> = {}) {
+        if (!("version" in $$source)) {
+            this["version"] = "";
+        }
+        if (!("created" in $$source)) {
+            this["created"] = false;
+        }
+        if (!("active" in $$source)) {
+            this["active"] = false;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new PublishResult instance from a string or object.
+     */
+    static createFrom($$source: any = {}): PublishResult {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new PublishResult($$parsedSource as Partial<PublishResult>);
+    }
+}
+
+/**
+ * PublishState ist der Stand der Verbindung für die Oberfläche.
+ */
+export class PublishState {
+    "url": string;
+    "connected": boolean;
+
+    /**
+     * ID ist der Vorschlag für die Vorlagen-ID auf dem Server.
+     */
+    "id": string;
+
+    /** Creates a new PublishState instance. */
+    constructor($$source: Partial<PublishState> = {}) {
+        if (!("url" in $$source)) {
+            this["url"] = "";
+        }
+        if (!("connected" in $$source)) {
+            this["connected"] = false;
+        }
+        if (!("id" in $$source)) {
+            this["id"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new PublishState instance from a string or object.
+     */
+    static createFrom($$source: any = {}): PublishState {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new PublishState($$parsedSource as Partial<PublishState>);
+    }
+}
+
+/**
  * RecentFile ist ein zuletzt geöffnetes Paket.
  */
 export class RecentFile {
@@ -822,7 +1010,7 @@ export class Report {
      * Creates a new Report instance from a string or object.
      */
     static createFrom($$source: any = {}): Report {
-        const $$createField1_0 = $$createType14;
+        const $$createField1_0 = $$createType18;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField1_0($$parsedSource["problems"]);
@@ -859,7 +1047,7 @@ export class Result {
      * Creates a new Result instance from a string or object.
      */
     static createFrom($$source: any = {}): Result {
-        const $$createField2_0 = $$createType15;
+        const $$createField2_0 = $$createType19;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("history" in $$parsedSource) {
             $$parsedSource["history"] = $$createField2_0($$parsedSource["history"]);
@@ -939,7 +1127,7 @@ export class Samples {
      * Creates a new Samples instance from a string or object.
      */
     static createFrom($$source: any = {}): Samples {
-        const $$createField0_0 = $$createType17;
+        const $$createField0_0 = $$createType21;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("items" in $$parsedSource) {
             $$parsedSource["items"] = $$createField0_0($$parsedSource["items"]);
@@ -1039,7 +1227,7 @@ export class SchemaDiff {
      * Creates a new SchemaDiff instance from a string or object.
      */
     static createFrom($$source: any = {}): SchemaDiff {
-        const $$createField1_0 = $$createType19;
+        const $$createField1_0 = $$createType23;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("changes" in $$parsedSource) {
             $$parsedSource["changes"] = $$createField1_0($$parsedSource["changes"]);
@@ -1216,9 +1404,9 @@ export class XPathInfo {
      * Creates a new XPathInfo instance from a string or object.
      */
     static createFrom($$source: any = {}): XPathInfo {
-        const $$createField2_0 = $$createType21;
-        const $$createField3_0 = $$createType23;
-        const $$createField4_0 = $$createType25;
+        const $$createField2_0 = $$createType25;
+        const $$createField3_0 = $$createType27;
+        const $$createField4_0 = $$createType29;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField2_0($$parsedSource["problems"]);
@@ -1280,16 +1468,20 @@ const $$createType9 = pipeline$0.PageRef.createFrom;
 const $$createType10 = $Create.Array($$createType9);
 const $$createType11 = pipeline$0.FontRef.createFrom;
 const $$createType12 = $Create.Array($$createType11);
-const $$createType13 = Problem.createFrom;
+const $$createType13 = FileChange.createFrom;
 const $$createType14 = $Create.Array($$createType13);
-const $$createType15 = model$0.History.createFrom;
-const $$createType16 = Sample.createFrom;
-const $$createType17 = $Create.Array($$createType16);
-const $$createType18 = SchemaChange.createFrom;
-const $$createType19 = $Create.Array($$createType18);
-const $$createType20 = xpath$0.Problem.createFrom;
+const $$createType15 = DiffLine.createFrom;
+const $$createType16 = $Create.Array($$createType15);
+const $$createType17 = Problem.createFrom;
+const $$createType18 = $Create.Array($$createType17);
+const $$createType19 = model$0.History.createFrom;
+const $$createType20 = Sample.createFrom;
 const $$createType21 = $Create.Array($$createType20);
-const $$createType22 = Field.createFrom;
-const $$createType23 = $Create.Nullable($$createType22);
-const $$createType24 = xpath$0.Result.createFrom;
-const $$createType25 = $Create.Nullable($$createType24);
+const $$createType22 = SchemaChange.createFrom;
+const $$createType23 = $Create.Array($$createType22);
+const $$createType24 = xpath$0.Problem.createFrom;
+const $$createType25 = $Create.Array($$createType24);
+const $$createType26 = Field.createFrom;
+const $$createType27 = $Create.Nullable($$createType26);
+const $$createType28 = xpath$0.Result.createFrom;
+const $$createType29 = $Create.Nullable($$createType28);

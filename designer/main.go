@@ -67,6 +67,7 @@ func main() {
 			application.NewService(app.NewValidationService(core)),
 			application.NewService(app.NewConformanceService(core)),
 			application.NewService(app.NewSampleDataService(core)),
+			application.NewService(app.NewPublishService(core)),
 			// Seiten, Schriften und Bilder des Canvas über HTTP.
 			application.NewServiceWithOptions(app.NewAssets(core), application.ServiceOptions{Route: "/pdx"}),
 		},

@@ -25,5 +25,13 @@ Enthaltene Fremdbestandteile:
 
 Abhängigkeiten:
 
+* github.com/boombuler/barcode (MIT)
 * github.com/boxesandglue/textshape (MIT)
+* github.com/tim-riep/go-xslt (Apache-2.0)
+* golang.org/x/crypto (BSD-3-Clause), nur OCSP
 * golang.org/x/text (BSD-3-Clause)
+* software.sslmate.com/src/go-pkcs12 (BSD-3-Clause)
+
+Nur für Tests, nicht Teil der Programme: EU DSS Validator
+(esig/dss-demonstrations, LGPL-2.1) als lokal gebautes Docker-Image
+(dssval/build.sh), veraPDF (GPL-3.0 oder MPL-2.0) als Docker-Image.
