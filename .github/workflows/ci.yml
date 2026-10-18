@@ -62,3 +62,10 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
         working-directory: designer/frontend
       - run: make e2e
+      - name: Berichte der Ende-zu-Ende-Tests bei Fehlern
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.os }}
+          path: designer/frontend/test-results
+          retention-days: 7
