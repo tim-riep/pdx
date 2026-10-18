@@ -50,6 +50,9 @@ jobs:
           make bindings
           git diff --exit-code frontend/bindings
       - run: make check
+      - name: Drittanbieterhinweise aktuell
+        if: runner.os == 'Linux'
+        run: make notices-check
       - run: make test
       - name: Natives Binary und Smoke-Test
         run: |
