@@ -154,6 +154,10 @@ export class Conformance {
  * ConformanceFinding ist eine verletzte Regel mit ihren Einzelprüfungen.
  */
 export class ConformanceFinding {
+    /**
+     * Specification ist die Norm der Regel, etwa "ISO 14289-1:2014".
+     */
+    "specification": string;
     "clause": string;
     "test": string;
     "description": string;
@@ -162,6 +166,9 @@ export class ConformanceFinding {
 
     /** Creates a new ConformanceFinding instance. */
     constructor($$source: Partial<ConformanceFinding> = {}) {
+        if (!("specification" in $$source)) {
+            this["specification"] = "";
+        }
         if (!("clause" in $$source)) {
             this["clause"] = "";
         }
@@ -185,10 +192,10 @@ export class ConformanceFinding {
      * Creates a new ConformanceFinding instance from a string or object.
      */
     static createFrom($$source: any = {}): ConformanceFinding {
-        const $$createField4_0 = $$createType6;
+        const $$createField5_0 = $$createType6;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("items" in $$parsedSource) {
-            $$parsedSource["items"] = $$createField4_0($$parsedSource["items"]);
+            $$parsedSource["items"] = $$createField5_0($$parsedSource["items"]);
         }
         return new ConformanceFinding($$parsedSource as Partial<ConformanceFinding>);
     }

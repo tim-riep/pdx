@@ -35,12 +35,21 @@ beforeEach(() => {
         { name: "x", group: "position", kind: "length" },
         { name: "layout", group: "position", kind: "enum", enum: ["positioned", "flowed"], required: true },
         { name: "hyphenate", group: "text", kind: "bool" },
+        { name: "role", group: "access", kind: "enum", enum: ["P", "H1", "Figure"] },
+        { name: "alt", group: "access", kind: "text" },
       ],
+    },
+    template: {
+      key: "template", name: "template", mixed: false, text: false, children: [],
+      properties: [{ name: "profile", group: "general", kind: "profile" }],
     },
   };
   tpl.snapshot = {
     rev: 1, root: "t",
-    nodes: { box: { ref: "box", name: "subform", type: "subform", parent: "t", attrs: { id: "box", x: "20mm", layout: "positioned" }, children: [] } },
+    nodes: {
+      box: { ref: "box", name: "subform", type: "subform", parent: "t", attrs: { id: "box", x: "20mm", layout: "positioned" }, children: [] },
+      t: { ref: "t", name: "template", type: "template", parent: "", attrs: { profile: "pdfa-3a,pdfua-1" }, children: [{ ref: "box" }] },
+    },
   };
   select("box");
 });
@@ -77,5 +86,24 @@ describe("Inspector", () => {
     await fireEvent.input(screen.getByRole("searchbox"), { target: { value: "anord" } });
     expect(screen.queryByLabelText("X")).toBeNull();
     expect(screen.getByLabelText("Anordnung*")).toBeTruthy();
+  });
+
+  it("zeigt Auswahlwerte und Barrierefreiheit auf Deutsch", () => {
+    render(Inspector);
+    expect(screen.getByText("Barrierefreiheit")).toBeTruthy();
+    expect(screen.getByRole("option", { name: "frei platziert" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "Überschrift 1" })).toBeTruthy();
+    expect(screen.getByText(/statt des Bildes vorlesen/)).toBeTruthy();
+  });
+
+  it("bietet Profile mit Erklärung an", async () => {
+    select("t");
+    render(Inspector);
+    const sel = screen.getByTestId("profile-select") as HTMLSelectElement;
+    expect(sel.value).toBe("pdfa-3a,pdfua-1");
+    expect(screen.getByTestId("profile-desc").textContent).toContain("barrierefrei");
+    api.Apply.mockResolvedValue({ rev: 2, select: "t", history: { undo: "", redo: "", can: [true, false] } });
+    await fireEvent.change(sel, { target: { value: "pdfa-4f,pdfua-2" } });
+    expect(api.Apply).toHaveBeenCalledWith("Ausgabeprofil ändern", { op: "setAttr", ref: "t", name: "profile", value: "pdfa-4f,pdfua-2" });
   });
 });

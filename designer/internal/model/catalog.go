@@ -12,11 +12,13 @@ import (
 // des Vorlagenformats.
 type Property struct {
 	Name string `json:"name"`
-	// Group ordnet die Eigenschaft im Inspektor ein: general, position,
-	// text, border, spacing, breaks, binding oder other.
+	// Group ordnet die Eigenschaft im Inspektor ein: general, access
+	// (Barrierefreiheit), position, text, border, spacing, breaks, binding
+	// oder other.
 	Group string `json:"group"`
 	// Kind wählt den Editor: id, ref, length, lengths, color, font (Verweis
-	// auf ein Schrift-Token), xpath, enum, bool, number oder text.
+	// auf ein Schrift-Token), xpath, enum, bool, number, profile
+	// (Konformitätsprofile) oder text.
 	Kind     string   `json:"kind"`
 	Enum     []string `json:"enum,omitempty"`
 	Default  string   `json:"default,omitempty"`
@@ -170,6 +172,8 @@ func property(a *xsd.AttributeUse) Property {
 			p.Kind = "xpath"
 		case "TokenRef":
 			p.Kind = "font"
+		case "ProfileList":
+			p.Kind = "profile"
 		default:
 			switch a.Type.BuiltinBase().Local {
 			case "ID":
@@ -189,11 +193,14 @@ func property(a *xsd.AttributeUse) Property {
 	return p
 }
 
-var groupOrder = map[string]int{"general": 0, "binding": 1, "position": 2, "text": 3, "spacing": 4, "border": 5, "breaks": 6, "other": 7}
+var groupOrder = map[string]int{"general": 0, "binding": 1, "access": 2, "position": 3, "text": 4, "spacing": 5, "border": 6, "breaks": 7, "other": 8}
 
 var groups = map[string]string{
-	"id": "general", "style": "general", "role": "general", "presence": "general", "title": "general",
-	"lang": "general", "parent": "general", "use": "general", "type": "general", "name": "general",
+	"id": "general", "style": "general", "presence": "general", "title": "general",
+	"parent": "general", "use": "general", "type": "general", "name": "general",
+	"profile": "general", "afRelationship": "general",
+	"role": "access", "alt": "access", "altBind": "access", "lang": "access", "readingOrder": "access",
+	"artifact": "access", "scope": "access",
 	"bind": "binding", "format": "binding", "default": "binding", "repeat": "binding", "by": "binding",
 	"of": "binding", "value": "binding", "ref": "binding", "src": "binding", "source": "binding",
 	"dataRoot": "binding", "schema": "binding", "pattern": "binding", "href": "binding",

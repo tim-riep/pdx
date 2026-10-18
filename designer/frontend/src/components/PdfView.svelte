@@ -1,9 +1,10 @@
 <script lang="ts">
-  // Ansicht PDF: das erzeugte PDF/A-3b mit pdf.js, so wie es ausgeliefert
+  // Ansicht PDF: das erzeugte PDF im Profil der Vorlage mit pdf.js, so wie es ausgeliefert
   // wird. pdf.js und sein Worker liegen im Bündel, nichts kommt aus dem Netz.
   import { getDocument, GlobalWorkerOptions, type PDFDocumentLoadingTask, type PDFDocumentProxy } from "pdfjs-dist";
   import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
-  import { t } from "../lib/i18n";
+  import { profileShort, t } from "../lib/i18n";
+  import { node, tpl } from "../lib/template.svelte";
   import { askPath, project, ui } from "../lib/project.svelte";
   import { RenderAPI, message } from "../lib/api";
 
@@ -46,6 +47,8 @@
   let status = $state<"loading" | "ok" | "error">("loading");
   let error = $state("");
   let pages = $state(0);
+  // Das Profil der Vorlage bestimmt, welche Normen das PDF erfüllt.
+  const profile = $derived(profileShort(node(tpl.snapshot?.root ?? "")?.attrs.profile || "pdfa-3b"));
   let width = $state(800);
   let seq = 0;
   let doc: PDFDocumentProxy | null = null;
@@ -120,7 +123,7 @@
 <div class="pdf" bind:clientWidth={width} data-testid="pdf-view">
   <div class="bar">
     {#if status === "loading"}<span class="muted">{t("pdf.loading")}</span>
-    {:else if status === "ok"}<span class="muted" data-testid="pdf-info">{pages === 1 ? t("pdf.page") : t("pdf.pages", { n: pages })}</span>
+    {:else if status === "ok"}<span class="muted" data-testid="pdf-info">{pages === 1 ? t("pdf.page", { profile }) : t("pdf.pages", { n: pages, profile })}</span>
       <button onclick={savePDF}>{t("pdf.save")}</button>
       <button onclick={showPDF}>{t("pdf.show")}</button>
     {/if}

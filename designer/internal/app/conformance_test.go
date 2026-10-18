@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
+	"sync"
 	"testing"
 	"time"
 
@@ -85,6 +87,46 @@ func TestConformanceMapping(t *testing.T) {
 	}
 	if got := cs.State(); got.State != ConformanceDone || len(got.Findings) != len(st.Findings) {
 		t.Fatalf("State %+v", got.State)
+	}
+}
+
+// flavourRunner merkt sich die geprüften Flavours und meldet je Flavour
+// einen Befund.
+type flavourRunner struct {
+	mu   sync.Mutex
+	seen []string
+}
+
+func (*flavourRunner) Name() string { return "Attrappe" }
+
+func (f *flavourRunner) Validate(ctx context.Context, file, flavour string) (*verapdf.Report, error) {
+	f.mu.Lock()
+	f.seen = append(f.seen, flavour)
+	f.mu.Unlock()
+	return &verapdf.Report{Compliant: flavour != "ua1", Findings: []verapdf.Finding{{Specification: "Norm " + flavour, Clause: "1"}}}, nil
+}
+
+// Die Prüfung folgt dem Profil der Vorlage: ein Lauf je beanspruchtem
+// Standard, konform nur, wenn alle bestehen.
+func TestConformanceProfile(t *testing.T) {
+	rec := &recorder{}
+	c := NewCore(rec, nil, t.TempDir())
+	if _, err := NewProjectService(c).Open(muster); err != nil {
+		t.Fatal(err)
+	}
+	c.doc.Pkg.Template.Root.SetAttr("profile", "pdfa-3a,pdfua-1")
+	fr := &flavourRunner{}
+	c.conf.detect = func(context.Context, func(string)) (verapdf.Runner, error) { return fr, nil }
+	st, err := NewConformanceService(c).Check()
+	if err != nil || st.Profile != "pdfa-3a,pdfua-1" {
+		t.Fatalf("Start: %+v %v", st, err)
+	}
+	st = waitConformance(t, rec, 10*time.Second)
+	if st.State != ConformanceDone || st.Compliant || len(st.Findings) != 2 || st.Findings[1].Specification != "Norm ua1" {
+		t.Fatalf("Ergebnis: %+v", st)
+	}
+	if !slices.Equal(fr.seen, []string{"3a", "ua1"}) {
+		t.Errorf("Flavours %v", fr.seen)
 	}
 }
 

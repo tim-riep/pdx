@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Property } from "../lib/api";
-  import { t, label, propLabel } from "../lib/i18n";
+  import { t, label, propLabel, enumLabel, help, profiles, profileLabel, profileDesc } from "../lib/i18n";
   import { apply, node, typeOf } from "../lib/template.svelte";
   import { selection } from "../lib/selection.svelte";
   import TableTools from "./TableTools.svelte";
@@ -78,14 +78,22 @@
               {:else}
                 <XPathInput ref={n.ref} prop={p.name} value={n.attrs[p.name] ?? ""} label={propLabel(p.name)} placeholder={p.default ?? ""} />
               {/if}
+              {#if help(p.name)}<p class="help">{help(p.name)}</p>{/if}
             </div>
           {:else}
           <label class="prop" data-prop={p.name}>
             <span class="label" title={p.name}>{propLabel(p.name)}{#if p.required}<sup>*</sup>{/if}</span>
             {#if p.kind === "enum"}
               <select value={n.attrs[p.name] ?? ""} onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value)}>
-                <option value="">{p.default ? t("inspector.default", { value: p.default }) : ""}</option>
-                {#each p.enum ?? [] as v}<option value={v}>{v}</option>{/each}
+                <option value="">{p.default ? t("inspector.default", { value: enumLabel(p.name, p.default) }) : ""}</option>
+                {#each p.enum ?? [] as v}<option value={v}>{enumLabel(p.name, v)}</option>{/each}
+              </select>
+            {:else if p.kind === "profile"}
+              {@const cur = n.attrs[p.name] ?? ""}
+              <select value={cur} data-testid="profile-select" onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value)}>
+                <option value="">{t("inspector.default", { value: profileLabel("pdfa-3b") })}</option>
+                {#each profiles as v}<option value={v}>{profileLabel(v)}</option>{/each}
+                {#if cur && !profiles.includes(cur)}<option value={cur}>{profileLabel(cur)}</option>{/if}
               </select>
             {:else if p.kind === "font"}
               <select value={n.attrs[p.name] ?? ""} onchange={(e) => commit(p, e.currentTarget, e.currentTarget.value)}>
@@ -106,6 +114,8 @@
               </span>
             {/if}
           </label>
+          {#if p.kind === "profile"}<p class="help" data-testid="profile-desc">{profileDesc(n.attrs[p.name] || "pdfa-3b")}</p>{/if}
+          {#if p.kind !== "profile" && help(p.name)}<p class="help">{help(p.name)}</p>{/if}
           {/if}
         {/each}
       </section>
@@ -190,6 +200,15 @@
   }
   .content h3 {
     margin-top: 0;
+  }
+  .help {
+    margin: 0 0 var(--space-2) calc(110px + var(--space-2));
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  div.prop .help {
+    grid-column: 2;
+    margin: 0;
   }
   .hint {
     margin: 2px 0 0;

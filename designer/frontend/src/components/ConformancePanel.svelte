@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ConformanceItem } from "../lib/api";
-  import { label, t } from "../lib/i18n";
+  import { label, profileShort, t } from "../lib/i18n";
   import { node } from "../lib/template.svelte";
   import { select } from "../lib/selection.svelte";
   import { project, ui } from "../lib/project.svelte";
@@ -41,7 +41,7 @@
   {#if st && st.state === "done"}
     <p class="verdict" class:ok={st.compliant} role="status" data-testid="conformance-verdict">
       <span aria-hidden="true">{st.compliant ? "✓" : "✗"}</span>
-      {st.compliant ? t("conformance.ok") : t("conformance.bad", { n: st.findings.length })}
+      {st.compliant ? t("conformance.ok", { profile: profileShort(st.profile) }) : t("conformance.bad", { n: st.findings.length })}
       <span class="muted" title={st.runner}>{source}, {t("conformance.meta", { runner: st.runner.replace(/ \(.*\)$/, ""), seconds: (st.millis / 1000).toFixed(1) })}</span>
     </p>
   {:else if st && st.state === "error"}
@@ -62,7 +62,7 @@
         <li>
           <button class="rule" aria-expanded={!!open[i]} onclick={() => (open[i] = !open[i])}>
             <span class="twisty">{open[i] ? "▾" : "▸"}</span>
-            <span class="clause">{f.test ? t("conformance.clauseTest", { clause: f.clause, test: f.test }) : t("conformance.clause", { clause: f.clause })}</span>
+            <span class="clause">{f.test ? t("conformance.clauseTest", { spec: f.specification, clause: f.clause, test: f.test }) : t("conformance.clause", { spec: f.specification, clause: f.clause })}</span>
             <span class="desc">{f.description}</span>
             <span class="count">{f.count}</span>
           </button>

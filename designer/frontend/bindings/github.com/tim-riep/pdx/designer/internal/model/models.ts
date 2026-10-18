@@ -266,14 +266,16 @@ export class Property {
     "name": string;
 
     /**
-     * Group ordnet die Eigenschaft im Inspektor ein: general, position,
-     * text, border, spacing, breaks, binding oder other.
+     * Group ordnet die Eigenschaft im Inspektor ein: general, access
+     * (Barrierefreiheit), position, text, border, spacing, breaks, binding
+     * oder other.
      */
     "group": string;
 
     /**
      * Kind wählt den Editor: id, ref, length, lengths, color, font (Verweis
-     * auf ein Schrift-Token), xpath, enum, bool, number oder text.
+     * auf ein Schrift-Token), xpath, enum, bool, number, profile
+     * (Konformitätsprofile) oder text.
      */
     "kind": string;
     "enum"?: string[];

@@ -297,7 +297,7 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
 
   // Konformität.
   await page.getByRole("tab", { name: "Konformität" }).click();
-  await page.getByTestId("conformance").getByRole("button", { name: "PDF/A-3b prüfen" }).click();
+  await page.getByTestId("conformance").getByRole("button", { name: "Konformität prüfen" }).click();
   const verdict = page.getByTestId("conformance-verdict");
   if (realVeraPDF) {
     await expect(verdict).toContainText("Konform mit PDF/A-3b", { timeout: 240_000 });

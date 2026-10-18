@@ -40,11 +40,13 @@ type ConformanceItem struct {
 
 // ConformanceFinding ist eine verletzte Regel mit ihren Einzelprüfungen.
 type ConformanceFinding struct {
-	Clause      string            `json:"clause"`
-	Test        string            `json:"test"`
-	Description string            `json:"description"`
-	Count       int               `json:"count"`
-	Items       []ConformanceItem `json:"items"`
+	// Specification ist die Norm der Regel, etwa "ISO 14289-1:2014".
+	Specification string            `json:"specification"`
+	Clause        string            `json:"clause"`
+	Test          string            `json:"test"`
+	Description   string            `json:"description"`
+	Count         int               `json:"count"`
+	Items         []ConformanceItem `json:"items"`
 }
 
 // Conformance ist der Stand der Prüfung.
@@ -79,7 +81,8 @@ type conformance struct {
 	now func() time.Time
 }
 
-// ConformanceService prüft das erzeugte PDF mit veraPDF gegen PDF/A-3b.
+// ConformanceService prüft das erzeugte PDF mit veraPDF gegen jeden Standard,
+// den das Profil der Vorlage beansprucht.
 type ConformanceService struct{ c *Core }
 
 // NewConformanceService liefert die Sicht auf den gemeinsamen Zustand.
@@ -128,7 +131,8 @@ func (s *ConformanceService) Check() (Conformance, error) {
 
 	data, sample := c.previewDataLocked()
 	in := pipeline.Input{Canon: template.Write(c.doc.Pkg.Template), Files: maps.Clone(c.doc.Pkg.Files), Data: data}
-	c.conf.state = Conformance{State: ConformanceRunning, Rev: c.doc.Rev(), Sample: sample, Profile: pdx.DefaultProfile}
+	prof := c.doc.Pkg.Template.Root.Get("profile", pdx.DefaultProfile)
+	c.conf.state = Conformance{State: ConformanceRunning, Rev: c.doc.Rev(), Sample: sample, Profile: prof}
 	st := c.conf.stateCopy()
 	c.emit.Emit(EventConformance, st)
 	go c.runConformance(ctx, gen, in, st)
@@ -215,7 +219,7 @@ func (c *Core) runConformance(ctx context.Context, gen int, in pipeline.Input, s
 		return
 	}
 	st.Runner = runner.Name()
-	flavour, err := verapdf.Flavour(st.Profile)
+	flavours, err := verapdf.Flavours(st.Profile)
 	if err != nil {
 		fail(err)
 		return
@@ -231,17 +235,27 @@ func (c *Core) runConformance(ctx context.Context, gen int, in pipeline.Input, s
 		fail(err)
 		return
 	}
-	rep, err := runner.Validate(ctx, file, flavour)
-	if err != nil {
-		fail(err)
-		return
+	// veraPDF prüft einen Flavour je Lauf, eine Kombination braucht mehrere.
+	compliant := true
+	var findings []ConformanceFinding
+	for _, flavour := range flavours {
+		rep, err := runner.Validate(ctx, file, flavour)
+		if err != nil {
+			fail(err)
+			return
+		}
+		if rep.Exception != "" {
+			fail(errors.New("veraPDF: " + rep.Exception))
+			return
+		}
+		compliant = compliant && rep.Compliant
+		findings = append(findings, mapFindings(rep, &trace)...)
 	}
-	if rep.Exception != "" {
-		fail(errors.New("veraPDF: " + rep.Exception))
-		return
+	if findings == nil {
+		findings = []ConformanceFinding{}
 	}
-	st.State, st.Compliant = ConformanceDone, rep.Compliant
-	st.Findings = mapFindings(rep, &trace)
+	st.State, st.Compliant = ConformanceDone, compliant
+	st.Findings = findings
 	finish(st)
 }
 
@@ -257,7 +271,7 @@ var (
 func mapFindings(rep *verapdf.Report, trace *render.Trace) []ConformanceFinding {
 	out := []ConformanceFinding{}
 	for _, f := range rep.Findings {
-		cf := ConformanceFinding{Clause: f.Clause, Test: f.TestNumber, Description: f.Description, Count: f.FailedChecks, Items: []ConformanceItem{}}
+		cf := ConformanceFinding{Specification: f.Specification, Clause: f.Clause, Test: f.TestNumber, Description: f.Description, Count: f.FailedChecks, Items: []ConformanceItem{}}
 		if cf.Count == 0 {
 			cf.Count = len(f.Checks)
 		}

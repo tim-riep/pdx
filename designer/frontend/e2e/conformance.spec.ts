@@ -7,7 +7,7 @@ test("Konformität: Befunde nach Regeln, Klick führt zum Element", async ({ pag
   await openMuster(page, true);
   await page.getByRole("tab", { name: "Konformität" }).click();
   const panel = page.getByTestId("conformance");
-  await panel.getByRole("button", { name: "PDF/A-3b prüfen" }).click();
+  await panel.getByRole("button", { name: "Konformität prüfen" }).click();
   const verdict = panel.getByTestId("conformance-verdict");
   await expect(verdict).toContainText("Nicht konform, 2 Regeln verletzt");
   await expect(verdict).toContainText("veraPDF lokal");
