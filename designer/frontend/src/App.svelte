@@ -27,6 +27,7 @@
   import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
   import ConformancePanel from "./components/ConformancePanel.svelte";
+  import AccessibilityPanel from "./components/AccessibilityPanel.svelte";
   import { entries } from "./lib/problems.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
@@ -96,6 +97,7 @@
         ["styles", "panel.styles", () => (rightTab = "styles")],
         ["problems", "panel.problems", () => (bottomTab = "problems")],
         ["conformance", "panel.conformance", () => (bottomTab = "conformance")],
+        ["access", "panel.access", () => (bottomTab = "access")],
         ["xpath", "panel.xpath", () => (bottomTab = "xpath")],
       ];
       for (const [id, key, run] of panels) items.push({ id: `panel-${id}`, label: t("palette.panel", { panel: t(key) }), group: g("panel"), run });
@@ -251,11 +253,13 @@
     </Tabs>
   </aside>
   <section class="bottom">
-    <Tabs tabs={[["problems", problemCount ? t("problems.count", { n: problemCount }) : t("panel.problems")], ["conformance", t("panel.conformance")], ["xpath", t("panel.xpath")]]} bind:active={bottomTab}>
+    <Tabs tabs={[["problems", problemCount ? t("problems.count", { n: problemCount }) : t("panel.problems")], ["conformance", t("panel.conformance")], ["access", t("panel.access")], ["xpath", t("panel.xpath")]]} bind:active={bottomTab}>
       {#if bottomTab === "xpath"}
         <XPathPanel />
       {:else if bottomTab === "problems"}
         <ProblemsPanel />
+      {:else if bottomTab === "access"}
+        <AccessibilityPanel />
       {:else}
         <ConformancePanel />
       {/if}

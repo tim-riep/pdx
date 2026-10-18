@@ -20,6 +20,7 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/image"
+	"github.com/tim-riep/pdx/pdf/profile"
 	"github.com/tim-riep/pdx/pdf/render"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
@@ -261,8 +262,8 @@ func encodePNG(im *image.Image) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// PDF erzeugt das PDF eines Stands mit dem Standardprofil (PDF/A-3b) und
-// den Anhängen der Vorlage. created ist das Erstellungsdatum. trace erhält, wenn gesetzt, die Zuordnung der
+// PDF erzeugt das PDF eines Stands im Profil der Vorlage und mit ihren
+// Anhängen. created ist das Erstellungsdatum. trace erhält, wenn gesetzt, die Zuordnung der
 // Operatoren zu den Vorlagenelementen. Fehler tragen die Vorlagen-ID wie in
 // den Befunden von Run.
 func (p *Pipeline) PDF(ctx context.Context, in Input, created time.Time, trace *render.Trace) ([]byte, []Problem, error) {
@@ -295,4 +296,60 @@ func problems(err error) []Problem {
 		return []Problem{{Level: "Fehler", ID: e.ID, Msg: e.Msg}}
 	}
 	return []Problem{{Level: "Fehler", Msg: err.Error()}}
+}
+
+// AccessProfile ist das Profil, nach dem Access prüft, wenn das Profil der
+// Vorlage keine Barrierefreiheit verlangt.
+const AccessProfile = "pdfa-3a,pdfua-1"
+
+// Access ist die Analyse der Barrierefreiheit eines Stands.
+type Access struct {
+	// Profile ist das geprüfte Profil. Assumed meldet, dass das Profil der
+	// Vorlage keine Barrierefreiheit verlangt und ersatzweise nach
+	// AccessProfile geprüft wurde.
+	Profile string `json:"profile"`
+	Assumed bool   `json:"assumed"`
+	// Tree ist der Strukturbaum in Lesereihenfolge, nil, wenn das Setzen
+	// scheiterte.
+	Tree *render.StructNode `json:"tree"`
+	// Findings sind die Befunde der Vorprüfung, Problems Fehler beim Setzen.
+	Findings []Problem `json:"findings"`
+	Problems []Problem `json:"problems"`
+}
+
+// Access setzt einen Stand und analysiert Strukturbaum und Vorprüfung, ohne
+// ein PDF zu schreiben.
+func (p *Pipeline) Access(ctx context.Context, in Input) (*Access, error) {
+	res := &Access{Findings: []Problem{}, Problems: []Problem{}}
+	tpl, _, err := p.compile(in)
+	if err != nil {
+		res.Problems = problems(err)
+		return res, nil
+	}
+	res.Profile = tpl.Profile()
+	prof, err := profile.Lookup(res.Profile)
+	if err != nil {
+		res.Problems = problems(err)
+		return res, nil
+	}
+	c := profile.ClaimOf(prof)
+	if c.Level != "A" && c.UA == 0 {
+		res.Profile, res.Assumed = AccessProfile, true
+		p, _ := profile.Lookup(AccessProfile)
+		c = profile.ClaimOf(p)
+	}
+	doc, err := tpl.Layout(in.Data, pdx.TemplateOptions{Options: pdx.Options{Fonts: p.reg, Context: ctx}})
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return nil, err
+	}
+	if err != nil {
+		res.Problems = problems(err)
+		return res, nil
+	}
+	tree, errs := render.Analyze(doc, c)
+	res.Tree = tree
+	for _, e := range errs {
+		res.Findings = append(res.Findings, Problem{Level: "Fehler", ID: e.ID, Msg: e.Msg})
+	}
+	return res, nil
 }

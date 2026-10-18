@@ -103,6 +103,8 @@ type tagger struct {
 	rootRef, ns pdf.Ref
 	// ids sind die vergebenen Element-IDs in Baumreihenfolge für den IDTree.
 	ids []idEntry
+	// texts sammelt den Text je Element für Analyze.
+	texts map[*structElem]*strings.Builder
 }
 
 type idEntry struct {
@@ -124,6 +126,7 @@ func newTagger(doc *areatree.Document) *tagger {
 		inline:   map[*structElem]map[string]*structElem{},
 		linkText: map[string]*strings.Builder{},
 		labels:   map[*structElem]string{},
+		texts:    map[*structElem]*strings.Builder{},
 	}
 }
 
@@ -393,6 +396,16 @@ func (t *tagger) text(pi int, v *areatree.GlyphRun, c tagCtx) {
 		}
 	}
 	m := t.content(pi, target, areatree.Rect{X: v.Origin.X, Y: v.Origin.Y - v.Ascent})
+	tb := t.texts[target]
+	if tb == nil {
+		tb = &strings.Builder{}
+		t.texts[target] = tb
+	}
+	for _, g := range v.Glyphs {
+		if !g.Hyphen {
+			tb.WriteString(g.Text)
+		}
+	}
 	// Text einer Marke bestimmt die Nummerierung ihrer Liste.
 	for e := target; e != nil; e = e.parent {
 		if e.typ == "Lbl" {

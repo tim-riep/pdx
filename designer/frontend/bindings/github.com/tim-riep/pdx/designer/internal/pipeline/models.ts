@@ -5,6 +5,76 @@
 // @ts-ignore: Unused imports
 import { Create as $Create } from "@wailsio/runtime";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as render$0 from "../../../pdf/render/models.js";
+
+/**
+ * Access ist die Analyse der Barrierefreiheit eines Stands.
+ */
+export class Access {
+    /**
+     * Profile ist das geprüfte Profil. Assumed meldet, dass das Profil der
+     * Vorlage keine Barrierefreiheit verlangt und ersatzweise nach
+     * AccessProfile geprüft wurde.
+     */
+    "profile": string;
+    "assumed": boolean;
+
+    /**
+     * Tree ist der Strukturbaum in Lesereihenfolge, nil, wenn das Setzen
+     * scheiterte.
+     */
+    "tree": render$0.StructNode | null;
+
+    /**
+     * Findings sind die Befunde der Vorprüfung, Problems Fehler beim Setzen.
+     */
+    "findings": Problem[];
+    "problems": Problem[];
+
+    /** Creates a new Access instance. */
+    constructor($$source: Partial<Access> = {}) {
+        if (!("profile" in $$source)) {
+            this["profile"] = "";
+        }
+        if (!("assumed" in $$source)) {
+            this["assumed"] = false;
+        }
+        if (!("tree" in $$source)) {
+            this["tree"] = null;
+        }
+        if (!("findings" in $$source)) {
+            this["findings"] = [];
+        }
+        if (!("problems" in $$source)) {
+            this["problems"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Access instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Access {
+        const $$createField2_0 = $$createType1;
+        const $$createField3_0 = $$createType3;
+        const $$createField4_0 = $$createType3;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("tree" in $$parsedSource) {
+            $$parsedSource["tree"] = $$createField2_0($$parsedSource["tree"]);
+        }
+        if ("findings" in $$parsedSource) {
+            $$parsedSource["findings"] = $$createField3_0($$parsedSource["findings"]);
+        }
+        if ("problems" in $$parsedSource) {
+            $$parsedSource["problems"] = $$createField4_0($$parsedSource["problems"]);
+        }
+        return new Access($$parsedSource as Partial<Access>);
+    }
+}
+
 /**
  * FontRef ist eine Schrift für den Canvas.
  */
@@ -100,3 +170,9 @@ export class Problem {
         return new Problem($$parsedSource as Partial<Problem>);
     }
 }
+
+// Private type creation functions
+const $$createType0 = render$0.StructNode.createFrom;
+const $$createType1 = $Create.Nullable($$createType0);
+const $$createType2 = Problem.createFrom;
+const $$createType3 = $Create.Array($$createType2);

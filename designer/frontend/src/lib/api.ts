@@ -25,6 +25,8 @@ export type {
   History,
   Child,
 } from "../../bindings/github.com/tim-riep/pdx/designer/internal/model/models";
+export type { Access } from "../../bindings/github.com/tim-riep/pdx/designer/internal/pipeline/models";
+export type { StructNode } from "../../bindings/github.com/tim-riep/pdx/pdf/render/models";
 export type {
   ProjectState,
   RecentFile,

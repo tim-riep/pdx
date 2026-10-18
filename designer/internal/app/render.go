@@ -63,6 +63,21 @@ func (s *RenderService) SetView(view, sample string) {
 	s.c.scheduleLocked(0)
 }
 
+// Access analysiert Strukturbaum und Vorprüfung der Barrierefreiheit für
+// die Daten der Vorschau, ohne ein PDF zu schreiben.
+func (s *RenderService) Access() (*pipeline.Access, error) {
+	c := s.c
+	c.mu.Lock()
+	if c.doc == nil {
+		c.mu.Unlock()
+		return nil, errors.New("keine Vorlage geöffnet")
+	}
+	data, _ := c.previewDataLocked()
+	in := pipeline.Input{Canon: template.Write(c.doc.Pkg.Template), Files: maps.Clone(c.doc.Pkg.Files), Data: data}
+	c.mu.Unlock()
+	return c.r.pipe.Access(context.Background(), in)
+}
+
 // Latest liefert das zuletzt gesetzte Manifest.
 func (s *RenderService) Latest() Manifest {
 	s.c.mu.Lock()

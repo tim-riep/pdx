@@ -12,7 +12,21 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
+import * as pipeline$0 from "../pipeline/models.js";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
 import * as $models from "./models.js";
+
+/**
+ * Access analysiert Strukturbaum und Vorprüfung der Barrierefreiheit für
+ * die Daten der Vorschau, ohne ein PDF zu schreiben.
+ */
+export function Access(): $CancellablePromise<pipeline$0.Access | null> {
+    return $Call.ByID(2266494879).then(($result: any) => {
+        return $$createType1($result);
+    });
+}
 
 /**
  * ExportPDF schreibt das PDF des aktuellen Stands in eine Datei.
@@ -34,7 +48,7 @@ export function ExportPDFDialog(): $CancellablePromise<string> {
  */
 export function Latest(): $CancellablePromise<$models.Manifest> {
     return $Call.ByID(1942259250).then(($result: any) => {
-        return $$createType0($result);
+        return $$createType2($result);
     });
 }
 
@@ -55,4 +69,6 @@ export function SetView(view: string, sample: string): $CancellablePromise<void>
 }
 
 // Private type creation functions
-const $$createType0 = $models.Manifest.createFrom;
+const $$createType0 = pipeline$0.Access.createFrom;
+const $$createType1 = $Create.Nullable($$createType0);
+const $$createType2 = $models.Manifest.createFrom;
