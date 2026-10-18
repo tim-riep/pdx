@@ -22,6 +22,10 @@ type File struct {
 	// busy sind die Objekte, die gerade gelesen werden, um zyklische
 	// Verweise (etwa eine Length, die auf sich selbst zeigt) zu erkennen.
 	busy map[int]bool
+	// startxref ist der Offset des neuesten Xref-Abschnitts, newestStm
+	// meldet, dass er ein Xref-Stream ist.
+	startxref int
+	newestStm bool
 }
 
 // MaxDecoded begrenzt die entpackte Größe eines Streams, damit
@@ -41,6 +45,8 @@ func Open(data []byte) (*File, error) {
 		return nil, fmt.Errorf("startxref fehlt")
 	}
 	off, _ := strconv.Atoi(string(ms[len(ms)-1][1]))
+	f.startxref = off
+	f.newestStm = !bytes.HasPrefix(bytes.TrimLeft(data[min(off, len(data)):], " \r\n\t"), []byte("xref"))
 	seen := map[int]bool{}
 	for off > 0 && !seen[off] {
 		seen[off] = true
@@ -245,6 +251,21 @@ func (f *File) indirect(l *lexer) (Object, error) {
 		n = e
 	}
 	return &Stream{Dict: d, Raw: l.b[start : start+n]}, nil
+}
+
+// Data liefert die Bytes der Datei.
+func (f *File) Data() []byte { return f.data }
+
+// StartXref liefert den Offset des neuesten Xref-Abschnitts.
+func (f *File) StartXref() int { return f.startxref }
+
+// XRefStream meldet, dass der neueste Xref-Abschnitt ein Xref-Stream ist.
+func (f *File) XRefStream() bool { return f.newestStm }
+
+// Size liefert die Größe aus dem Trailer: höchste Objektnummer plus eins.
+func (f *File) Size() int {
+	n, _ := f.Trailer["Size"].(int64)
+	return int(n)
 }
 
 // Get liefert das Objekt mit der Nummer des Verweises.
