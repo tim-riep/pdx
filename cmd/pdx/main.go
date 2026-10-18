@@ -29,8 +29,8 @@ import (
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/font"
-	"github.com/tim-riep/pdx/verapdf"
 	"github.com/tim-riep/pdx/pdf/profile"
+	"github.com/tim-riep/pdx/verapdf"
 )
 
 func main() {
@@ -240,7 +240,7 @@ func cmdVerify(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "pdx verify: Format %q unbekannt\n", *format)
 		return 2
 	}
-	flavour, err := verapdf.Flavour(*prof)
+	flavours, err := verapdf.Flavours(*prof)
 	if err != nil {
 		fmt.Fprintf(stderr, "pdx verify: %v\n", err)
 		return 2
@@ -251,26 +251,40 @@ func cmdVerify(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "pdx verify: %v\n", err)
 		return 1
 	}
-	rep, err := runner.Validate(ctx, pos[0], flavour)
-	if err != nil {
-		var pe *os.PathError
-		if errors.As(err, &pe) {
+	// Ein Lauf je beanspruchtem Standard, das Ergebnis gilt nur, wenn alle
+	// bestehen.
+	var reports []*verapdf.Report
+	failed := false
+	for _, flavour := range flavours {
+		rep, err := runner.Validate(ctx, pos[0], flavour)
+		if err != nil {
+			var pe *os.PathError
+			if errors.As(err, &pe) {
+				fmt.Fprintf(stderr, "pdx verify: %v\n", err)
+				return 2
+			}
 			fmt.Fprintf(stderr, "pdx verify: %v\n", err)
-			return 2
+			return 1
 		}
-		fmt.Fprintf(stderr, "pdx verify: %v\n", err)
-		return 1
+		rep.File = pos[0]
+		reports = append(reports, rep)
+		failed = failed || rep.Failed()
 	}
-	rep.File = pos[0]
 	if *format == "json" {
 		enc := json.NewEncoder(stdout)
 		enc.SetIndent("", "  ")
-		enc.Encode(rep)
+		if len(reports) == 1 {
+			enc.Encode(reports[0])
+		} else {
+			enc.Encode(reports)
+		}
 	} else {
 		fmt.Fprintf(stdout, "%s\n", pos[0])
-		rep.WriteText(stdout)
+		for _, rep := range reports {
+			rep.WriteText(stdout)
+		}
 	}
-	if rep.Failed() {
+	if failed {
 		return 1
 	}
 	return 0

@@ -36,13 +36,37 @@ var flavours = map[string]string{
 	"pdfa-3b": "3b",
 }
 
-// Flavour liefert den veraPDF-Flavour zu einem pdx-Profil.
+// Flavour liefert den veraPDF-Flavour zu einem einzelnen pdx-Profil.
 func Flavour(profile string) (string, error) {
 	f, ok := flavours[profile]
 	if !ok {
 		return "", fmt.Errorf("für Profil %q gibt es keine veraPDF-Prüfung", profile)
 	}
 	return f, nil
+}
+
+// Flavours liefert die veraPDF-Flavours zu einer Profilangabe wie
+// "pdfa-3a,pdfua-1", einen je beanspruchtem Standard. veraPDF prüft mit
+// --flavour genau einen Flavour je Lauf (docs.verapdf.org/cli/validation),
+// also braucht eine Kombination mehrere Läufe.
+func Flavours(spec string) ([]string, error) {
+	var out []string
+	var errs []error
+	for _, n := range strings.Split(spec, ",") {
+		if n = strings.TrimSpace(n); n == "" {
+			continue
+		}
+		f, err := Flavour(n)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		out = append(out, f)
+	}
+	if len(out) == 0 && len(errs) == 0 {
+		errs = append(errs, fmt.Errorf("kein Profil angegeben"))
+	}
+	return out, errors.Join(errs...)
 }
 
 // Runner prüft eine Datei mit veraPDF.

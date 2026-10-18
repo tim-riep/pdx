@@ -39,9 +39,18 @@ func (p PDFA3B) Allow(f pdf.Feature) error {
 	return nil
 }
 
+func (PDFA3B) claim() Claim { return Claim{Version: "1.7", PDFA: 3, Level: "B"} }
+
 // Prepare ergänzt Output Intent und XMP-Metadaten.
-func (p PDFA3B) Prepare(ctx *Context) error {
-	return preparePDFA(ctx, 3, "B")
+func (p PDFA3B) Prepare(ctx *Context) error { return prepareClaim(ctx, p.claim()) }
+
+// prepareClaim ergänzt die Pflichtobjekte eines Anspruchs: Output Intent
+// für PDF/A und die XMP-Metadaten mit den Kennungen aller Teile.
+func prepareClaim(ctx *Context, c Claim) error {
+	if c.PDFA == 0 {
+		return nil
+	}
+	return preparePDFA(ctx, c.PDFA, c.Level)
 }
 
 func preparePDFA(ctx *Context, part int, conformance string) error {

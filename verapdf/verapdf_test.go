@@ -89,3 +89,16 @@ func TestRunnerLive(t *testing.T) {
 		t.Errorf("unerwarteter Bericht: %+v", rep)
 	}
 }
+
+func TestFlavours(t *testing.T) {
+	got, err := Flavours("pdfa-3b")
+	if err != nil || len(got) != 1 || got[0] != "3b" {
+		t.Fatalf("pdfa-3b: %v %v", got, err)
+	}
+	if _, err := Flavours("pdfa-3b,pdf-1.7,gibtsnicht"); err == nil || !strings.Contains(err.Error(), "pdf-1.7") || !strings.Contains(err.Error(), "gibtsnicht") {
+		t.Fatalf("Fehler nicht vollständig: %v", err)
+	}
+	if _, err := Flavours(" , "); err == nil {
+		t.Fatal("leere Angabe angenommen")
+	}
+}
