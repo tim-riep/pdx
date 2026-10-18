@@ -2,6 +2,7 @@ package pdf
 
 import (
 	"bytes"
+	"errors"
 	"crypto/md5"
 	"fmt"
 	"io"
@@ -165,36 +166,107 @@ func (d *Document) Write(w io.Writer) error {
 // muss. Das ist die zweite Verteidigungslinie hinter den Aufrufen von Use in
 // den höheren Schichten.
 func (d *Document) check() error {
-	found := map[Feature]bool{}
+	st := &scanState{found: map[Feature]bool{}}
 	for _, o := range d.objs {
-		scan(o, found)
+		st.scan(o)
 	}
-	for f := Transparency; f <= UnembeddedFont; f++ {
-		if found[f] {
+	for f := Transparency; f <= NeedAppearances; f++ {
+		if st.found[f] {
 			if err := d.Use(f); err != nil {
 				return err
 			}
 		}
 	}
-	return nil
+	return d.checkActions(st)
 }
 
-func scan(o Object, found map[Feature]bool) {
+// action ist eine gefundene Aktion, aa ein gefundenes AA-Dictionary.
+type action struct{ s, named Name }
+
+type aaEntry struct {
+	owner Name
+	keys  []Name
+}
+
+// scanState sammelt beim Durchlauf Funktionen und Aktionen.
+type scanState struct {
+	found   map[Feature]bool
+	actions []action
+	aa      []aaEntry
+	widgetA int
+}
+
+// checkActions legt alle Aktionen der Policy vor und meldet alle Verstöße
+// auf einmal. Gleiche Verstöße erscheinen einmal.
+func (d *Document) checkActions(st *scanState) error {
+	ap, ok := d.policy.(ActionPolicy)
+	if !ok {
+		return nil
+	}
+	var errs []error
+	seen := map[string]bool{}
+	add := func(err error) {
+		if err != nil && !seen[err.Error()] {
+			seen[err.Error()] = true
+			errs = append(errs, err)
+		}
+	}
+	for _, a := range st.actions {
+		add(ap.AllowAction(a.s, a.named))
+	}
+	for _, e := range st.aa {
+		add(ap.AllowAdditionalActions(e.owner, e.keys))
+	}
+	if st.widgetA > 0 {
+		add(ap.AllowWidgetAction())
+	}
+	return errors.Join(errs...)
+}
+
+func (st *scanState) scan(o Object) {
 	switch v := o.(type) {
 	case Array:
 		for _, e := range v {
-			scan(e, found)
+			st.scan(e)
 		}
 	case *Stream:
-		scanDict(v.Dict, found, true)
+		st.scanDict(v.Dict, true)
 	case *Dict:
-		scanDict(v, found, false)
+		st.scanDict(v, false)
 	}
 }
 
-func scanDict(d *Dict, found map[Feature]bool, isStream bool) {
-	if n, ok := d.Get("S").(Name); ok && n == "JavaScript" {
-		found[JavaScript] = true
+// isAction erkennt ein Aktions-Dictionary: Typ Action oder ohne Typ, mit
+// einem Namen in S. Strukturelemente tragen ebenfalls S, aber Typ StructElem.
+func isAction(d *Dict) (Name, bool) {
+	s, ok := d.Get("S").(Name)
+	if !ok {
+		return "", false
+	}
+	switch t, _ := d.Get("Type").(Name); t {
+	case "", "Action":
+		return s, true
+	}
+	return "", false
+}
+
+func (st *scanState) scanDict(d *Dict, isStream bool) {
+	found := st.found
+	if s, ok := isAction(d); ok {
+		named, _ := d.Get("N").(Name)
+		st.actions = append(st.actions, action{s, named})
+		if s == "JavaScript" {
+			found[JavaScript] = true
+		}
+	}
+	if aa, ok := d.Get("AA").(*Dict); ok {
+		st.aa = append(st.aa, aaEntry{aaOwner(d), aa.Keys()})
+	}
+	if sub, _ := d.Get("Subtype").(Name); sub == "Widget" && d.Has("A") {
+		st.widgetA++
+	}
+	if v, ok := d.Get("NeedAppearances").(Bool); ok && bool(v) {
+		found[NeedAppearances] = true
 	}
 	if d.Has("JS") {
 		found[JavaScript] = true
@@ -244,8 +316,26 @@ func scanDict(d *Dict, found map[Feature]bool, isStream bool) {
 		found[ExternalContent] = true
 	}
 	for _, k := range d.Keys() {
-		scan(d.Get(k), found)
+		st.scan(d.Get(k))
 	}
+}
+
+// aaOwner bestimmt den Besitzer eines AA-Dictionarys für die Regeln der
+// Profile.
+func aaOwner(d *Dict) Name {
+	switch t, _ := d.Get("Type").(Name); t {
+	case "Catalog", "Page":
+		return t
+	}
+	if sub, _ := d.Get("Subtype").(Name); sub == "Widget" {
+		return "Widget"
+	} else if sub != "" {
+		return "Annot"
+	}
+	if d.Has("FT") || d.Has("T") {
+		return "Field"
+	}
+	return "Annot"
 }
 
 func hasName(o Object, n Name) bool {

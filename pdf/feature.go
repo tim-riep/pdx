@@ -26,6 +26,9 @@ const (
 	// UnmappedGlyph steht für eine Glyphe ohne Unicode-Zuordnung in der
 	// ToUnicode-CMap ihrer Schrift.
 	UnmappedGlyph
+	// NeedAppearances steht für den Eintrag NeedAppearances true im
+	// AcroForm-Dictionary, der den Viewer Erscheinungsbilder erzeugen lässt.
+	NeedAppearances
 )
 
 var featureNames = map[Feature]string{
@@ -38,6 +41,7 @@ var featureNames = map[Feature]string{
 	Attachment:      "Dateianhänge",
 	UnembeddedFont:  "nicht eingebettete Schriften",
 	UnmappedGlyph:   "Glyphen ohne Unicode-Zuordnung",
+	NeedAppearances: "NeedAppearances",
 }
 
 func (f Feature) String() string {
@@ -77,4 +81,21 @@ var alwaysForbidden = map[Feature]string{
 	JavaScript: "pdx schreibt grundsätzlich kein JavaScript",
 	XFA:        "pdx schreibt grundsätzlich kein XFA",
 	Encryption: "pdx verschlüsselt nicht",
+	// Jedes Feld bringt sein eigenes Erscheinungsbild mit. PDF/A verbietet
+	// NeedAppearances (ISO 19005-2 6.4.1, ISO 19005-4 6.4.1).
+	NeedAppearances: "pdx schreibt jedes Erscheinungsbild selbst und setzt NeedAppearances nie",
+}
+
+// ActionPolicy prüft Aktionen (ISO 32000-1 12.6). Profile, die Aktionen
+// nicht einschränken, implementieren sie nicht. Jede Methode liefert nil
+// oder einen Fehler mit der verletzten Klausel.
+type ActionPolicy interface {
+	// AllowAction prüft eine Aktion vom Typ s. named ist bei Named-Aktionen
+	// der Wert von N, sonst leer.
+	AllowAction(s, named Name) error
+	// AllowAdditionalActions prüft ein AA-Dictionary. owner ist Catalog,
+	// Page, Widget, Field oder Annot, keys sind seine Auslöser.
+	AllowAdditionalActions(owner Name, keys []Name) error
+	// AllowWidgetAction prüft den Eintrag A an einer Widget-Annotation.
+	AllowWidgetAction() error
 }
