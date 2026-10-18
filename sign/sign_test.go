@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"golang.org/x/crypto/ocsp"
+	"software.sslmate.com/src/go-pkcs12"
 
 	"github.com/tim-riep/pdx/internal/testpki"
 	"github.com/tim-riep/pdx/sign"
@@ -155,5 +156,26 @@ func TestTestPKI(t *testing.T) {
 	}
 	if len(crl.RevokedCertificateEntries) != 1 || crl.RevokedCertificateEntries[0].SerialNumber.Cmp(pki.Revoked.Cert.SerialNumber) != 0 {
 		t.Error("CRL nennt das gesperrte Zertifikat nicht")
+	}
+}
+
+// LoadPKCS12 liest Schlüssel und Kette, die Wurzel fällt weg, ein falsches
+// Passwort scheitert. Die Datei entsteht im Test.
+func TestLoadPKCS12(t *testing.T) {
+	pki := testpki.New(t)
+	p12, err := pkcs12.Modern.Encode(pki.Signer.Key, pki.Signer.Cert, []*x509.Certificate{pki.Inter.Cert, pki.Root.Cert}, "geheim")
+	if err != nil {
+		t.Fatal(err)
+	}
+	s, err := sign.LoadPKCS12(p12, "geheim")
+	if err != nil {
+		t.Fatal(err)
+	}
+	certs := s.Certificates()
+	if len(certs) != 2 || !certs[0].Equal(pki.Signer.Cert) || !certs[1].Equal(pki.Inter.Cert) {
+		t.Errorf("Kette falsch: %d Zertifikate", len(certs))
+	}
+	if _, err := sign.LoadPKCS12(p12, "falsch"); err == nil {
+		t.Error("falsches Passwort nicht erkannt")
 	}
 }

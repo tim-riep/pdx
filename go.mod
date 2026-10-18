@@ -12,3 +12,5 @@ require (
 require golang.org/x/text v0.43.0
 
 require golang.org/x/crypto v0.58.0
+
+require software.sslmate.com/src/go-pkcs12 v0.7.4

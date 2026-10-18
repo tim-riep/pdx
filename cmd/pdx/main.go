@@ -52,6 +52,9 @@ Aufruf:
   pdx structure <datei.pdf>
   pdx extract-data <formular.pdf> --template <vorlage> [-o daten.xml] [--data grunddaten.xml]
   pdx flatten <formular.pdf> --template <vorlage> [-o statisch.pdf] [--profile NAME] [--data grunddaten.xml]
+  pdx sign <eingabe.pdf> --signer pkcs12:datei.p12 [-o signiert.pdf] [--level B-B|B-T|B-LT|B-LTA]
+             [--tsa URL] [--field NAME] [--reason TEXT] [--location TEXT] [--contact TEXT]
+             Passwort aus PDX_SIGN_PASSWORD oder Abfrage, nie als Argument
   pdx version
 
 Eine Vorlage ist ein ZIP-Paket oder ein Verzeichnis mit template.xml.
@@ -83,6 +86,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdExtract(args[1:], stdout, stderr)
 	case "flatten":
 		return cmdFlatten(args[1:], stdout, stderr)
+	case "sign":
+		return cmdSign(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintf(stdout, "pdx %s (veraPDF %s)\n", pdx.Version, verapdf.Version)
 		return 0
