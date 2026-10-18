@@ -162,18 +162,23 @@
     return m ? m[1] : null;
   }
 
+  // loading verhindert parallele Abfragen der Felder, während nach dem @
+  // weiter getippt wird.
+  let loading: Promise<void> | null = null;
+
   async function oninput() {
     dirty = true;
     if (plain) return;
-    const q = atQuery();
-    if (q !== null && query === null) {
-      try {
-        fields = (await TemplateAPI.XPathFields(ref)) ?? [];
-      } catch {
-        fields = [];
-      }
+    if (atQuery() !== null && query === null) {
+      loading ??= TemplateAPI.XPathFields(ref)
+        .then((f) => void (fields = f ?? []))
+        .catch(() => void (fields = []))
+        .finally(() => (loading = null));
+      await loading;
     }
-    query = q;
+    // Nach dem Warten gilt die Eingabe von jetzt, nicht die vom Start der
+    // Abfrage, sonst bliebe das Menü auf einem älteren Stand.
+    query = atQuery();
     index = 0;
   }
 

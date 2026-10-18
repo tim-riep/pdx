@@ -44,3 +44,23 @@ test("Text mit Feld-Chips bearbeiten: Inspektor, @ und Doppelklick", async ({ pa
   await expect(page.getByTestId("inline-edit")).toHaveCount(0);
   await expect(editor).not.toContainText("XYZ");
 });
+
+// Langsames Backend (wie auf CI-Rechnern): Während die Felder nach dem @
+// laden, geht das Tippen weiter. Das Menü zeigt den Stand der letzten
+// Eingabe, nicht den einer früheren Abfrage.
+test("@-Menü bei langsamem Backend", async ({ page }) => {
+  await openMuster(page);
+  await selectInTree(page, ["seiten", "erste", "erste-kopf", "rechnungsdaten", "rechnungsnummer"]);
+  const editor = page.getByTestId("inspector-content").getByTestId("content-editor");
+  await expect(editor.locator(".chip")).toHaveText("inv:number");
+  await page.route("**/wails/runtime**", async (route) => {
+    await new Promise((r) => setTimeout(r, 400));
+    await route.continue();
+  });
+  await editor.click({ position: { x: 4, y: 4 } });
+  await page.keyboard.press("End");
+  await page.keyboard.type(" @inv:issueDa", { delay: 30 });
+  await expect(page.getByTestId("content-menu").getByRole("option").first()).toHaveText("inv:issueDate");
+  await page.unroute("**/wails/runtime**");
+  await page.keyboard.press("Escape");
+});
