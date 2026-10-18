@@ -45,7 +45,7 @@ func TestCorpus(t *testing.T) {
 
 // matrixProfiles sind die Profile der Konformitätsmatrix neben pdfa-3b, das
 // TestCorpus mit Golden Files prüft. Sie wächst mit jedem neuen Profil.
-var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-3a,pdfua-1"}
+var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-3a,pdfua-1", "pdfa-4", "pdfa-4f"}
 
 // inaccessible sind Korpusfälle, die PDF/UA bewusst nicht erfüllen
 // (Abbildungen ohne Alternativtext, Tabellen ohne Kopfzellen). Die
@@ -54,8 +54,8 @@ var inaccessible = map[string]bool{"barcodes": true, "bilder": true, "rechnung":
 
 // TestCorpusProfiles rendert jeden Fall in jedem Profil der Matrix. Mit
 // PDX_CONFORMANCE=1 prüft veraPDF jeden beanspruchten Standard. Anhänge, die
-// ein Profil nicht erlaubt (unter PDF/A-2 alles außer PDF/A), müssen mit der
-// Klausel abgelehnt werden.
+// ein Profil nicht erlaubt (unter PDF/A-2 und PDF/A-4 alles außer PDF/A),
+// und PDF/A-4f ohne Anhang müssen mit der Klausel abgelehnt werden.
 func TestCorpusProfiles(t *testing.T) {
 	files, err := filepath.Glob("testdata/fo/*.fo")
 	if err != nil {
@@ -68,8 +68,11 @@ func TestCorpusProfiles(t *testing.T) {
 				t.Parallel()
 				res, err := RenderFile(f, Options{Profile: prof, CreationDate: corpusDate})
 				if err != nil {
-					if strings.HasPrefix(prof, "pdfa-2") && strings.Contains(err.Error(), "ISO 19005-2 6.8") {
-						return // Anhang ohne PDF/A, wie verlangt abgelehnt
+					// Anhänge, die das Profil nicht erlaubt (PDF/A-2 und
+					// PDF/A-4 nur PDF/A), und 4f ohne Anhang lehnt der
+					// Writer ab.
+					if strings.Contains(err.Error(), "ISO 19005-2 6.8") || strings.Contains(err.Error(), "ISO 19005-4 6.9") {
+						return
 					}
 					var ce render.CheckErrors
 					if inaccessible[name] && errors.As(err, &ce) {

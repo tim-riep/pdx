@@ -132,6 +132,9 @@ func combine(parts []Profile) (Claim, error) {
 			continue
 		}
 		pc := cl.claim()
+		if pc.PDFA == 0 && pc.UA == 0 {
+			plain = append(plain, p.Name())
+		}
 		if pc.PDFA > 0 {
 			pdfa = append(pdfa, p.Name())
 			c.PDFA, c.Level = pc.PDFA, pc.Level

@@ -93,6 +93,8 @@ type renderer struct {
 
 	// tag plant den Strukturbaum, nil ohne Tagged PDF.
 	tag *tagger
+	// claim ist der Anspruch des Profils mit PDF-Version.
+	claim profile.Claim
 }
 
 func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
@@ -106,9 +108,11 @@ func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
 		opts.Producer = "pdx"
 	}
 	r := &renderer{doc: doc, opts: opts, d: pdf.NewDocument(opts.Profile), gs: map[string]pdf.Ref{}}
+	r.claim = profile.ClaimOf(opts.Profile)
+	r.d.Version = r.claim.Version
 	r.fonts = newFontSet(r)
 	r.images = newImageSet(r)
-	c := profile.ClaimOf(opts.Profile)
+	c := r.claim
 	if strict := c.Level == "A" || c.UA > 0; opts.Tagged || strict {
 		r.tag = newTagger(doc)
 		r.tag.plan()
@@ -163,7 +167,11 @@ func (r *renderer) build() error {
 	if r.tag != nil {
 		r.tag.write(r)
 	}
-	r.info = r.infoDict()
+	// PDF 2.0 ersetzt das Info-Dictionary durch XMP (ISO 32000-2 14.3.3),
+	// PDF/A-4 verbietet es ohne PieceInfo (ISO 19005-4 6.1.3).
+	if r.claim.Version != "2.0" {
+		r.info = r.infoDict()
+	}
 	if len(r.doc.Bookmarks) > 0 {
 		outlines, err := r.outlines()
 		if err != nil {
@@ -182,7 +190,9 @@ func (r *renderer) build() error {
 		return err
 	}
 	r.d.Root = r.d.Add(r.catalog)
-	r.d.Info = r.d.Add(r.info)
+	if r.info != nil {
+		r.d.Info = r.d.Add(r.info)
+	}
 	return nil
 }
 

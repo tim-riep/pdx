@@ -135,7 +135,7 @@ func TestPDFA2Attachments(t *testing.T) {
 	if err == nil {
 		t.Fatal("unzulässige Anhänge angenommen")
 	}
-	for _, want := range []string{`"daten.xml" ist kein PDF`, `"alt.pdf" ist kein PDF/A-1- oder PDF/A-2-Dokument`, "6.8"} {
+	for _, want := range []string{`"daten.xml" ist kein PDF`, `"alt.pdf" ist kein Dokument in PDF/A-1, PDF/A-2`, "6.8"} {
 		if !strings.Contains(err.Error(), want) {
 			t.Errorf("%q fehlt in %v", want, err)
 		}
@@ -170,5 +170,64 @@ func TestPDFAUnicodeLevels(t *testing.T) {
 			t.Errorf("%s: pdfaid fehlt", spec)
 		}
 		testutil.Conform(t, spec+".pdf", b, spec)
+	}
+}
+
+// PDF/A-4 beruht auf PDF 2.0: Kopf %PDF-2.0, kein Info-Dictionary,
+// pdfaid:rev 2020 und keine Stufe außer F. Anhänge sind unter 4 nur als
+// PDF/A-1, -2 oder -4 erlaubt, 4f verlangt mindestens einen.
+func TestPDFA4(t *testing.T) {
+	doc := textDoc(t)
+	doc.Meta = areatree.Metadata{Title: "PDF/A-4", Lang: "de-DE"}
+	b, err := Render(doc, Options{Profile: lookup(t, "pdfa-4"), CreationDate: testDate})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := testutil.CheckStructure(b); err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.HasPrefix(b, []byte("%PDF-2.0\n")) {
+		t.Error("Kopf nicht %PDF-2.0")
+	}
+	trailer := b[bytes.LastIndex(b, []byte("trailer")):]
+	if bytes.Contains(trailer, []byte("/Info")) {
+		t.Error("Info-Dictionary darf unter PDF/A-4 nicht stehen")
+	}
+	for _, bad := range []string{"/Producer (", "pdfaid:conformance", "pdfaExtension"} {
+		if bytes.Contains(b, []byte(bad)) {
+			t.Errorf("%q darf unter PDF/A-4 nicht stehen", bad)
+		}
+	}
+	if !bytes.Contains(b, []byte("<pdfaid:rev>2020</pdfaid:rev>")) {
+		t.Error("pdfaid:rev fehlt")
+	}
+	testutil.Conform(t, "pdfa-4.pdf", b, "pdfa-4")
+
+	// 4f ohne Anhang ist ein Fehler, mit Anhang konform.
+	if _, err := Render(doc, Options{Profile: lookup(t, "pdfa-4f"), CreationDate: testDate}); err == nil ||
+		!strings.Contains(err.Error(), "ISO 19005-4 6.9") {
+		t.Errorf("4f ohne Anhang: %v", err)
+	}
+	doc.Attachments = []areatree.Attachment{{Name: "daten.xml", MIMEType: "text/xml", Relationship: areatree.Data, Data: []byte(facturX)}}
+	b, err = Render(doc, Options{Profile: lookup(t, "pdfa-4f"), CreationDate: testDate})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Contains(b, []byte("<pdfaid:conformance>F</pdfaid:conformance>")) {
+		t.Error("pdfaid:conformance F fehlt")
+	}
+	testutil.Conform(t, "pdfa-4f.pdf", b, "pdfa-4f")
+
+	// Unter PDF/A-4 ohne Stufe nur PDF/A-Anhänge, PDF/A-3 gehört nicht dazu.
+	inner, err := Render(shapes(), Options{Profile: pdfa3b(t), CreationDate: testDate})
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc.Attachments = append(doc.Attachments, areatree.Attachment{Name: "a3.pdf", MIMEType: "application/pdf", Data: inner})
+	_, err = Render(doc, Options{Profile: lookup(t, "pdfa-4"), CreationDate: testDate})
+	for _, want := range []string{`"daten.xml" ist kein PDF`, `"a3.pdf" ist kein Dokument in PDF/A-1, PDF/A-2, PDF/A-4`} {
+		if err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("%q fehlt in %v", want, err)
+		}
 	}
 }

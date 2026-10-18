@@ -99,6 +99,8 @@ Feste Objektreihenfolge, sortierte Dictionary-Schlüssel, feste Zahlenformatieru
 | `pdfa-3u` | PDF/A-3u, zusätzlich eine Unicode-Zuordnung für jede Glyphe (6.2.11.7.2). Fehlt sie, bricht das Schreiben mit Schrift und Glyphe ab |
 | `pdfa-2b`, `pdfa-2u` | PDF/A-2 nach ISO 19005-2. Anhänge nur als PDF/A-1 oder PDF/A-2 (6.8), alle unzulässigen Anhänge in einer Meldung |
 | `pdfa-3a` | PDF/A-3a, Tagged PDF mit Strukturbaum (6.7). Verlangt Dokumentsprache und Alternativtexte für Abbildungen |
+| `pdfa-4`, `pdfa-4f` | PDF/A-4 nach ISO 19005-4 auf Grundlage von PDF 2.0. Kopf `%PDF-2.0`, kein Info-Dictionary, Metadaten nur im XMP mit `pdfaid:rev` 2020. Unter `pdfa-4` Anhänge nur als PDF/A-1, -2 oder -4 (6.9), `pdfa-4f` erlaubt beliebige Anhänge und verlangt mindestens einen |
+| `pdf-2.0` | PDF 2.0 ohne Konformitätsanspruch, Metadaten im XMP |
 | `pdfua-1` | PDF/UA-1 nach ISO 14289-1, kombinierbar mit PDF/A-2 und PDF/A-3, etwa `pdfa-3a,pdfua-1`. XMP mit pdfuaid, DisplayDocTitle. Verlangt zusätzlich Titel, lückenlose Überschriften ab H1, Kopfzellen in Tabellen und Verweise mit Text im Strukturbaum |
 | `pdf-1.7` | PDF 1.7 ohne Konformitätsanspruch, Schriften trotzdem immer eingebettet |
 
@@ -106,7 +108,7 @@ Profile lassen sich kombinieren, etwa `--profile pdfa-3a,pdfua-1`. Unzulässige 
 
 Unter `pdfa-3a` und `pdfua-1` prüft pdx vor dem Schreiben alles, was sich nicht auffüllen lässt, und meldet alle Befunde auf einmal mit der ID des Vorlagenelements, etwa `[girocode] Abbildung ohne Alternativtext (alt oder altBind), ISO 14289-1 7.3, ISO 19005-3 6.7`. Kopf und Fuß sind Artefakte, `artifact="false"` holt Inhalte wie Anschrift und Rechnungsdaten in den Strukturbaum. Wiederholte Tabellenköpfe, Überträge und Zwischensummen sind Artefakte.
 
-In Arbeit (Phase 3): 4, 4f, PDF/UA-2, E-Rechnung.
+In Arbeit (Phase 3): PDF/UA-2, E-Rechnung.
 
 ## FO-Teilumfang
 

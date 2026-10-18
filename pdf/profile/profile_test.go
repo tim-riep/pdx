@@ -103,3 +103,30 @@ func TestSetAllow(t *testing.T) {
 		t.Fatalf("Anhang: %v", err)
 	}
 }
+
+// PDF/A-4 beruht auf PDF 2.0 und passt nicht zu PDF/UA-1, pdf-2.0 hat
+// keinen Anspruch und lässt sich nicht kombinieren.
+func TestPDF20Combinations(t *testing.T) {
+	for spec, want := range map[string]string{
+		"pdfa-4,pdfua-1":  "beide lassen sich nicht kombinieren",
+		"pdf-2.0,pdfua-1": "ohne Konformitätsanspruch",
+		"pdfa-4,pdfa-4f":  "nur ein PDF/A-Profil",
+	} {
+		if _, err := Lookup(spec); err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("%s: %v", spec, err)
+		}
+	}
+	for spec, want := range map[string]Claim{
+		"pdfa-4":  {Version: "2.0", PDFA: 4},
+		"pdfa-4f": {Version: "2.0", PDFA: 4, Level: "F"},
+		"pdf-2.0": {Version: "2.0"},
+	} {
+		p, err := Lookup(spec)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := ClaimOf(p); got != want {
+			t.Errorf("%s: %+v", spec, got)
+		}
+	}
+}

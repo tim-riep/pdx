@@ -21,6 +21,8 @@ type Document struct {
 	Root Ref
 	// Info verweist auf das Info-Dictionary. Optional.
 	Info Ref
+	// Version ist die PDF-Version im Dateikopf, "1.7" (Vorgabe) oder "2.0".
+	Version string
 }
 
 // NewDocument legt ein leeres Dokument an. Eine Policy nil erlaubt alles außer
@@ -90,8 +92,13 @@ func (d *Document) Use(f Feature) error {
 	return d.policy.Allow(f)
 }
 
-// Header ist der Dateikopf mit Binärkommentar nach ISO 32000 7.5.2.
-const Header = "%PDF-1.7\n%\xe2\xe3\xcf\xd3\n"
+// header liefert den Dateikopf mit Binärkommentar nach ISO 32000 7.5.2.
+func header(version string) string {
+	if version == "" {
+		version = "1.7"
+	}
+	return "%PDF-" + version + "\n%\xe2\xe3\xcf\xd3\n"
+}
 
 // Bytes schreibt das Dokument in einen Puffer.
 func (d *Document) Bytes() ([]byte, error) {
@@ -118,7 +125,12 @@ func (d *Document) Write(w io.Writer) error {
 	}
 
 	var b bytes.Buffer
-	b.WriteString(Header)
+	switch d.Version {
+	case "", "1.7", "2.0":
+	default:
+		return fmt.Errorf("pdf: Version %q wird nicht unterstützt", d.Version)
+	}
+	b.WriteString(header(d.Version))
 	offsets := make([]int, len(d.objs))
 	for i, o := range d.objs {
 		offsets[i] = b.Len()

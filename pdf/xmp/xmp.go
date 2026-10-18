@@ -24,6 +24,9 @@ type Packet struct {
 	PDFAConformance string
 	// UAPart setzt pdfuaid:part (ISO 14289-1 5), 0 lässt es weg.
 	UAPart int
+	// PDFARev und UARev setzen pdfaid:rev und pdfuaid:rev, leer lässt sie
+	// weg. PDF/A-4 und PDF/UA-2 verlangen sie.
+	PDFARev, UARev string
 
 	Title, Author, Subject, Keywords, Creator, Producer string
 	Created, Modified                                   time.Time
@@ -103,11 +106,17 @@ func (p *Packet) Bytes() ([]byte, error) {
 			if p.PDFAConformance != "" {
 				simple("pdfaid:conformance", p.PDFAConformance)
 			}
+			if p.PDFARev != "" {
+				simple("pdfaid:rev", p.PDFARev)
+			}
 		})
 	}
 	if p.UAPart > 0 {
 		desc(`xmlns:pdfuaid="`+builtin["pdfuaid"]+`"`, func() {
 			simple("pdfuaid:part", fmt.Sprint(p.UAPart))
+			if p.UARev != "" {
+				simple("pdfuaid:rev", p.UARev)
+			}
 		})
 	}
 	desc(`xmlns:dc="`+builtin["dc"]+`"`, func() {

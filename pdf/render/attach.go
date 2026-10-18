@@ -24,6 +24,9 @@ var relationships = map[areatree.Relationship]bool{
 func (r *renderer) attachments() error {
 	atts := r.doc.Attachments
 	if len(atts) == 0 {
+		if r.claim.PDFA == 4 && r.claim.Level == "F" {
+			return fmt.Errorf("Profil %s: ISO 19005-4 6.9 verlangt für PDF/A-4f mindestens einen Dateianhang", r.opts.Profile.Name())
+		}
 		return nil
 	}
 	if err := r.d.Use(pdf.Attachment); err != nil {
