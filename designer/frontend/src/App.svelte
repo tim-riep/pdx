@@ -28,6 +28,7 @@
   import StylesPanel from "./components/StylesPanel.svelte";
   import ConformancePanel from "./components/ConformancePanel.svelte";
   import AccessibilityPanel from "./components/AccessibilityPanel.svelte";
+  import { access, refreshAccess } from "./lib/access.svelte";
   import { entries } from "./lib/problems.svelte";
   import Hierarchy from "./components/Hierarchy.svelte";
   import Inspector from "./components/Inspector.svelte";
@@ -41,6 +42,15 @@
   let leftTab = $state("hierarchy");
   let rightTab = $state("inspector");
   let bottomTab = $state("problems");
+
+  // Die Analyse der Barrierefreiheit läuft nach jeder Änderung neu, solange
+  // ihr Panel offen oder die Lesereihenfolge eingeblendet ist.
+  $effect(() => {
+    const rev = project.rev;
+    if (!project.open || (bottomTab !== "access" && !access.showOrder)) return;
+    const timer = setTimeout(refreshAccess, rev ? 300 : 0);
+    return () => clearTimeout(timer);
+  });
   let about = $state(false);
   const problemCount = $derived(entries().length);
 

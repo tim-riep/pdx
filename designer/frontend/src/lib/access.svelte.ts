@@ -4,7 +4,7 @@
 
 import { EVENT, RenderAPI, message, on, type Access, type ProjectState } from "./api";
 
-export const access = $state({ data: null as Access | null, loading: false, error: "" });
+export const access = $state({ data: null as Access | null, loading: false, error: "", showOrder: false });
 
 let seq = 0;
 
@@ -31,17 +31,19 @@ on<ProjectState>(EVENT.project, (s) => {
   }
 });
 
-// order liefert die Vorlagen-IDs in Lesereihenfolge, jede einmal.
-export function order(a: Access | null): string[] {
+// steps liefert die Vorlagen-IDs der Elemente mit eigenem Inhalt (Text
+// oder Abbildung) in Lesereihenfolge, jede einmal. Die Nummer eines Schritts
+// ist seine Stelle plus eins.
+export function steps(a: Access | null): string[] {
   const out: string[] = [];
   const seen = new Set<string>();
   const walk = (n: Access["tree"]) => {
     if (!n) return;
-    if (n.id && !seen.has(n.id)) {
+    if (n.id && !seen.has(n.id) && (n.text || n.type === "Figure")) {
       seen.add(n.id);
       out.push(n.id);
     }
-    n.kids.forEach(walk);
+    n.kids.forEach((k) => walk(k));
   };
   walk(a?.tree ?? null);
   return out;

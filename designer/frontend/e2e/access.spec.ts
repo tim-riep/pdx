@@ -31,4 +31,13 @@ test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   await expect(panel.locator('button.item[data-ref="girocode"]')).toContainText("Abbildung ohne Alternativtext");
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(panel.getByTestId("access-verdict")).toContainText("Keine Befunde der Vorprüfung", { timeout: 10_000 });
+
+  // Lesereihenfolge auf der Seite: Briefkopf zuerst, Überschrift danach.
+  await panel.getByTestId("access-order").check();
+  const first = page.locator('.order[data-order="1"]');
+  await expect(first).toHaveAttribute("data-ref", "briefkopf-firma");
+  const titel = page.locator('.order[data-ref="titel"]');
+  await expect(titel).toBeVisible();
+  expect(Number(await titel.getAttribute("data-order"))).toBeGreaterThan(3);
+  await page.screenshot({ path: "test-results/lesereihenfolge.png" });
 });

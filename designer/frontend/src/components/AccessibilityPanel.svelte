@@ -8,14 +8,6 @@
 
   const a = $derived(access.data);
 
-  // Nach jeder Änderung neu analysieren, kurz verzögert.
-  $effect(() => {
-    const rev = project.rev;
-    if (!project.open) return;
-    const timer = setTimeout(refreshAccess, rev ? 300 : 0);
-    return () => clearTimeout(timer);
-  });
-
   function go(ref: string) {
     if (!ref) return;
     if (!node(ref)) {
@@ -50,6 +42,7 @@
 <div class="access" data-testid="access">
   <div class="bar">
     <button disabled={!project.open || access.loading} onclick={refreshAccess}>{t("access.refresh")}</button>
+    <label class="toggle"><input type="checkbox" bind:checked={access.showOrder} data-testid="access-order" /> {t("access.order")}</label>
     {#if access.loading}<span class="spin" aria-hidden="true"></span>{/if}
     {#if a}
       <span class="muted">{a.assumed ? t("access.assumed", { profile: profileShort(a.profile) }) : t("access.profile", { profile: profileShort(a.profile) })}</span>
@@ -92,6 +85,12 @@
     display: flex;
     gap: var(--space-2);
     align-items: center;
+  }
+  .toggle {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    white-space: nowrap;
   }
   .muted,
   .hint {

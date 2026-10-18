@@ -16,6 +16,7 @@
   import { TemplateAPI, message, type ViewNode } from "../../lib/api";
   import { ui } from "../../lib/project.svelte";
   import { t } from "../../lib/i18n";
+  import { access, steps } from "../../lib/access.svelte";
 
   let { page, hash, zoom, grid, visible, bitmap, image }: {
     page: Page; hash: string; zoom: number; grid: boolean; visible: boolean;
@@ -51,6 +52,17 @@
   const current = $derived(
     selected.length ? (selected[selection.instance?.page === page.n ? selection.instance.k : 0] ?? selected[0]).r : null,
   );
+
+  // Nummern der Lesereihenfolge: je Schritt der erste Bereich auf dieser Seite.
+  const orderSteps = $derived(access.showOrder ? steps(access.data) : []);
+  const badges = $derived.by(() => {
+    const out: { n: number; id: string; r: Rect }[] = [];
+    orderSteps.forEach((id, i) => {
+      const a = page.els.find((x) => x.id === id);
+      if (a) out.push({ n: i + 1, id, r: a.r });
+    });
+    return out;
+  });
 
   // Rahmen der Teilformulare im Entwurf, fließende mit Pfeil für die Richtung.
   const frames = $derived.by(() => {
@@ -349,6 +361,9 @@
         {/each}
       {/if}
     {/if}
+    {#each badges as b (b.id)}
+      <span class="order" data-order={b.n} data-ref={b.id} style="left:{b.r[0] * zoom}px;top:{b.r[1] * zoom}px">{b.n}</span>
+    {/each}
     {#if drag?.active}
       <div class="box ghost" data-ghost style={box(drag.live)}></div>
       {#each drag.guides as g}
@@ -427,6 +442,21 @@
   .ghost {
     outline: 1px dashed var(--accent);
     background: var(--accent-soft);
+  }
+  .order {
+    position: absolute;
+    /* links neben dem Bereich, damit der Text lesbar bleibt */
+    transform: translateX(calc(-100% - 3px));
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font: 600 10px/16px var(--font-ui, sans-serif);
+    text-align: center;
+    box-shadow: 0 0 0 1px #fff;
   }
   .handle {
     position: absolute;
