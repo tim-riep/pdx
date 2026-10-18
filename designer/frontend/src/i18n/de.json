@@ -578,5 +578,8 @@
   "matterhorn.progress": "{n} von {total} geprüft",
   "matterhorn.hint": "Diese Punkte kann keine Software entscheiden. Prüfe sie am PDF, etwa mit einem Screenreader, und hake ab, was erfüllt ist. Der Stand bleibt auf diesem Rechner gespeichert.",
   "matterhorn.na": "(entfällt: {reason})",
-  "matterhorn.source": "Grundlage: Matterhorn Protocol 1.1, © 2021 PDF Association, Lizenz CC BY 4.0. Eigene deutsche Fassung."
+  "matterhorn.source": "Grundlage: Matterhorn Protocol 1.1, © 2021 PDF Association, Lizenz CC BY 4.0. Eigene deutsche Fassung.",
+  "access.up": "Früher vorlesen",
+  "access.down": "Später vorlesen",
+  "access.moveCmd": "Lesereihenfolge ändern"
 }

@@ -41,6 +41,14 @@ test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   expect(Number(await titel.getAttribute("data-order"))).toBeGreaterThan(3);
   await page.screenshot({ path: "test-results/lesereihenfolge.png" });
 
+  // Lesereihenfolge ändern: Rechnungsdaten vor das Adressfenster.
+  const num = async (ref: string) => Number(await page.locator(`.order[data-ref="${ref}"]`).getAttribute("data-order"));
+  expect(await num("absenderzeile")).toBeLessThan(await num("rechnungsnummer"));
+  await tree.locator('[data-up="rechnungsdaten"]').click();
+  await expect.poll(async () => (await num("rechnungsnummer")) < (await num("absenderzeile")), { timeout: 10_000 }).toBe(true);
+  await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
+  await expect.poll(async () => (await num("absenderzeile")) < (await num("rechnungsnummer")), { timeout: 10_000 }).toBe(true);
+
   // Manuelle Prüfung: Fortschritt zählt nur zutreffende Punkte.
   const mh = panel.getByTestId("matterhorn");
   await mh.getByRole("button", { name: /Manuelle Prüfung/ }).click();

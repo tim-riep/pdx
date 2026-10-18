@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { StructNode } from "../lib/api";
   import { has, label, profileShort, t } from "../lib/i18n";
-  import { node } from "../lib/template.svelte";
+  import { apply, isPositioned, node } from "../lib/template.svelte";
   import { select, selection } from "../lib/selection.svelte";
   import { project, ui } from "../lib/project.svelte";
   import { access, refreshAccess } from "../lib/access.svelte";
@@ -18,6 +18,44 @@
     select(ref, null, true);
   }
 
+  // Alle Vorlagen-IDs in Lesereihenfolge, auch Gruppen ohne eigenen Text.
+  const ids = $derived.by(() => {
+    const out: string[] = [];
+    const walk = (n: StructNode | null) => {
+      if (!n) return;
+      if (n.id && !out.includes(n.id)) out.push(n.id);
+      n.kids.forEach(walk);
+    };
+    walk(a?.tree ?? null);
+    return out;
+  });
+
+  // siblings liefert die frei platzierten Geschwister eines Elements in
+  // ihrer aktuellen Lesereihenfolge.
+  function siblings(ref: string): string[] {
+    const n = node(ref);
+    const p = node(n?.parent);
+    if (!n || !p || !isPositioned(n)) return [];
+    const refs = p.children.map((c) => c?.ref ?? "").filter((r) => r && node(r));
+    const rank = (r: string) => {
+      const i = ids.indexOf(r);
+      return i < 0 ? Number.MAX_SAFE_INTEGER : i;
+    };
+    return refs.sort((x, y) => rank(x) - rank(y));
+  }
+
+  // move verschiebt ein Element in der Lesereihenfolge und nummeriert alle
+  // Geschwister neu (readingOrder 1 bis n) in einem Befehl.
+  async function move(ref: string, dir: -1 | 1) {
+    const sib = siblings(ref);
+    const i = sib.indexOf(ref);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= sib.length) return;
+    [sib[i], sib[j]] = [sib[j], sib[i]];
+    const cmds = sib.map((r, k) => ({ op: "setAttr", ref: r, name: "readingOrder", value: String(k + 1) }));
+    await apply(t("access.moveCmd"), { op: "batch", cmds });
+  }
+
   const typeLabel = (type: string) => (has(`struct.${type}`) ? t(`struct.${type}`) : type);
   const where = (id: string) => {
     const n = node(id);
@@ -26,14 +64,23 @@
 </script>
 
 {#snippet tree(n: StructNode, depth: number)}
+  {@const sib = n.id ? siblings(n.id) : []}
   <li>
-    <button class="row" class:sel={!!n.id && selection.ref === n.id} disabled={!n.id} style:padding-left="{depth * 14 + 4}px"
-      onclick={() => go(n.id)} data-struct={n.type} data-ref={n.id}>
-      <span class="type">{typeLabel(n.type)}</span>
-      {#if n.id && node(n.id)}<code>{n.id}</code>{/if}
-      {#if n.alt}<span class="alt" title={t("prop.alt")}>„{n.alt}“</span>{:else if n.text}<span class="text">{n.text}</span>{/if}
-      {#if n.lang}<span class="lang">{n.lang}</span>{/if}
-    </button>
+    <div class="line">
+      <button class="row" class:sel={!!n.id && selection.ref === n.id} disabled={!n.id} style:padding-left="{depth * 14 + 4}px"
+        onclick={() => go(n.id)} data-struct={n.type} data-ref={n.id}>
+        <span class="type">{typeLabel(n.type)}</span>
+        {#if n.id && node(n.id)}<code>{n.id}</code>{/if}
+        {#if n.alt}<span class="alt" title={t("prop.alt")}>„{n.alt}“</span>{:else if n.text}<span class="text">{n.text}</span>{/if}
+        {#if n.lang}<span class="lang">{n.lang}</span>{/if}
+      </button>
+      {#if sib.length > 1}
+        <span class="moves">
+          <button title={t("access.up")} aria-label={t("access.up")} disabled={sib.indexOf(n.id) === 0} onclick={() => move(n.id, -1)} data-up={n.id}>↑</button>
+          <button title={t("access.down")} aria-label={t("access.down")} disabled={sib.indexOf(n.id) === sib.length - 1} onclick={() => move(n.id, 1)} data-down={n.id}>↓</button>
+        </span>
+      {/if}
+    </div>
     {#if n.kids.length}
       <ul>{#each n.kids as k, i (i)}{#if k}{@render tree(k, depth + 1)}{/if}{/each}</ul>
     {/if}
@@ -156,6 +203,23 @@
   }
   .type {
     font-weight: 600;
+  }
+  .line {
+    display: flex;
+    align-items: center;
+  }
+  .line .row {
+    flex: 1;
+    min-width: 0;
+  }
+  .moves {
+    display: flex;
+    gap: 2px;
+    flex: none;
+  }
+  .moves button {
+    padding: 0 6px;
+    line-height: 16px;
   }
   code,
   .lang {
