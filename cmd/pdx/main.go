@@ -40,7 +40,7 @@ func main() {
 const usage = `pdx %s: XSL-FO und Vorlagen zu PDF bis PDF/A-3
 
 Aufruf:
-  pdx render <eingabe.fo> [-o ausgabe.pdf] [--profile NAME] [--attach DATEI:BEZIEHUNG:MIME]...
+  pdx render <eingabe.fo> [-o ausgabe.pdf] [--profile NAME] [--attach DATEI:BEZIEHUNG:MIME[:BESCHREIBUNG]]...
              [--creation-date RFC3339] [--font DATEI]... [--area-tree DATEI]
   pdx render --template <vorlage> <daten.xml> [-o ausgabe.pdf] [--strict] [--lang SPRACHE]
              [--fo DATEI] und die übrigen Optionen von render
@@ -123,7 +123,7 @@ func cmdRender(args []string, stdout, stderr io.Writer) int {
 	foOut := fs.String("fo", "", "erzeugtes FO einer Vorlage zusätzlich in diese Datei schreiben")
 	tagged := fs.Bool("tagged", false, "Tagged PDF mit Strukturbaum schreiben, auch wenn das Profil es nicht verlangt")
 	var attach, fonts multi
-	fs.Var(&attach, "attach", "Anhang DATEI:BEZIEHUNG:MIME, wiederholbar")
+	fs.Var(&attach, "attach", "Anhang DATEI:BEZIEHUNG:MIME[:BESCHREIBUNG], wiederholbar")
 	fs.Var(&fonts, "font", "zusätzliche Schriftdatei, wiederholbar")
 	pos, err := parse(fs, args)
 	if err != nil {
@@ -208,14 +208,22 @@ func creationDate(v string) (time.Time, error) {
 
 // parseAttach liest DATEI:BEZIEHUNG:MIME. Der Pfad darf Doppelpunkte
 // enthalten, getrennt wird an den letzten beiden.
+// parseAttach liest DATEI:BEZIEHUNG:MIME[:BESCHREIBUNG]. Der MIME-Typ
+// enthält immer einen Schrägstrich, ein letzter Teil ohne Schrägstrich ist
+// die Beschreibung (PDF/UA-2 verlangt sie, ISO 14289-2 8.14.1). Sie darf
+// keinen Doppelpunkt enthalten.
 func parseAttach(v string) (areatree.Attachment, error) {
+	desc := ""
+	if k := strings.LastIndex(v, ":"); k > 0 && !strings.Contains(v[k+1:], "/") {
+		desc, v = v[k+1:], v[:k]
+	}
 	i := strings.LastIndex(v, ":")
 	j := -1
 	if i > 0 {
 		j = strings.LastIndex(v[:i], ":")
 	}
 	if j <= 0 {
-		return areatree.Attachment{}, fmt.Errorf("--attach %q: erwartet DATEI:BEZIEHUNG:MIME", v)
+		return areatree.Attachment{}, fmt.Errorf("--attach %q: erwartet DATEI:BEZIEHUNG:MIME oder DATEI:BEZIEHUNG:MIME:BESCHREIBUNG", v)
 	}
 	file, rel, mime := v[:j], v[j+1:i], v[i+1:]
 	data, err := os.ReadFile(file)
@@ -223,7 +231,7 @@ func parseAttach(v string) (areatree.Attachment, error) {
 		return areatree.Attachment{}, fmt.Errorf("--attach: %w", err)
 	}
 	return areatree.Attachment{
-		Name: filepath.Base(file), MIMEType: mime, Relationship: areatree.Relationship(rel), Data: data,
+		Name: filepath.Base(file), MIMEType: mime, Relationship: areatree.Relationship(rel), Data: data, Description: desc,
 	}, nil
 }
 

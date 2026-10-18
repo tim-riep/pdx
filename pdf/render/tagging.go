@@ -26,6 +26,10 @@ type structElem struct {
 	scope  string
 	// colSpan und rowSpan sind die Spannen einer Tabellenzelle.
 	colSpan, rowSpan int
+	// label ist der zugängliche Name eines Formularfelds, form markiert das
+	// Form-Element eines Widgets.
+	label string
+	form  bool
 	id               string // Vorlagen-ID, für Meldungen
 	ref              pdf.Ref
 	// generic ist ein Block ohne Rolle: P mit eigenem Inhalt, sonst Div.
@@ -45,7 +49,8 @@ type structKid struct {
 	elem  *structElem
 	page  int
 	mcid  int
-	annot *areatree.Link
+	// annot ist eine Annotation: Link oder Widget.
+	annot areatree.Area
 }
 
 // mark legt fest, wie ein Bereich gezeichnet wird.
@@ -77,7 +82,7 @@ type tagger struct {
 	root   *structElem
 	marks  map[areatree.Area]mark
 	pages  [][]*structElem // je Seite das Strukturelement je MCID
-	annots map[*areatree.Link]int
+	annots map[areatree.Area]int
 	// annotRefs sind die Annotationen in der Reihenfolge ihrer Schlüssel ab
 	// der Seitenzahl.
 	annotRefs []pdf.Ref
@@ -92,8 +97,9 @@ type tagger struct {
 	inline map[*structElem]map[string]*structElem
 	// linkText sammelt den Text je Verweis für /Contents der Annotation.
 	linkText map[string]*strings.Builder
-	// artifactLinks sind die Vorlagen-IDs von Verweisen in Artefakten.
-	artifactLinks []string
+	// artifactLinks und artifactWidgets sind die Vorlagen-IDs von
+	// Verweisen und Formularfeldern in Artefakten.
+	artifactLinks, artifactWidgets []string
 	// labels sammelt den Text der Listenmarken je Liste für ListNumbering.
 	labels map[*structElem]string
 	// pdf2 legt die Elemente in den Namespace von PDF 2.0
@@ -117,7 +123,7 @@ func newTagger(doc *areatree.Document) *tagger {
 		doc:      doc,
 		root:     &structElem{typ: "Document", lang: doc.Meta.Lang},
 		marks:    map[areatree.Area]mark{},
-		annots:   map[*areatree.Link]int{},
+		annots:   map[areatree.Area]int{},
 		state:    map[string]tagCtx{},
 		last:     map[string]*structElem{},
 		tables:   map[*structElem]*tableState{},
@@ -170,6 +176,18 @@ func (t *tagger) walk(pi int, a areatree.Area, c tagCtx, top bool) {
 		}
 		le := t.linkElem(c.parent, v.Key, v.Rect, pi)
 		le.kids = append(le.kids, structKid{annot: v, page: pi})
+		t.annots[v] = 0
+	case *areatree.Widget:
+		if c.artifact {
+			t.artifactWidgets = append(t.artifactWidgets, v.ID)
+			return
+		}
+		// Je Widget ein Form-Element mit genau einer Objektreferenz
+		// (ISO 14289-1 7.18.4, ISO 14289-2 8.10.1).
+		se := &structElem{typ: "Form", parent: c.parent, id: v.ID, label: v.Field.Label, form: true}
+		se.located, se.page, se.y, se.x = true, pi, v.Y, v.X
+		c.parent.kids = append(c.parent.kids, structKid{elem: se})
+		se.kids = append(se.kids, structKid{annot: v, page: pi})
 		t.annots[v] = 0
 	}
 }
@@ -595,15 +613,24 @@ func (t *tagger) markOf(a areatree.Area) (mark, bool) {
 // annotation versieht eine Link-Annotation mit ihrem Schlüssel im
 // ParentTree und dem Linktext als /Contents (ISO 14289-1 7.18.1).
 func (t *tagger) annotation(l *areatree.Link, a *pdf.Dict, ref pdf.Ref) {
-	if _, ok := t.annots[l]; !ok {
+	if !t.register(l, a, ref) {
 		return
 	}
-	t.annots[l] = len(t.doc.Pages) + len(t.annotRefs)
-	t.annotRefs = append(t.annotRefs, ref)
-	a.Set("StructParent", pdf.Int(t.annots[l]))
 	if b := t.linkText[l.Key]; b != nil && strings.TrimSpace(b.String()) != "" {
 		a.Set("Contents", pdf.TextString(strings.TrimSpace(b.String())))
 	}
+}
+
+// register vergibt den Schlüssel einer Annotation im ParentTree und setzt
+// StructParent. false, wenn die Annotation nicht im Baum steht.
+func (t *tagger) register(area areatree.Area, a *pdf.Dict, ref pdf.Ref) bool {
+	if _, ok := t.annots[area]; !ok {
+		return false
+	}
+	t.annots[area] = len(t.doc.Pages) + len(t.annotRefs)
+	t.annotRefs = append(t.annotRefs, ref)
+	a.Set("StructParent", pdf.Int(t.annots[area]))
+	return true
 }
 
 // write schreibt den Strukturbaum und hängt ihn an den Katalog
@@ -811,5 +838,19 @@ func listNumbering(labels string, pdf2 bool) string {
 	return "Disc"
 }
 
-// tagWidget bindet ein Widget in den Strukturbaum ein. Folgt mit Schritt 5.
-func (r *renderer) tagWidget(w *areatree.Widget, annot *pdf.Dict, ref pdf.Ref) {}
+// tagWidget bindet ein Widget über sein Form-Element in den Strukturbaum
+// ein. Der zugängliche Name steht als TU am Feld (ISO 14289-1 7.18.1) und
+// als Contents am Widget, das PDF/UA-2 ohne Lbl verlangt (ISO 14289-2
+// 8.10.2.3). Bei Optionsfeldern nennt Contents zusätzlich die Option.
+func (r *renderer) tagWidget(w *areatree.Widget, annot *pdf.Dict, ref pdf.Ref) {
+	if r.tag == nil || !r.tag.register(w, annot, ref) {
+		return
+	}
+	label := w.Field.Label
+	if w.Field.Type == "radio" && w.Field.Export != "" {
+		label = strings.TrimSpace(label + " " + w.Field.Export)
+	}
+	if label != "" {
+		annot.Set("Contents", pdf.TextString(label))
+	}
+}

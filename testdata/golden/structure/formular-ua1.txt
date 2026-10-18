@@ -1,0 +1,54 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  H1 "Antrag"
+  P "Anrede"
+  Div
+    P
+      Form
+        Annotation Widget "Anrede Frau"
+      "Frau"
+    P
+      Form
+        Annotation Widget "Anrede Herr"
+      "Herr"
+    P
+      Form
+        Annotation Widget "Anrede divers"
+      "divers"
+  P "Name"
+  Div
+    Form
+      Annotation Widget "Name"
+  P "E-Mail"
+  Div
+    Form
+      Annotation Widget "E-Mail-Adresse"
+  P "Land"
+  Div
+    Form
+      Annotation Widget "Land"
+  P "Tarif"
+  Div
+    Form
+      Annotation Widget "Tarif"
+  P "Newsletter abonnieren"
+  Div
+    Form
+      Annotation Widget "Newsletter abonnieren"
+  P "Bemerkung"
+  Div
+    Form
+      Annotation Widget "Bemerkung"
+  H2 "Personen"
+  Div
+    Div
+      Form
+        Annotation Widget "Vorname"
+  Div
+    Div
+      Form
+        Annotation Widget "Vorname"
+  P "Unterschrift"
+  Div
+    Form
+      Annotation Widget "Unterschrift"

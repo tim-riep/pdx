@@ -109,6 +109,10 @@ func (t *tagger) check(c profile.Claim) error {
 			if cl := clause("7.5", "8.2.5.26", ""); cl != "" && !hasType(se, "TH") {
 				add(se.id, "Tabelle ohne Kopfzellen (Kopfbereich oder scope an Zellen), %s", cl)
 			}
+		case "Form":
+			if cl := clause("7.18.1", "8.10.2.3", ""); cl != "" && se.form && strings.TrimSpace(se.label) == "" {
+				add(se.id, "Formularfeld ohne Bezeichnung (label), %s verlangt einen zugänglichen Namen", cl)
+			}
 		case "Link":
 			if cl := clause("7.18.5", "", ""); cl != "" && !hasText(se) {
 				add(se.id, "Verweis ohne Text, %s verlangt eine Beschreibung", cl)
@@ -122,6 +126,11 @@ func (t *tagger) check(c profile.Claim) error {
 	}
 	walk(t.root)
 	page = -1
+	if cl := clause("7.18.4", "8.10.1", ""); cl != "" {
+		for _, id := range t.artifactWidgets {
+			add(id, "Formularfeld in Kopf, Fuß oder Artefakt, %s verlangt ein Form-Element im Strukturbaum", cl)
+		}
+	}
 	if cl := clause("7.18.1", "8.2.5.20", ""); cl != "" {
 		for _, l := range t.artifactLinks {
 			add(l, "Verweis in Kopf, Fuß oder Artefakt, %s verlangt, dass jede Annotation im Strukturbaum steht", cl)

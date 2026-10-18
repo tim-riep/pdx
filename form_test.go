@@ -1,12 +1,14 @@
 package pdx
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/internal/testutil"
 	"github.com/tim-riep/pdx/pdf/reader"
+	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
@@ -155,5 +157,60 @@ func TestFormRender(t *testing.T) {
 	// PDF/A-4f ohne Anhang wird abgelehnt.
 	if _, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-4f"}}); err == nil {
 		t.Error("PDF/A-4f ohne Anhang angenommen")
+	}
+}
+
+// TestFormAccessible schreibt das Formular barrierefrei als PDF/A-3a mit
+// PDF/UA-1 und als PDF/A-4f mit PDF/UA-2: je Widget ein Form-Element mit
+// Objektreferenz, Tab-Reihenfolge nach Struktur. Fehlt eine Bezeichnung,
+// nennt die Vorprüfung alle betroffenen Felder.
+func TestFormAccessible(t *testing.T) {
+	tpl, data := loadForm(t)
+	att := areatree.Attachment{Name: "antrag.xml", MIMEType: "text/xml", Relationship: areatree.Data, Description: "Antragsdaten", Data: data}
+	for _, prof := range []string{"pdfa-3a,pdfua-1", "pdfa-4f,pdfua-2"} {
+		t.Run(prof, func(t *testing.T) {
+			res, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: prof, Attachments: []areatree.Attachment{att}}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := structure(t, res.PDF)
+			ua := prof[len(prof)-1:]
+			testutil.Golden(t, "testdata/golden/structure/formular-ua"+ua+".txt", got)
+			if n := strings.Count(string(got), "\n    Form\n") + strings.Count(string(got), "\n      Form\n"); n != 12 {
+				t.Errorf("%d Form-Elemente, erwartet 12", n)
+			}
+			if !strings.Contains(string(got), `Annotation Widget "Anrede Frau"`) {
+				t.Error("Optionsfeld ohne Contents")
+			}
+			testutil.Conform(t, "formular-ua"+ua+".pdf", res.PDF, prof)
+		})
+	}
+
+	// Ohne Bezeichnungen meldet die Vorprüfung jedes Feld.
+	src := string(template.Write(tpl.Package.Template))
+	for _, l := range []string{` label="Name"`, ` label="E-Mail-Adresse"`, ` label="Unterschrift"`} {
+		src = strings.Replace(src, l, "", 1)
+	}
+	parsed, err := template.Parse([]byte(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	q, err := pkg.New(parsed, tpl.Package.Files)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = RenderTemplate(q, data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3a,pdfua-1"}})
+	var es template.Errors
+	if !errors.As(err, &es) {
+		t.Fatalf("keine Befunde: %v", err)
+	}
+	ids := map[string]bool{}
+	for _, e := range es {
+		if strings.Contains(e.Msg, "Formularfeld ohne Bezeichnung") {
+			ids[e.ID] = true
+		}
+	}
+	if !ids["name"] || !ids["email"] || !ids["unterschrift"] || len(ids) != 3 {
+		t.Errorf("Befunde %v", es)
 	}
 }
