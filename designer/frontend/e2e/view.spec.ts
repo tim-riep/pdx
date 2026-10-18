@@ -27,7 +27,9 @@ test("Lineale, Einheit pt und Seitenübersicht", async ({ page }) => {
   await selectInTree(page, ["seiten", "erste", "erste-kopf", "adressfenster"]);
   const x = page.getByTestId("inspector").locator('[data-prop="x"] input');
   await expect(x).toHaveValue("20mm");
-  await page.locator("body").press("ArrowRight");
+  // Pfeile in der Hierarchie navigieren, darum den Fokus dort lösen.
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.keyboard.press("ArrowRight");
   await expect(x).toHaveValue("57.5pt");
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(x).toHaveValue("20mm");

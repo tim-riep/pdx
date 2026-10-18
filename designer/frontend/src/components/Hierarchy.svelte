@@ -29,6 +29,50 @@
   });
 
   const kids = (ref: string) => (node(ref)?.children ?? []).filter((c) => c.ref).map((c) => c.ref!);
+
+  // Sichtbare Zeilen in Reihenfolge, für die Tastatur.
+  function visible(): string[] {
+    const out: string[] = [];
+    const walk = (r: string) => {
+      out.push(r);
+      if (open[r]) kids(r).forEach(walk);
+    };
+    if (tpl.snapshot) walk(tpl.snapshot.root);
+    return out;
+  }
+
+  function focusRow(ref: string) {
+    select(ref, null, true);
+    queueMicrotask(() => (document.querySelector(`.hierarchy [data-row="${CSS.escape(ref)}"] .name`) as HTMLElement | null)?.focus());
+  }
+
+  // Pfeile wählen, Rechts klappt auf, Links zu oder zum Elternelement,
+  // Umschalt+F10 oder die Kontextmenütaste öffnen das Menü.
+  function onkeydown(e: KeyboardEvent) {
+    if (e.altKey || e.metaKey || e.ctrlKey) return;
+    const rows = visible();
+    const cur = selection.ref;
+    const i = rows.indexOf(cur);
+    const n = node(cur);
+    let handled = true;
+    if (e.key === "ArrowDown") focusRow(rows[Math.min(rows.length - 1, i + 1)] ?? rows[0]);
+    else if (e.key === "ArrowUp") focusRow(rows[Math.max(0, i - 1)] ?? rows[0]);
+    else if (e.key === "ArrowRight" && n) {
+      const c = kids(cur);
+      if (c.length && !open[cur]) open[cur] = true;
+      else if (c.length) focusRow(c[0]);
+    } else if (e.key === "ArrowLeft" && n) {
+      if (open[cur] && kids(cur).length) open[cur] = false;
+      else if (n.parent) focusRow(n.parent);
+    } else if ((e.key === "F10" && e.shiftKey) || e.key === "ContextMenu") {
+      const el = document.querySelector(`.hierarchy [data-row="${CSS.escape(cur)}"]`)?.getBoundingClientRect();
+      if (cur && el) openElementMenu(cur, el.left + 24, el.bottom);
+    } else handled = false;
+    if (handled) {
+      e.preventDefault();
+      e.stopPropagation(); // nicht als Verschieben im Canvas
+    }
+  }
 </script>
 
 {#snippet tree(ref: string, depth: number)}
@@ -36,7 +80,7 @@
   {#if n}
     {@const children = kids(ref)}
     <div class="row" class:selected={selection.ref === ref} class:hover={selection.hover === ref}
-      style="padding-left: {depth * 12 + 4}px" role="treeitem" tabindex="-1" aria-selected={selection.ref === ref}
+      style="padding-left: {depth * 12 + 4}px" role="treeitem" tabindex="-1" aria-selected={selection.ref === ref} data-row={ref}
       aria-expanded={children.length ? !!open[ref] : undefined}
       onmouseenter={() => (selection.hover = ref)} onmouseleave={() => (selection.hover = "")} oncontextmenu={(e) => menuAt(e, ref)}>
       {#if children.length}
@@ -56,7 +100,7 @@
   {/if}
 {/snippet}
 
-<div class="hierarchy" role="tree" aria-label={t("panel.hierarchy")} data-testid="hierarchy">
+<div class="hierarchy" role="tree" tabindex="-1" aria-label={t("panel.hierarchy")} data-testid="hierarchy" {onkeydown}>
   {#if tpl.snapshot}
     {@render tree(tpl.snapshot.root, 0)}
   {/if}
