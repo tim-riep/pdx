@@ -67,9 +67,12 @@ func (f *Face) Shape(text string, size areatree.Length, opts ShapeOptions) (glyp
 	if len(opts.Features) > 0 {
 		feats = ot.ParseFeatures(strings.Join(opts.Features, ","))
 	}
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.shaper.Shape(buf, feats)
+	sh, err := f.shaper()
+	if err != nil {
+		return nil, fmt.Errorf("Shaper für %s: %w", f.PostScript, err)
+	}
+	sh.Shape(buf, feats)
+	f.shapers.Put(sh)
 
 	// Clustergrenzen bestimmen, damit jede Glyphe ihren Text erhält.
 	starts := make([]int, 0, len(buf.Info))

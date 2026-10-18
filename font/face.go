@@ -19,12 +19,14 @@ import (
 
 // Face ist eine geladene Schrift.
 type Face struct {
-	data   []byte
-	index  int
-	font   *ot.Font
-	face   *ot.Face
-	shaper *ot.Shaper
-	mu     sync.Mutex // der Shaper ist nicht nebenläufig nutzbar
+	data  []byte
+	index int
+	font  *ot.Font
+	face  *ot.Face
+	// shapers hält Shaper zur Wiederverwendung. Ein Shaper ist nicht
+	// nebenläufig nutzbar, mit einem Pool formen parallele Läufe dieselbe
+	// Schrift gleichzeitig statt nacheinander.
+	shapers sync.Pool
 
 	key  string
 	upem float64
@@ -85,13 +87,12 @@ func Load(data []byte, index int) (f *Face, err error) {
 	}
 	sum := sha256.Sum256(data)
 	f = &Face{
-		data:   data,
-		index:  index,
-		font:   fnt,
-		face:   face,
-		shaper: shaper,
-		key:    hex.EncodeToString(sum[:8]),
-		upem:   float64(face.Upem()),
+		data:  data,
+		index: index,
+		font:  fnt,
+		face:  face,
+		key:   hex.EncodeToString(sum[:8]),
+		upem:  float64(face.Upem()),
 
 		PostScript:  face.PostscriptName(),
 		Family:      face.FamilyName(),
@@ -106,6 +107,7 @@ func Load(data []byte, index int) (f *Face, err error) {
 		XHeight:     int(face.XHeight()),
 		ItalicAngle: float64(face.ItalicAngle()) / 65536,
 	}
+	f.shapers.Put(shaper)
 	x0, y0, x1, y1 := face.BBox()
 	f.BBox = [4]int{int(x0), int(y0), int(x1), int(y1)}
 	if f.Weight == 0 {
@@ -172,4 +174,21 @@ func (f *Face) GlyphFor(r rune) (gid uint16, ok bool) {
 func (f *Face) HasRune(r rune) bool {
 	_, ok := f.GlyphFor(r)
 	return ok
+}
+
+// shaper liefert einen freien Shaper. Ein neuer bekommt eine eigene
+// Kopie der geparsten Schrift, damit Shaper keinen Zustand teilen.
+func (f *Face) shaper() (*ot.Shaper, error) {
+	if s, ok := f.shapers.Get().(*ot.Shaper); ok {
+		return s, nil
+	}
+	fnt, err := ot.ParseFont(f.data, f.index)
+	if err != nil {
+		return nil, err
+	}
+	face, err := ot.NewFace(fnt)
+	if err != nil {
+		return nil, err
+	}
+	return ot.NewShaperFromFace(face)
 }

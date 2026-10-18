@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -319,4 +320,61 @@ func TestTemplateProfile(t *testing.T) {
 	if !bytes.Contains(res.PDF, []byte("<pdfaid:conformance>U</pdfaid:conformance>")) {
 		t.Fatal("Profil der Vorlage nicht angewandt")
 	}
+}
+
+// Parallele Läufe mit gemeinsamer Vorlage und Schrift-Registry ergeben
+// dieselben Bytes wie ein einzelner Lauf (Render-Dienst, Shaper-Pool).
+func TestParallelRenderDeterministic(t *testing.T) {
+	p, data := loadMuster(t)
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	reg := font.NewRegistry()
+	opts := TemplateOptions{Options: Options{Profile: "pdfa-3b", CreationDate: templateDate, Fonts: reg}}
+	want, err := tpl.Render(data, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wg sync.WaitGroup
+	errs := make(chan string, 16)
+	for range 8 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for range 2 {
+				res, err := tpl.Render(data, opts)
+				if err != nil {
+					errs <- err.Error()
+					return
+				}
+				if !bytes.Equal(res.PDF, want.PDF) {
+					errs <- "andere Bytes als im einzelnen Lauf"
+					return
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	close(errs)
+	for e := range errs {
+		t.Error(e)
+	}
+}
+
+func BenchmarkParallelRender(b *testing.B) {
+	p, data := loadMuster(b)
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		b.Fatal(err)
+	}
+	opts := TemplateOptions{Options: Options{Profile: "pdfa-3b", CreationDate: templateDate, Fonts: font.NewRegistry()}}
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			if _, err := tpl.Render(data, opts); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
 }
