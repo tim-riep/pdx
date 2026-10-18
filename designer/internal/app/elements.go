@@ -21,6 +21,13 @@ const (
 	KindBarcode    = "barcode"
 	KindPageNumber = "pageNumber"
 	KindTable      = "table"
+	// Formularfelder.
+	KindTextField      = "textField"
+	KindCheckBox       = "checkBox"
+	KindRadioGroup     = "radioGroup"
+	KindComboBox       = "comboBox"
+	KindListBox        = "listBox"
+	KindSignatureField = "signatureField"
 )
 
 // Insert beschreibt das Einfügen eines Bausteins.
@@ -86,7 +93,12 @@ func (s *TemplateService) InsertElement(in Insert) (Result, error) {
 var elementLabels = map[string]string{
 	KindText: "Text", KindPositioned: "Teilformular", KindFlowed: "Teilformular", KindLine: "Linie",
 	KindRect: "Rechteck", KindImage: "Bild", KindBarcode: "Barcode", KindPageNumber: "Seitenzahl", KindTable: "Tabelle",
+	KindTextField: "Textfeld", KindCheckBox: "Kontrollkästchen", KindRadioGroup: "Optionsfelder",
+	KindComboBox: "Kombinationsfeld", KindListBox: "Auswahlliste", KindSignatureField: "Signaturfeld",
 }
+
+// fieldBorder ist der Rahmen neuer Formularfelder.
+const fieldBorder = "0.5pt solid #555555"
 
 // element baut den Baustein mit sinnvollen Vorgaben.
 func (b *builder) element(in Insert, parent *template.Node) (*template.Node, error) {
@@ -142,6 +154,32 @@ func (b *builder) element(in Insert, parent *template.Node) (*template.Node, err
 		rows.InsertChild(-1, row)
 		el.InsertChild(-1, head)
 		el.InsertChild(-1, rows)
+	case KindTextField:
+		el = template.NewElement("textField", attr("id", b.id("textfeld")), attr("bind", "."), attr("label", "Textfeld"),
+			attr("w", "60mm"), attr("h", "7mm"), attr("border", fieldBorder))
+	case KindCheckBox:
+		el = template.NewElement("checkBox", attr("id", b.id("kontrollkaestchen")), attr("bind", "."), attr("label", "Kontrollkästchen"),
+			attr("w", "5mm"), attr("h", "5mm"), attr("border", fieldBorder))
+	case KindRadioGroup, KindComboBox, KindListBox:
+		name := map[string][2]string{KindRadioGroup: {"radioGroup", "optionen"}, KindComboBox: {"comboBox", "kombifeld"}, KindListBox: {"listBox", "liste"}}[in.Kind]
+		id := b.id(name[1])
+		el = template.NewElement(name[0], attr("id", id), attr("bind", "."), attr("label", elementLabels[in.Kind]))
+		switch in.Kind {
+		case KindComboBox:
+			el.SetAttr("w", "40mm")
+			el.SetAttr("h", "7mm")
+			el.SetAttr("border", fieldBorder)
+		case KindListBox:
+			el.SetAttr("w", "40mm")
+			el.SetAttr("h", "16mm")
+			el.SetAttr("border", fieldBorder)
+		}
+		for i, v := range []string{"A", "B"} {
+			el.InsertChild(-1, template.NewElement("option", attr("id", b.id(fmt.Sprintf("%s-o%d", id, i+1))), attr("value", v), attr("label", "Option "+v)))
+		}
+	case KindSignatureField:
+		el = template.NewElement("signatureField", attr("id", b.id("signatur")), attr("label", "Unterschrift"),
+			attr("w", "60mm"), attr("h", "15mm"), attr("border", fieldBorder))
 	default:
 		return nil, fmt.Errorf("Baustein %q unbekannt", in.Kind)
 	}

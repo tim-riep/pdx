@@ -91,6 +91,7 @@
   <div class="bar">
     <button disabled={!project.open || access.loading} onclick={refreshAccess}>{t("access.refresh")}</button>
     <label class="toggle"><input type="checkbox" bind:checked={access.showOrder} data-testid="access-order" /> {t("access.order")}</label>
+    <label class="toggle"><input type="checkbox" bind:checked={access.showTabs} data-testid="access-tabs" /> {t("access.tabs")}</label>
     {#if access.loading}<span class="spin" aria-hidden="true"></span>{/if}
     {#if a}
       <span class="muted">{a.assumed ? t("access.assumed", { profile: profileShort(a.profile) }) : t("access.profile", { profile: profileShort(a.profile) })}</span>

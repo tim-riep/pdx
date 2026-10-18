@@ -9,11 +9,19 @@ export interface TextItem { k: "t"; id?: string; x: number; y: number; f: string
 export interface LineItem { k: "l"; id?: string; p: [number, number, number, number]; w: number; c: string; st?: string }
 export interface PathItem { k: "p"; id?: string; c: string; r: Rect[] }
 export interface ImageItem { k: "i"; id?: string; r: Rect; i: string }
-export type DrawItem = RectItem | TextItem | LineItem | PathItem | ImageItem;
+export interface WidgetItem { k: "w"; id?: string; r: Rect; t: "checkbox" | "radio"; on: boolean; c: string }
+export type DrawItem = RectItem | TextItem | LineItem | PathItem | ImageItem | WidgetItem;
 
-export interface Area { id: string; r: Rect; k: "block" | "inline" | "text" | "image" | "code" }
+export interface Area { id: string; r: Rect; k: "block" | "inline" | "text" | "image" | "code" | "field" }
 
-export interface Page { n: number; w: number; h: number; draw: DrawItem[]; els: Area[] }
+// FieldEl ist ein Formularfeld für die ausfüllbare Vorschau.
+export interface FieldEl {
+  id: string; name: string; r: Rect; type: "text" | "checkbox" | "radio" | "list" | "combo" | "signature";
+  value: string; export?: string; on?: string; label?: string; multiline?: boolean; maxLength?: number;
+  readOnly?: boolean; options?: { value: string; label: string }[];
+}
+
+export interface Page { n: number; w: number; h: number; draw: DrawItem[]; els: Area[]; fields?: FieldEl[] }
 
 export interface PageRef { n: number; w: number; h: number; hash: string }
 export interface FontRef { key: string; family: string }

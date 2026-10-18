@@ -16,7 +16,8 @@
   import { TemplateAPI, message, type ViewNode } from "../../lib/api";
   import { ui } from "../../lib/project.svelte";
   import { t } from "../../lib/i18n";
-  import { access, steps } from "../../lib/access.svelte";
+  import { access, steps, tabStops } from "../../lib/access.svelte";
+  import { fill, fieldKey } from "../../lib/fill.svelte";
 
   let { page, hash, zoom, grid, visible, bitmap, image }: {
     page: Page; hash: string; zoom: number; grid: boolean; visible: boolean;
@@ -63,6 +64,26 @@
     });
     return out;
   });
+
+  // Tab-Reihenfolge: Nummer je Formularfeld, an jedem seiner Bereiche.
+  const tabs = $derived.by(() => {
+    if (!access.showTabs) return [];
+    const order = tabStops(access.data);
+    return (page.fields ?? []).flatMap((f) => {
+      const i = order.indexOf(f.id);
+      return i < 0 ? [] : [{ n: i + 1, id: f.id, r: f.r }];
+    });
+  });
+
+  // Ausfüllbare Vorschau: Eingabefelder über den Widgets.
+  const fillable = $derived(render.view === "preview" ? (page.fields ?? []).filter((f) => f.type !== "signature") : []);
+  const fontPx = $derived(Math.max(9, 10 * zoom));
+  function value(f: NonNullable<typeof page.fields>[number], i: number): string {
+    return fill.values[fieldKey(f.name, page.n, i, f.type === "radio")] ?? f.value;
+  }
+  function setValue(f: NonNullable<typeof page.fields>[number], i: number, v: string) {
+    fill.values[fieldKey(f.name, page.n, i, f.type === "radio")] = v;
+  }
 
   // Rahmen der Teilformulare im Entwurf, fließende mit Pfeil für die Richtung.
   const frames = $derived.by(() => {
@@ -338,6 +359,31 @@
       <ContentEditor ref={editing.ref} autofocus ondone={() => (editing = null)} />
     </div>
   {/if}
+  {#if fillable.length}
+    <div class="fill" data-testid="fill">
+      {#each fillable as f, i (f.name + i)}
+        {@const st = `${box(f.r)};font-size:${fontPx}px`}
+        {#if f.type === "text" && f.multiline}
+          <textarea style={st} aria-label={f.label || f.name} readonly={f.readOnly} maxlength={f.maxLength || undefined}
+            value={value(f, i)} oninput={(e) => setValue(f, i, e.currentTarget.value)} data-field={f.name}></textarea>
+        {:else if f.type === "text"}
+          <input style={st} aria-label={f.label || f.name} readonly={f.readOnly} maxlength={f.maxLength || undefined}
+            value={value(f, i)} oninput={(e) => setValue(f, i, e.currentTarget.value)} data-field={f.name} />
+        {:else if f.type === "checkbox"}
+          <input type="checkbox" style={st} aria-label={f.label || f.name} disabled={f.readOnly}
+            checked={value(f, i) === f.on} onchange={(e) => setValue(f, i, e.currentTarget.checked ? (f.on ?? "true") : "")} data-field={f.name} />
+        {:else if f.type === "radio"}
+          <input type="radio" style={st} name="{f.name}@{page.n}" aria-label="{f.label} {f.export}" disabled={f.readOnly}
+            checked={value(f, i) === f.export} onchange={() => setValue(f, i, f.export ?? "")} data-field={f.name} />
+        {:else}
+          <select style={st} aria-label={f.label || f.name} disabled={f.readOnly} size={f.type === "list" ? Math.max(2, f.options?.length ?? 2) : undefined}
+            value={value(f, i)} onchange={(e) => setValue(f, i, e.currentTarget.value)} data-field={f.name}>
+            {#each f.options ?? [] as o (o.value)}<option value={o.value}>{o.label}</option>{/each}
+          </select>
+        {/if}
+      {/each}
+    </div>
+  {/if}
   <div class="overlay">
     {#each frames as f}
       <div class="box frame" class:flowed={f.flowed} style={box(f.a.r)}>{#if f.flowed}<span class="flow">↓</span>{/if}</div>
@@ -361,6 +407,9 @@
         {/each}
       {/if}
     {/if}
+    {#each tabs as b, i (b.id + i)}
+      <span class="order tab" data-tab={b.n} data-ref={b.id} style="left:{b.r[0] * zoom}px;top:{b.r[1] * zoom}px">{b.n}</span>
+    {/each}
     {#each badges as b (b.id)}
       <span class="order" data-order={b.n} data-ref={b.id} style="left:{b.r[0] * zoom}px;top:{b.r[1] * zoom}px">{b.n}</span>
     {/each}
@@ -457,6 +506,35 @@
     font: 600 10px/16px var(--font-ui, sans-serif);
     text-align: center;
     box-shadow: 0 0 0 1px #fff;
+  }
+  .order.tab {
+    background: var(--warning, #b7791f);
+    transform: translateX(calc(-100% - 3px)) translateY(-40%);
+  }
+  .fill {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .fill > * {
+    position: absolute;
+    box-sizing: border-box;
+    margin: 0;
+    pointer-events: auto;
+    background: #ffffff;
+    border: 1px solid var(--accent);
+    color: #000;
+    font-family: Helvetica, Arial, sans-serif;
+    padding: 1px 3px;
+  }
+  .fill textarea {
+    resize: none;
+  }
+  .fill input[type="checkbox"],
+  .fill input[type="radio"] {
+    padding: 0;
+    accent-color: var(--accent);
   }
   .handle {
     position: absolute;

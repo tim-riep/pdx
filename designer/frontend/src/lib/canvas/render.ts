@@ -46,6 +46,33 @@ export function drawPage(ctx: CanvasRenderingContext2D, page: Page, scale: numbe
         ctx.fillStyle = it.c;
         for (const [x, y, w, h] of it.r) ctx.fillRect(x, y, w, h);
         break;
+      case "w": {
+        const [x, y, w, h] = it.r;
+        const s = Math.min(w, h);
+        if (it.t === "radio") {
+          ctx.strokeStyle = "#666666";
+          ctx.lineWidth = 0.75;
+          ctx.beginPath();
+          ctx.arc(x + w / 2, y + h / 2, (s - 0.75) / 2, 0, 2 * Math.PI);
+          ctx.stroke();
+          if (it.on) {
+            ctx.fillStyle = it.c;
+            ctx.beginPath();
+            ctx.arc(x + w / 2, y + h / 2, s * 0.25, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        } else if (it.on) {
+          // Haken wie im Erscheinungsbild des PDF.
+          ctx.strokeStyle = it.c;
+          ctx.lineWidth = s * 0.12;
+          ctx.beginPath();
+          ctx.moveTo(x + w * 0.2, y + h * 0.48);
+          ctx.lineTo(x + w * 0.42, y + h * 0.72);
+          ctx.lineTo(x + w * 0.8, y + h * 0.22);
+          ctx.stroke();
+        }
+        break;
+      }
       case "i": {
         const img = images(it.i);
         const [x, y, w, h] = it.r;

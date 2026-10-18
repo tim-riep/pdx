@@ -19,6 +19,41 @@ type Page struct {
 	// Treffertest, Auswahl und Hilfslinien. Wiederholte Elemente kommen
 	// mehrfach vor.
 	Els []El `json:"els"`
+	// Fields sind die Formularfelder der Seite für die ausfüllbare Vorschau.
+	Fields []FieldEl `json:"fields"`
+}
+
+// FieldEl ist ein Formularfeld für die Vorschau.
+type FieldEl struct {
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	Rect      [4]float64 `json:"r"`
+	Type      string     `json:"type"`
+	Value     string     `json:"value"`
+	Export    string     `json:"export,omitempty"`
+	On        string     `json:"on,omitempty"`
+	Label     string     `json:"label,omitempty"`
+	Multiline bool       `json:"multiline,omitempty"`
+	MaxLength int        `json:"maxLength,omitempty"`
+	ReadOnly  bool       `json:"readOnly,omitempty"`
+	Options   []Option   `json:"options,omitempty"`
+}
+
+// Option ist ein Auswahlwert eines Felds.
+type Option struct {
+	Value string `json:"value"`
+	Label string `json:"label"`
+}
+
+// widgetItem zeichnet Kontrollkästchen und Optionsfelder: T ist checkbox
+// oder radio, On der Zustand.
+type widgetItem struct {
+	K  string     `json:"k"`
+	ID string     `json:"id,omitempty"`
+	R  [4]float64 `json:"r"`
+	T  string     `json:"t"`
+	On bool       `json:"on"`
+	C  string     `json:"c"`
 }
 
 // El ist ein Bereich eines Vorlagenelements.
@@ -103,7 +138,7 @@ func styleName(s areatree.BorderStyle) string {
 // convert übersetzt eine Seite. fontKey und imageKey liefern die Schlüssel
 // der Schriften und Bilder des Dokuments.
 func convert(pg *areatree.Page, fontKey func(areatree.FontID) string, imageKey func(areatree.ImageID) string) Page {
-	out := Page{N: pg.Number, W: pt(pg.Width), H: pt(pg.Height), Draw: []any{}, Els: []El{}}
+	out := Page{N: pg.Number, W: pt(pg.Width), H: pt(pg.Height), Draw: []any{}, Els: []El{}, Fields: []FieldEl{}}
 	seen := map[El]bool{}
 	el := func(id, kind string, r [4]float64) {
 		e := El{ID: id, Rect: r, Kind: kind}
@@ -186,6 +221,51 @@ func convert(pg *areatree.Page, fontKey func(areatree.FontID) string, imageKey f
 				}
 				out.Draw = append(out.Draw, it)
 				el(pid, "code", rect(a.Rect))
+			case *areatree.Widget:
+				f := a.Field
+				r := rect(a.Rect)
+				it := rectItem{K: "r", ID: a.ID, R: r}
+				if f.Background != nil {
+					it.Bg = color(*f.Background)
+				}
+				b := f.Border
+				if !b.Visible() && (f.Type == "checkbox" || f.Type == "radio") {
+					b = areatree.Border{Width: 750, Style: areatree.Solid, Color: areatree.GrayColor(0.4)}
+				}
+				if b.Visible() && f.Type != "radio" {
+					// Der Canvas zeichnet Rahmen außerhalb des Rechtecks, das
+					// Erscheinungsbild im PDF innerhalb.
+					bw := pt(b.Width)
+					it.R = [4]float64{r[0] + bw, r[1] + bw, r[2] - 2*bw, r[3] - 2*bw}
+					s := []any{bw, color(b.Color), styleName(b.Style)}
+					it.B = []any{s, s, s, s}
+				}
+				if it.Bg != "" || it.B != nil {
+					out.Draw = append(out.Draw, it)
+				}
+				switch f.Type {
+				case "checkbox":
+					out.Draw = append(out.Draw, widgetItem{K: "w", ID: a.ID, R: r, T: "checkbox", On: f.Value == f.OnValue, C: color(f.Color)})
+				case "radio":
+					out.Draw = append(out.Draw, widgetItem{K: "w", ID: a.ID, R: r, T: "radio", On: f.Value == f.Export, C: color(f.Color)})
+				}
+				if a.Selected != nil {
+					out.Draw = append(out.Draw, rectItem{K: "r", ID: a.ID, R: rect(*a.Selected), Bg: "#99bfe6"})
+				}
+				visit(runsOf(a), a.ID)
+				el(a.ID, "field", r)
+				fe := FieldEl{ID: a.ID, Name: f.Name, Rect: r, Type: f.Type, Value: f.Value, Label: f.Label,
+					Multiline: f.Multiline, MaxLength: f.MaxLength, ReadOnly: f.ReadOnly}
+				switch f.Type {
+				case "radio":
+					fe.Export = f.Export
+				case "checkbox":
+					fe.On = f.OnValue
+				}
+				for _, o := range f.Options {
+					fe.Options = append(fe.Options, Option{Value: o.Value, Label: o.Label})
+				}
+				out.Fields = append(out.Fields, fe)
 			case *areatree.Image:
 				iid := id
 				if a.ID != "" {
@@ -197,5 +277,14 @@ func convert(pg *areatree.Page, fontKey func(areatree.FontID) string, imageKey f
 		}
 	}
 	visit(pg.Areas, "")
+	return out
+}
+
+// runsOf liefert die Glyph-Runs eines Widgets als Bereiche.
+func runsOf(w *areatree.Widget) []areatree.Area {
+	out := make([]areatree.Area, len(w.Runs))
+	for i, r := range w.Runs {
+		out[i] = r
+	}
 	return out
 }

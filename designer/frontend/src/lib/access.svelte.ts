@@ -4,7 +4,7 @@
 
 import { EVENT, RenderAPI, message, on, type Access, type ProjectState } from "./api";
 
-export const access = $state({ data: null as Access | null, loading: false, error: "", showOrder: false });
+export const access = $state({ data: null as Access | null, loading: false, error: "", showOrder: false, showTabs: false });
 
 let seq = 0;
 
@@ -43,6 +43,19 @@ export function steps(a: Access | null): string[] {
       seen.add(n.id);
       out.push(n.id);
     }
+    n.kids.forEach((k) => walk(k));
+  };
+  walk(a?.tree ?? null);
+  return out;
+}
+
+// tabStops liefert die Vorlagen-IDs der Formularfelder in der Reihenfolge
+// des Strukturbaums. Mit /Tabs /S ist das die Tab-Reihenfolge.
+export function tabStops(a: Access | null): string[] {
+  const out: string[] = [];
+  const walk = (n: Access["tree"]) => {
+    if (!n) return;
+    if (n.type === "Form" && n.id && !out.includes(n.id)) out.push(n.id);
     n.kids.forEach((k) => walk(k));
   };
   walk(a?.tree ?? null);

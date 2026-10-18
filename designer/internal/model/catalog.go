@@ -13,8 +13,8 @@ import (
 type Property struct {
 	Name string `json:"name"`
 	// Group ordnet die Eigenschaft im Inspektor ein: general, access
-	// (Barrierefreiheit), position, text, border, spacing, breaks, binding
-	// oder other.
+	// (Barrierefreiheit), form (Formularfeld), position, text, border,
+	// spacing, breaks, binding oder other.
 	Group string `json:"group"`
 	// Kind wählt den Editor: id, ref, length, lengths, color, font (Verweis
 	// auf ein Schrift-Token), xpath, enum, bool, number, profile
@@ -193,14 +193,16 @@ func property(a *xsd.AttributeUse) Property {
 	return p
 }
 
-var groupOrder = map[string]int{"general": 0, "binding": 1, "access": 2, "position": 3, "text": 4, "spacing": 5, "border": 6, "breaks": 7, "other": 8}
+var groupOrder = map[string]int{"general": 0, "binding": 1, "form": 2, "access": 3, "position": 4, "text": 5, "spacing": 6, "border": 7, "breaks": 8, "other": 9}
 
 var groups = map[string]string{
 	"id": "general", "style": "general", "presence": "general", "title": "general",
 	"parent": "general", "use": "general", "type": "general", "name": "general",
 	"profile": "general", "afRelationship": "general",
 	"role": "access", "alt": "access", "altBind": "access", "lang": "access", "readingOrder": "access",
-	"artifact": "access", "scope": "access",
+	"artifact": "access", "scope": "access", "label": "access",
+	"readOnly": "form", "required": "form", "multiline": "form", "maxLength": "form",
+	"onValue": "form", "offValue": "form", "editable": "form",
 	"bind": "binding", "format": "binding", "default": "binding", "repeat": "binding", "by": "binding",
 	"of": "binding", "value": "binding", "ref": "binding", "src": "binding", "source": "binding",
 	"dataRoot": "binding", "schema": "binding", "pattern": "binding", "href": "binding",

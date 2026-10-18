@@ -47,7 +47,7 @@
   // ihr Panel offen oder die Lesereihenfolge eingeblendet ist.
   $effect(() => {
     const rev = project.rev;
-    if (!project.open || (bottomTab !== "access" && !access.showOrder)) return;
+    if (!project.open || (bottomTab !== "access" && !access.showOrder && !access.showTabs)) return;
     const timer = setTimeout(refreshAccess, rev ? 300 : 0);
     return () => clearTimeout(timer);
   });

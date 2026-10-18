@@ -8,13 +8,16 @@ import { t } from "./i18n";
 
 export const ELEMENT_MIME = "application/x-pdx-element";
 
-export const kinds = ["text", "positioned", "flowed", "line", "rect", "image", "barcode", "pageNumber", "table"] as const;
+export const kinds = ["text", "positioned", "flowed", "line", "rect", "image", "barcode", "pageNumber", "table",
+  "textField", "checkBox", "radioGroup", "comboBox", "listBox", "signatureField"] as const;
 export type Kind = (typeof kinds)[number];
 
 // elementName ist der Elementname eines Bausteins in der Vorlage.
 export const elementName: Record<Kind, string> = {
   text: "text", positioned: "subform", flowed: "subform", line: "line", rect: "rect",
   image: "image", barcode: "barcode", pageNumber: "pageNumber", table: "table",
+  textField: "textField", checkBox: "checkBox", radioGroup: "radioGroup", comboBox: "comboBox",
+  listBox: "listBox", signatureField: "signatureField",
 };
 
 // acceptsContent meldet, ob ein Element Inhalt wie Felder aufnimmt.

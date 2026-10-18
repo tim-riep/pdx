@@ -267,8 +267,8 @@ export class Property {
 
     /**
      * Group ordnet die Eigenschaft im Inspektor ein: general, access
-     * (Barrierefreiheit), position, text, border, spacing, breaks, binding
-     * oder other.
+     * (Barrierefreiheit), form (Formularfeld), position, text, border,
+     * spacing, breaks, binding oder other.
      */
     "group": string;
 
