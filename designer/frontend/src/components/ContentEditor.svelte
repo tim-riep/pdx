@@ -26,7 +26,16 @@
   let fields: DataField[] = $state.raw([]);
   let query = $state<string | null>(null);
   let index = $state(0);
-  const matches = $derived(query === null ? [] : fields.filter((f) => f.path.toLowerCase().includes(query!.toLowerCase())).slice(0, 12));
+  // Genaue Treffer zuerst, dann Treffer am Anfang, dann der Rest.
+  const matches = $derived.by(() => {
+    if (query === null) return [];
+    const q = query.toLowerCase();
+    const rank = (p: string) => (p === q ? 0 : p.startsWith(q) ? 1 : 2);
+    return fields
+      .filter((f) => f.path.toLowerCase().includes(q))
+      .sort((a, b) => rank(a.path.toLowerCase()) - rank(b.path.toLowerCase()))
+      .slice(0, 12);
+  });
 
   let focused = false;
   let dirty = false;
