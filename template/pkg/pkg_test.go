@@ -68,7 +68,7 @@ func zipOf(files map[string]string) []byte {
 	return b.Bytes()
 }
 
-const minimal = `<template xmlns="https://pdx.example/ns/template/0" id="t" lang="de" version="0"><pageSet id="ps"><pageMaster id="pm"/></pageSet><body id="b"/></template>`
+const minimal = `<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="t" lang="de" version="1"><pageSet id="ps"><pageMaster id="pm"/></pageSet><body id="b"/></template>`
 
 func TestRejects(t *testing.T) {
 	cases := map[string]map[string]string{

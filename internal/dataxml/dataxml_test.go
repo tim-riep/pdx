@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-const ns = "https://pdx.example/ns/antrag/1"
+const ns = "https://github.com/tim-riep/pdx/ns/examples/antrag"
 
 func TestRoundTrip(t *testing.T) {
 	src := `<?xml version="1.0" encoding="UTF-8"?>

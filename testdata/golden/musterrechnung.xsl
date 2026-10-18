@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:inv="https://pdx.example/ns/invoice/1" exclude-result-prefixes="xs inv">
+<xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:inv="https://github.com/tim-riep/pdx/ns/examples/invoice" exclude-result-prefixes="xs inv">
   <!-- Erzeugt von pdx aus der Vorlage musterrechnung. Nicht von Hand bearbeiten. -->
   <xsl:output method="xml" encoding="UTF-8" indent="no"/>
   <xsl:decimal-format name="fmt-de" decimal-separator="," grouping-separator="."/>

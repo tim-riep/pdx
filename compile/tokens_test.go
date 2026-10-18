@@ -90,7 +90,7 @@ func TestTokenAttrsFromSchema(t *testing.T) {
 
 func TestTokensSchema(t *testing.T) {
 	// Verweise sind nur dort gültig, wo das XSD sie zulässt.
-	if _, err := template.Parse([]byte(`<template xmlns="https://pdx.example/ns/template/0" id="t" lang="de-DE" version="0"><pageSet id="ps"><pageMaster id="pm"/></pageSet><body id="b"><text id="x" textAlign="$a">a</text></body></template>`)); err == nil {
+	if _, err := template.Parse([]byte(`<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="t" lang="de-DE" version="1"><pageSet id="ps"><pageMaster id="pm"/></pageSet><body id="b"><text id="x" textAlign="$a">a</text></body></template>`)); err == nil {
 		t.Fatal("Verweis in textAlign angenommen")
 	}
 }

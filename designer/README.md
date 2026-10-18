@@ -1,6 +1,6 @@
 # pdx Designer
 
-Desktop-Anwendung, mit der man Dokumente gegen ein Daten-XSD gestaltet, ohne XML zu schreiben. Grundlage ist die Engine von pdx (Ordner darüber). Gespeichert wird ausschließlich im Vorlagenformat v0, verlustfrei und mit stabilen Git-Diffs. Ergebnis ist ein PDF/A-3b mit eingebetteten Daten.
+Desktop-Anwendung, mit der man Dokumente gegen ein Daten-XSD gestaltet, ohne XML zu schreiben. Grundlage ist die Engine von pdx (Ordner darüber). Gespeichert wird ausschließlich im Vorlagenformat 1, verlustfrei und mit stabilen Git-Diffs. Ergebnis ist ein PDF/A-3b mit eingebetteten Daten.
 
 Stand: Phase 2 (Designer-MVP). Die Musterrechnung lässt sich im Designer von Grund auf nachbauen und besteht veraPDF 1.30.3 gegen PDF/A-3b (Ende-zu-Ende-Test `e2e/rebuild.spec.ts`).
 

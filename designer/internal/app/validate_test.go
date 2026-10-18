@@ -89,7 +89,7 @@ func TestProblemsOfSamples(t *testing.T) {
 	files := maps.Clone(c.doc.Pkg.Files)
 	canon := template.Write(c.doc.Pkg.Template)
 	c.mu.Unlock()
-	files["samples/kaputt.xml"] = []byte(`<inv:invoice xmlns:inv="https://pdx.example/ns/invoice/1"><inv:falsch/></inv:invoice>`)
+	files["samples/kaputt.xml"] = []byte(`<inv:invoice xmlns:inv="https://github.com/tim-riep/pdx/ns/examples/invoice"><inv:falsch/></inv:invoice>`)
 	ps := runChecks(canon, files)
 	var hit bool
 	for _, p := range ps {

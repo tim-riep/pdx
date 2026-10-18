@@ -41,7 +41,7 @@ type Document struct {
 
 // newTemplate ist die Vorlage für „Neu“: eine A4-Seite und ein leerer Rumpf.
 const newTemplate = `<?xml version="1.0" encoding="UTF-8"?>
-<template xmlns="https://pdx.example/ns/template/0" id="vorlage" lang="de" version="0">
+<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="vorlage" lang="de" version="1">
   <pageSet id="seiten">
     <pageMaster id="seite" margin="20mm" size="A4"/>
   </pageSet>

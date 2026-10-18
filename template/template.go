@@ -1,5 +1,5 @@
-// Package template liest, prüft und schreibt das Vorlagenformat v0 von pdx
-// (template.xml). Das Format beschreibt schema/template-v0.xsd, geprüft wird
+// Package template liest, prüft und schreibt das Vorlagenformat 1 von pdx
+// (template.xml). Das Format beschreibt schema/template-v1.xsd, geprüft wird
 // mit dem XSD-Validator von go-xslt.
 //
 // Die Vorlage wird als geordneter Knotenbaum gehalten, damit der Designer sie
@@ -22,13 +22,20 @@ import (
 	"github.com/tim-riep/go-xslt/engine"
 )
 
-// NS ist der Namespace des Vorlagenformats v0. Die Domain pdx.example ist ein
-// Platzhalter (RFC 2606).
-const NS = "https://pdx.example/ns/template/0"
+// NS ist der Namespace des Vorlagenformats 1.
+const NS = "https://github.com/tim-riep/pdx/ns/template/1"
 
-// Schema ist das XSD des Vorlagenformats v0.
+// LegacyNS ist der Namespace des Formats 0 bis pdx 0.1.0. Format 1 ist
+// inhaltlich gleich, der Parser liest alte Vorlagen und hebt sie auf
+// Format 1 (Namespace und version), pdx fmt schreibt sie neu.
+const LegacyNS = "https://pdx.example/ns/template/0"
+
+// Version ist der Wert von template/@version im Format 1.
+const Version = "1"
+
+// Schema ist das XSD des Vorlagenformats 1.
 //
-//go:embed schema/template-v0.xsd
+//go:embed schema/template-v1.xsd
 var Schema string
 
 // Kind unterscheidet Elemente und Text.
@@ -251,6 +258,7 @@ func parseTree(data []byte) (*Template, error) {
 	var root *Node
 	var stack []*Node
 	count := 0
+	legacy := false
 	for {
 		line, col := dec.InputPos()
 		tok, err := dec.Token()
@@ -266,7 +274,9 @@ func parseTree(data []byte) (*Template, error) {
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			if t.Name.Space != NS {
+			if t.Name.Space == LegacyNS {
+				legacy = true
+			} else if t.Name.Space != NS {
 				return nil, &Error{Line: line, Col: col, Msg: fmt.Sprintf("Element %s gehört nicht zum Namespace %s", t.Name.Local, NS)}
 			}
 			if len(stack) >= 128 {
@@ -319,6 +329,11 @@ func parseTree(data []byte) (*Template, error) {
 	}
 	if root.Name != "template" {
 		return nil, &Error{Line: root.Line, Col: root.Col, Msg: "Wurzelelement muss template sein"}
+	}
+	// Format 0 (bis pdx 0.1.0) ist inhaltlich gleich, nur Namespace und
+	// version ändern sich.
+	if legacy && root.Get("version", "") == "0" {
+		root.SetAttr("version", Version)
 	}
 	t := &Template{Root: root}
 	t.index()

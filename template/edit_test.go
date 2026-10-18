@@ -63,7 +63,7 @@ func TestEditHelpers(t *testing.T) {
 
 // TestParseTree liest eine wohlgeformte, aber ungültige Vorlage.
 func TestParseTree(t *testing.T) {
-	src := []byte(`<template xmlns="https://pdx.example/ns/template/0" id="t" version="0"><body id="b"><text/></body></template>`)
+	src := []byte(`<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="t" version="1"><body id="b"><text/></body></template>`)
 	if _, err := Parse(src); err == nil {
 		t.Fatal("Parse akzeptiert eine ungültige Vorlage")
 	}

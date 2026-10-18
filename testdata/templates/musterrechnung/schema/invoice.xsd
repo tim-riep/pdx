@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Datenschema der Musterrechnung von pdx. Eigenes, bewusst schlankes Format
-  für Tests und Beispiele, kein E-Rechnungsstandard. Die Domain pdx.example im
-  Namespace ist ein Platzhalter (RFC 2606).
+  für Tests und Beispiele, kein E-Rechnungsstandard.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns="https://pdx.example/ns/invoice/1"
-           targetNamespace="https://pdx.example/ns/invoice/1"
+           xmlns="https://github.com/tim-riep/pdx/ns/examples/invoice"
+           targetNamespace="https://github.com/tim-riep/pdx/ns/examples/invoice"
            elementFormDefault="qualified">
 
   <xs:element name="invoice">

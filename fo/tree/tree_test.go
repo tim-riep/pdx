@@ -7,7 +7,7 @@ import (
 )
 
 const minimal = `<?xml version="1.0"?>
-<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de">
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xml:lang="de">
   <fo:layout-master-set>
     <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm">
       <fo:region-body margin="20mm"/>
@@ -124,5 +124,33 @@ func TestLatin1(t *testing.T) {
 	walk(root)
 	if text != "Grüße" {
 		t.Fatalf("Text %q", text)
+	}
+}
+
+// FO mit dem Namespace der Erweiterungen bis pdx 0.1.0 wird wie der neue
+// gelesen, für Elemente und Attribute.
+func TestLegacyNamespace(t *testing.T) {
+	old := strings.Replace(minimal, NSPDX, NSPDXLegacy, 1)
+	old = strings.Replace(old, `<fo:block font-size="12pt">`, `<fo:block font-size="12pt" pdx:id="b1">`, 1)
+	root, err := Parse(strings.NewReader(old))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var att, id bool
+	var walk func(n *Node)
+	walk = func(n *Node) {
+		if n.Is(NSPDX, "attachment") {
+			att = true
+		}
+		if n.Attrs["{"+NSPDX+"}id"] == "b1" {
+			id = true
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(root)
+	if !att || !id {
+		t.Errorf("Erweiterung %v, Attribut %v im neuen Namespace", att, id)
 	}
 }

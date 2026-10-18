@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Vorlagenformat v0 von pdx (template.xml).
+  Vorlagenformat 1 von pdx (template.xml).
 
   Eine Vorlage beschreibt ein Dokument unabhängig von den Daten: Seitenvorlagen,
   Teilformulare, Felder mit Bindungen an das Daten-XSD, Tabellen mit Kopf, Fuß,
@@ -12,11 +12,12 @@
   sich darauf. Bindungen sind XPath-Ausdrücke relativ zum Kontext des umgebenden
   Elements (am Anfang die Wurzel der Daten).
 
-  Die Domain pdx.example im Namespace ist ein Platzhalter (RFC 2606).
+  Format 1 ist inhaltlich gleich dem Format 0 bis pdx 0.1.0 (Namespace
+  https://pdx.example/ns/template/0). pdx liest alte Vorlagen weiter.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns="https://pdx.example/ns/template/0"
-           targetNamespace="https://pdx.example/ns/template/0"
+           xmlns="https://github.com/tim-riep/pdx/ns/template/1"
+           targetNamespace="https://github.com/tim-riep/pdx/ns/template/1"
            elementFormDefault="qualified">
 
   <!-- Einfache Typen -->
@@ -195,7 +196,7 @@
         <xs:element ref="einvoice" minOccurs="0"/>
       </xs:sequence>
       <xs:attribute name="id" type="xs:ID" use="required"/>
-      <xs:attribute name="version" type="xs:string" use="required" fixed="0"/>
+      <xs:attribute name="version" type="xs:string" use="required" fixed="1"/>
       <xs:attribute name="profile" type="ProfileList">
         <xs:annotation><xs:documentation>Konformitätsprofile der Ausgabe, Vorgabe pdfa-3b. Eine Angabe beim Aufruf geht vor.</xs:documentation></xs:annotation>
       </xs:attribute>

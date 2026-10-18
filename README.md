@@ -2,7 +2,7 @@
 
 pdx erzeugt PDF-Dateien in PDF/A-2, PDF/A-3 und PDF/A-4, barrierefrei nach PDF/UA-1 und PDF/UA-2 sowie als E-Rechnung nach ZUGFeRD und Factur-X aus XSL-FO, komplett in Go und ohne cgo. Es ist die Engine eines Dokumentdesigners nach dem Vorbild von Adobe LiveCycle Designer. Ein XSD beschreibt die Datenschnittstelle, ein Desktop-Designer gestaltet das Dokument, die Engine setzt es. veraPDF ist die verbindliche Prüfinstanz für die Konformität.
 
-Stand: Phase 4 (ausfüllbare Formulare, PAdES-Signaturen bis B-LTA, Render-Dienst über HTTP). Davor Phase 3 mit PDF/A-2, -3, -4, PDF/UA-1, -2, Tagged PDF und E-Rechnung. Der Desktop-Designer (Wails und Svelte) liegt in [`designer/`](designer/README.md), mit ihm lässt sich die Musterrechnung ohne XML nachbauen. Darunter die Layout-Engine für Geschäftsdokumente (Seitenfolgen, Tabellen, Listen, Keeps, Marker, Knuth-Plass, Silbentrennung, Links, Lesezeichen, Barcodes), Vorlagenformat v0 mit Compiler nach XSLT 3.0, Bindungsprüfung gegen das Daten-XSD, Vergleich mit Apache FOP, Design-Tokens im Vorlagenformat.
+Stand: Phase 4 (ausfüllbare Formulare, PAdES-Signaturen bis B-LTA, Render-Dienst über HTTP). Davor Phase 3 mit PDF/A-2, -3, -4, PDF/UA-1, -2, Tagged PDF und E-Rechnung. Der Desktop-Designer (Wails und Svelte) liegt in [`designer/`](designer/README.md), mit ihm lässt sich die Musterrechnung ohne XML nachbauen. Darunter die Layout-Engine für Geschäftsdokumente (Seitenfolgen, Tabellen, Listen, Keeps, Marker, Knuth-Plass, Silbentrennung, Links, Lesezeichen, Barcodes), Vorlagenformat 1 mit Compiler nach XSLT 3.0, Bindungsprüfung gegen das Daten-XSD, Vergleich mit Apache FOP, Design-Tokens im Vorlagenformat.
 
 ## Aufruf
 
@@ -68,7 +68,7 @@ XSL-FO ──fo/tree──▶ FO-Baum ──fo/layout──▶ Area Tree ──p
 | `fo/layout` | Galley und Seitenumbruch, Seitenfolgen, Tabellen, Listen, Keeps, Marker, Verweise über mehrere Durchläufe, Links, Lesezeichen, Barcodes |
 | `hyph` | Silbentrennung nach Liang mit Mustern aus hyph-utf8 (de-1996, en-us) |
 | `barcode` | QR, GiroCode (EPC069-12), DataMatrix, Code 128 als Modulraster |
-| `template` | Vorlagenformat v0: XSD, Parser, kanonischer Writer |
+| `template` | Vorlagenformat 1: XSD, Parser, kanonischer Writer |
 | `template/pkg` | Vorlagenpakete aus ZIP oder Verzeichnis, deterministisches Schreiben |
 | `compile` | Vorlage zu XSLT 3.0 mit Überträgen, Formaten und Quellzuordnung |
 | `dataschema` | statische Prüfung der Bindungen gegen das Daten-XSD |
@@ -268,7 +268,7 @@ Bewusste Abweichungen von Apache FOP stehen mit Begründung aus der Spezifikatio
 
 ### Erweiterungen
 
-Namespace `https://pdx.example/ns/pdx/1.0` (die Domain pdx.example ist ein Platzhalter). Metadaten und Anhänge stehen in `fo:declarations`, Barcodes in `fo:instream-foreign-object`, dem Ort, den XSL 1.1 für fremde Inhalte vorsieht:
+Namespace `https://github.com/tim-riep/pdx/ns/fo/1`. Metadaten und Anhänge stehen in `fo:declarations`, Barcodes in `fo:instream-foreign-object`, dem Ort, den XSL 1.1 für fremde Inhalte vorsieht:
 
 ```xml
 <fo:declarations>
@@ -286,7 +286,7 @@ Das erzeugte FO einer Vorlage trägt an jedem Element `pdx:id` mit der ID des Vo
 
 ## Vorlagen
 
-Eine Vorlage beschreibt das Dokument unabhängig von den Daten: Seitenvorlagen für erste, folgende und letzte Seiten, Kopf und Fuß mit positioniertem Inhalt, Teilformulare (positioniert oder fließend, auch wiederholt), Texte mit eingebetteten Feldern, Tabellen mit Kopf, Fuß, Gruppen, Zwischensumme (`subtotal`), Übertrag (`carryOver`) und Summe (`total`), Barcodes, Seitenzahlen („Seite {current} von {total}“), Stile, Formatmuster je Gebietsschema und Textressourcen je Sprache. Bindungen sind XPath-Ausdrücke gegen das Daten-XSD. Das Format beschreibt `template/schema/template-v0.xsd`, Namen sind englisch in camelCase.
+Eine Vorlage beschreibt das Dokument unabhängig von den Daten: Seitenvorlagen für erste, folgende und letzte Seiten, Kopf und Fuß mit positioniertem Inhalt, Teilformulare (positioniert oder fließend, auch wiederholt), Texte mit eingebetteten Feldern, Tabellen mit Kopf, Fuß, Gruppen, Zwischensumme (`subtotal`), Übertrag (`carryOver`) und Summe (`total`), Barcodes, Seitenzahlen („Seite {current} von {total}“), Stile, Formatmuster je Gebietsschema und Textressourcen je Sprache. Bindungen sind XPath-Ausdrücke gegen das Daten-XSD. Das Format beschreibt `template/schema/template-v1.xsd`, Namen sind englisch in camelCase. Namespace ist `https://github.com/tim-riep/pdx/ns/template/1` mit `version="1"`. Vorlagen im Format 0 bis pdx 0.1.0 (Namespace `https://pdx.example/ns/template/0`) liest pdx weiter und hebt sie beim Laden auf Format 1, `pdx fmt -w template.xml` schreibt sie dauerhaft um. Dasselbe gilt für den alten Namespace der FO-Erweiterungen.
 
 Design-Tokens benennen Farben, Längen und Schriften an einer Stelle (`<tokens>` nach `<styles>`). Stile und Elemente verweisen mit `$id` darauf, etwa `color="$primaer"`, `padding="$abstand-m 2mm"` oder `border="0.5pt solid $linie"`. Ein Schrift-Token setzt über `font="$fliesstext"` Familie, Größe, Stärke und Stil, ausdrücklich gesetzte Attribute desselben Elements gehen vor. Tokens dürfen auf Tokens derselben Art verweisen. Der Compiler löst die Verweise auf und meldet unbekannte Tokens, falsche Arten und Kreise mit Vorlagen-ID.
 

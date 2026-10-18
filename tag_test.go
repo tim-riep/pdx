@@ -30,7 +30,7 @@ func TestLayoutTags(t *testing.T) {
 	for i := 0; i < 70; i++ {
 		fmt.Fprintf(&rows, `<fo:table-row><fo:table-cell><fo:block>Position %d</fo:block></fo:table-cell></fo:table-row>`, i)
 	}
-	fo := `<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+	fo := `<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xml:lang="de-DE">
 <fo:layout-master-set><fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm"><fo:region-body margin-top="20mm"/><fo:region-before extent="15mm"/></fo:simple-page-master></fo:layout-master-set>
 <fo:page-sequence master-reference="A4"><fo:static-content flow-name="xsl-region-before"><fo:block pdx:id="kopf">Kopfzeile</fo:block>
 <fo:block-container pdx:id="anschrift" absolute-position="fixed" left="20mm" top="5mm" width="80mm" pdx:artifact="false"><fo:block-container pdx:id="zeile" absolute-position="absolute" left="0mm" top="0mm" width="80mm"><fo:block>Muster AG</fo:block></fo:block-container></fo:block-container>

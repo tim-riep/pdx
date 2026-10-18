@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="https://pdx.example/ns/antrag/1" exclude-result-prefixes="xs a">
+<xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="https://github.com/tim-riep/pdx/ns/examples/antrag" exclude-result-prefixes="xs a">
   <!-- Erzeugt von pdx aus der Vorlage formular. Nicht von Hand bearbeiten. -->
   <xsl:output method="xml" encoding="UTF-8" indent="no"/>
   <xsl:template match="/">

@@ -65,7 +65,7 @@ func TestPaths(t *testing.T) {
 
 func TestEval(t *testing.T) {
 	p, sc := load(t)
-	ns := map[string]string{"inv": "https://pdx.example/ns/invoice/1"}
+	ns := map[string]string{"inv": "https://github.com/tim-riep/pdx/ns/examples/invoice"}
 	data := p.Files[p.Samples()[0]]
 	r := Eval("inv:items/inv:item", inv, ns, data)
 	if r.Error != "" || r.Kind != "nodes" || r.Count < 2 || len(r.Values) == 0 {

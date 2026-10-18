@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Einfacher Geschäftsbrief nach DIN 5008 (vereinfacht). -->
-<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xml:lang="de-DE">
   <fo:layout-master-set>
     <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="0mm">
       <fo:region-body margin-top="45mm" margin-bottom="25mm" margin-left="25mm" margin-right="20mm"/>

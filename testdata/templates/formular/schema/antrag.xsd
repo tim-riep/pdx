@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://pdx.example/ns/antrag/1" targetNamespace="https://pdx.example/ns/antrag/1" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://github.com/tim-riep/pdx/ns/examples/antrag" targetNamespace="https://github.com/tim-riep/pdx/ns/examples/antrag" elementFormDefault="qualified">
   <xs:element name="antrag">
     <xs:complexType>
       <xs:sequence>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Seitenfolgen: Erstseite, gerade und ungerade Folgeseiten, letzte Seite,
      Seite X von Y, Verweise, römische Zählung und force-page-count. -->
-<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xml:lang="de-DE">
   <fo:layout-master-set>
     <fo:simple-page-master master-name="erste" page-width="210mm" page-height="297mm" margin="15mm 20mm">
       <fo:region-body margin-top="40mm" margin-bottom="20mm" margin-right="50mm"/>

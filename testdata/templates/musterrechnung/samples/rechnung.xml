@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<invoice xmlns="https://pdx.example/ns/invoice/1">
+<invoice xmlns="https://github.com/tim-riep/pdx/ns/examples/invoice">
   <number>RE-2026-0001</number>
   <issueDate>2026-01-15</issueDate>
   <dueDate>2026-01-29</dueDate>

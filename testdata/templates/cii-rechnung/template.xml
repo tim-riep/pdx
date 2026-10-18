@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<template xmlns="https://pdx.example/ns/template/0" id="cii-rechnung" dataRoot="rsm:CrossIndustryInvoice" lang="de-DE" profile="pdfa-3a,pdfua-1" title="E-Rechnung (CII)" version="0">
+<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="cii-rechnung" dataRoot="rsm:CrossIndustryInvoice" lang="de-DE" profile="pdfa-3a,pdfua-1" title="E-Rechnung (CII)" version="1">
   <namespaces>
     <ns prefix="rsm" uri="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"/>
     <ns prefix="ram" uri="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"/>

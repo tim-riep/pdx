@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Kopf und Fuß mit Logo, Hintergrund, Rahmen und Seitenzahl ab Seite 5. -->
-<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xml:lang="de-DE">
   <fo:layout-master-set>
     <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="10mm 15mm">
       <fo:region-body margin-top="30mm" margin-bottom="22mm"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<antrag xmlns="https://pdx.example/ns/antrag/1">
+<antrag xmlns="https://github.com/tim-riep/pdx/ns/examples/antrag">
   <anrede>Frau</anrede>
   <name>Erika Musterfrau</name>
   <land>DE</land>

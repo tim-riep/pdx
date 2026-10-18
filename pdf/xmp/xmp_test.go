@@ -17,7 +17,7 @@ func sample() *Packet {
 		Title: "Rechnung <2026> & Co", Author: "Tim", Subject: "Test", Keywords: "a, b",
 		Creator: "pdx-Test", Producer: "pdx", Created: d, Modified: d,
 		Extension: true,
-		Schemas: []areatree.XMPSchema{{NamespaceURI: "https://pdx.example/ns/pdx-test/1.0#", Prefix: "pdxt", Description: "Testschema",
+		Schemas: []areatree.XMPSchema{{NamespaceURI: "https://github.com/tim-riep/pdx/ns/test#", Prefix: "pdxt", Description: "Testschema",
 			Properties: []areatree.XMPProperty{{Name: "Version", Value: "1.0", Description: "Version"}}}},
 	}
 }

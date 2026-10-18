@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<template xmlns="https://pdx.example/ns/template/0" id="musterrechnung" dataRoot="inv:invoice" lang="de-DE" schema="schema/invoice.xsd" title="Musterrechnung" version="0">
+<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="musterrechnung" dataRoot="inv:invoice" lang="de-DE" schema="schema/invoice.xsd" title="Musterrechnung" version="1">
   <namespaces>
-    <ns prefix="inv" uri="https://pdx.example/ns/invoice/1"/>
+    <ns prefix="inv" uri="https://github.com/tim-riep/pdx/ns/examples/invoice"/>
   </namespaces>
   <styles>
     <style id="st-basis" fontFamily="Helvetica" fontSize="9.5pt" lineHeight="1.3"/>

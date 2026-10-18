@@ -2,7 +2,7 @@
 <!-- Marker: Übertrag im Tabellenkopf und Zwischensumme im Tabellenfuß je
      Seite (fo:retrieve-table-marker) sowie ein lebender Kolumnentitel
      (fo:retrieve-marker). -->
-<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://github.com/tim-riep/pdx/ns/fo/1" xml:lang="de-DE">
   <fo:layout-master-set>
     <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="15mm 20mm">
       <fo:region-body margin-top="12mm" margin-bottom="12mm"/>

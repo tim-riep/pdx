@@ -28,7 +28,7 @@ type Problem struct {
 
 // Typen der Probleme, als URI unter dem Dienst dokumentiert.
 const (
-	typeBase = "https://pdx.dev/probleme/"
+	typeBase = "https://github.com/tim-riep/pdx/problems/"
 )
 
 func writeProblem(w http.ResponseWriter, p Problem) {

@@ -188,7 +188,7 @@ func TestWrongRoot(t *testing.T) {
 // mini baut eine kleine Vorlage um den Inhalt von body.
 func mini(t *testing.T, head, body string) *template.Template {
 	t.Helper()
-	src := `<template xmlns="https://pdx.example/ns/template/0" id="t" lang="de-DE" version="0" dataRoot="d">` + head +
+	src := `<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="t" lang="de-DE" version="1" dataRoot="d">` + head +
 		`<pageSet id="ps"><pageMaster id="pm"/></pageSet><body id="b">` + body + `</body></template>`
 	tpl, err := template.Parse([]byte(src))
 	if err != nil {
@@ -335,7 +335,7 @@ func TestFormular(t *testing.T) {
 	for _, want := range []string{
 		`type="radio" name="anrede" label="Anrede" export="Frau" value="Frau"`,
 		`type="text" name="name" label="Name" max-length="40" required="true" value="Erika Musterfrau"`,
-		`context="/Q{https://pdx.example/ns/antrag/1}antrag[1]/Q{https://pdx.example/ns/antrag/1}personen[1]/Q{https://pdx.example/ns/antrag/1}person[2]"`,
+		`context="/Q{https://github.com/tim-riep/pdx/ns/examples/antrag}antrag[1]/Q{https://github.com/tim-riep/pdx/ns/examples/antrag}personen[1]/Q{https://github.com/tim-riep/pdx/ns/examples/antrag}person[2]"`,
 		`<pdx:option value="Komfort" label="Komfort"/>`,
 		`type="signature" name="unterschrift"`,
 	} {
