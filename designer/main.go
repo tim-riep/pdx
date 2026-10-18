@@ -33,11 +33,15 @@ func init() {
 }
 
 func main() {
-	smoke := flag.Bool("smoke", false, "starten, kurz warten und beenden (Test der Builds)")
+	smoke := flag.Bool("smoke", false, "starten, das Paket aus -open setzen und beenden (Test der Builds)")
+	open := flag.String("open", "", "Vorlagenpaket beim Start öffnen (ZIP oder Verzeichnis)")
 	flag.Parse()
+	started := time.Now()
 
 	var wails *application.App
-	emit := emitter{app: func() *application.App { return wails }}
+	// Im Smoke-Test meldet der Emitter die erste gesetzte Seite.
+	firstPage := make(chan app.Manifest, 1)
+	emit := emitter{app: func() *application.App { return wails }, pages: firstPage}
 	// PDX_DESIGNER_DATA ersetzt das Datenverzeichnis, etwa in Tests.
 	dataDir := os.Getenv("PDX_DESIGNER_DATA")
 	if dataDir == "" {
@@ -87,9 +91,40 @@ func main() {
 			}
 		})
 	}
+	// Quit wirkt erst, wenn die Anwendung läuft.
+	running := make(chan struct{})
+	wails.Event.OnApplicationEvent(events.Common.ApplicationStarted, func(*application.ApplicationEvent) { close(running) })
+	if *open != "" {
+		go func() {
+			if _, err := app.NewProjectService(core).Open(*open); err != nil {
+				log.Println("Öffnen:", err)
+				if *smoke {
+					os.Exit(1) // Quit beendet mit Code 0
+				}
+			}
+		}()
+	}
 	if *smoke {
 		go func() {
-			time.Sleep(3 * time.Second)
+			<-running
+			if *open == "" {
+				time.Sleep(3 * time.Second) // nur Start und Ende
+				wails.Quit()
+				return
+			}
+			select {
+			case m := <-firstPage:
+				if len(m.Problems) > 0 {
+					log.Printf("smoke: %d Befunde, erster: %s", len(m.Problems), m.Problems[0].Msg)
+					os.Exit(1)
+				} else {
+					log.Printf("smoke: %d Seiten, erste Seite %d ms nach dem Start", len(m.Pages), time.Since(started).Milliseconds())
+				}
+			case <-time.After(60 * time.Second):
+				log.Println("smoke: keine Seite nach 60 s")
+				os.Exit(1)
+			}
+			time.Sleep(500 * time.Millisecond) // Fenster einmal zeigen
 			wails.Quit()
 		}()
 	}
@@ -99,10 +134,20 @@ func main() {
 	}
 }
 
-// emitter leitet Ereignisse der Services an Wails weiter.
-type emitter struct{ app func() *application.App }
+// emitter leitet Ereignisse der Services an Wails weiter. pages erhält
+// das erste Manifest mit Seiten oder Befunden (Smoke-Test).
+type emitter struct {
+	app   func() *application.App
+	pages chan app.Manifest
+}
 
 func (e emitter) Emit(name string, data any) {
+	if m, ok := data.(app.Manifest); ok && name == app.EventRenderPages && (len(m.Pages) > 0 || len(m.Problems) > 0) {
+		select {
+		case e.pages <- m:
+		default:
+		}
+	}
 	if a := e.app(); a != nil {
 		a.Event.Emit(name, data)
 	}

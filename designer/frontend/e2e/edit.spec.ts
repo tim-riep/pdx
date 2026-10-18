@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { openMuster } from "./helpers";
+import { openMuster, selectInTree } from "./helpers";
 
 async function selectAddress(page: import("@playwright/test").Page) {
   const zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
@@ -52,4 +52,13 @@ test("Entf entfernt das ausgewählte Element", async ({ page }) => {
   await expect(page.getByTestId("hierarchy").getByText("adressfenster")).toHaveCount(0);
   await page.keyboard.press("ControlOrMeta+z");
   await expect(page.getByTestId("hierarchy").getByText("adressfenster", { exact: true })).toBeVisible();
+});
+
+test("Baustein Text bei gewähltem Text kommt dahinter, nicht hinein", async ({ page }) => {
+  await openMuster(page);
+  await selectInTree(page, ["inhalt", "titel"]);
+  await page.getByTestId("palette").locator('[data-kind="text"]').click();
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByTestId("inspector").locator("header strong")).toHaveText("Text");
+  await expect(page.getByTestId("inspector").locator("header code")).not.toHaveText("titel");
 });

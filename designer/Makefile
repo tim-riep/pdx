@@ -49,7 +49,7 @@ e2e: frontend
 	cd frontend && npx playwright test
 
 smoke: build
-	$(OUT)/pdx-designer$(EXE) --smoke
+	$(OUT)/pdx-designer$(EXE) --smoke --open ../testdata/templates/musterrechnung
 
 clean:
 	rm -rf frontend/dist $(OUT)/pdx-designer$(EXE) $(OUT)/designer-server$(EXE)

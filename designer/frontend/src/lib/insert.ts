@@ -54,12 +54,18 @@ export async function insertElement(kind: Kind, parent: string, index: number, x
   }
 }
 
-// insertAtSelection fügt in die Auswahl ein, wenn sie Inhalt aufnimmt, sonst
-// hinter die Auswahl, ohne Auswahl ans Ende des Inhalts.
+// accepts meldet, ob ein Element den Baustein als Kind erlaubt. Ein Text
+// nimmt Felder auf, aber keinen weiteren Text.
+function accepts(ref: string, kind: Kind): boolean {
+  return !!typeOf(node(ref))?.children?.some((c) => c?.name === elementName[kind]);
+}
+
+// insertAtSelection fügt in die Auswahl ein, wenn sie den Baustein erlaubt,
+// sonst hinter die Auswahl, ohne Auswahl ans Ende des Inhalts.
 export function insertAtSelection(kind: Kind) {
   const sel = node(selection.ref);
-  if (sel && acceptsContent(sel.ref)) return insertElement(kind, sel.ref, -1);
-  if (sel?.parent && acceptsContent(sel.parent)) {
+  if (sel && accepts(sel.ref, kind)) return insertElement(kind, sel.ref, -1);
+  if (sel?.parent && accepts(sel.parent, kind)) {
     const parent = node(sel.parent)!;
     const i = parent.children.findIndex((c) => c?.ref === sel.ref);
     return insertElement(kind, parent.ref, i < 0 ? -1 : i + 1);
