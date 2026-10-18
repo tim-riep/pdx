@@ -390,5 +390,10 @@
   "canvas.unit": "Einheit",
   "canvas.pages": "Seiten",
   "canvas.pagesTitle": "Seitenübersicht",
-  "canvas.page": "Seite {n}"
+  "canvas.page": "Seite {n}",
+  "about.title": "Über pdx Designer",
+  "about.text": "Dokumente gegen ein XSD gestalten. Lizenz Apache 2.0.",
+  "about.notices": "Drittanbieterhinweise",
+  "about.close": "Schließen",
+  "about.open": "Über pdx Designer"
 }

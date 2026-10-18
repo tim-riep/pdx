@@ -1,6 +1,7 @@
 <script lang="ts">
   import { AppAPI, SampleAPI } from "./lib/api";
   import CommandPalette from "./components/CommandPalette.svelte";
+  import AboutDialog from "./components/AboutDialog.svelte";
   import { closePalette, openPalette, palette, type PaletteItem } from "./lib/palette.svelte";
   import { checkConformance } from "./lib/conformance.svelte";
   import { insertAtSelection, kinds } from "./lib/insert";
@@ -39,6 +40,7 @@
   let leftTab = $state("hierarchy");
   let rightTab = $state("inspector");
   let bottomTab = $state("problems");
+  let about = $state(false);
   const problemCount = $derived(entries().length);
 
   AppAPI.Info().then((i) => (version = t("status.version", { version: i.version, engine: i.engine })));
@@ -112,6 +114,7 @@
       }
     }
     items.push({ id: "theme", label: t("theme.toggle"), group: g("view"), run: toggleTheme });
+    items.push({ id: "about", label: t("about.open"), group: g("view"), run: () => (about = true) });
     return items;
   }
 
@@ -260,12 +263,13 @@
   </section>
   <footer class="status" data-testid="status">
     {#if ui.error}<span class="error" role="alert">{ui.error}</span>{:else if ui.notice}<span>{ui.notice}</span>{/if}
-    <span class="version">{version}</span>
+    <button class="version" onclick={() => (about = true)} title={t("about.open")}>{version}</button>
   </footer>
 </div>
 
 <ContextMenu />
 {#if palette.open}<CommandPalette items={paletteItems} />{/if}
+{#if about}<AboutDialog {version} onclose={() => (about = false)} />{/if}
 {#if sd.open}<SchemaDiffDialog />{/if}
 
 {#if ui.pathPrompt}
@@ -388,6 +392,15 @@
   }
   .status .version {
     margin-left: auto;
+    border: 0;
+    background: none;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .status .version:hover {
+    text-decoration: underline;
   }
   .error {
     color: var(--danger);

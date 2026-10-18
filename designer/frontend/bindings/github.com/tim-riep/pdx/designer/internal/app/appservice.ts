@@ -33,6 +33,13 @@ export function Info(): $CancellablePromise<$models.Info> {
 }
 
 /**
+ * Notices liefert die Drittanbieterhinweise mit allen Lizenztexten.
+ */
+export function Notices(): $CancellablePromise<string> {
+    return $Call.ByID(962585219);
+}
+
+/**
  * PickFile fragt nach einer Datei, etwa einem Bild für den Baustein Bild.
  * pattern ist ein Filter wie "*.png;*.jpg".
  */

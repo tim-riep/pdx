@@ -9,7 +9,7 @@ export MACOSX_DEPLOYMENT_TARGET ?= 11.0
 export CGO_CFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 export CGO_LDFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 
-.PHONY: all deps bindings frontend build server test check e2e smoke clean
+.PHONY: all deps bindings frontend build server test check e2e smoke clean notices notices-check
 
 all: build
 
@@ -21,6 +21,15 @@ bindings:
 
 frontend:
 	cd frontend && npx vite build
+
+# Drittanbieterhinweise aus den gelinkten Go-Modulen und den gebündelten
+# npm-Paketen (frontend/bundled-packages.json schreibt der Vite-Build).
+notices: frontend
+	$(GO) run ./tools/notices
+
+# notices-check scheitert, wenn die Hinweise nicht zum Stand passen (CI).
+notices-check: notices
+	git diff --exit-code -- notices/THIRD_PARTY_NOTICES.txt frontend/bundled-packages.json
 
 build: frontend
 	$(GO) build -o $(OUT)/pdx-designer$(EXE) .

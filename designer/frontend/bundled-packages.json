@@ -1,0 +1,22 @@
+[
+  {
+    "name": "@wailsio/runtime",
+    "version": "3.0.0-beta.30",
+    "license": "MIT"
+  },
+  {
+    "name": "clsx",
+    "version": "2.1.1",
+    "license": "MIT"
+  },
+  {
+    "name": "pdfjs-dist",
+    "version": "6.4.299",
+    "license": "Apache-2.0"
+  },
+  {
+    "name": "svelte",
+    "version": "5.57.1",
+    "license": "MIT"
+  }
+]

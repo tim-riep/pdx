@@ -13,6 +13,7 @@ import (
 
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/designer/internal/model"
+	"github.com/tim-riep/pdx/designer/notices"
 	"github.com/tim-riep/pdx/designer/internal/pipeline"
 )
 
@@ -86,6 +87,9 @@ func (a *AppService) PickFile(title, name, pattern string) (string, error) {
 	}
 	return a.c.dialogs.OpenFile(title, []Filter{{Name: name, Pattern: pattern}}, false)
 }
+
+// Notices liefert die Drittanbieterhinweise mit allen Lizenztexten.
+func (*AppService) Notices() string { return notices.Text }
 
 // Info liefert Name und Versionen.
 func (*AppService) Info() Info {
