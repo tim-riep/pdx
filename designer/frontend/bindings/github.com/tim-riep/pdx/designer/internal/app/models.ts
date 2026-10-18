@@ -7,6 +7,9 @@ import { Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
+import * as pdx$0 from "../../../models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
 import * as model$0 from "../model/models.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -584,6 +587,61 @@ export class Insert {
 }
 
 /**
+ * Licenses beschreibt die Lizenzen der App für den Dialog Lizenzen.
+ */
+export class Licenses {
+    /**
+     * Name und License gelten für den Designer selbst (Apache License 2.0).
+     */
+    "name": string;
+    "license": string;
+    "notice": string;
+
+    /**
+     * Components sind alle enthaltenen Fremdbestandteile mit Lizenztext.
+     */
+    "components": pdx$0.Component[];
+
+    /**
+     * Full sind alle Hinweise als ein Text, zum Kopieren oder Sichern.
+     */
+    "full": string;
+
+    /** Creates a new Licenses instance. */
+    constructor($$source: Partial<Licenses> = {}) {
+        if (!("name" in $$source)) {
+            this["name"] = "";
+        }
+        if (!("license" in $$source)) {
+            this["license"] = "";
+        }
+        if (!("notice" in $$source)) {
+            this["notice"] = "";
+        }
+        if (!("components" in $$source)) {
+            this["components"] = [];
+        }
+        if (!("full" in $$source)) {
+            this["full"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Licenses instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Licenses {
+        const $$createField3_0 = $$createType10;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("components" in $$parsedSource) {
+            $$parsedSource["components"] = $$createField3_0($$parsedSource["components"]);
+        }
+        return new Licenses($$parsedSource as Partial<Licenses>);
+    }
+}
+
+/**
  * Manifest beschreibt die gesetzten Seiten eines Stands. Die Seiten selbst
  * holt die Oberfläche über /pdx/page/<hash>, nur geänderte Hashes sind neu.
  */
@@ -635,8 +693,8 @@ export class Manifest {
      * Creates a new Manifest instance from a string or object.
      */
     static createFrom($$source: any = {}): Manifest {
-        const $$createField3_0 = $$createType10;
-        const $$createField4_0 = $$createType12;
+        const $$createField3_0 = $$createType12;
+        const $$createField4_0 = $$createType14;
         const $$createField5_0 = $$createType3;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("pages" in $$parsedSource) {
@@ -805,8 +863,8 @@ export class PublishDiff {
      * Creates a new PublishDiff instance from a string or object.
      */
     static createFrom($$source: any = {}): PublishDiff {
-        const $$createField4_0 = $$createType14;
-        const $$createField5_0 = $$createType16;
+        const $$createField4_0 = $$createType16;
+        const $$createField5_0 = $$createType18;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("files" in $$parsedSource) {
             $$parsedSource["files"] = $$createField4_0($$parsedSource["files"]);
@@ -1010,7 +1068,7 @@ export class Report {
      * Creates a new Report instance from a string or object.
      */
     static createFrom($$source: any = {}): Report {
-        const $$createField1_0 = $$createType18;
+        const $$createField1_0 = $$createType20;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField1_0($$parsedSource["problems"]);
@@ -1047,7 +1105,7 @@ export class Result {
      * Creates a new Result instance from a string or object.
      */
     static createFrom($$source: any = {}): Result {
-        const $$createField2_0 = $$createType19;
+        const $$createField2_0 = $$createType21;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("history" in $$parsedSource) {
             $$parsedSource["history"] = $$createField2_0($$parsedSource["history"]);
@@ -1127,7 +1185,7 @@ export class Samples {
      * Creates a new Samples instance from a string or object.
      */
     static createFrom($$source: any = {}): Samples {
-        const $$createField0_0 = $$createType21;
+        const $$createField0_0 = $$createType23;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("items" in $$parsedSource) {
             $$parsedSource["items"] = $$createField0_0($$parsedSource["items"]);
@@ -1227,7 +1285,7 @@ export class SchemaDiff {
      * Creates a new SchemaDiff instance from a string or object.
      */
     static createFrom($$source: any = {}): SchemaDiff {
-        const $$createField1_0 = $$createType23;
+        const $$createField1_0 = $$createType25;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("changes" in $$parsedSource) {
             $$parsedSource["changes"] = $$createField1_0($$parsedSource["changes"]);
@@ -1404,9 +1462,9 @@ export class XPathInfo {
      * Creates a new XPathInfo instance from a string or object.
      */
     static createFrom($$source: any = {}): XPathInfo {
-        const $$createField2_0 = $$createType25;
-        const $$createField3_0 = $$createType27;
-        const $$createField4_0 = $$createType29;
+        const $$createField2_0 = $$createType27;
+        const $$createField3_0 = $$createType29;
+        const $$createField4_0 = $$createType31;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("problems" in $$parsedSource) {
             $$parsedSource["problems"] = $$createField2_0($$parsedSource["problems"]);
@@ -1464,24 +1522,26 @@ const $$createType5 = ConformanceItem.createFrom;
 const $$createType6 = $Create.Array($$createType5);
 const $$createType7 = Segment.createFrom;
 const $$createType8 = $Create.Array($$createType7);
-const $$createType9 = pipeline$0.PageRef.createFrom;
+const $$createType9 = pdx$0.Component.createFrom;
 const $$createType10 = $Create.Array($$createType9);
-const $$createType11 = pipeline$0.FontRef.createFrom;
+const $$createType11 = pipeline$0.PageRef.createFrom;
 const $$createType12 = $Create.Array($$createType11);
-const $$createType13 = FileChange.createFrom;
+const $$createType13 = pipeline$0.FontRef.createFrom;
 const $$createType14 = $Create.Array($$createType13);
-const $$createType15 = DiffLine.createFrom;
+const $$createType15 = FileChange.createFrom;
 const $$createType16 = $Create.Array($$createType15);
-const $$createType17 = Problem.createFrom;
+const $$createType17 = DiffLine.createFrom;
 const $$createType18 = $Create.Array($$createType17);
-const $$createType19 = model$0.History.createFrom;
-const $$createType20 = Sample.createFrom;
-const $$createType21 = $Create.Array($$createType20);
-const $$createType22 = SchemaChange.createFrom;
+const $$createType19 = Problem.createFrom;
+const $$createType20 = $Create.Array($$createType19);
+const $$createType21 = model$0.History.createFrom;
+const $$createType22 = Sample.createFrom;
 const $$createType23 = $Create.Array($$createType22);
-const $$createType24 = xpath$0.Problem.createFrom;
+const $$createType24 = SchemaChange.createFrom;
 const $$createType25 = $Create.Array($$createType24);
-const $$createType26 = Field.createFrom;
-const $$createType27 = $Create.Nullable($$createType26);
-const $$createType28 = xpath$0.Result.createFrom;
+const $$createType26 = xpath$0.Problem.createFrom;
+const $$createType27 = $Create.Array($$createType26);
+const $$createType28 = Field.createFrom;
 const $$createType29 = $Create.Nullable($$createType28);
+const $$createType30 = xpath$0.Result.createFrom;
+const $$createType31 = $Create.Nullable($$createType30);

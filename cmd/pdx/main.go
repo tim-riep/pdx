@@ -55,6 +55,7 @@ Aufruf:
   pdx sign <eingabe.pdf> --signer pkcs12:datei.p12|remote:URL [-o signiert.pdf] [--level B-B|B-T|B-LT|B-LTA]
              [--tsa URL] [--field NAME] [--reason TEXT] [--location TEXT] [--contact TEXT]
              Passwort aus PDX_SIGN_PASSWORD oder Abfrage, Token aus PDX_SIGN_TOKEN, nie als Argument
+  pdx licenses [--list]   Lizenz von pdx und aller enthaltenen Fremdbestandteile
   pdx version
 
 Eine Vorlage ist ein ZIP-Paket oder ein Verzeichnis mit template.xml.
@@ -88,6 +89,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdFlatten(args[1:], stdout, stderr)
 	case "sign":
 		return cmdSign(args[1:], stdout, stderr)
+	case "licenses":
+		return cmdLicenses(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintf(stdout, "pdx %s (veraPDF %s)\n", pdx.Version, verapdf.Version)
 		return 0

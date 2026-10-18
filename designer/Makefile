@@ -25,7 +25,7 @@ frontend:
 # Drittanbieterhinweise aus den gelinkten Go-Modulen und den gebündelten
 # npm-Paketen (frontend/bundled-packages.json schreibt der Vite-Build).
 notices: frontend
-	$(GO) run ./tools/notices
+	$(GO) run ../internal/tools/notices -cgo -npm frontend/bundled-packages.json -node frontend/node_modules -title "pdx Designer" -o notices/THIRD_PARTY_NOTICES.txt
 
 # notices-check scheitert, wenn die Hinweise nicht zum Stand passen (CI).
 notices-check: notices

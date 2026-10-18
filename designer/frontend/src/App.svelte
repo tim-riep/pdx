@@ -24,6 +24,7 @@
   import SamplesPanel from "./components/SamplesPanel.svelte";
   import SchemaDiffDialog from "./components/SchemaDiffDialog.svelte";
   import PublishDialog from "./components/PublishDialog.svelte";
+  import LicensesDialog from "./components/LicensesDialog.svelte";
   import { sd } from "./lib/schemadiff.svelte";
   import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
@@ -54,6 +55,7 @@
   });
   let about = $state(false);
   let publish = $state(false);
+  let licenses = $state(false);
   const problemCount = $derived(entries().length);
 
   AppAPI.Info().then((i) => (version = t("status.version", { version: i.version, engine: i.engine })));
@@ -130,6 +132,7 @@
     }
     items.push({ id: "theme", label: t("theme.toggle"), group: g("view"), run: toggleTheme });
     items.push({ id: "about", label: t("about.open"), group: g("view"), run: () => (about = true) });
+    items.push({ id: "licenses", label: t("licenses.open"), group: g("view"), run: () => (licenses = true) });
     return items;
   }
 
@@ -245,6 +248,7 @@
         </button>
       {/each}
     </div>
+    <button data-testid="licenses-open" onclick={() => (licenses = true)}>{t("licenses.open")}</button>
     <button class="icon" title={t("theme.toggle")} aria-label={t("theme.toggle")} onclick={toggleTheme}>◐</button>
   </header>
   <aside class="left">
@@ -287,7 +291,8 @@
 
 <ContextMenu />
 {#if palette.open}<CommandPalette items={paletteItems} />{/if}
-{#if about}<AboutDialog {version} onclose={() => (about = false)} />{/if}
+{#if about}<AboutDialog {version} onclose={() => (about = false)} onlicenses={() => ((about = false), (licenses = true))} />{/if}
+{#if licenses}<LicensesDialog onclose={() => (licenses = false)} />{/if}
 {#if sd.open}<SchemaDiffDialog />{/if}
 {#if publish}<PublishDialog onclose={() => (publish = false)} />{/if}
 

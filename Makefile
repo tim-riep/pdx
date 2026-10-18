@@ -8,7 +8,7 @@ TEMPLATES := $(wildcard testdata/templates/*/template.xml)
 PDFS      := $(patsubst testdata/fo/%.fo,$(OUT)/%.pdf,$(CORPUS)) \
              $(patsubst testdata/templates/%/template.xml,$(OUT)/vorlage-%.pdf,$(TEMPLATES))
 
-.PHONY: all build test vet fuzz golden conformance fop-compare fo-conformance fo-reference dss-image dss image clean
+.PHONY: all build test vet fuzz golden conformance fop-compare fo-conformance fo-reference dss-image dss image notices notices-check clean
 
 all: vet test
 
@@ -34,6 +34,14 @@ fuzz:
 	$(GO) test -run=^$$ -fuzz=FuzzSignPDF -fuzztime=30s .
 	$(GO) test -run=^$$ -fuzz=FuzzUpload -fuzztime=30s ./server
 	$(GO) test -run=^$$ -fuzz=FuzzRender -fuzztime=30s ./server
+
+# Drittanbieterhinweise mit allen Lizenztexten für pdx und pdx-server. Nach
+# jeder Änderung der Abhängigkeiten oder eingebetteten Dateien ausführen.
+notices:
+	$(GO) run ./internal/tools/notices -pkgs ./cmd/pdx,./cmd/pdx-server -o THIRD_PARTY_NOTICES.txt
+
+notices-check:
+	$(GO) run ./internal/tools/notices -pkgs ./cmd/pdx,./cmd/pdx-server -o THIRD_PARTY_NOTICES.txt -check
 
 # Baut das Image des EU DSS Validators lokal (lädt Quellen, Basisimages und
 # Maven-Abhängigkeiten) und prüft damit alle PAdES-Stufen.

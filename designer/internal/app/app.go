@@ -93,6 +93,30 @@ func (a *AppService) PickFile(title, name, pattern string) (string, error) {
 // Notices liefert die Drittanbieterhinweise mit allen Lizenztexten.
 func (*AppService) Notices() string { return notices.Text }
 
+// Licenses beschreibt die Lizenzen der App für den Dialog Lizenzen.
+type Licenses struct {
+	// Name und License gelten für den Designer selbst (Apache License 2.0).
+	Name    string `json:"name"`
+	License string `json:"license"`
+	Notice  string `json:"notice"`
+	// Components sind alle enthaltenen Fremdbestandteile mit Lizenztext.
+	Components []pdx.Component `json:"components"`
+	// Full sind alle Hinweise als ein Text, zum Kopieren oder Sichern.
+	Full string `json:"full"`
+}
+
+// Licenses liefert die Lizenz des Designers und aller enthaltenen
+// Fremdbestandteile.
+func (*AppService) Licenses() Licenses {
+	return Licenses{
+		Name:       "pdx Designer",
+		License:    pdx.License,
+		Notice:     pdx.Notice,
+		Components: pdx.Components(notices.Text),
+		Full:       pdx.License + "\n\n" + notices.Text,
+	}
+}
+
 // Info liefert Name und Versionen.
 func (*AppService) Info() Info {
 	return Info{Name: "pdx Designer", Version: Version, Engine: pdx.Version}

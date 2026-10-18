@@ -1,9 +1,12 @@
 pdx Designer: Drittanbieterhinweise
 Erzeugt mit make notices, nicht von Hand ändern.
 
+Die Programme stehen unter der Apache License 2.0 (LICENSE). Diese Datei
+enthält den Hinweis von pdx und die Lizenztexte aller Fremdbestandteile,
+die in den Programmen enthalten sind.
 
 ========================================================================
-pdx (Engine)
+pdx (NOTICE)
 ========================================================================
 
 pdx
@@ -33,8 +36,284 @@ Enthaltene Fremdbestandteile:
 
 Abhängigkeiten:
 
+* github.com/boombuler/barcode (MIT)
 * github.com/boxesandglue/textshape (MIT)
+* github.com/tim-riep/go-xslt (Apache-2.0)
+* golang.org/x/crypto (BSD-3-Clause), nur OCSP
 * golang.org/x/text (BSD-3-Clause)
+* software.sslmate.com/src/go-pkcs12 (BSD-3-Clause)
+
+Nur im Repository für Tests, nicht Teil der Programme:
+
+* Testfälle aus Apache FOP 2.11 (testdata/suites/fop)
+  Copyright 1999-2025 The Apache Software Foundation
+  Apache License 2.0, siehe testdata/suites/fop/LICENSE und NOTICE
+
+* Erwartungswerte zur W3C XSL Test Suite (testdata/suites/w3c/expect),
+  erzeugt mit Apache FOP. Die Suite selbst wird beim Testlauf geladen und
+  nicht weitergegeben (W3C Software and Document License).
+
+* EU DSS Validator (esig/dss-demonstrations, LGPL-2.1) als lokal gebautes
+  Docker-Image (dssval/build.sh), veraPDF (GPL-3.0 oder MPL-2.0) als
+  Docker-Image. Beide werden nur aufgerufen, nicht gelinkt oder
+  weitergegeben.
+
+========================================================================
+Liberation Fonts 2.1.5 (eingebettet, SIL Open Font License 1.1)
+========================================================================
+
+Digitized data copyright (c) 2010 Google Corporation
+	with Reserved Font Arimo, Tinos and Cousine.
+Copyright (c) 2012 Red Hat, Inc.
+	with Reserved Font Name Liberation.
+
+This Font Software is licensed under the SIL Open Font License,
+Version 1.1.
+
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+
+PREAMBLE The goals of the Open Font License (OFL) are to stimulate
+worldwide development of collaborative font projects, to support the font
+creation efforts of academic and linguistic communities, and to provide
+a free and open framework in which fonts may be shared and improved in
+partnership with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves.
+The fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works.  The fonts and derivatives,
+however, cannot be released under any other type of license.  The
+requirement for fonts to remain under this license does not apply to
+any document created using the fonts or their derivatives.
+
+ 
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such.
+This may include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components
+as distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting ? in part or in whole ?
+any of the components of the Original Version, by changing formats or
+by porting the Font Software to a new environment.
+
+"Author" refers to any designer, engineer, programmer, technical writer
+or other person who contributed to the Font Software.
+
+
+PERMISSION & CONDITIONS
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,in
+   Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+   redistributed and/or sold with any software, provided that each copy
+   contains the above copyright notice and this license. These can be
+   included either as stand-alone text files, human-readable headers or
+   in the appropriate machine-readable metadata fields within text or
+   binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+   Name(s) unless explicit written permission is granted by the
+   corresponding Copyright Holder. This restriction only applies to the
+   primary font name as presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+   Software shall not be used to promote, endorse or advertise any
+   Modified Version, except to acknowledge the contribution(s) of the
+   Copyright Holder(s) and the Author(s) or with their explicit written
+   permission.
+
+5) The Font Software, modified or unmodified, in part or in whole, must
+   be distributed entirely under this license, and must not be distributed
+   under any other license. The requirement for fonts to remain under
+   this license does not apply to any document created using the Font
+   Software.
+
+
+ 
+TERMINATION
+This license becomes null and void if any of the above conditions are not met.
+
+ 
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT.  IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER
+DEALINGS IN THE FONT SOFTWARE.
+
+========================================================================
+Trennmuster aus hyph-utf8 (eingebettet, de-1996 MIT, en-us freie Weitergabe mit Hinweis)
+========================================================================
+
+# Trennmuster
+
+Die Muster stammen aus dem Paket hyph-utf8 (https://github.com/hyphenation/tex-hyphen),
+Stand vom 17.10.2026, und werden unverändert übernommen. pdx liest die
+Textfassungen (`*.pat.txt` mit Mustern, `*.hyp.txt` mit Ausnahmen).
+
+| Datei | Sprache | Lizenz |
+|---|---|---|
+| de-1996.pat.txt | Deutsch, reformierte Rechtschreibung (de-1996), Version 2024-02-28 | MIT |
+| en-us.pat.txt, en-us.hyp.txt | Englisch, amerikanische Schreibung (en-us), Version 2005-05-30 | freie Weitergabe mit Hinweis, siehe unten |
+
+Die Kopfzeilen der Originaldateien mit Copyright und Lizenz folgen
+unverändert.
+
+## de-1996
+
+```
+ title: German Hyphenation Patterns (Reformed Orthography, 2006)
+
+ notice: TeX-Trennmuster für die reformierte (2006) deutsche Rechtschreibung
+
+ version: 2024-02-28
+
+ authors:
+   -
+     name:    Deutschsprachige Trennmustermannschaft
+     contact: trennmuster@dante.de
+
+ copyright: Copyright (c) 2013-2024
+            Stephan Hennig, Werner Lemberg, Günter Milde,
+            Sander van Geloven, Georg Pfeiffer, Gisbert W. Selke,
+            Tobias Wendorf, Keno Wehr
+
+ licence:
+     name: MIT
+     url:  https://opensource.org/licenses/mit-license.php
+     text: >
+           Permission is hereby granted, free of charge, to any person
+           obtaining a copy of this software and associated documentation
+           files (the “Software”), to deal in the Software without
+           restriction, including without limitation the rights to use,
+           copy, modify, merge, publish, distribute, sublicense, and/or
+           sell copies of the Software, and to permit persons to whom the
+           Software is furnished to do so, subject to the following
+           conditions:
+
+           The above copyright notice and this permission notice shall be
+           included in all copies or substantial portions of the Software.
+
+           THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+           EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+           OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+           NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+           HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+           WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+           FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+           OTHER DEALINGS IN THE SOFTWARE.
+
+ source: https://repo.or.cz/w/wortliste.git?a=commit;h=304aaa2188a75e57afe36bad0443d90a9c715b8e
+
+ language:
+     name: German, reformed spelling
+     tag:  de-1996
+
+ hyphenmins:
+     generation:
+         left:  2
+         right: 2
+     typesetting:
+         left:  2
+         right: 2
+
+ texlive:
+     encoding: ec
+     babelname: ngerman
+     use_old_patterns_comment: Kept for the sake of backward compatibility, but newer and better patterns by WL are available.
+     legacy_patterns: dehyphn.tex
+     message: German hyphenation patterns (reformed orthography)
+     package: german
+
+ ===========================================================================
+```
+
+## en-us
+
+```
+ title: Hyphenation patterns for American English
+ copyright: Copyright (C) 1990, 2004, 2005 Gerard D.C. Kuiken
+ notice: This file is part of the hyph-utf8 package.
+     See http://www.hyphenation.org/tex for more information.
+ language:
+     name: English, American spelling
+     tag: en-us
+ version: 2005-05-30
+ authors:
+   -
+     name: Gerard D.C. Kuiken
+ licence:
+     text: >
+         Copying and distribution of this file, with or without modification,
+         are permitted in any medium without royalty provided the copyright
+         notice and this notice are preserved.
+ hyphenmins:
+     typesetting:
+         left: 2
+         right: 3
+ changes:
+     March 1, 1990 Initial release
+     May 30, 2005 Added copyright notice, no patterns change.
+ texlive:
+     encoding: ascii
+     babelname: usenglishmax
+     legacy_patterns: ushyphmax.tex
+     message: Hyphenation patterns for American English
+     package: english
+ known_bugs:
+     de-mo-c-rat: 'instead of dem-o-crat (see GitHub issue #15)'
+ ==========================================
+
+ ushyphmax.tex -- patterns for more hyphenation pattern memory (12000+).
+ Also known as ushyphen.max.
+
+ Needs extended pattern memory.
+ Hyphenation trie becomes 7283 with 377 ops.
+
+ These patterns are based on the Hyphenation Exception Log
+ published in TUGboat, Volume 10 (1989), No. 3, pp. 337-341,
+ and a large number of incorrectly hyphenated words not yet published.
+ If added to Liang's before the closing bracket } of \patterns,
+ the patterns run errorfree as far as known at this moment.
+
+ These patterns find all admissible hyphens of the words in
+ the Exception Log.  ushyph2.tex is a smaller set.
+
+ Please send bugs or suggestions to tex-live (at) tug.org.
+
+ 2005-05-30 (karl): in the past, ushyphmax.tex was a file containing
+ only the additional patterns, without the \patterns command, etc.
+ This turned out not to be very useful, since in practice the TeX
+ distributions need one self-contained file for a language.  Therefore,
+ ushyphmax.tex now contains both the additional patterns from
+ Dr. Kuiken, and the original patterns and hyphenations from Knuth's
+ hyphen.tex.
+
+ The Plain TeX hyphenation tables.
+```
 
 ========================================================================
 Go (Standardbibliothek und Laufzeit)

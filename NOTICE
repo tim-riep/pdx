@@ -32,6 +32,17 @@ Abhängigkeiten:
 * golang.org/x/text (BSD-3-Clause)
 * software.sslmate.com/src/go-pkcs12 (BSD-3-Clause)
 
-Nur für Tests, nicht Teil der Programme: EU DSS Validator
-(esig/dss-demonstrations, LGPL-2.1) als lokal gebautes Docker-Image
-(dssval/build.sh), veraPDF (GPL-3.0 oder MPL-2.0) als Docker-Image.
+Nur im Repository für Tests, nicht Teil der Programme:
+
+* Testfälle aus Apache FOP 2.11 (testdata/suites/fop)
+  Copyright 1999-2025 The Apache Software Foundation
+  Apache License 2.0, siehe testdata/suites/fop/LICENSE und NOTICE
+
+* Erwartungswerte zur W3C XSL Test Suite (testdata/suites/w3c/expect),
+  erzeugt mit Apache FOP. Die Suite selbst wird beim Testlauf geladen und
+  nicht weitergegeben (W3C Software and Document License).
+
+* EU DSS Validator (esig/dss-demonstrations, LGPL-2.1) als lokal gebautes
+  Docker-Image (dssval/build.sh), veraPDF (GPL-3.0 oder MPL-2.0) als
+  Docker-Image. Beide werden nur aufgerufen, nicht gelinkt oder
+  weitergegeben.

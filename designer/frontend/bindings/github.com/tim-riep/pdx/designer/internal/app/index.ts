@@ -35,6 +35,7 @@ export {
     FileChange,
     Info,
     Insert,
+    Licenses,
     Manifest,
     Problem,
     ProjectState,

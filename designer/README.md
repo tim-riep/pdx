@@ -75,11 +75,11 @@ designer/
 
 * **Eine Wahrheit:** Die Vorlage (`template.Template`) lebt nur im Backend. Die Oberfläche schickt Befehle (`setAttr`, `insert`, `remove`, `move`, `content`, `batch`, `setFile`) und erhält Patches einer Projektion über das Ereignis `template:changed`. Nach jedem Befehl prüft das Backend gegen das XSD des Formats und die Verweise im Paket und nimmt ihn sonst zurück.
 * **Kein Layout im Frontend:** Alles Sichtbare kommt aus dem Area Tree der Engine. Jeder Bereich trägt die Vorlagen-ID, darauf beruhen Auswahl, Treffertest, Hilfslinien und das Zuordnen von Befunden.
-* **Services:** AppService, ProjectService (Öffnen, Speichern, Autosave alle 30 s, Wiederherstellung), TemplateService (Befehle, Tabellen, Struktur, Inhalt, Tokens, XPath), RenderService (Ansicht, Seiten, Schriften, Bilder und PDF über `/pdx/`), SchemaService (Datenbaum, Import, Vergleich und Ersetzen), SampleDataService, ValidationService und ConformanceService.
+* **Services:** AppService (Info, Lizenzen), ProjectService (Öffnen, Speichern, Autosave alle 30 s, Wiederherstellung), TemplateService (Befehle, Tabellen, Struktur, Inhalt, Tokens, XPath), RenderService (Ansicht, Seiten, Schriften, Bilder und PDF über `/pdx/`), SchemaService (Datenbaum, Import, Vergleich und Ersetzen), SampleDataService, ValidationService und ConformanceService.
 * **Pipeline:** 80 ms nach der letzten Änderung setzt das Backend neu. Der Compiler läuft nur bei geändertem Inhalt, ein neuer Lauf bricht den alten ab. Nur Seiten mit neuem Hash werden übertragen.
 * **Prüfung:** dieselben Prüfungen wie `pdx check` (Paket `check` der Engine), dazu Pfade in Präsenzbedingungen. veraPDF läuft lokal oder in Docker im Hintergrund.
 
-Lizenzen: Alles Ausgelieferte steht unter MIT, BSD oder Apache 2.0. Die Volltexte erzeugt `make notices` nach `notices/THIRD_PARTY_NOTICES.txt`, die App zeigt sie unter Über (Klick auf die Version).
+Lizenzen: Der Designer steht unter der Apache License 2.0. Alles Mitgelieferte steht unter MIT, BSD, Apache 2.0 oder (für die eingebetteten Liberation-Schriften) der SIL Open Font License 1.1, die Trennmuster unter MIT und freier Weitergabe mit Hinweis. Die Volltexte erzeugt `make notices` mit dem gemeinsamen Werkzeug `../internal/tools/notices` nach `notices/THIRD_PARTY_NOTICES.txt`. Die App zeigt sie über den Knopf Lizenzen in der Werkzeugleiste (auch unter Über und in der Befehlspalette): die eigene Lizenz und jeden Bestandteil mit Lizenz und vollem Text, mit Suche und zum Kopieren.
 
 ## Leistung
 

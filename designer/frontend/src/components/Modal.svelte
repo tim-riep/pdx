@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-  let { title, children, actions }: { title: string; children: Snippet; actions: Snippet } = $props();
+  let { title, children, actions, wide = false }: { title: string; children: Snippet; actions: Snippet; wide?: boolean } = $props();
 </script>
 
 <div class="backdrop">
-  <div class="modal" role="dialog" aria-modal="true" aria-label={title}>
+  <div class="modal" class:wide role="dialog" aria-modal="true" aria-label={title}>
     <h1>{title}</h1>
     <div class="body">{@render children()}</div>
     <div class="actions">{@render actions()}</div>
@@ -28,6 +28,10 @@
     padding: var(--space-4);
     min-width: 380px;
     max-width: 560px;
+  }
+  .modal.wide {
+    max-width: min(1000px, 92vw);
+    width: min(1000px, 92vw);
   }
   h1 {
     font-size: 15px;

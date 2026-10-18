@@ -33,6 +33,16 @@ export function Info(): $CancellablePromise<$models.Info> {
 }
 
 /**
+ * Licenses liefert die Lizenz des Designers und aller enthaltenen
+ * Fremdbestandteile.
+ */
+export function Licenses(): $CancellablePromise<$models.Licenses> {
+    return $Call.ByID(2590393818).then(($result: any) => {
+        return $$createType1($result);
+    });
+}
+
+/**
  * Notices liefert die Drittanbieterhinweise mit allen Lizenztexten.
  */
 export function Notices(): $CancellablePromise<string> {
@@ -49,3 +59,4 @@ export function PickFile(title: string, name: string, pattern: string): $Cancell
 
 // Private type creation functions
 const $$createType0 = $models.Info.createFrom;
+const $$createType1 = $models.Licenses.createFrom;

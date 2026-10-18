@@ -2,6 +2,7 @@
 //
 //	pdx-server -config pdx-server.json
 //	pdx-server hash-key < schluessel.txt
+//	pdx-server licenses
 //
 // Die Konfiguration ist JSON (siehe server.Config), API-Schlüssel stehen
 // darin nur als SHA-256-Hash. hash-key liest den Schlüssel von der
@@ -87,6 +88,10 @@ func main() {
 }
 
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	if len(args) > 0 && args[0] == "licenses" {
+		fmt.Fprint(stdout, pdx.License, "\n\n", pdx.ThirdPartyNotices)
+		return 0
+	}
 	if len(args) > 0 && args[0] == "hash-key" {
 		line, err := bufio.NewReader(stdin).ReadString('\n')
 		key := strings.TrimRight(line, "\r\n")

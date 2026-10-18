@@ -392,7 +392,6 @@
   "canvas.page": "Seite {n}",
   "about.title": "Über pdx Designer",
   "about.text": "Dokumente gegen ein XSD gestalten. Lizenz Apache 2.0.",
-  "about.notices": "Drittanbieterhinweise",
   "about.close": "Schließen",
   "about.open": "Über pdx Designer",
   "pdf.save": "PDF speichern …",
@@ -640,5 +639,15 @@
   "publish.existing": "Gleicher Inhalt wie Version {v}, keine neue Version angelegt.",
   "publish.isActive": "Version {v} ist aktiv.",
   "publish.close": "Schließen",
-  "publish.saveHint": "Hochgeladen wird der aktuelle Stand im Designer, auch ungespeichert."
+  "publish.saveHint": "Hochgeladen wird der aktuelle Stand im Designer, auch ungespeichert.",
+  "about.licenses": "Lizenzen anzeigen",
+  "licenses.open": "Lizenzen",
+  "licenses.title": "Lizenzen",
+  "licenses.intro": "pdx Designer steht unter der Apache License 2.0. Er enthält {n} Fremdbestandteile, jeder mit seiner eigenen Lizenz. Wähle einen Eintrag, um den vollen Lizenztext zu sehen.",
+  "licenses.own": "pdx Designer",
+  "licenses.filter": "Bestandteil oder Lizenz suchen",
+  "licenses.unknown": "siehe Text",
+  "licenses.copy": "Alle Hinweise kopieren",
+  "licenses.copied": "Kopiert",
+  "licenses.close": "Schließen"
 }

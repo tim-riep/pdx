@@ -342,4 +342,10 @@ PDX_CONFORMANCE=1 go test ./...
 
 ## Lizenz
 
-Apache License 2.0, siehe `LICENSE` und `NOTICE` (dort auch alle Abhängigkeiten). Die Liberation-Schriften und Source Serif 4 (nur Testdaten) stehen unter der SIL Open Font License 1.1. Das sRGB-Profil berechnet pdx selbst.
+pdx steht unter der Apache License 2.0, siehe `LICENSE` und `NOTICE`. `THIRD_PARTY_NOTICES.txt` enthält die vollständigen Lizenztexte aller Fremdbestandteile, die in `pdx` und `pdx-server` enthalten sind: die eingebetteten Liberation-Schriften (SIL Open Font License 1.1), die Trennmuster aus hyph-utf8 (MIT und freie Weitergabe mit Hinweis), die Laufzeit von Go und alle gelinkten Go-Module.
+
+```bash
+pdx licenses --list
+```
+
+`pdx licenses` und `pdx-server licenses` geben alle Texte aus, das Image legt sie unter `/usr/share/doc/pdx/` ab. Der Designer zeigt sie über den Knopf Lizenzen, samt Wails und den npm-Paketen des Frontends. `make notices` erzeugt die Datei nach einer Änderung der Abhängigkeiten neu, ein Test meldet einen veralteten Stand. Nur im Repository für Tests liegen Fälle aus Apache FOP (Apache License 2.0) und Source Serif 4 (SIL Open Font License 1.1), siehe `NOTICE`. Die Liberation-Schriften und Source Serif 4 (nur Testdaten) stehen unter der SIL Open Font License 1.1. Das sRGB-Profil berechnet pdx selbst.
