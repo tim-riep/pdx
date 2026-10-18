@@ -1,0 +1,69 @@
+MarkInfo Marked true, Sprache "de-DE", 13 Artefakttexte
+Document lang="de-DE"
+  P "Rechnung RE-2026-0001"
+  P "Für unsere Leistungen im Dezember 2025 berechnen wir Ihnen:"
+  Table
+    THead
+      TR
+        TH scope=Column
+          P "Pos."
+        TH scope=Column
+          P "Leistung"
+        TH scope=Column
+          P "Menge"
+        TH scope=Column
+          P "Einzelpreis"
+        TH scope=Column
+          P "Betrag"
+    TBody
+      TR
+        TD
+          P "1"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+        TD
+          P "760,00 €"
+      TR
+        TD
+          P "2"
+        TD
+          P "Workshop vor Ort"
+        TD
+          P "1 Tag"
+        TD
+          P "180,00 €"
+        TD
+          P "180,00 €"
+      TR
+        TD
+          P "3"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+        TD
+          P "60,00 €"
+  Table
+    TBody
+      TR
+        TD
+          P "Nettobetrag"
+        TD
+          P "1.000,00 €"
+      TR
+        TD
+          P "Umsatzsteuer 19 %"
+        TD
+          P "190,00 €"
+      TR
+        TD
+          P "Gesamtbetrag"
+        TD
+          P "1.190,00 €"
+  P "Zahlbar innerhalb von 14 Tagen ohne Abzug. Die Rechnungsdaten liegen dieser Datei zusätzlich maschinenlesbar als factur-x.xml bei."

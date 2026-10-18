@@ -155,3 +155,32 @@ func (c *Content) ShowGlyphs(gids []uint16, adjust []float64) {
 	}
 	c.op("] TJ")
 }
+
+// BeginMarked beginnt eine markierte Inhaltsfolge mit Strukturbezug:
+// /Tag <</MCID n>> BDC (ISO 32000-1 14.6, 14.7.4).
+func (c *Content) BeginMarked(tag Name, mcid int) {
+	var b bytes.Buffer
+	tag.writePDF(&b)
+	b.WriteString(" <</MCID ")
+	b.WriteString(strconv.Itoa(mcid))
+	b.WriteString(">> BDC")
+	c.op(b.String())
+}
+
+// BeginArtifact beginnt einen Artefakt-Bereich: /Artifact BMC (ISO 32000-1
+// 14.8.2.2). Artefakte gehören nicht zum Strukturbaum.
+func (c *Content) BeginArtifact() { c.op("/Artifact BMC") }
+
+// BeginActualText beginnt eine Span mit Ersatztext:
+// /Span <</ActualText …>> BDC (ISO 32000-1 14.9.4). Sie liegt innerhalb
+// markierten Inhalts und trägt keine MCID.
+func (c *Content) BeginActualText(text string) {
+	var b bytes.Buffer
+	b.WriteString("/Span <</ActualText ")
+	TextString(text).writePDF(&b)
+	b.WriteString(">> BDC")
+	c.op(b.String())
+}
+
+// EndMarked beendet eine markierte Inhaltsfolge: EMC.
+func (c *Content) EndMarked() { c.op("EMC") }

@@ -102,6 +102,18 @@ func (pc *pageCtx) area(a areatree.Area) error {
 }
 
 func (pc *pageCtx) draw(a areatree.Area) error {
+	// Im Tagged PDF wird jeder Blattbereich als Inhalt oder Artefakt
+	// markiert. Container markieren nur Hintergrund und Rahmen selbst, Text
+	// markiert innerhalb des Textobjekts wegen der Trennstriche.
+	if t := pc.r.tag; t != nil {
+		switch a.(type) {
+		case *areatree.Container, *areatree.GlyphRun, *areatree.Link:
+		default:
+			m := t.marks[a]
+			pc.begin(m)
+			defer pc.c.EndMarked()
+		}
+	}
 	switch v := a.(type) {
 	case *areatree.Container:
 		return pc.container(v)
@@ -121,7 +133,20 @@ func (pc *pageCtx) draw(a areatree.Area) error {
 	return fmt.Errorf("unbekannter Bereich %T", a)
 }
 
+// begin öffnet die markierte Inhaltsfolge eines Bereichs.
+func (pc *pageCtx) begin(m mark) {
+	if m.artifact {
+		pc.c.BeginArtifact()
+		return
+	}
+	pc.c.BeginMarked(m.tag, m.mcid)
+}
+
 func (pc *pageCtx) container(c *areatree.Container) error {
+	decor := pc.r.tag != nil && (c.Background != nil || hasBorder(c.Border))
+	if decor {
+		pc.c.BeginArtifact()
+	}
 	if c.Background != nil {
 		pc.c.Save()
 		if err := pc.fill(*c.Background); err != nil {
@@ -133,6 +158,9 @@ func (pc *pageCtx) container(c *areatree.Container) error {
 	}
 	if err := pc.borders(c.Rect, c.Border); err != nil {
 		return err
+	}
+	if decor {
+		pc.c.EndMarked()
 	}
 	clip := c.Kind == areatree.KindViewport
 	if clip {

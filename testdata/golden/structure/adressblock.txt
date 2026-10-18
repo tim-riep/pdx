@@ -1,0 +1,14 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  Div
+    P "Beispiel GmbH · Hauptstraße 1 · 50667 Köln"
+    P "Herrn"
+    P "Dr. Max Mustermann"
+    P "Lindenallee 7 b"
+    P "80331 München"
+  Div
+    P "Ihr Zeichen: MM-17"
+    P "Unser Zeichen: BG-2026-001"
+    P "Datum: 01.01.2026"
+  P "Absolut positionierte Blöcke"
+  P "Der Adressblock und die Infospalte stehen fest auf der Seite und nehmen keinen Platz im Fluss ein. Die Falzmarke links ist relativ zur Region positioniert. Dieser Text beginnt am oberen Rand der Region body."

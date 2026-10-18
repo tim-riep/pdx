@@ -39,7 +39,12 @@ func (pc *pageCtx) link(l *areatree.Link) error {
 	default:
 		return fmt.Errorf("Link ohne Ziel")
 	}
-	pc.annots = append(pc.annots, pc.r.d.Add(a))
+	ref := pc.r.d.Reserve()
+	if pc.r.tag != nil {
+		pc.r.tag.annotation(l, a, ref)
+	}
+	pc.r.d.Set(ref, a)
+	pc.annots = append(pc.annots, ref)
 	return nil
 }
 

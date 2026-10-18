@@ -49,6 +49,7 @@ Aufruf:
   pdx fmt [-w] <template.xml>
   pdx pack <verzeichnis> [-o vorlage.zip]
   pdx verify <datei.pdf> [--profile NAME] [--format text|json]
+  pdx structure <datei.pdf>
   pdx version
 
 Eine Vorlage ist ein ZIP-Paket oder ein Verzeichnis mit template.xml.
@@ -74,6 +75,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdFmt(args[1:], stdout, stderr)
 	case "pack":
 		return cmdPack(args[1:], stdout, stderr)
+	case "structure":
+		return cmdStructure(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintf(stdout, "pdx %s (veraPDF %s)\n", pdx.Version, verapdf.Version)
 		return 0
@@ -118,6 +121,7 @@ func cmdRender(args []string, stdout, stderr io.Writer) int {
 	strict := fs.Bool("strict", false, "Daten vor dem Setzen gegen das Daten-XSD der Vorlage prüfen")
 	lang := fs.String("lang", "", "Sprache der Texte und Formate einer Vorlage")
 	foOut := fs.String("fo", "", "erzeugtes FO einer Vorlage zusätzlich in diese Datei schreiben")
+	tagged := fs.Bool("tagged", false, "Tagged PDF mit Strukturbaum schreiben, auch wenn das Profil es nicht verlangt")
 	var attach, fonts multi
 	fs.Var(&attach, "attach", "Anhang DATEI:BEZIEHUNG:MIME, wiederholbar")
 	fs.Var(&fonts, "font", "zusätzliche Schriftdatei, wiederholbar")
@@ -138,7 +142,7 @@ func cmdRender(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "pdx render: %v\n", err)
 		return 2
 	}
-	opts := pdx.Options{Profile: *prof, CreationDate: created}
+	opts := pdx.Options{Profile: *prof, CreationDate: created, Tagged: *tagged}
 	for _, a := range attach {
 		att, err := parseAttach(a)
 		if err != nil {

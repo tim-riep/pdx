@@ -1,0 +1,13 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  P "Sonderzeichen & Typografie"
+  P "Umlaute: ä ö ü Ä Ö Ü · Eszett: ß ẞ · Währung: 1.234,56 € · 9,90 $ · 5 £"
+  P "Anführungen: „deutsch“ ‚einfach‘ »französisch« ›einfach‹ “englisch”"
+  P "Striche: Bindestrich - Halbgeviert – Geviert — Minus − · Auslassung …"
+  P "Sonstiges: § 12 Abs. 3 · © ® ™ · ° · ± × ÷ · ½ ¼ ¾ · µ · Nr.\u00a05 mit festem Leerzeichen"
+  P "Times: Grüße aus Köln, Straße für Straße – „Qualität“ für 19,99 €."
+  P "Courier: Grüße, Maße, Größe: 100 € | 0O 1lI"
+  P "Kursiv: Größere Ähnlichkeit übte Spaß Ω"
+  P "Fett: ÄÖÜ äöü ß € „Zitat“"
+  P "Ligaturen und Kerning (Liberation Serif): Offizielle Effizienz, fließend, AVATAR, Tower, Wolfgang."
+  P "Leerraum wird zusammengefasst, Zeilenumbrüche bleiben mit linefeed-treatment erhalten."

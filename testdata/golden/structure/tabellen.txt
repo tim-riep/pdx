@@ -1,0 +1,472 @@
+MarkInfo Marked true, Sprache "de-DE", 9 Artefakttexte
+Document lang="de-DE"
+  P "Positionen"
+  Table
+    THead
+      TR
+        TH scope=Column
+          P "Pos."
+        TH scope=Column
+          P "Leistung"
+        TH scope=Column
+          P "Menge"
+        TH scope=Column
+          P "Betrag"
+    TBody
+      TR
+        TD
+          P "1"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "2"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "3"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "4"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "5"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "6"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "7"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "8"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "9"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "10"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "11"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "12"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "13"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "14"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "15"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "16"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "17"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "18"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "19"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "20"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "21"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "22"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "23"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "24"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "25"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "26"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "27"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "28"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "29"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "30"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "31"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "32"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "33"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "34"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "35"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "36"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "37"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "38"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "39"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "40"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "41"
+        TD
+          P "Workshop vor Ort mit Vorbereitung, Durchführung und Nachbereitung"
+        TD
+          P "1 Tag"
+        TD
+          P "1.180,00 €"
+      TR
+        TD
+          P "42"
+        TD
+          P "Reisekosten pauschal"
+        TD
+          P "1"
+        TD
+          P "60,00 €"
+      TR
+        TD
+          P "43"
+        TD
+          P "Lizenz Dokumentdesigner"
+        TD
+          P "3"
+        TD
+          P "240,00 €"
+      TR
+        TD
+          P "44"
+        TD
+          P "Schulung Anwender"
+        TD
+          P "2 Tage"
+        TD
+          P "1.900,00 €"
+      TR
+        TD
+          P "45"
+        TD
+          P "Beratung Konzeptphase"
+        TD
+          P "8 h"
+        TD
+          P "95,00 €"
+      TR
+        TD
+          P "46"
+        TD
+          P "Diese Zeile hat einen langen Text, der über viele Zeilen läuft. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat."
+        TD
+          P "0,00 €"
+    TFoot
+      TR
+        TD
+          P "Fortsetzung auf der nächsten Seite"
+  P "Verbund und getrennte Rahmen"
+  Table
+    TBody
+      TR
+        TD
+          P "Zwei Zeilen hoch, senkrecht zentriert"
+        TD
+          P "B1"
+        TD
+          P "C1 mit etwas mehr Text, der in der breiten Spalte umbricht und die Zeile höher macht."
+      TR
+        TD
+          P "B2 und C2 verbunden"
+  P "Listen"
+  L
+    Div
+      Div
+        P "•"
+      Div
+        P "Aufzählungspunkt mit kurzem Text."
+    Div
+      Div
+        P "•"
+      Div
+        P "Ein längerer Punkt, dessen Text über mehr als eine Zeile läuft, damit man sieht, dass der Body bündig unter sich fortgesetzt wird und das Label oben steht."
+        L
+          Div
+            Div
+              P "a)"
+            Div
+              P "Verschachtelte Liste, Label rechtsbündig."
+          Div
+            Div
+              P "b)"
+            Div
+              P "Zweiter Unterpunkt."
+    Div
+      Div
+        P "3."
+      Div
+        P "Nummerierter Punkt mit Ausdruck im Einzug."

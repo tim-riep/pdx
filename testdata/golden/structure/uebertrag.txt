@@ -1,0 +1,517 @@
+MarkInfo Marked true, Sprache "de-DE", 17 Artefakttexte
+Document lang="de-DE"
+  P "Einleitung"
+  P "Die folgende Aufstellung läuft über mehrere Seiten. Jede Zeile trägt zwei Marker: den Übertrag vor der Zeile und die Zwischensumme nach der Zeile. Der Tabellenfuß zeigt die Zwischensumme der Seite, der Kopf der Folgeseite den Übertrag."
+  P "Positionen"
+  Table
+    THead
+      TR
+        TH scope=Column
+          P "Pos."
+        TH scope=Column
+          P "Leistung"
+        TH scope=Column
+          P "Betrag"
+      TR
+        TH scope=Column
+          P "Übertrag"
+        TH scope=Column
+          P "0,00 €"
+    TBody
+      TR
+        TD
+          P "1"
+        TD
+          P "Konzeption Abschnitt 1"
+        TD
+          P "89,19 €"
+      TR
+        TD
+          P "2"
+        TD
+          P "Umsetzung Modul Abschnitt 2"
+        TD
+          P "168,38 €"
+      TR
+        TD
+          P "3"
+        TD
+          P "Test und Abnahme Abschnitt 3"
+        TD
+          P "247,57 €"
+      TR
+        TD
+          P "4"
+        TD
+          P "Schulung Abschnitt 4"
+        TD
+          P "326,76 €"
+      TR
+        TD
+          P "5"
+        TD
+          P "Dokumentation Abschnitt 5"
+        TD
+          P "405,95 €"
+      TR
+        TD
+          P "6"
+        TD
+          P "Reisekosten Abschnitt 6"
+        TD
+          P "485,14 €"
+      TR
+        TD
+          P "7"
+        TD
+          P "Lizenzgebühr Abschnitt 7"
+        TD
+          P "564,33 €"
+      TR
+        TD
+          P "8"
+        TD
+          P "Beratung Abschnitt 8"
+        TD
+          P "643,52 €"
+      TR
+        TD
+          P "9"
+        TD
+          P "Konzeption Abschnitt 9"
+        TD
+          P "722,71 €"
+      TR
+        TD
+          P "10"
+        TD
+          P "Umsetzung Modul Abschnitt 10"
+        TD
+          P "801,90 €"
+      TR
+        TD
+          P "11"
+        TD
+          P "Test und Abnahme Abschnitt 11"
+        TD
+          P "881,09 €"
+      TR
+        TD
+          P "12"
+        TD
+          P "Schulung Abschnitt 12"
+        TD
+          P "60,28 €"
+      TR
+        TD
+          P "13"
+        TD
+          P "Dokumentation Abschnitt 13"
+        TD
+          P "139,47 €"
+      TR
+        TD
+          P "14"
+        TD
+          P "Reisekosten Abschnitt 14"
+        TD
+          P "218,66 €"
+      TR
+        TD
+          P "15"
+        TD
+          P "Lizenzgebühr Abschnitt 15"
+        TD
+          P "297,85 €"
+      TR
+        TD
+          P "16"
+        TD
+          P "Beratung Abschnitt 16"
+        TD
+          P "377,04 €"
+      TR
+        TD
+          P "17"
+        TD
+          P "Konzeption Abschnitt 17"
+        TD
+          P "456,23 €"
+      TR
+        TD
+          P "18"
+        TD
+          P "Umsetzung Modul Abschnitt 18"
+        TD
+          P "535,42 €"
+      TR
+        TD
+          P "19"
+        TD
+          P "Test und Abnahme Abschnitt 19"
+        TD
+          P "614,61 €"
+      TR
+        TD
+          P "20"
+        TD
+          P "Schulung Abschnitt 20"
+        TD
+          P "693,80 €"
+      TR
+        TD
+          P "21"
+        TD
+          P "Dokumentation Abschnitt 21"
+        TD
+          P "772,99 €"
+      TR
+        TD
+          P "22"
+        TD
+          P "Reisekosten Abschnitt 22"
+        TD
+          P "852,18 €"
+      TR
+        TD
+          P "23"
+        TD
+          P "Lizenzgebühr Abschnitt 23"
+        TD
+          P "31,37 €"
+      TR
+        TD
+          P "24"
+        TD
+          P "Beratung Abschnitt 24"
+        TD
+          P "110,56 €"
+      TR
+        TD
+          P "25"
+        TD
+          P "Konzeption Abschnitt 25"
+        TD
+          P "189,75 €"
+      TR
+        TD
+          P "26"
+        TD
+          P "Umsetzung Modul Abschnitt 26"
+        TD
+          P "268,94 €"
+      TR
+        TD
+          P "27"
+        TD
+          P "Test und Abnahme Abschnitt 27"
+        TD
+          P "348,13 €"
+      TR
+        TD
+          P "28"
+        TD
+          P "Schulung Abschnitt 28"
+        TD
+          P "427,32 €"
+      TR
+        TD
+          P "29"
+        TD
+          P "Dokumentation Abschnitt 29"
+        TD
+          P "506,51 €"
+      TR
+        TD
+          P "30"
+        TD
+          P "Reisekosten Abschnitt 30"
+        TD
+          P "585,70 €"
+      TR
+        TD
+          P "31"
+        TD
+          P "Lizenzgebühr Abschnitt 31"
+        TD
+          P "664,89 €"
+      TR
+        TD
+          P "32"
+        TD
+          P "Beratung Abschnitt 32"
+        TD
+          P "744,08 €"
+      TR
+        TD
+          P "33"
+        TD
+          P "Konzeption Abschnitt 33"
+        TD
+          P "823,27 €"
+      TR
+        TD
+          P "34"
+        TD
+          P "Umsetzung Modul Abschnitt 34"
+        TD
+          P "902,46 €"
+      TR
+        TD
+          P "35"
+        TD
+          P "Test und Abnahme Abschnitt 35"
+        TD
+          P "81,65 €"
+      TR
+        TD
+          P "36"
+        TD
+          P "Schulung Abschnitt 36"
+        TD
+          P "160,84 €"
+      TR
+        TD
+          P "37"
+        TD
+          P "Dokumentation Abschnitt 37"
+        TD
+          P "240,03 €"
+      TR
+        TD
+          P "38"
+        TD
+          P "Reisekosten Abschnitt 38"
+        TD
+          P "319,22 €"
+      TR
+        TD
+          P "39"
+        TD
+          P "Lizenzgebühr Abschnitt 39"
+        TD
+          P "398,41 €"
+      TR
+        TD
+          P "40"
+        TD
+          P "Beratung Abschnitt 40"
+        TD
+          P "477,60 €"
+      TR
+        TD
+          P "41"
+        TD
+          P "Konzeption Abschnitt 41"
+        TD
+          P "556,79 €"
+      TR
+        TD
+          P "42"
+        TD
+          P "Umsetzung Modul Abschnitt 42"
+        TD
+          P "635,98 €"
+      TR
+        TD
+          P "43"
+        TD
+          P "Test und Abnahme Abschnitt 43"
+        TD
+          P "715,17 €"
+      TR
+        TD
+          P "44"
+        TD
+          P "Schulung Abschnitt 44"
+        TD
+          P "794,36 €"
+      TR
+        TD
+          P "45"
+        TD
+          P "Dokumentation Abschnitt 45"
+        TD
+          P "873,55 €"
+      TR
+        TD
+          P "46"
+        TD
+          P "Reisekosten Abschnitt 46"
+        TD
+          P "52,74 €"
+      TR
+        TD
+          P "47"
+        TD
+          P "Lizenzgebühr Abschnitt 47"
+        TD
+          P "131,93 €"
+      TR
+        TD
+          P "48"
+        TD
+          P "Beratung Abschnitt 48"
+        TD
+          P "211,12 €"
+      TR
+        TD
+          P "49"
+        TD
+          P "Konzeption Abschnitt 49"
+        TD
+          P "290,31 €"
+      TR
+        TD
+          P "50"
+        TD
+          P "Umsetzung Modul Abschnitt 50"
+        TD
+          P "369,50 €"
+      TR
+        TD
+          P "51"
+        TD
+          P "Test und Abnahme Abschnitt 51"
+        TD
+          P "448,69 €"
+      TR
+        TD
+          P "52"
+        TD
+          P "Schulung Abschnitt 52"
+        TD
+          P "527,88 €"
+      TR
+        TD
+          P "53"
+        TD
+          P "Dokumentation Abschnitt 53"
+        TD
+          P "607,07 €"
+      TR
+        TD
+          P "54"
+        TD
+          P "Reisekosten Abschnitt 54"
+        TD
+          P "686,26 €"
+      TR
+        TD
+          P "55"
+        TD
+          P "Lizenzgebühr Abschnitt 55"
+        TD
+          P "765,45 €"
+      TR
+        TD
+          P "56"
+        TD
+          P "Beratung Abschnitt 56"
+        TD
+          P "844,64 €"
+      TR
+        TD
+          P "57"
+        TD
+          P "Konzeption Abschnitt 57"
+        TD
+          P "23,83 €"
+      TR
+        TD
+          P "58"
+        TD
+          P "Umsetzung Modul Abschnitt 58"
+        TD
+          P "103,02 €"
+      TR
+        TD
+          P "59"
+        TD
+          P "Test und Abnahme Abschnitt 59"
+        TD
+          P "182,21 €"
+      TR
+        TD
+          P "60"
+        TD
+          P "Schulung Abschnitt 60"
+        TD
+          P "261,40 €"
+      TR
+        TD
+          P "61"
+        TD
+          P "Dokumentation Abschnitt 61"
+        TD
+          P "340,59 €"
+      TR
+        TD
+          P "62"
+        TD
+          P "Reisekosten Abschnitt 62"
+        TD
+          P "419,78 €"
+      TR
+        TD
+          P "63"
+        TD
+          P "Lizenzgebühr Abschnitt 63"
+        TD
+          P "498,97 €"
+      TR
+        TD
+          P "64"
+        TD
+          P "Beratung Abschnitt 64"
+        TD
+          P "578,16 €"
+      TR
+        TD
+          P "65"
+        TD
+          P "Konzeption Abschnitt 65"
+        TD
+          P "657,35 €"
+      TR
+        TD
+          P "66"
+        TD
+          P "Umsetzung Modul Abschnitt 66"
+        TD
+          P "736,54 €"
+      TR
+        TD
+          P "67"
+        TD
+          P "Test und Abnahme Abschnitt 67"
+        TD
+          P "815,73 €"
+      TR
+        TD
+          P "68"
+        TD
+          P "Schulung Abschnitt 68"
+        TD
+          P "894,92 €"
+      TR
+        TD
+          P "69"
+        TD
+          P "Dokumentation Abschnitt 69"
+        TD
+          P "74,11 €"
+      TR
+        TD
+          P "70"
+        TD
+          P "Reisekosten Abschnitt 70"
+        TD
+          P "153,30 €"
+    TFoot
+      TR
+        TD
+          P "Zwischensumme"
+        TD
+          P "31.887,15 €"
+  P "Gesamtsumme 31.887,15 €"

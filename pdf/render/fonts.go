@@ -106,6 +106,10 @@ func (pc *pageCtx) glyphs(g *areatree.GlyphRun) error {
 		return err
 	}
 	pc.c.BeginText()
+	m, tagged := pc.r.tag.markOf(g)
+	if tagged {
+		pc.begin(m)
+	}
 	pc.c.Font(name, size)
 	pc.c.TextMatrix(1, 0, 0, 1, pc.x(g.Origin.X), pc.y(g.Origin.Y))
 
@@ -120,7 +124,16 @@ func (pc *pageCtx) glyphs(g *areatree.GlyphRun) error {
 			gids, adj = gids[:0], adj[:0]
 		}
 	}
-	for _, gl := range g.Glyphs {
+	span := false // Span des Trennstrichs offen
+	for i, gl := range g.Glyphs {
+		if tagged && m.hyphen && !m.artifact && i == len(g.Glyphs)-1 {
+			// Der Trennstrich aus dem Zeilenumbruch steht für einen weichen
+			// Trennstrich, damit das Wort beim Vorlesen und Kopieren ganz
+			// bleibt (ISO 32000-1 14.8.2.2.3).
+			flush()
+			pc.c.BeginActualText("\u00ad")
+			span = true
+		}
 		if gl.YOffset != rise {
 			flush()
 			rise = gl.YOffset
@@ -142,6 +155,12 @@ func (pc *pageCtx) glyphs(g *areatree.GlyphRun) error {
 		carry += e.Width[gl.ID] - gl.Advance.Pt()*k + xo
 	}
 	flush()
+	if span {
+		pc.c.EndMarked()
+	}
+	if tagged {
+		pc.c.EndMarked()
+	}
 	pc.c.EndText()
 	pc.c.Restore()
 	return nil

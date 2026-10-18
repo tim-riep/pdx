@@ -18,7 +18,13 @@ pdx render eingabe.fo -o ausgabe.pdf --profile pdfa-3b --attach factur-x.xml:Alt
 pdx verify ausgabe.pdf --profile pdfa-3b
 ```
 
-`render` schreibt das PDF. Ohne `--creation-date` gilt `SOURCE_DATE_EPOCH`, sonst die aktuelle Zeit. Weitere Optionen: `--font DATEI` (wiederholbar) registriert eigene Schriften, `--area-tree DATEI` schreibt den Area Tree als Text.
+`render` schreibt das PDF. Ohne `--creation-date` gilt `SOURCE_DATE_EPOCH`, sonst die aktuelle Zeit. Weitere Optionen: `--font DATEI` (wiederholbar) registriert eigene Schriften, `--area-tree DATEI` schreibt den Area Tree als Text, `--tagged` schreibt Tagged PDF mit Strukturbaum auch dann, wenn das Profil es nicht verlangt.
+
+```bash
+pdx structure ausgabe.pdf
+```
+
+`structure` gibt den logischen Strukturbaum aus: je Element Typ, Sprache, Alternativtext, Bezug von Kopfzellen und Text in Lesereihenfolge. Widersprüche zwischen Baum, ParentTree und markiertem Inhalt (unmarkierter Inhalt, fehlende oder verwaiste MCIDs) erscheinen als Befund und ergeben Exit-Code 1.
 
 Mit einer Vorlage (ZIP-Paket oder Verzeichnis mit `template.xml`) werden aus Daten Dokumente:
 

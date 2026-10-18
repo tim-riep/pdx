@@ -1,0 +1,13 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  P "Barcodes"
+  P "QR-Code mit Adresse (natürliche Größe, Modul 0,5 mm):"
+  Div
+    Figure
+  P "GiroCode über 1.190,00 € (35 mm breit):"
+  Div
+    Figure
+  P "DataMatrix und Code 128 in einer Zeile, blau:"
+  P
+    Figure
+    Figure

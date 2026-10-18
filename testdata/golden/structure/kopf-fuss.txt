@@ -1,0 +1,6 @@
+MarkInfo Marked true, Sprache "de-DE", 10 Artefakttexte
+Document lang="de-DE"
+  P "Kopf- und Fußbereiche"
+  P "Diese Seiten zeigen statische Inhalte mit Hintergrundfarbe, Rahmen, Logo und Seitenzahl. Die Zählung beginnt bei fünf. Der Fluss erzwingt mit Zeilenumbrüchen eine zweite Seite."
+  P "Zeile eins Zeile zwei Zeile vier nach einer Leerzeile"
+  P "Dieser Block steht wegen seines Abstands auf der zweiten Seite. Am Seitenanfang wird space-before verworfen."

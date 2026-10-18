@@ -1,0 +1,18 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  P "Bilder"
+  P "JPEG in natürlicher Größe (72 dpi):"
+  Div
+    Figure
+  P "JPEG auf 50 mm Breite, Höhe proportional, und auf halbe Größe:"
+  P
+    Figure
+    Figure
+  P "PNG mit Alphakanal auf farbigem Hintergrund:"
+  P
+    "Logo"
+    Figure
+    "im Text mit Grundlinie an der Bildunterkante."
+  P "Graustufen-PNG, verzerrt mit scaling=\"non-uniform\":"
+  Div
+    Figure

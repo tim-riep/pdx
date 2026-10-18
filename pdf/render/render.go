@@ -24,6 +24,9 @@ type Options struct {
 	// Trace erhält, wenn gesetzt, je Seite die Operatorbereiche mit der
 	// Vorlagen-ID der Bereiche. Die Ausgabe bleibt unverändert.
 	Trace *Trace
+	// Tagged schreibt Tagged PDF mit Strukturbaum. Profile, die Tagging
+	// verlangen (PDF/A Stufe A, PDF/UA), schalten es immer ein.
+	Tagged bool
 }
 
 // Trace ordnet Operatoren der Inhaltsströme den Vorlagenelementen zu, damit
@@ -87,6 +90,9 @@ type renderer struct {
 
 	pageRefs []pdf.Ref
 	pageIdx  int
+
+	// tag plant den Strukturbaum, nil ohne Tagged PDF.
+	tag *tagger
 }
 
 func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
@@ -102,6 +108,10 @@ func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
 	r := &renderer{doc: doc, opts: opts, d: pdf.NewDocument(opts.Profile), gs: map[string]pdf.Ref{}}
 	r.fonts = newFontSet(r)
 	r.images = newImageSet(r)
+	if c := profile.ClaimOf(opts.Profile); opts.Tagged || c.Level == "A" || c.UA > 0 {
+		r.tag = newTagger(doc)
+		r.tag.plan()
+	}
 	return r, nil
 }
 
@@ -143,6 +153,9 @@ func (r *renderer) build() error {
 	r.catalog = pdf.D("Type", pdf.Name("Catalog"), "Pages", r.pages)
 	if r.doc.Meta.Lang != "" {
 		r.catalog.Set("Lang", pdf.TextString(r.doc.Meta.Lang))
+	}
+	if r.tag != nil {
+		r.tag.write(r)
 	}
 	r.info = r.infoDict()
 	if len(r.doc.Bookmarks) > 0 {
@@ -220,6 +233,13 @@ func (r *renderer) page(p *areatree.Page) (pdf.Ref, error) {
 	}
 	if len(pc.annots) > 0 {
 		page.Set("Annots", pc.annots)
+	}
+	if r.tag != nil {
+		if len(r.tag.pages[r.pageIdx]) > 0 {
+			page.Set("StructParents", pdf.Int(r.pageIdx))
+		}
+		// Tabulatorreihenfolge nach Struktur (ISO 14289-1 7.18.3).
+		page.Set("Tabs", pdf.Name("S"))
 	}
 	ref := r.pageRefs[r.pageIdx]
 	r.d.Set(ref, page)

@@ -1,0 +1,683 @@
+MarkInfo Marked true, Sprache "de-DE", 42 Artefakttexte
+Document lang="de-DE"
+  H1 "Rechnung"
+  Table
+    THead
+      TR
+        TH scope=Column
+          P "Pos."
+        TH scope=Column
+          P "Leistung"
+        TH scope=Column
+          P "Menge"
+        TH scope=Column
+          P "Einzelpreis"
+        TH scope=Column
+          P "Betrag"
+    TBody
+      TR
+        TD
+          P "1"
+        TD
+          P "Workshop vor Ort 1"
+        TD
+          P "8"
+        TD
+          P "64,37"
+        TD
+          P "514,96"
+      TR
+        TD
+          P "2"
+        TD
+          P "Implementierung Modul 2"
+        TD
+          P "6"
+        TD
+          P "83,74"
+        TD
+          P "502,44"
+      TR
+        TD
+          P "3"
+        TD
+          P "Test und Abnahme 3"
+        TD
+          P "4"
+        TD
+          P "103,11"
+        TD
+          P "412,44"
+      TR
+        TD
+          P "4"
+        TD
+          P "Schulung Anwender 4"
+        TD
+          P "2"
+        TD
+          P "122,48"
+        TD
+          P "244,96"
+      TR
+        TD
+          P "5"
+        TD
+          P "Dokumentation 5"
+        TD
+          P "9"
+        TD
+          P "141,85"
+        TD
+          P "1.276,65"
+      TR
+        TD
+          P "6"
+        TD
+          P "Reisekosten pauschal 6"
+        TD
+          P "7"
+        TD
+          P "161,22"
+        TD
+          P "1.128,54"
+      TR
+        TD
+          P "7"
+        TD
+          P "Lizenz Dokumentdesigner 7"
+        TD
+          P "5"
+        TD
+          P "180,59"
+        TD
+          P "902,95"
+      TR
+        TD
+          P "8"
+        TD
+          P "Wartung pro Monat 8"
+        TD
+          P "3"
+        TD
+          P "199,96"
+        TD
+          P "599,88"
+      TR
+        TD
+          P "9"
+        TD
+          P "Datenmigration 9"
+        TD
+          P "1"
+        TD
+          P "219,33"
+        TD
+          P "219,33"
+      TR
+        TD
+          P "10"
+        TD
+          P "Beratung Konzeptphase 10"
+        TD
+          P "8"
+        TD
+          P "238,70"
+        TD
+          P "1.909,60"
+      TR
+        TD
+          P "11"
+        TD
+          P "Workshop vor Ort 11"
+        TD
+          P "6"
+        TD
+          P "258,07"
+        TD
+          P "1.548,42"
+      TR
+        TD
+          P "12"
+        TD
+          P "Implementierung Modul 12"
+        TD
+          P "4"
+        TD
+          P "277,44"
+        TD
+          P "1.109,76"
+      TR
+        TD
+          P "13"
+        TD
+          P "Test und Abnahme 13"
+        TD
+          P "2"
+        TD
+          P "296,81"
+        TD
+          P "593,62"
+      TR
+        TD
+          P "14"
+        TD
+          P "Schulung Anwender 14"
+        TD
+          P "9"
+        TD
+          P "316,18"
+        TD
+          P "2.845,62"
+      TR
+        TD
+          P "15"
+        TD
+          P "Dokumentation 15"
+        TD
+          P "7"
+        TD
+          P "335,55"
+        TD
+          P "2.348,85"
+      TR
+        TD
+          P "16"
+        TD
+          P "Reisekosten pauschal 16"
+        TD
+          P "5"
+        TD
+          P "354,92"
+        TD
+          P "1.774,60"
+      TR
+        TD
+          P "17"
+        TD
+          P "Lizenz Dokumentdesigner 17"
+        TD
+          P "3"
+        TD
+          P "374,29"
+        TD
+          P "1.122,87"
+      TR
+        TD
+          P "18"
+        TD
+          P "Wartung pro Monat 18"
+        TD
+          P "1"
+        TD
+          P "393,66"
+        TD
+          P "393,66"
+      TR
+        TD
+          P "19"
+        TD
+          P "Datenmigration 19"
+        TD
+          P "8"
+        TD
+          P "413,03"
+        TD
+          P "3.304,24"
+      TR
+        TD
+          P "20"
+        TD
+          P "Beratung Konzeptphase 20"
+        TD
+          P "6"
+        TD
+          P "52,40"
+        TD
+          P "314,40"
+      TR
+        TD
+          P "21"
+        TD
+          P "Workshop vor Ort 21"
+        TD
+          P "4"
+        TD
+          P "71,77"
+        TD
+          P "287,08"
+      TR
+        TD
+          P "22"
+        TD
+          P "Implementierung Modul 22"
+        TD
+          P "2"
+        TD
+          P "91,14"
+        TD
+          P "182,28"
+      TR
+        TD
+          P "23"
+        TD
+          P "Test und Abnahme 23"
+        TD
+          P "9"
+        TD
+          P "110,51"
+        TD
+          P "994,59"
+      TR
+        TD
+          P "24"
+        TD
+          P "Schulung Anwender 24"
+        TD
+          P "7"
+        TD
+          P "129,88"
+        TD
+          P "909,16"
+      TR
+        TD
+          P "25"
+        TD
+          P "Dokumentation 25"
+        TD
+          P "5"
+        TD
+          P "149,25"
+        TD
+          P "746,25"
+      TR
+        TD
+          P "26"
+        TD
+          P "Reisekosten pauschal 26"
+        TD
+          P "3"
+        TD
+          P "168,62"
+        TD
+          P "505,86"
+      TR
+        TD
+          P "27"
+        TD
+          P "Lizenz Dokumentdesigner 27"
+        TD
+          P "1"
+        TD
+          P "187,99"
+        TD
+          P "187,99"
+      TR
+        TD
+          P "28"
+        TD
+          P "Wartung pro Monat 28"
+        TD
+          P "8"
+        TD
+          P "207,36"
+        TD
+          P "1.658,88"
+      TR
+        TD
+          P "29"
+        TD
+          P "Datenmigration 29"
+        TD
+          P "6"
+        TD
+          P "226,73"
+        TD
+          P "1.360,38"
+      TR
+        TD
+          P "30"
+        TD
+          P "Beratung Konzeptphase 30"
+        TD
+          P "4"
+        TD
+          P "246,10"
+        TD
+          P "984,40"
+      TR
+        TD
+          P "31"
+        TD
+          P "Workshop vor Ort 31"
+        TD
+          P "2"
+        TD
+          P "265,47"
+        TD
+          P "530,94"
+      TR
+        TD
+          P "32"
+        TD
+          P "Implementierung Modul 32"
+        TD
+          P "9"
+        TD
+          P "284,84"
+        TD
+          P "2.563,56"
+      TR
+        TD
+          P "33"
+        TD
+          P "Test und Abnahme 33"
+        TD
+          P "7"
+        TD
+          P "304,21"
+        TD
+          P "2.129,47"
+      TR
+        TD
+          P "34"
+        TD
+          P "Schulung Anwender 34"
+        TD
+          P "5"
+        TD
+          P "323,58"
+        TD
+          P "1.617,90"
+      TR
+        TD
+          P "35"
+        TD
+          P "Dokumentation 35"
+        TD
+          P "3"
+        TD
+          P "342,95"
+        TD
+          P "1.028,85"
+      TR
+        TD
+          P "36"
+        TD
+          P "Reisekosten pauschal 36"
+        TD
+          P "1"
+        TD
+          P "362,32"
+        TD
+          P "362,32"
+      TR
+        TD
+          P "37"
+        TD
+          P "Lizenz Dokumentdesigner 37"
+        TD
+          P "8"
+        TD
+          P "381,69"
+        TD
+          P "3.053,52"
+      TR
+        TD
+          P "38"
+        TD
+          P "Wartung pro Monat 38"
+        TD
+          P "6"
+        TD
+          P "401,06"
+        TD
+          P "2.406,36"
+      TR
+        TD
+          P "39"
+        TD
+          P "Datenmigration 39"
+        TD
+          P "4"
+        TD
+          P "420,43"
+        TD
+          P "1.681,72"
+      TR
+        TD
+          P "40"
+        TD
+          P "Beratung Konzeptphase 40"
+        TD
+          P "2"
+        TD
+          P "59,80"
+        TD
+          P "119,60"
+      TR
+        TD
+          P "41"
+        TD
+          P "Workshop vor Ort 41"
+        TD
+          P "9"
+        TD
+          P "79,17"
+        TD
+          P "712,53"
+      TR
+        TD
+          P "42"
+        TD
+          P "Implementierung Modul 42"
+        TD
+          P "7"
+        TD
+          P "98,54"
+        TD
+          P "689,78"
+      TR
+        TD
+          P "43"
+        TD
+          P "Test und Abnahme 43"
+        TD
+          P "5"
+        TD
+          P "117,91"
+        TD
+          P "589,55"
+      TR
+        TD
+          P "44"
+        TD
+          P "Schulung Anwender 44"
+        TD
+          P "3"
+        TD
+          P "137,28"
+        TD
+          P "411,84"
+      TR
+        TD
+          P "45"
+        TD
+          P "Dokumentation 45"
+        TD
+          P "1"
+        TD
+          P "156,65"
+        TD
+          P "156,65"
+      TR
+        TD
+          P "46"
+        TD
+          P "Reisekosten pauschal 46"
+        TD
+          P "8"
+        TD
+          P "176,02"
+        TD
+          P "1.408,16"
+      TR
+        TD
+          P "47"
+        TD
+          P "Lizenz Dokumentdesigner 47"
+        TD
+          P "6"
+        TD
+          P "195,39"
+        TD
+          P "1.172,34"
+      TR
+        TD
+          P "48"
+        TD
+          P "Wartung pro Monat 48"
+        TD
+          P "4"
+        TD
+          P "214,76"
+        TD
+          P "859,04"
+      TR
+        TD
+          P "49"
+        TD
+          P "Datenmigration 49"
+        TD
+          P "2"
+        TD
+          P "234,13"
+        TD
+          P "468,26"
+      TR
+        TD
+          P "50"
+        TD
+          P "Beratung Konzeptphase 50"
+        TD
+          P "9"
+        TD
+          P "253,50"
+        TD
+          P "2.281,50"
+      TR
+        TD
+          P "51"
+        TD
+          P "Workshop vor Ort 51"
+        TD
+          P "7"
+        TD
+          P "272,87"
+        TD
+          P "1.910,09"
+      TR
+        TD
+          P "52"
+        TD
+          P "Implementierung Modul 52"
+        TD
+          P "5"
+        TD
+          P "292,24"
+        TD
+          P "1.461,20"
+      TR
+        TD
+          P "53"
+        TD
+          P "Test und Abnahme 53"
+        TD
+          P "3"
+        TD
+          P "311,61"
+        TD
+          P "934,83"
+      TR
+        TD
+          P "54"
+        TD
+          P "Schulung Anwender 54"
+        TD
+          P "1"
+        TD
+          P "330,98"
+        TD
+          P "330,98"
+      TR
+        TD
+          P "55"
+        TD
+          P "Dokumentation 55"
+        TD
+          P "8"
+        TD
+          P "350,35"
+        TD
+          P "2.802,80"
+      TR
+        TD
+          P "56"
+        TD
+          P "Reisekosten pauschal 56"
+        TD
+          P "6"
+        TD
+          P "369,72"
+        TD
+          P "2.218,32"
+      TR
+        TD
+          P "57"
+        TD
+          P "Lizenz Dokumentdesigner 57"
+        TD
+          P "4"
+        TD
+          P "389,09"
+        TD
+          P "1.556,36"
+      TR
+        TD
+          P "58"
+        TD
+          P "Wartung pro Monat 58"
+        TD
+          P "2"
+        TD
+          P "408,46"
+        TD
+          P "816,92"
+      TR
+        TD
+          P "59"
+        TD
+          P "Datenmigration 59"
+        TD
+          P "9"
+        TD
+          P "47,83"
+        TD
+          P "430,47"
+      TR
+        TD
+          P "60"
+        TD
+          P "Beratung Konzeptphase 60"
+        TD
+          P "7"
+        TD
+          P "67,20"
+        TD
+          P "470,40"
+  Div
+    P "Nettobetrag: 68.060,92 €"
+    P "Umsatzsteuer: 12.931,57 €"
+    P "Gesamtbetrag: 80.992,49 €"
+    Div
+      Figure

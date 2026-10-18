@@ -1,0 +1,15 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  P "Silbentrennung"
+  Div
+    P "Ohne Trennung"
+    P "Die Rechnungsstellung für Dienstleistungsunternehmen erfordert eine nachvollziehbare Dokumentation sämtlicher Leistungspositionen, Zwischensummen und Umsatzsteuerbeträge."
+  Div
+    P "Mit Trennung (Deutsch, de-1996)"
+    P "Die Rechnungsstellung für Dienstleistungsunternehmen erfordert eine nachvollziehbare Dokumentation sämtlicher Leistungspositionen, Zwischensummen und Umsatzsteuerbeträge."
+  Div
+    P "Mit Trennung, Bindestrich und Mindestlängen 3 und 3"
+    P "Geschäftsführungsentscheidungen über Investitionsvorhaben werden quartalsweise im Aufsichtsratsgremium protokolliert."
+  Div
+    P "English (en-us), ragged right"
+    P lang="en-US" "Hyphenation algorithms traditionally rely on patterns derived from large dictionaries, enabling typesetting systems to break incomprehensibly long words automatically."

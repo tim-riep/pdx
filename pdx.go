@@ -53,6 +53,9 @@ type Options struct {
 	// Trace erhält, wenn gesetzt, die Zuordnung der PDF-Operatoren zu den
 	// Vorlagenelementen (für Befunde von veraPDF).
 	Trace *render.Trace
+	// Tagged schreibt Tagged PDF mit Strukturbaum, auch wenn das Profil es
+	// nicht verlangt.
+	Tagged bool
 }
 
 // Result enthält das PDF und den Area Tree.
@@ -82,6 +85,7 @@ func Render(fo io.Reader, opts Options) (*Result, error) {
 		CreationDate: opts.CreationDate,
 		Producer:     "pdx " + Version,
 		Trace:        opts.Trace,
+		Tagged:       opts.Tagged,
 	})
 	if err != nil {
 		return nil, err

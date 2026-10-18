@@ -1,0 +1,13 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  P "Beispiel GmbH · Hauptstraße 1 · 50667 Köln"
+  P "Familie Mustermann"
+  P "Musterweg 12"
+  P "12345 Musterstadt"
+  P "Köln, 1. Januar 2026"
+  P "Ihre Anfrage vom 15. Dezember 2025"
+  P "Sehr geehrte Damen und Herren,"
+  P "vielen Dank für Ihre Anfrage. Gern bestätigen wir Ihnen die Lieferung der bestellten Waren zum vereinbarten Termin. Die Ware wird in einer stabilen Verpackung versandt, die Sie bei Bedarf an uns zurückgeben können. Für Rückfragen steht Ihnen unser Kundenservice montags bis freitags von 8 bis 17 Uhr zur Verfügung."
+  P "Wir freuen uns auf die weitere Zusammenarbeit und verbleiben mit freundlichen Grüßen aus Köln."
+  P "Ihre Beispiel GmbH"
+  P "Erika Musterfrau, Vertrieb"

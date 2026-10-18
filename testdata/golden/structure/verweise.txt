@@ -1,0 +1,43 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  P "Inhalt"
+  P
+    Link
+      "1 Grundlagen"
+      Annotation Link "1 Grundlagen"
+    "..................................................................................................................................... 2"
+  P
+    Link
+      "1.1 Area Tree"
+      Annotation Link "1.1 Area Tree"
+    "............................................................................................................................... 2"
+  P
+    Link
+      "2 Ausgabe"
+      Annotation Link "2 Ausgabe"
+    "......................................................................................................................................... 3"
+  P
+    Link
+      "2.1 PDF/A"
+      Annotation Link "2.1 PDF/A"
+    ".................................................................................................................................... 3"
+  P "Linie als Trenner:  und Leerraum: [ ]"
+  P
+    "Mehr zur Spezifikation unter"
+    Link
+      "www.w3.org/TR/xsl11"
+      Annotation Link "www.w3.org/TR/xsl11"
+    "."
+  P "1 Grundlagen"
+  P "Text zu den Grundlagen."
+  P "1.1 Area Tree"
+  P
+    "Zurück zum"
+    Link
+      "Inhalt"
+      Annotation Link "Inhalt"
+    "."
+  P "2 Ausgabe"
+  P "Text zur Ausgabe."
+  P "2.1 PDF/A"
+  P "Alle Dateien bestehen veraPDF."
