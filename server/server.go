@@ -15,17 +15,25 @@ import (
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/pdf/profile"
+	"github.com/tim-riep/pdx/sign"
 	"github.com/tim-riep/pdx/template/pkg"
+	"github.com/tim-riep/pdx/verapdf"
 )
 
 // Server ist der Render-Dienst.
 type Server struct {
-	cfg   *Config
-	store Store
-	log   *slog.Logger
-	sem   chan struct{}
-	cache *lru
-	group flight
+	cfg     *Config
+	store   Store
+	log     *slog.Logger
+	sem     chan struct{}
+	cache   *lru
+	group   flight
+	metrics *metrics
+	// Verifier prüft mit veraPDF, nil schaltet /v1/verify ab.
+	Verifier verapdf.Runner
+	// Signer und TSA signieren für /v1/sign, ohne Signer ist es aus.
+	Signer sign.Signer
+	TSA    *sign.TSA
 	// now liefert die Zeit, in Tests fest.
 	now func() time.Time
 }
@@ -39,7 +47,7 @@ func New(cfg *Config, store Store, log *slog.Logger) (*Server, error) {
 		log = slog.New(slog.DiscardHandler)
 	}
 	return &Server{cfg: cfg, store: store, log: log, sem: make(chan struct{}, cfg.MaxConcurrent),
-		cache: newLRU(32), now: time.Now}, nil
+		cache: newLRU(32), metrics: newMetrics(), now: time.Now}, nil
 }
 
 // Handler liefert die Routen des Dienstes.
@@ -50,6 +58,10 @@ func (s *Server) Handler() http.Handler {
 		io.WriteString(w, "ok\n")
 	})
 	mux.HandleFunc("GET /readyz", s.ready)
+	mux.HandleFunc("GET /metrics", s.serveMetrics)
+	mux.Handle("POST /v1/render/{id}/batch", s.auth(RightRender, s.batch))
+	mux.Handle("POST /v1/verify", s.auth(RightVerify, s.verify))
+	mux.Handle("POST /v1/sign", s.auth(RightSign, s.sign))
 	mux.Handle("POST /v1/render/{id}", s.auth(RightRender, s.render))
 	mux.Handle("GET /v1/templates", s.auth(RightTemplates, s.listTemplates))
 	mux.Handle("POST /v1/templates/{id}", s.auth(RightTemplates, s.uploadTemplate))
@@ -132,8 +144,11 @@ func (s *Server) logRequests(h *http.ServeMux) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		rec := &recorder{ResponseWriter: w}
+		s.metrics.inFlight.Add(1)
 		h.ServeHTTP(rec, r)
+		s.metrics.inFlight.Add(-1)
 		_, pattern := h.Handler(r)
+		s.metrics.observe(pattern, rec.status, time.Since(start))
 		s.log.LogAttrs(r.Context(), slog.LevelInfo, "anfrage",
 			slog.String("methode", r.Method),
 			slog.String("route", pattern),
@@ -191,9 +206,8 @@ func (s *Server) template(ctx context.Context, id, version, lang string) (*compi
 	return v.(*compiled), ver, nil
 }
 
-// render setzt einen Datensatz: POST /v1/render/{id}?version=&profile=
-// &lang=&strict=&creationDate=, Daten-XML im Rumpf, PDF als Antwort.
-func (s *Server) render(w http.ResponseWriter, r *http.Request) {
+// renderOptions liest die Parameter zum Rendern, alle Befunde auf einmal.
+func (s *Server) renderOptions(r *http.Request) (pdx.TemplateOptions, []Finding) {
 	q := r.URL.Query()
 	opts := pdx.TemplateOptions{Strict: q.Get("strict") == "true"}
 	var bad []Finding
@@ -211,19 +225,44 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request) {
 		}
 		opts.CreationDate = t
 	}
-	if len(bad) > 0 {
-		writeProblem(w, Problem{Status: http.StatusBadRequest, Title: "Ungültige Parameter", Findings: bad})
-		return
-	}
-	data, err := io.ReadAll(http.MaxBytesReader(w, r.Body, s.cfg.MaxBody))
+	return opts, bad
+}
+
+// readBody liest den Rumpf bis max Bytes und meldet Fehler als Problem.
+func readBody(w http.ResponseWriter, r *http.Request, max int64) ([]byte, bool) {
+	data, err := io.ReadAll(http.MaxBytesReader(w, r.Body, max))
 	if err != nil {
 		var mbe *http.MaxBytesError
 		if errors.As(err, &mbe) {
 			writeProblem(w, Problem{Status: http.StatusRequestEntityTooLarge, Title: "Anfrage zu groß",
-				Detail: fmt.Sprintf("Höchstens %d Bytes sind erlaubt.", s.cfg.MaxBody)})
-			return
+				Detail: fmt.Sprintf("Höchstens %d Bytes sind erlaubt.", max)})
+			return nil, false
 		}
 		writeProblem(w, Problem{Status: http.StatusBadRequest, Title: "Rumpf nicht lesbar"})
+		return nil, false
+	}
+	return data, true
+}
+
+// templateProblem meldet einen Fehler beim Laden der Vorlage.
+func templateProblem(w http.ResponseWriter, err error) {
+	if errors.Is(err, ErrNotFound) {
+		writeProblem(w, Problem{Status: http.StatusNotFound, Title: "Vorlage oder Version unbekannt"})
+		return
+	}
+	writeProblem(w, Problem{Type: typeBase + "vorlage", Status: http.StatusUnprocessableEntity, Title: "Vorlage fehlerhaft", Findings: findings(err)})
+}
+
+// render setzt einen Datensatz: POST /v1/render/{id}?version=&profile=
+// &lang=&strict=&creationDate=, Daten-XML im Rumpf, PDF als Antwort.
+func (s *Server) render(w http.ResponseWriter, r *http.Request) {
+	opts, bad := s.renderOptions(r)
+	if len(bad) > 0 {
+		writeProblem(w, Problem{Status: http.StatusBadRequest, Title: "Ungültige Parameter", Findings: bad})
+		return
+	}
+	data, ok := readBody(w, r, s.cfg.MaxBody)
+	if !ok {
 		return
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), s.cfg.Timeout.Duration)
@@ -233,13 +272,10 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer s.release()
+	q := r.URL.Query()
 	c, ver, err := s.template(ctx, r.PathValue("id"), q.Get("version"), q.Get("lang"))
-	if errors.Is(err, ErrNotFound) {
-		writeProblem(w, Problem{Status: http.StatusNotFound, Title: "Vorlage oder Version unbekannt"})
-		return
-	}
 	if err != nil {
-		writeProblem(w, Problem{Type: typeBase + "vorlage", Status: http.StatusUnprocessableEntity, Title: "Vorlage fehlerhaft", Findings: findings(err)})
+		templateProblem(w, err)
 		return
 	}
 	opts.Fonts = c.fonts

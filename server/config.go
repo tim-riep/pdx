@@ -65,6 +65,23 @@ type Config struct {
 	MaxBody int64 `json:"maxBody"`
 	// MaxTemplate begrenzt ein hochgeladenes Vorlagenpaket, Vorgabe 50 MiB.
 	MaxTemplate int64 `json:"maxTemplate"`
+	// MaxPDF begrenzt ein PDF für verify und sign, Vorgabe 50 MiB.
+	MaxPDF int64 `json:"maxPDF"`
+	// MaxBatch begrenzt das ZIP eines Stapels, Vorgabe 100 MiB, und
+	// MaxBatchEntries die Zahl der Datensätze darin, Vorgabe 1000.
+	MaxBatch        int64 `json:"maxBatch"`
+	MaxBatchEntries int   `json:"maxBatchEntries"`
+	// BatchTimeout begrenzt die Laufzeit eines Stapels, Vorgabe 10m.
+	BatchTimeout Duration `json:"batchTimeout"`
+	// VeraPDF schaltet /v1/verify ein: "docker", "local" oder ein Pfad
+	// zur veraPDF-CLI. Leer bedeutet aus.
+	VeraPDF string `json:"verapdf"`
+	// Signer schaltet /v1/sign ein: pkcs12:datei.p12 (Passwort aus
+	// PDX_SIGN_PASSWORD) oder remote:https://dienst (Token aus
+	// PDX_SIGN_TOKEN). Leer bedeutet aus.
+	Signer string `json:"signer"`
+	// TSA ist der Zeitstempeldienst für /v1/sign ab B-T.
+	TSA string `json:"tsa"`
 	// MaxConcurrent begrenzt gleichzeitige Rendervorgänge, Vorgabe 8.
 	MaxConcurrent int `json:"maxConcurrent"`
 	// Timeout begrenzt die Laufzeit einer Anfrage, Vorgabe 30s.
@@ -101,6 +118,18 @@ func (c *Config) Check() error {
 	}
 	if c.MaxTemplate == 0 {
 		c.MaxTemplate = 50 << 20
+	}
+	if c.MaxPDF == 0 {
+		c.MaxPDF = 50 << 20
+	}
+	if c.MaxBatch == 0 {
+		c.MaxBatch = 100 << 20
+	}
+	if c.MaxBatchEntries == 0 {
+		c.MaxBatchEntries = 1000
+	}
+	if c.BatchTimeout.Duration == 0 {
+		c.BatchTimeout.Duration = 10 * time.Minute
 	}
 	if c.MaxConcurrent == 0 {
 		c.MaxConcurrent = 8

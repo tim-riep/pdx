@@ -26,7 +26,61 @@ import (
 
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/server"
+	"github.com/tim-riep/pdx/sign"
+	"github.com/tim-riep/pdx/verapdf"
 )
+
+// configure schaltet veraPDF und Signieren nach der Konfiguration ein.
+// Passwort und Token kommen nur aus der Umgebung, nie aus Datei oder
+// Argument, und werden nach dem Laden aus der Umgebung entfernt.
+func configure(s *server.Server, cfg *server.Config) error {
+	switch v := cfg.VeraPDF; v {
+	case "":
+	case "docker":
+		s.Verifier = verapdf.Docker{Image: verapdf.DockerImage, Platform: verapdf.DockerPlatform}
+	case "local":
+		r, err := verapdf.Detect(context.Background(), nil)
+		if err != nil {
+			return err
+		}
+		s.Verifier = r
+	default:
+		s.Verifier = verapdf.Local{Path: v}
+	}
+	if cfg.Signer == "" {
+		return nil
+	}
+	kind, loc, _ := strings.Cut(cfg.Signer, ":")
+	switch kind {
+	case "pkcs12":
+		data, err := os.ReadFile(loc)
+		if err != nil {
+			return err
+		}
+		pw, ok := os.LookupEnv("PDX_SIGN_PASSWORD")
+		if !ok {
+			return errors.New("PDX_SIGN_PASSWORD fehlt für den Signer")
+		}
+		os.Unsetenv("PDX_SIGN_PASSWORD")
+		if s.Signer, err = sign.LoadPKCS12(data, pw); err != nil {
+			return err
+		}
+	case "remote":
+		tok := os.Getenv("PDX_SIGN_TOKEN")
+		os.Unsetenv("PDX_SIGN_TOKEN")
+		rs, err := sign.NewRemoteSigner(context.Background(), loc, tok, nil)
+		if err != nil {
+			return err
+		}
+		s.Signer = rs
+	default:
+		return fmt.Errorf("Signer %q: erlaubt sind pkcs12:DATEI und remote:URL", cfg.Signer)
+	}
+	if cfg.TSA != "" {
+		s.TSA = &sign.TSA{URL: cfg.TSA}
+	}
+	return nil
+}
 
 func main() {
 	os.Exit(run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr))
@@ -65,6 +119,10 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	log := slog.New(slog.NewJSONHandler(stdout, nil))
 	s, err := server.New(cfg, &server.DirStore{Dir: cfg.TemplateDir}, log)
 	if err != nil {
+		fmt.Fprintf(stderr, "pdx-server: %v\n", err)
+		return 2
+	}
+	if err := configure(s, cfg); err != nil {
 		fmt.Fprintf(stderr, "pdx-server: %v\n", err)
 		return 2
 	}
