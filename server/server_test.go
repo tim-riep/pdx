@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -42,9 +43,12 @@ func newTest(t *testing.T, cfg *Config, logw io.Writer) (*httptest.Server, []byt
 	t.Helper()
 	p, data := muster(t)
 	store := &MemStore{}
-	if err := store.Put("rechnung", "1", p); err != nil {
+	raw, _ := p.Bytes()
+	v, _, err := store.Put(context.Background(), "rechnung", raw)
+	if err != nil {
 		t.Fatal(err)
 	}
+	store.Activate(context.Background(), "rechnung", v.Version)
 	var log *slog.Logger
 	if logw != nil {
 		log = slog.New(slog.NewJSONHandler(logw, nil))

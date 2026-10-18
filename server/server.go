@@ -49,11 +49,27 @@ func (s *Server) Handler() http.Handler {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		io.WriteString(w, "ok\n")
 	})
+	mux.HandleFunc("GET /readyz", s.ready)
 	mux.Handle("POST /v1/render/{id}", s.auth(RightRender, s.render))
+	mux.Handle("GET /v1/templates", s.auth(RightTemplates, s.listTemplates))
+	mux.Handle("POST /v1/templates/{id}", s.auth(RightTemplates, s.uploadTemplate))
+	mux.Handle("GET /v1/templates/{id}/versions", s.auth(RightTemplates, s.listVersions))
+	mux.Handle("GET /v1/templates/{id}/versions/{version}", s.auth(RightTemplates, s.getVersion))
+	mux.Handle("PUT /v1/templates/{id}/active", s.auth(RightTemplates, s.activate))
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		writeProblem(w, Problem{Status: http.StatusNotFound, Title: "Pfad unbekannt"})
 	})
 	return s.logRequests(mux)
+}
+
+// ready meldet Bereitschaft, wenn die Ablage lesbar ist.
+func (s *Server) ready(w http.ResponseWriter, r *http.Request) {
+	if _, err := s.store.List(r.Context()); err != nil {
+		writeProblem(w, Problem{Status: http.StatusServiceUnavailable, Title: "Ablage nicht verfügbar"})
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	io.WriteString(w, "bereit\n")
 }
 
 type keyCtx struct{}

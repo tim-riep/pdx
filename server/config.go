@@ -63,6 +63,8 @@ type Config struct {
 	Keys []APIKey `json:"keys"`
 	// MaxBody begrenzt den Rumpf einer Anfrage in Bytes, Vorgabe 10 MiB.
 	MaxBody int64 `json:"maxBody"`
+	// MaxTemplate begrenzt ein hochgeladenes Vorlagenpaket, Vorgabe 50 MiB.
+	MaxTemplate int64 `json:"maxTemplate"`
 	// MaxConcurrent begrenzt gleichzeitige Rendervorgänge, Vorgabe 8.
 	MaxConcurrent int `json:"maxConcurrent"`
 	// Timeout begrenzt die Laufzeit einer Anfrage, Vorgabe 30s.
@@ -96,6 +98,9 @@ func (c *Config) Check() error {
 	}
 	if c.MaxBody == 0 {
 		c.MaxBody = 10 << 20
+	}
+	if c.MaxTemplate == 0 {
+		c.MaxTemplate = 50 << 20
 	}
 	if c.MaxConcurrent == 0 {
 		c.MaxConcurrent = 8
