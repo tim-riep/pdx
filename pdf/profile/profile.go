@@ -188,6 +188,24 @@ func (s *Set) Allow(f pdf.Feature) error {
 	return nil
 }
 
+// CheckAttachment fragt jedes Profil, das Anhänge inhaltlich prüft.
+func (s *Set) CheckAttachment(name string, data []byte) error {
+	for _, p := range s.parts {
+		if c, ok := p.(AttachmentChecker); ok {
+			if err := c.CheckAttachment(name, data); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// AttachmentChecker prüft den Inhalt eines Anhangs, etwa PDF/A-2, das nur
+// PDF/A-Dokumente als Anhang zulässt.
+type AttachmentChecker interface {
+	CheckAttachment(name string, data []byte) error
+}
+
 // Prepare ergänzt die Pflichtobjekte einmal für den vereinten Anspruch, damit
 // Output Intent und XMP nicht doppelt entstehen.
 func (s *Set) Prepare(ctx *Context) error { return prepareClaim(ctx, ClaimOf(s)) }

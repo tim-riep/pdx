@@ -1,12 +1,90 @@
 package profile
 
 import (
+	"bytes"
+	"fmt"
+	"regexp"
+	"strings"
+
 	"github.com/tim-riep/pdx/icc"
 	"github.com/tim-riep/pdx/pdf"
 	"github.com/tim-riep/pdx/pdf/xmp"
 )
 
-func init() { register("pdfa-3b", func() Profile { return PDFA3B{} }) }
+func init() {
+	register("pdfa-3b", func() Profile { return PDFA3B{} })
+	register("pdfa-2b", func() Profile { return PDFA{Part: 2, Level: "B"} })
+	register("pdfa-2u", func() Profile { return PDFA{Part: 2, Level: "U"} })
+	register("pdfa-3u", func() Profile { return PDFA{Part: 3, Level: "U"} })
+}
+
+// PDFA ist PDF/A-2 oder PDF/A-3 (ISO 19005-2:2011, ISO 19005-3:2012) in der
+// Stufe B oder U. Die Klauseln beider Teile sind gleich nummeriert, PDF/A-3
+// erlaubt zusätzlich beliebige Anhänge (6.8).
+type PDFA struct {
+	Part  int
+	Level string
+}
+
+// Name liefert etwa "pdfa-3u".
+func (p PDFA) Name() string { return fmt.Sprintf("pdfa-%d%s", p.Part, strings.ToLower(p.Level)) }
+
+// Allow prüft eine Funktion gegen den Teil und die Stufe.
+func (p PDFA) Allow(f pdf.Feature) error { return allowPDFA(p, p.Part, p.Level, f) }
+
+func (p PDFA) claim() Claim { return Claim{Version: "1.7", PDFA: p.Part, Level: p.Level} }
+
+// Prepare ergänzt Output Intent und XMP-Metadaten.
+func (p PDFA) Prepare(ctx *Context) error { return prepareClaim(ctx, p.claim()) }
+
+// CheckAttachment verlangt unter PDF/A-2, dass ein Anhang selbst ein
+// PDF/A-1- oder PDF/A-2-Dokument ist (ISO 19005-2 6.8).
+func (p PDFA) CheckAttachment(name string, data []byte) error {
+	if p.Part != 2 {
+		return nil
+	}
+	return checkPDFAAttachment(p.Name(), name, data)
+}
+
+// allowPDFA sind die Regeln von PDF/A-2 und PDF/A-3 für alle Stufen. Die
+// Stufen U und A verlangen eine Unicode-Zuordnung je Glyphe (6.2.11.7.2).
+func allowPDFA(p pdf.Policy, part int, level string, f pdf.Feature) error {
+	clause := func(c string) string { return fmt.Sprintf("ISO 19005-%d %s", part, c) }
+	switch f {
+	case pdf.Encryption:
+		return deny(p, f, clause("6.1.3")+" verbietet das Encrypt-Dictionary")
+	case pdf.LZW:
+		return deny(p, f, clause("6.1.7.2")+" verbietet LZWDecode")
+	case pdf.ExternalContent:
+		return deny(p, f, clause("6.1.7.1")+" verbietet Streams in externen Dateien")
+	case pdf.UnembeddedFont:
+		return deny(p, f, clause("6.2.11.4.1")+" verlangt eingebettete Schriften")
+	case pdf.JavaScript:
+		return deny(p, f, clause("6.6.1")+" verbietet JavaScript")
+	case pdf.XFA:
+		return deny(p, f, clause("6.4.2")+" verbietet XFA")
+	case pdf.UnmappedGlyph:
+		if level == "U" || level == "A" {
+			return deny(p, f, clause("6.2.11.7.2")+" verlangt für jede Glyphe eine Unicode-Zuordnung")
+		}
+	}
+	return nil
+}
+
+// pdfaPart findet die Kennung pdfaid:part im XMP eines PDF.
+var pdfaPart = regexp.MustCompile(`pdfaid:part(?:>|="|='|\s*=\s*["'])\s*([0-9])`)
+
+// checkPDFAAttachment prüft, ob ein Anhang ein PDF/A-1- oder -2-Dokument ist.
+func checkPDFAAttachment(profile, name string, data []byte) error {
+	if !bytes.HasPrefix(data, []byte("%PDF-")) {
+		return fmt.Errorf("Profil %s: Anhang %q ist kein PDF, ISO 19005-2 6.8 erlaubt nur Anhänge in PDF/A-1 oder PDF/A-2", profile, name)
+	}
+	m := pdfaPart.FindSubmatch(data)
+	if m == nil || (string(m[1]) != "1" && string(m[1]) != "2") {
+		return fmt.Errorf("Profil %s: Anhang %q ist kein PDF/A-1- oder PDF/A-2-Dokument (ISO 19005-2 6.8)", profile, name)
+	}
+	return nil
+}
 
 // PDFA3B ist PDF/A-3b nach ISO 19005-3:2012, Konformitätsstufe B.
 //
@@ -21,23 +99,7 @@ type PDFA3B struct{}
 func (PDFA3B) Name() string { return "pdfa-3b" }
 
 // Allow prüft eine Funktion gegen ISO 19005-3.
-func (p PDFA3B) Allow(f pdf.Feature) error {
-	switch f {
-	case pdf.Encryption:
-		return deny(p, f, "ISO 19005-3 6.1.3 verbietet das Encrypt-Dictionary")
-	case pdf.LZW:
-		return deny(p, f, "ISO 19005-3 6.1.7.2 verbietet LZWDecode")
-	case pdf.ExternalContent:
-		return deny(p, f, "ISO 19005-3 6.1.7.1 verbietet Streams in externen Dateien")
-	case pdf.UnembeddedFont:
-		return deny(p, f, "ISO 19005-3 6.2.11.4.1 verlangt eingebettete Schriften")
-	case pdf.JavaScript:
-		return deny(p, f, "ISO 19005-3 6.6.1 verbietet JavaScript")
-	case pdf.XFA:
-		return deny(p, f, "ISO 19005-3 6.4.2 verbietet XFA")
-	}
-	return nil
-}
+func (p PDFA3B) Allow(f pdf.Feature) error { return allowPDFA(p, 3, "B", f) }
 
 func (PDFA3B) claim() Claim { return Claim{Version: "1.7", PDFA: 3, Level: "B"} }
 

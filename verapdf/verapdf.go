@@ -33,7 +33,10 @@ const (
 
 // flavours bildet pdx-Profilnamen auf veraPDF-Flavours ab.
 var flavours = map[string]string{
+	"pdfa-2b": "2b",
+	"pdfa-2u": "2u",
 	"pdfa-3b": "3b",
+	"pdfa-3u": "3u",
 }
 
 // Flavour liefert den veraPDF-Flavour zu einem einzelnen pdx-Profil.

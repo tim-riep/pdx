@@ -23,6 +23,9 @@ const (
 	Attachment
 	// UnembeddedFont steht für eine nicht eingebettete Schrift.
 	UnembeddedFont
+	// UnmappedGlyph steht für eine Glyphe ohne Unicode-Zuordnung in der
+	// ToUnicode-CMap ihrer Schrift.
+	UnmappedGlyph
 )
 
 var featureNames = map[Feature]string{
@@ -34,6 +37,7 @@ var featureNames = map[Feature]string{
 	XFA:             "XFA",
 	Attachment:      "Dateianhänge",
 	UnembeddedFont:  "nicht eingebettete Schriften",
+	UnmappedGlyph:   "Glyphen ohne Unicode-Zuordnung",
 }
 
 func (f Feature) String() string {

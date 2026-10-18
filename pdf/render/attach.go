@@ -2,12 +2,14 @@ package render
 
 import (
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/pdf"
+	"github.com/tim-riep/pdx/pdf/profile"
 )
 
 var relationships = map[areatree.Relationship]bool{
@@ -35,23 +37,36 @@ func (r *renderer) attachments() error {
 	var af pdf.Array
 	var names []named
 	date := pdf.Date(r.opts.CreationDate)
+	// Alle Fehler der Anhänge auf einmal melden.
+	var errs []error
+	checker, _ := r.opts.Profile.(profile.AttachmentChecker)
 	for _, a := range atts {
-		if a.Name == "" {
-			return fmt.Errorf("Dateianhang ohne Namen")
-		}
-		if seen[a.Name] {
-			return fmt.Errorf("Dateianhang %q ist doppelt", a.Name)
+		switch {
+		case a.Name == "":
+			errs = append(errs, fmt.Errorf("Dateianhang ohne Namen"))
+			continue
+		case seen[a.Name]:
+			errs = append(errs, fmt.Errorf("Dateianhang %q ist doppelt", a.Name))
+			continue
 		}
 		seen[a.Name] = true
 		if !validMIME(a.MIMEType) {
-			return fmt.Errorf("Dateianhang %q: MIME-Typ %q ist ungültig", a.Name, a.MIMEType)
+			errs = append(errs, fmt.Errorf("Dateianhang %q: MIME-Typ %q ist ungültig", a.Name, a.MIMEType))
 		}
 		rel := a.Relationship
 		if rel == "" {
 			rel = areatree.Unspecified
 		}
 		if !relationships[rel] {
-			return fmt.Errorf("Dateianhang %q: AFRelationship %q ist unbekannt", a.Name, rel)
+			errs = append(errs, fmt.Errorf("Dateianhang %q: AFRelationship %q ist unbekannt", a.Name, rel))
+		}
+		if checker != nil {
+			if err := checker.CheckAttachment(a.Name, a.Data); err != nil {
+				errs = append(errs, err)
+			}
+		}
+		if len(errs) > 0 {
+			continue
 		}
 		sum := md5.Sum(a.Data)
 		ef := r.d.Add(pdf.NewFlateStream(pdf.D(
@@ -72,6 +87,9 @@ func (r *renderer) attachments() error {
 		ref := r.d.Add(fs)
 		af = append(af, ref)
 		names = append(names, named{a.Name, ref})
+	}
+	if len(errs) > 0 {
+		return errors.Join(errs...)
 	}
 	// Der Namensbaum verlangt nach Bytes sortierte Schlüssel.
 	sort.Slice(names, func(i, j int) bool {

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strconv"
+	"strings"
 	"unicode/utf16"
 
 	"github.com/boxesandglue/textshape/ot"
@@ -86,6 +88,7 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 
 	e := &Embedded{CID: map[uint16]uint16{}, Width: map[uint16]float64{}}
 	type cidEntry struct {
+		gid   uint16
 		cid   uint16
 		width float64
 		text  string
@@ -99,7 +102,7 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 		w := f.scale1000(f.Advance(g))
 		e.CID[g] = uint16(n)
 		e.Width[g] = w
-		entries = append(entries, cidEntry{cid: uint16(n), width: w, text: u.text[g]})
+		entries = append(entries, cidEntry{gid: g, cid: uint16(n), width: w, text: u.text[g]})
 	}
 	sort.Slice(entries, func(i, j int) bool { return entries[i].cid < entries[j].cid })
 
@@ -174,10 +177,34 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 	}
 	cidRef := d.Add(cidFont)
 
+	// Jede Glyphe braucht eine Unicode-Zuordnung (für PDF/A U und A Pflicht,
+	// ISO 19005-3 6.2.11.7.2). Folgeglyphen eines Clusters tragen beim
+	// Shaping keinen Text, sie bekommen das Zeichen, das die Schrift selbst
+	// ihnen in der cmap zuordnet. Fehlt auch das, entscheidet das Profil.
 	var cm []cmapEntry
+	var unmapped []string
+	var reverse map[ot.GlyphID]rune
 	for _, en := range entries {
-		if en.text != "" {
-			cm = append(cm, cmapEntry{cid: en.cid, text: en.text})
+		text := en.text
+		if text == "" && en.gid != 0 {
+			if reverse == nil {
+				reverse = f.face.Cmap().CollectReverseMapping()
+			}
+			if r, ok := reverse[ot.GlyphID(en.gid)]; ok && r != 0 && r != 0xFEFF && r != 0xFFFE {
+				text = string(r)
+			}
+		}
+		if text == "" {
+			if en.gid != 0 {
+				unmapped = append(unmapped, strconv.Itoa(int(en.gid)))
+			}
+			continue
+		}
+		cm = append(cm, cmapEntry{cid: en.cid, text: text})
+	}
+	if len(unmapped) > 0 {
+		if err := d.Use(pdf.UnmappedGlyph); err != nil {
+			return nil, fmt.Errorf("Schrift %s, Glyphen %s: %w", f.PostScript, strings.Join(unmapped, ", "), err)
 		}
 	}
 	toUni := d.Add(pdf.NewFlateStream(nil, toUnicode(cm)))

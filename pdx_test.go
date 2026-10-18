@@ -41,6 +41,40 @@ func TestCorpus(t *testing.T) {
 	}
 }
 
+// matrixProfiles sind die Profile der Konformitätsmatrix neben pdfa-3b, das
+// TestCorpus mit Golden Files prüft. Sie wächst mit jedem neuen Profil.
+var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u"}
+
+// TestCorpusProfiles rendert jeden Fall in jedem Profil der Matrix. Mit
+// PDX_CONFORMANCE=1 prüft veraPDF jeden beanspruchten Standard. Anhänge, die
+// ein Profil nicht erlaubt (unter PDF/A-2 alles außer PDF/A), müssen mit der
+// Klausel abgelehnt werden.
+func TestCorpusProfiles(t *testing.T) {
+	files, err := filepath.Glob("testdata/fo/*.fo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".fo")
+		for _, prof := range matrixProfiles {
+			t.Run(name+"/"+prof, func(t *testing.T) {
+				t.Parallel()
+				res, err := RenderFile(f, Options{Profile: prof, CreationDate: corpusDate})
+				if err != nil {
+					if strings.HasPrefix(prof, "pdfa-2") && strings.Contains(err.Error(), "ISO 19005-2 6.8") {
+						return // Anhang ohne PDF/A, wie verlangt abgelehnt
+					}
+					t.Fatal(err)
+				}
+				if _, err := testutil.CheckStructure(res.PDF); err != nil {
+					t.Fatal(err)
+				}
+				testutil.Conform(t, name+"-"+prof+".pdf", res.PDF, prof)
+			})
+		}
+	}
+}
+
 // TestReproducible rendert jeden Fall zweimal und verlangt identische Bytes.
 func TestReproducible(t *testing.T) {
 	files, _ := filepath.Glob("testdata/fo/*.fo")
