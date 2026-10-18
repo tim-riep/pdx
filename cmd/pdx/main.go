@@ -50,6 +50,7 @@ Aufruf:
   pdx pack <verzeichnis> [-o vorlage.zip]
   pdx verify <datei.pdf> [--profile NAME] [--format text|json]
   pdx structure <datei.pdf>
+  pdx extract-data <formular.pdf> --template <vorlage> [-o daten.xml] [--data grunddaten.xml]
   pdx version
 
 Eine Vorlage ist ein ZIP-Paket oder ein Verzeichnis mit template.xml.
@@ -77,6 +78,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdPack(args[1:], stdout, stderr)
 	case "structure":
 		return cmdStructure(args[1:], stdout, stderr)
+	case "extract-data":
+		return cmdExtract(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintf(stdout, "pdx %s (veraPDF %s)\n", pdx.Version, verapdf.Version)
 		return 0

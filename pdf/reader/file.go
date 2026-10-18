@@ -19,7 +19,14 @@ type File struct {
 	offs  map[int]int
 	inStm map[int][2]int
 	cache map[int]Object
+	// busy sind die Objekte, die gerade gelesen werden, um zyklische
+	// Verweise (etwa eine Length, die auf sich selbst zeigt) zu erkennen.
+	busy map[int]bool
 }
+
+// MaxDecoded begrenzt die entpackte Größe eines Streams, damit
+// komprimierte Bomben weder Speicher noch Zeit aufbrauchen.
+var MaxDecoded int64 = 256 << 20
 
 var reStartXref = regexp.MustCompile(`startxref\s+(\d+)`)
 
@@ -28,7 +35,7 @@ func Open(data []byte) (*File, error) {
 	if !bytes.HasPrefix(data, []byte("%PDF-")) {
 		return nil, fmt.Errorf("keine PDF-Datei")
 	}
-	f := &File{data: data, offs: map[int]int{}, inStm: map[int][2]int{}, cache: map[int]Object{}}
+	f := &File{data: data, offs: map[int]int{}, inStm: map[int][2]int{}, cache: map[int]Object{}, busy: map[int]bool{}}
 	ms := reStartXref.FindAllSubmatch(data, -1)
 	if ms == nil {
 		return nil, fmt.Errorf("startxref fehlt")
@@ -245,6 +252,11 @@ func (f *File) Get(r Ref) (Object, error) {
 	if o, ok := f.cache[r.Num]; ok {
 		return o, nil
 	}
+	if f.busy[r.Num] {
+		return nil, fmt.Errorf("Objekt %d verweist zyklisch auf sich selbst", r.Num)
+	}
+	f.busy[r.Num] = true
+	defer delete(f.busy, r.Num)
 	var o Object
 	var err error
 	if off, ok := f.offs[r.Num]; ok {
@@ -377,9 +389,12 @@ func (f *File) Decode(s *Stream) ([]byte, error) {
 			if err != nil {
 				return nil, err
 			}
-			out, err := io.ReadAll(zr)
+			out, err := io.ReadAll(io.LimitReader(zr, MaxDecoded+1))
 			if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
 				return nil, err
+			}
+			if int64(len(out)) > MaxDecoded {
+				return nil, fmt.Errorf("Stream ist entpackt größer als %d Bytes", MaxDecoded)
 			}
 			var p Dict
 			switch v := parms.(type) {

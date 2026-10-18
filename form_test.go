@@ -214,3 +214,78 @@ func TestFormAccessible(t *testing.T) {
 		t.Errorf("Befunde %v", es)
 	}
 }
+
+// TestExtractData liest ein ausgefülltes Formular zurück: Werte aus den
+// Feldern, alles andere aus den Grunddaten, Reihenfolge nach Daten-XSD.
+func TestExtractData(t *testing.T) {
+	tpl, base := loadForm(t)
+	filled := strings.NewReplacer(
+		"<anrede>Frau</anrede>", "<anrede>divers</anrede>",
+		"<name>Erika Musterfrau</name>", "<name>Alex Beispiel</name>",
+		"<tarif>Komfort</tarif>", "<tarif>Premium</tarif>",
+		"<newsletter>false</newsletter>", "<newsletter>true</newsletter>",
+		"<vorname>Max</vorname>", "<vorname>Moritz</vorname>",
+	).Replace(string(base))
+	// Neue Werte für Felder, deren Knoten in den Grunddaten fehlen.
+	filled = strings.Replace(filled, "<land>DE</land>", "<email>alex@beispiel.example</email>\n  <land>AT</land>", 1)
+	res, err := tpl.Render([]byte(filled), TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3a,pdfua-1"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := tpl.ExtractData(res.PDF, base)
+	if err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	for _, want := range []string{
+		"<anrede>divers</anrede>", "<name>Alex Beispiel</name>", "<email>alex@beispiel.example</email>",
+		"<land>AT</land>", "<tarif>Premium</tarif>", "<newsletter>true</newsletter>",
+		"<vorname>Erika</vorname><geburtsjahr>1984</geburtsjahr>", "<vorname>Moritz</vorname>",
+	} {
+		if !strings.Contains(strings.Join(strings.Fields(string(out)), ""), strings.Join(strings.Fields(want), "")) {
+			t.Errorf("%q fehlt in\n%s", want, out)
+		}
+	}
+	// email steht nach dem XSD vor land, auch wenn es neu angelegt wurde.
+	if strings.Index(string(out), "<email>") > strings.Index(string(out), "<land>") {
+		t.Errorf("Reihenfolge nach XSD verletzt:\n%s", out)
+	}
+	if err := tpl.Validate(out); err != nil {
+		t.Errorf("ungültig: %v", err)
+	}
+
+	// Ohne Grunddaten entsteht das Dokument aus den Feldern.
+	out, err = tpl.ExtractData(res.PDF, nil)
+	if err != nil || !strings.Contains(string(out), "<a:name>Alex Beispiel</a:name>") || !strings.Contains(string(out), "<a:vorname>Moritz</a:vorname>") {
+		t.Errorf("ohne Grunddaten: %v\n%s", err, out)
+	}
+
+	// Werte außerhalb der Enumeration und zu lange Namen meldet die Prüfung
+	// gegen das XSD auf einmal, die Daten liegen trotzdem vor.
+	bad := strings.Replace(string(base), "<land>DE</land>", "<land>FR</land>", 1)
+	bad = strings.Replace(bad, "<name>Erika Musterfrau</name>", "<name>"+strings.Repeat("x", 45)+"</name>", 1)
+	res, err = tpl.Render([]byte(bad), TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3b"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tpl.ExtractData(res.PDF, base)
+	e, ok := IsExtractError(err)
+	if !ok || !strings.Contains(e.Error(), `"FR" is not in the enumeration`) || !strings.Contains(e.Error(), "length 45 > 40") || !strings.Contains(string(e.Data), "<land>FR</land>") {
+		t.Errorf("Fehlerliste: %v", err)
+	}
+}
+
+// FuzzExtractData verlangt, dass beliebige Eingaben weder abstürzen noch
+// hängen. Startwerte sind ein gerendertes Formular und Bruchstücke davon.
+func FuzzExtractData(f *testing.F) {
+	tpl, base := loadForm(f)
+	res, err := tpl.Render(base, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3b"}})
+	if err != nil {
+		f.Fatal(err)
+	}
+	f.Add(res.PDF)
+	f.Add(res.PDF[:len(res.PDF)/2])
+	f.Add([]byte("%PDF-1.7\ntrailer\n<< /Root 1 0 R >>\nstartxref\n0\n%%EOF\n"))
+	f.Fuzz(func(t *testing.T, b []byte) {
+		tpl.ExtractData(b, base)
+	})
+}

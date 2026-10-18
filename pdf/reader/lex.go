@@ -38,9 +38,14 @@ type Operator string
 type Object any
 
 type lexer struct {
-	b   []byte
-	pos int
+	b     []byte
+	pos   int
+	depth int // Verschachtelung von Arrays und Dictionaries
 }
+
+// maxDepth begrenzt die Verschachtelung, damit bösartige Eingaben den
+// Stapel nicht sprengen.
+const maxDepth = 256
 
 func isSpace(c byte) bool {
 	return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\f' || c == 0
@@ -263,6 +268,13 @@ func (l *lexer) object(refs bool) (Object, error) {
 func (l *lexer) complete(t Object, refs bool) (Object, error) {
 	switch v := t.(type) {
 	case Operator:
+		if v == "[" || v == "<<" {
+			if l.depth >= maxDepth {
+				return nil, fmt.Errorf("Verschachtelung tiefer als %d an Position %d", maxDepth, l.pos)
+			}
+			l.depth++
+			defer func() { l.depth-- }()
+		}
 		switch v {
 		case "[":
 			var arr Array

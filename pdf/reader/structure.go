@@ -302,18 +302,8 @@ func (f *File) numberTree(o Object) map[int]Object {
 	return out
 }
 
-// textString dekodiert eine Textzeichenkette (UTF-16BE mit BOM oder
-// PDFDocEncoding, hier vereinfacht als Latin-1).
-func textString(s String) string {
-	if len(s) >= 2 && s[0] == 0xfe && s[1] == 0xff {
-		return utf16be(s[2:])
-	}
-	r := make([]rune, len(s))
-	for i, c := range s {
-		r[i] = rune(c)
-	}
-	return string(r)
-}
+// textString dekodiert eine Textzeichenkette, siehe TextString.
+func textString(s String) string { return TextString(s) }
 
 // joinText fügt Textstücke zusammen, mit Leerzeichen dort, wo keines steht.
 func joinText(parts []string) string {

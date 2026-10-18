@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestLexer(t *testing.T) {
@@ -142,4 +143,25 @@ func minimal(content, elem string) []byte {
 	}
 	fmt.Fprintf(&b, "trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(objs)+1, x)
 	return b.Bytes()
+}
+
+// Zyklische Verweise führen zu einem Fehler statt zu endloser Rekursion.
+func TestCyclicLength(t *testing.T) {
+	var b bytes.Buffer
+	b.WriteString("%PDF-1.7\n")
+	o1 := b.Len()
+	b.WriteString("1 0 obj\n<< /Length 1 0 R >>\nstream\nabc\nendstream\nendobj\n")
+	x := b.Len()
+	fmt.Fprintf(&b, "xref\n0 2\n0000000000 65535 f\r\n%010d 00000 n\r\ntrailer\n<< /Size 2 /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n", o1, x)
+	f, err := Open(b.Bytes())
+	if err != nil {
+		t.Fatal(err)
+	}
+	done := make(chan struct{})
+	go func() { f.Get(Ref{1, 0}); close(done) }()
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("zyklische Länge hängt")
+	}
 }
