@@ -99,7 +99,7 @@ PDX_PERF=1 npx playwright test e2e/perf.spec.ts --project chromium
 
 ## Bauen und testen
 
-Voraussetzungen: Go 1.26, Node 24. Unter Linux GTK 4 und WebKitGTK 6.0 (`libgtk-4-dev libwebkitgtk-6.0-dev`).
+Voraussetzungen: Go 1.26, Node 24. Unter Linux GTK ab 4.10 und WebKitGTK 6.0 (`libgtk-4-dev libwebkitgtk-6.0-dev`, etwa Ubuntu 24.04 oder Debian 13). In Containern braucht WebKitGTK `WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1`.
 
 ```bash
 make deps

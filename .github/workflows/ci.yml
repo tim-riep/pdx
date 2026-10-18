@@ -59,7 +59,9 @@ jobs:
           make build
           EXT=""; [ "$RUNNER_OS" = "Windows" ] && EXT=".exe"
           SMOKE="../out/pdx-designer$EXT --smoke --open ../testdata/templates/musterrechnung"
-          if [ "$RUNNER_OS" = "Linux" ]; then xvfb-run -a $SMOKE; else $SMOKE; fi
+          # Ohne Benutzernamensräume (Container, Ubuntu 24.04) scheitert
+          # die Sandbox von WebKitGTK, für den kurzen Test aus.
+          if [ "$RUNNER_OS" = "Linux" ]; then WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1 xvfb-run -a $SMOKE; else $SMOKE; fi
       - name: Playwright-Browser
         run: npx playwright install --with-deps chromium webkit
         working-directory: designer/frontend
