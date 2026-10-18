@@ -30,8 +30,8 @@ type structElem struct {
 	// Form-Element eines Widgets.
 	label string
 	form  bool
-	id               string // Vorlagen-ID, für Meldungen
-	ref              pdf.Ref
+	id    string // Vorlagen-ID, für Meldungen
+	ref   pdf.Ref
 	// generic ist ein Block ohne Rolle: P mit eigenem Inhalt, sonst Div.
 	generic bool
 	hasMC   bool
@@ -46,9 +46,9 @@ type structElem struct {
 // structKid ist ein Kind eines Strukturelements: Element, markierter
 // Inhalt (Seite und MCID) oder Annotation.
 type structKid struct {
-	elem  *structElem
-	page  int
-	mcid  int
+	elem *structElem
+	page int
+	mcid int
 	// annot ist eine Annotation: Link oder Widget.
 	annot areatree.Area
 }
