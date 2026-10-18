@@ -48,7 +48,9 @@ type PKI struct {
 func (p *PKI) TSAURL() string { return p.Server.URL + "/tsa" }
 
 // Chain liefert die Kette eines Endzertifikats ohne Wurzel.
-func (p *PKI) Chain(id Identity) []*x509.Certificate { return []*x509.Certificate{id.Cert, p.Inter.Cert} }
+func (p *PKI) Chain(id Identity) []*x509.Certificate {
+	return []*x509.Certificate{id.Cert, p.Inter.Cert}
+}
 
 // KeySigner liefert einen Signer für ein Endzertifikat.
 func (p *PKI) KeySigner(t testing.TB, id Identity) *sign.KeySigner {
@@ -71,12 +73,12 @@ func New(t testing.TB) *PKI {
 	now := time.Now().Add(-time.Minute)
 
 	p.Root = p.issue(t, nil, &x509.Certificate{
-		Subject: pkix.Name{CommonName: "pdx Test Wurzel", Organization: []string{"pdx Test"}, Country: []string{"DE"}},
+		Subject:   pkix.Name{CommonName: "pdx Test Wurzel", Organization: []string{"pdx Test"}, Country: []string{"DE"}},
 		NotBefore: now.Add(-24 * time.Hour), NotAfter: now.Add(10 * 365 * 24 * time.Hour),
 		IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
 	})
 	p.Inter = p.issue(t, &p.Root, &x509.Certificate{
-		Subject: pkix.Name{CommonName: "pdx Test Zwischen-CA", Organization: []string{"pdx Test"}, Country: []string{"DE"}},
+		Subject:   pkix.Name{CommonName: "pdx Test Zwischen-CA", Organization: []string{"pdx Test"}, Country: []string{"DE"}},
 		NotBefore: now.Add(-24 * time.Hour), NotAfter: now.Add(5 * 365 * 24 * time.Hour),
 		IsCA: true, BasicConstraintsValid: true, MaxPathLen: 0, MaxPathLenZero: true,
 		KeyUsage:              x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
