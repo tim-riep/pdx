@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Barrierefreiheit: Listen mit Marken, Fußnote und Verweis mit
+     Strukturziel. Gilt unter PDF/UA-1 und PDF/UA-2. -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:pdx="https://pdx.example/ns/pdx/1.0" xml:lang="de-DE">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="A4" page-width="210mm" page-height="297mm" margin="20mm">
+      <fo:region-body/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:declarations>
+    <pdx:metadata title="Listen und Verweise" subject="Barrierefreiheit: Listen, Fußnote, Verweise"/>
+  </fo:declarations>
+  <fo:bookmark-tree>
+    <fo:bookmark internal-destination="schritte"><fo:bookmark-title>Schritte</fo:bookmark-title></fo:bookmark>
+  </fo:bookmark-tree>
+  <fo:page-sequence master-reference="A4" font-family="Helvetica" font-size="11pt" line-height="1.4">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block role="H1" font-size="16pt" font-weight="bold" id="schritte">Schritte</fo:block>
+      <fo:list-block provisional-distance-between-starts="8mm">
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()"><fo:block>1.</fo:block></fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()"><fo:block>Vorlage öffnen</fo:block></fo:list-item-body>
+        </fo:list-item>
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()"><fo:block>2.</fo:block></fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()"><fo:block>Daten wählen</fo:block></fo:list-item-body>
+        </fo:list-item>
+      </fo:list-block>
+      <fo:block role="H2" font-weight="bold" space-before="4mm">Hinweise</fo:block>
+      <fo:list-block provisional-distance-between-starts="5mm">
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()"><fo:block>•</fo:block></fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()"><fo:block>Sprache am Dokument setzen</fo:block></fo:list-item-body>
+        </fo:list-item>
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()"><fo:block>•</fo:block></fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()"><fo:block>Bilder beschreiben</fo:block></fo:list-item-body>
+        </fo:list-item>
+      </fo:list-block>
+      <fo:block space-before="4mm">Zurück zu den <fo:basic-link internal-destination="schritte" color="blue">Schritten</fo:basic-link>.</fo:block>
+      <fo:block role="Note" font-size="9pt" space-before="4mm">Fußnote: Alle Angaben ohne Gewähr.</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

@@ -92,7 +92,7 @@ func (e *engine) recordID(id string, page string) {
 }
 
 // recordDest vermerkt die erste Lage einer ID als Sprungziel.
-func (e *engine) recordDest(id string, page *areatree.Page, at areatree.Point) {
+func (e *engine) recordDest(id string, page *areatree.Page, at areatree.Point, src string) {
 	if e.doc.Dests == nil {
 		e.doc.Dests = map[string]areatree.Dest{}
 	}
@@ -101,7 +101,7 @@ func (e *engine) recordDest(id string, page *areatree.Page, at areatree.Point) {
 	}
 	for i := len(e.doc.Pages) - 1; i >= 0; i-- {
 		if e.doc.Pages[i] == page {
-			e.doc.Dests[id] = areatree.Dest{Page: i, At: at}
+			e.doc.Dests[id] = areatree.Dest{Page: i, At: at, Source: src}
 			return
 		}
 	}

@@ -17,6 +17,29 @@ func (r *renderer) dest(id string) (pdf.Array, error) {
 	return pdf.Array{r.pageRefs[d.Page], pdf.Name("XYZ"), pdf.Real(d.At.X.Pt()), pdf.Real(h - d.At.Y.Pt()), pdf.Null{}}, nil
 }
 
+// target ist der Eintrag für ein internes Ziel: /Dest oder /A.
+type target struct {
+	key pdf.Name
+	val pdf.Object
+}
+
+// goTo liefert das Ziel einer ID. In Tagged PDF 2.0 ist es eine
+// GoTo-Aktion mit Strukturziel /SD neben /D (ISO 32000-2 12.3.2.3), wie
+// PDF/UA-2 es verlangt (ISO 14289-2 8.8).
+func (r *renderer) goTo(id string) (target, error) {
+	d, err := r.dest(id)
+	if err != nil {
+		return target{}, err
+	}
+	if r.tag != nil && r.tag.pdf2 {
+		if se := r.tag.destElem(r.doc.Dests[id]); se != nil {
+			sd := append(pdf.Array{se.ref}, d[1:]...)
+			return target{"A", pdf.D("S", pdf.Name("GoTo"), "D", d, "SD", sd)}, nil
+		}
+	}
+	return target{"Dest", d}, nil
+}
+
 // link legt eine Link-Annotation an. PDF/A verlangt das Druckflag (/F 4),
 // Link-Annotationen brauchen kein Erscheinungsbild (ISO 19005-3 6.3.3).
 func (pc *pageCtx) link(l *areatree.Link) error {
@@ -31,11 +54,11 @@ func (pc *pageCtx) link(l *areatree.Link) error {
 	case l.URI != "":
 		a.Set("A", pdf.D("S", pdf.Name("URI"), "URI", pdf.String(l.URI)))
 	case l.Dest != "":
-		d, err := pc.r.dest(l.Dest)
+		goTo, err := pc.r.goTo(l.Dest)
 		if err != nil {
 			return err
 		}
-		a.Set("Dest", d)
+		a.Set(goTo.key, goTo.val)
 	default:
 		return fmt.Errorf("Link ohne Ziel")
 	}
@@ -79,11 +102,11 @@ func (r *renderer) outlineItems(bms []areatree.Bookmark, parent pdf.Ref) (pdf.Re
 		case bm.URI != "":
 			item.Set("A", pdf.D("S", pdf.Name("URI"), "URI", pdf.String(bm.URI)))
 		default:
-			d, err := r.dest(bm.Dest)
+			goTo, err := r.goTo(bm.Dest)
 			if err != nil {
 				return pdf.Ref{}, pdf.Ref{}, 0, err
 			}
-			item.Set("Dest", d)
+			item.Set(goTo.key, goTo.val)
 		}
 		if len(bm.Children) > 0 {
 			f, l, n, err := r.outlineItems(bm.Children, refs[i])

@@ -115,6 +115,7 @@ func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
 	c := r.claim
 	if strict := c.Level == "A" || c.UA > 0; opts.Tagged || strict {
 		r.tag = newTagger(doc)
+		r.tag.pdf2 = c.Version == "2.0"
 		r.tag.plan()
 		if strict {
 			if err := r.tag.check(c); err != nil {
@@ -148,6 +149,9 @@ func (r *renderer) build() error {
 	r.pageRefs = make([]pdf.Ref, len(r.doc.Pages))
 	for i := range r.doc.Pages {
 		r.pageRefs[i] = r.d.Reserve()
+	}
+	if r.tag != nil {
+		r.tag.prepare(r)
 	}
 	var kids pdf.Array
 	for i, p := range r.doc.Pages {

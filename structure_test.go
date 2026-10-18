@@ -119,3 +119,48 @@ func TestTemplateAccessible(t *testing.T) {
 		t.Fatalf("Befund ohne Vorlagen-ID girocode: %v", err)
 	}
 }
+
+// accessibleProfiles sind die Kombinationen für barrierefreie Dokumente.
+var accessibleProfiles = []string{"pdfa-3a,pdfua-1", "pdfa-4,pdfua-2"}
+
+// TestAccessible rendert die Fälle in testdata/accessible unter PDF/UA-1
+// und PDF/UA-2. Der Strukturbaum muss widerspruchsfrei sein und dem Golden
+// File entsprechen, mit PDX_CONFORMANCE=1 prüft veraPDF jeden Standard.
+func TestAccessible(t *testing.T) {
+	files, err := filepath.Glob("testdata/accessible/*.fo")
+	if err != nil || len(files) == 0 {
+		t.Fatalf("keine Fälle: %v", err)
+	}
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".fo")
+		for _, prof := range accessibleProfiles {
+			t.Run(name+"/"+prof, func(t *testing.T) {
+				t.Parallel()
+				res, err := RenderFile(f, Options{Profile: prof, CreationDate: corpusDate})
+				if err != nil {
+					t.Fatal(err)
+				}
+				ua := prof[strings.LastIndex(prof, "-")+1:]
+				testutil.Golden(t, filepath.Join("testdata", "golden", "structure", name+"-ua"+ua+".txt"), structure(t, res.PDF))
+				testutil.Conform(t, name+"-ua"+ua+".pdf", res.PDF, prof)
+			})
+		}
+	}
+}
+
+// TestTemplateUA2 rendert die Musterrechnung als PDF/A-4f mit PDF/UA-2:
+// Strukturelemente im Namespace von PDF 2.0, Anhang mit Beschreibung.
+func TestTemplateUA2(t *testing.T) {
+	p, data := loadMuster(t)
+	res, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-4f,pdfua-2"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	structure(t, res.PDF)
+	for _, want := range []string{"%PDF-2.0", "<pdfuaid:rev>2024</pdfuaid:rev>", "/Namespaces [", "(http://iso.org/pdf2/ssn)"} {
+		if !bytes.Contains(res.PDF, []byte(want)) {
+			t.Errorf("%q fehlt", want)
+		}
+	}
+	testutil.Conform(t, "musterrechnung-ua2.pdf", res.PDF, "pdfa-4f,pdfua-2")
+}

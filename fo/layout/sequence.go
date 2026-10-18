@@ -285,7 +285,7 @@ func (s *sequence) newPage(m *master) *areatree.Container {
 	for n := s.node; n != nil; n = n.Parent {
 		if id, ok := n.Attr("id"); ok && id != "" {
 			s.e.recordID(id, formatNumber(s.page.Number, s.e.format))
-			s.e.recordDest(id, s.page, areatree.Point{})
+			s.e.recordDest(id, s.page, areatree.Point{}, "")
 		}
 	}
 	region := &areatree.Container{Kind: areatree.KindRegion, Rect: m.body, Source: m.bodyNode.Label(), ID: m.bodyNode.TemplateID()}

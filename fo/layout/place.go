@@ -137,17 +137,22 @@ func (pl *placer) box(it item) error {
 	for _, ctx := range it.path {
 		if id, ok := ctx.node.Attr("id"); ok && id != "" {
 			pl.e.recordID(id, folio)
-			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + ctx.x, Y: pl.y})
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + ctx.x, Y: pl.y}, ctx.node.Label())
 		}
 		for _, id := range ctx.ids {
 			pl.e.recordID(id, folio)
-			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + ctx.x, Y: pl.y})
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + ctx.x, Y: pl.y}, ctx.node.Label())
 		}
 	}
 	if it.line != nil {
+		// Ziele in einer Zeile zeigen auf den Block der Zeile.
+		src := ""
+		if n := len(it.path); n > 0 {
+			src = it.path[n-1].node.Label()
+		}
 		for _, id := range it.line.ids {
 			pl.e.recordID(id, folio)
-			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + it.line.x, Y: pl.y})
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + it.line.x, Y: pl.y}, src)
 		}
 	}
 	switch {

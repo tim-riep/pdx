@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -93,6 +94,20 @@ type tagger struct {
 	linkText map[string]*strings.Builder
 	// artifactLinks sind die Vorlagen-IDs von Verweisen in Artefakten.
 	artifactLinks []string
+	// labels sammelt den Text der Listenmarken je Liste für ListNumbering.
+	labels map[*structElem]string
+	// pdf2 legt die Elemente in den Namespace von PDF 2.0
+	// (ISO 32000-2 14.8.6), wie PDF/UA-2 es für Document verlangt.
+	pdf2 bool
+	// root ist das Objekt des StructTreeRoot, ns das des Namespace.
+	rootRef, ns pdf.Ref
+	// ids sind die vergebenen Element-IDs in Baumreihenfolge für den IDTree.
+	ids []idEntry
+}
+
+type idEntry struct {
+	id  string
+	ref pdf.Ref
 }
 
 func newTagger(doc *areatree.Document) *tagger {
@@ -108,6 +123,7 @@ func newTagger(doc *areatree.Document) *tagger {
 		links:    map[string]*structElem{},
 		inline:   map[*structElem]map[string]*structElem{},
 		linkText: map[string]*strings.Builder{},
+		labels:   map[*structElem]string{},
 	}
 }
 
@@ -236,7 +252,7 @@ func (t *tagger) elemFor(pi int, v *areatree.Container, parent *structElem, tg a
 	fo := foName(v.Source)
 	switch fo {
 	case "table-cell", "list-item-label", "list-item-body":
-		if tg.Row != 0 {
+		if tg.Row != 0 && parent.typ != "LI" {
 			if se := t.cell(v, parent, tg, fo); se != nil {
 				return se
 			}
@@ -248,6 +264,10 @@ func (t *tagger) elemFor(pi int, v *areatree.Container, parent *structElem, tg a
 			return se
 		}
 	}
+	// Ein Block ohne Rolle in einer Listenmarke gehört zur Marke.
+	if parent.typ == "Lbl" && fo == "block" && v.Role == "" && tg.Alt == "" && tg.Lang == "" {
+		return parent
+	}
 	se := &structElem{parent: parent, id: v.ID, alt: tg.Alt, lang: tg.Lang}
 	switch {
 	case roleTypes[v.Role] != "" && fo != "table-cell":
@@ -256,6 +276,12 @@ func (t *tagger) elemFor(pi int, v *areatree.Container, parent *structElem, tg a
 		se.typ = "Table"
 	case fo == "list-block":
 		se.typ = "L"
+	case fo == "list-item":
+		se.typ = "LI"
+	case fo == "list-item-label" && parent.typ == "LI":
+		se.typ = "Lbl"
+	case fo == "list-item-body" && parent.typ == "LI":
+		se.typ = "LBody"
 	case fo == "inline":
 		se.typ = "Span"
 	case tg.Alt != "":
@@ -367,6 +393,17 @@ func (t *tagger) text(pi int, v *areatree.GlyphRun, c tagCtx) {
 		}
 	}
 	m := t.content(pi, target, areatree.Rect{X: v.Origin.X, Y: v.Origin.Y - v.Ascent})
+	// Text einer Marke bestimmt die Nummerierung ihrer Liste.
+	for e := target; e != nil; e = e.parent {
+		if e.typ == "Lbl" {
+			if li := e.parent; li != nil && li.parent != nil && li.parent.typ == "L" {
+				for _, g := range v.Glyphs {
+					t.labels[li.parent] += g.Text
+				}
+			}
+			break
+		}
+	}
 	n := len(v.Glyphs)
 	m.hyphen = n > 0 && v.Glyphs[n-1].Hyphen
 	t.marks[v] = m
@@ -558,9 +595,36 @@ func (t *tagger) annotation(l *areatree.Link, a *pdf.Dict, ref pdf.Ref) {
 
 // write schreibt den Strukturbaum und hängt ihn an den Katalog
 // (ISO 32000-1 14.7.2, 14.7.4.4).
-func (t *tagger) write(r *renderer) {
-	root := r.d.Reserve()
+// prepare reserviert die Objekte des Baums vor dem Zeichnen, damit
+// Annotationen und Lesezeichen auf Elemente verweisen können.
+func (t *tagger) prepare(r *renderer) {
+	t.rootRef = r.d.Reserve()
+	if t.pdf2 {
+		t.ns = r.d.Add(pdf.D("Type", pdf.Name("Namespace"), "NS", pdf.String(ns20)))
+	}
 	t.reserve(r, t.root)
+}
+
+// ns20 ist der Namespace der Strukturtypen von PDF 2.0 (ISO 32000-2 14.8.6).
+const ns20 = "http://iso.org/pdf2/ssn"
+
+// destElem liefert das Strukturelement am Ziel eines Verweises, nil wenn das
+// Ziel eine Seite oder ein Artefakt ist.
+func (t *tagger) destElem(d areatree.Dest) *structElem {
+	st, ok := t.state[d.Source]
+	if !ok || st.artifact || st.parent == nil || st.parent == t.root {
+		return nil
+	}
+	for se := st.parent; se != nil; se = se.parent {
+		if se.ref.Num != 0 {
+			return se
+		}
+	}
+	return nil
+}
+
+func (t *tagger) write(r *renderer) {
+	root := t.rootRef
 	docRef := t.root.ref
 	t.writeElem(r, t.root, root)
 	var nums pdf.Array
@@ -577,12 +641,25 @@ func (t *tagger) write(r *renderer) {
 	for _, key := range t.sortedAnnots() {
 		nums = append(nums, pdf.Int(key.key), key.elem.ref)
 	}
-	r.d.Set(root, pdf.D(
+	str := pdf.D(
 		"Type", pdf.Name("StructTreeRoot"),
 		"K", docRef,
 		"ParentTree", pdf.D("Nums", nums),
 		"ParentTreeNextKey", pdf.Int(len(t.doc.Pages)+len(t.annotRefs)),
-	))
+	)
+	if t.pdf2 {
+		str.Set("Namespaces", pdf.Array{t.ns})
+	}
+	if len(t.ids) > 0 {
+		// Der Namensbaum verlangt nach Bytes sortierte Schlüssel.
+		sort.Slice(t.ids, func(i, j int) bool { return t.ids[i].id < t.ids[j].id })
+		var arr pdf.Array
+		for _, e := range t.ids {
+			arr = append(arr, pdf.String(e.id), e.ref)
+		}
+		str.Set("IDTree", pdf.D("Names", arr))
+	}
+	r.d.Set(root, str)
 	r.catalog.Set("StructTreeRoot", root)
 	r.catalog.Set("MarkInfo", pdf.D("Marked", pdf.Bool(true)))
 }
@@ -624,7 +701,25 @@ func (t *tagger) reserve(r *renderer, se *structElem) {
 }
 
 func (t *tagger) writeElem(r *renderer, se *structElem, parent pdf.Ref) {
-	d := pdf.D("Type", pdf.Name("StructElem"), "S", pdf.Name(se.typ), "P", parent)
+	typ := se.typ
+	if t.pdf2 && typ == "Note" {
+		typ = "FENote" // Note gibt es im Namespace von PDF 2.0 nicht
+	}
+	d := pdf.D("Type", pdf.Name("StructElem"), "S", pdf.Name(typ), "P", parent)
+	if t.pdf2 {
+		d.Set("NS", t.ns)
+	}
+	if typ == "Note" {
+		// PDF/UA-1 verlangt eine eindeutige ID je Note (ISO 14289-1 7.9).
+		id := fmt.Sprintf("note-%d", len(t.ids)+1)
+		d.Set("ID", pdf.String(id))
+		t.ids = append(t.ids, idEntry{id, se.ref})
+	}
+	if typ == "L" {
+		if lbl, ok := t.labels[se]; ok {
+			d.Set("A", pdf.D("O", pdf.Name("List"), "ListNumbering", pdf.Name(listNumbering(lbl, t.pdf2))))
+		}
+	}
 	pg := -1
 	for _, k := range se.kids {
 		if k.elem == nil {
@@ -679,4 +774,26 @@ func (t *tagger) writeElem(r *renderer, se *structElem, parent pdf.Ref) {
 		d.Set("A", a)
 	}
 	r.d.Set(se.ref, d)
+}
+
+// listNumbering leitet die Nummerierung einer Liste aus dem Text ihrer
+// Marken ab (ISO 32000-1 14.8.5.5, Table 347). Ziffern ergeben Decimal,
+// Buchstaben LowerAlpha oder UpperAlpha, andere Zeichen ungeordnet: Disc in
+// PDF 1.7, Unordered in PDF 2.0. PDF/UA-2 verbietet None bei Marken
+// (ISO 14289-2 8.2.5.25).
+func listNumbering(labels string, pdf2 bool) string {
+	for _, r := range labels {
+		switch {
+		case r >= '0' && r <= '9':
+			return "Decimal"
+		case r >= 'a' && r <= 'z':
+			return "LowerAlpha"
+		case r >= 'A' && r <= 'Z':
+			return "UpperAlpha"
+		}
+	}
+	if pdf2 {
+		return "Unordered"
+	}
+	return "Disc"
 }

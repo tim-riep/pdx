@@ -79,3 +79,18 @@ func TestCheckAllErrors(t *testing.T) {
 		t.Errorf("Vorprüfung ohne Anspruch: %v", err)
 	}
 }
+
+func TestListNumbering(t *testing.T) {
+	for _, c := range []struct {
+		labels string
+		pdf2   bool
+		want   string
+	}{
+		{"1.2.3.", false, "Decimal"}, {"a)b)", true, "LowerAlpha"}, {"A.B.", false, "UpperAlpha"},
+		{"••", false, "Disc"}, {"––", true, "Unordered"},
+	} {
+		if got := listNumbering(c.labels, c.pdf2); got != c.want {
+			t.Errorf("%q: %s statt %s", c.labels, got, c.want)
+		}
+	}
+}

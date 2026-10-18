@@ -1,0 +1,29 @@
+MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+Document lang="de-DE"
+  H1 "Schritte"
+  L
+    LI
+      Lbl "1."
+      LBody
+        P "Vorlage öffnen"
+    LI
+      Lbl "2."
+      LBody
+        P "Daten wählen"
+  H2 "Hinweise"
+  L
+    LI
+      Lbl "•"
+      LBody
+        P "Sprache am Dokument setzen"
+    LI
+      Lbl "•"
+      LBody
+        P "Bilder beschreiben"
+  P
+    "Zurück zu den"
+    Link
+      "Schritten"
+      Annotation Link "Schritten"
+    "."
+  FENote "Fußnote: Alle Angaben ohne Gewähr."

@@ -113,6 +113,9 @@ type InlineTag struct {
 type Dest struct {
 	Page int
 	At   Point
+	// Source ist die Quelle (Container.Source) des Elements am Ziel, für
+	// Strukturziele in Tagged PDF. Leer, wenn das Ziel eine Seite ist.
+	Source string
 }
 
 // Bookmark ist ein Lesezeichen. Ziel ist entweder Dest (eine ID) oder URI.

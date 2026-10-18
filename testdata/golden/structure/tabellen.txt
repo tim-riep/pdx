@@ -444,29 +444,24 @@ Document lang="de-DE"
           P "B2 und C2 verbunden"
   P "Listen"
   L
-    Div
-      Div
-        P "•"
-      Div
+    LI
+      Lbl "•"
+      LBody
         P "Aufzählungspunkt mit kurzem Text."
-    Div
-      Div
-        P "•"
-      Div
+    LI
+      Lbl "•"
+      LBody
         P "Ein längerer Punkt, dessen Text über mehr als eine Zeile läuft, damit man sieht, dass der Body bündig unter sich fortgesetzt wird und das Label oben steht."
         L
-          Div
-            Div
-              P "a)"
-            Div
+          LI
+            Lbl "a)"
+            LBody
               P "Verschachtelte Liste, Label rechtsbündig."
-          Div
-            Div
-              P "b)"
-            Div
+          LI
+            Lbl "b)"
+            LBody
               P "Zweiter Unterpunkt."
-    Div
-      Div
-        P "3."
-      Div
+    LI
+      Lbl "3."
+      LBody
         P "Nummerierter Punkt mit Ausdruck im Einzug."

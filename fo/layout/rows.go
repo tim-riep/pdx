@@ -181,7 +181,7 @@ func (pl *placer) rowIDs(r *rowLayout, a, y areatree.Length) {
 	mark := func(n *tree.Node, x areatree.Length) {
 		if id, ok := n.Attr("id"); ok && id != "" {
 			pl.e.recordID(id, folio)
-			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + x, Y: y})
+			pl.e.recordDest(id, pl.page, areatree.Point{X: pl.ref.X + x, Y: y}, n.Label())
 		}
 	}
 	for n := r.node; n != nil && !n.IsFO("table") && !n.IsFO("list-block"); n = n.Parent {

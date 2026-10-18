@@ -45,7 +45,7 @@ func TestCorpus(t *testing.T) {
 
 // matrixProfiles sind die Profile der Konformitätsmatrix neben pdfa-3b, das
 // TestCorpus mit Golden Files prüft. Sie wächst mit jedem neuen Profil.
-var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-3a,pdfua-1", "pdfa-4", "pdfa-4f"}
+var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-3a,pdfua-1", "pdfa-4", "pdfa-4f", "pdfa-4,pdfua-2"}
 
 // inaccessible sind Korpusfälle, die PDF/UA bewusst nicht erfüllen
 // (Abbildungen ohne Alternativtext, Tabellen ohne Kopfzellen). Die

@@ -63,6 +63,9 @@ func (r *renderer) attachments() error {
 		if !relationships[rel] {
 			errs = append(errs, fmt.Errorf("Dateianhang %q: AFRelationship %q ist unbekannt", a.Name, rel))
 		}
+		if r.claim.UA == 2 && strings.TrimSpace(a.Description) == "" {
+			errs = append(errs, fmt.Errorf("Dateianhang %q: ISO 14289-2 8.14.1 verlangt eine Beschreibung", a.Name))
+		}
 		if checker != nil {
 			if err := checker.CheckAttachment(a.Name, a.Data); err != nil {
 				errs = append(errs, err)
