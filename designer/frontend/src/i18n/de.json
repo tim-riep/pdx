@@ -573,5 +573,10 @@
   "einvoice.byLevel": "nach Stufe",
   "einvoice.from": "Erkannt aus {file}. Die Stufe steht in den Daten (Guideline-ID).",
   "einvoice.noSample": "Ohne Beispieldaten lässt sich die Stufe nicht erkennen. Lege unter Beispiele eine CII-Rechnung an.",
-  "el.einvoice": "E-Rechnung"
+  "el.einvoice": "E-Rechnung",
+  "matterhorn.title": "Manuelle Prüfung (Matterhorn 1.1)",
+  "matterhorn.progress": "{n} von {total} geprüft",
+  "matterhorn.hint": "Diese Punkte kann keine Software entscheiden. Prüfe sie am PDF, etwa mit einem Screenreader, und hake ab, was erfüllt ist. Der Stand bleibt auf diesem Rechner gespeichert.",
+  "matterhorn.na": "(entfällt: {reason})",
+  "matterhorn.source": "Grundlage: Matterhorn Protocol 1.1, © 2021 PDF Association, Lizenz CC BY 4.0. Eigene deutsche Fassung."
 }

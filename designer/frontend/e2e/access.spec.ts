@@ -40,4 +40,13 @@ test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   await expect(titel).toBeVisible();
   expect(Number(await titel.getAttribute("data-order"))).toBeGreaterThan(3);
   await page.screenshot({ path: "test-results/lesereihenfolge.png" });
+
+  // Manuelle Prüfung: Fortschritt zählt nur zutreffende Punkte.
+  const mh = panel.getByTestId("matterhorn");
+  await mh.getByRole("button", { name: /Manuelle Prüfung/ }).click();
+  await expect(mh.getByTestId("matterhorn-progress")).toHaveText("0 von 34 geprüft");
+  await expect(mh.locator('[data-check="03-003"]')).toBeDisabled();
+  await mh.locator('[data-check="09-001"]').check();
+  await expect(mh.getByTestId("matterhorn-progress")).toHaveText("1 von 34 geprüft");
+  await mh.locator('[data-check="09-001"]').uncheck();
 });

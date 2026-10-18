@@ -5,6 +5,7 @@
   import { select, selection } from "../lib/selection.svelte";
   import { project, ui } from "../lib/project.svelte";
   import { access, refreshAccess } from "../lib/access.svelte";
+  import MatterhornChecklist from "./MatterhornChecklist.svelte";
 
   const a = $derived(access.data);
 
@@ -72,6 +73,7 @@
       <h3>{t("access.tree")}</h3>
       <ul class="tree" data-testid="access-tree">{@render tree(a.tree, 0)}</ul>
     {/if}
+    <MatterhornChecklist />
   {:else if !access.loading}
     <p class="muted">{t("access.empty")}</p>
   {/if}
