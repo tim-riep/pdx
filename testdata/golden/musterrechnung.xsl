@@ -39,14 +39,14 @@
       </fo:declarations>
       <fo:page-sequence pdx:id="seiten" id="pdx-sequence" master-reference="seiten" font-family="Helvetica" font-size="9.5pt" line-height="1.3">
         <fo:static-content pdx:id="erste-kopf" flow-name="erste-kopf">
-          <fo:block-container pdx:id="briefkopf-firma" absolute-position="absolute" left="0mm" top="0mm" width="165mm">
-            <fo:block pdx:id="briefkopf-firma" font-family="Helvetica" font-size="16pt" font-weight="bold" line-height="1.3" color="#1f4e79" text-align="end">
+          <fo:block-container pdx:id="briefkopf-firma" absolute-position="absolute" left="0mm" top="0mm" width="165mm" pdx:artifact="false">
+            <fo:block pdx:id="briefkopf-firma" pdx:artifact="false" font-family="Helvetica" font-size="16pt" font-weight="bold" line-height="1.3" color="#1f4e79" text-align="end">
               <fo:inline pdx:id="briefkopf-firma-name">
                 <xsl:value-of select="inv:seller/inv:name"/>
               </fo:inline>
             </fo:block>
           </fo:block-container>
-          <fo:block-container pdx:id="adressfenster" absolute-position="fixed" left="20mm" top="45mm" width="85mm" height="45mm">
+          <fo:block-container pdx:id="adressfenster" absolute-position="fixed" left="20mm" top="45mm" width="85mm" height="45mm" pdx:artifact="false">
             <fo:block-container pdx:id="absenderzeile" absolute-position="absolute" left="0mm" top="5mm" width="85mm">
               <fo:block pdx:id="absenderzeile" font-family="Helvetica" font-size="7.5pt" line-height="1.3" color="#555555">
                 <fo:inline pdx:id="absender-name">
@@ -78,7 +78,7 @@
               </fo:block-container>
             </xsl:for-each>
           </fo:block-container>
-          <fo:block-container pdx:id="rechnungsdaten" absolute-position="fixed" left="125mm" top="50mm" width="60mm">
+          <fo:block-container pdx:id="rechnungsdaten" absolute-position="fixed" left="125mm" top="50mm" width="60mm" pdx:artifact="false">
             <fo:block pdx:id="rechnungsnummer">
               <xsl:text>Rechnungsnummer: </xsl:text>
               <fo:inline pdx:id="rechnungsnummer-wert" font-weight="bold">
@@ -279,6 +279,7 @@
               <xsl:text> €</xsl:text>
             </fo:block>
             <fo:block pdx:id="girocode">
+              <xsl:attribute name="pdx:alt" select="string((concat('GiroCode zur Überweisung von ', inv:totals/inv:gross, ' Euro an ', inv:seller/inv:name)))"/>
               <fo:instream-foreign-object pdx:id="girocode" content-width="30mm">
                 <pdx:barcode type="girocode">
                   <xsl:attribute name="name" select="inv:seller/inv:name"/>

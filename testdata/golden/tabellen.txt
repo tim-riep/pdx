@@ -870,7 +870,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
                 glyphs 20:5.283 17:2.639 20:5.283 27:5.283 19:5.283 15:2.639 19:5.283 19:5.283 3:2.639 2088:5.283
         line 56.693,707.109 56.693,733.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,707.109 538.583,733.909 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,734.159 481.39x17.4 repeat row=38/footer src=fo:table-cell@33:13
+        block 56.943,734.159 481.39x17.4 colspan=4 repeat row=38/footer src=fo:table-cell@33:13
           block 59.943,737.159 475.39x11.4 src=fo:block@33:102
             line 59.943,737.159 475.39x11.4
               text 387.476,745.331 font=2 size=9.5 color=gray(0) asc=6.916 desc=1.971 "Fortsetzung auf der nächsten Seite"
@@ -1126,7 +1126,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 59.943,212.17 27.766x11.4
               text 77.143,220.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "46"
                 glyphs 23:5.283 25:5.283
-        block 90.709,210.17 368.504x152.2 row=48/body src=fo:table-cell@309:11
+        block 90.709,210.17 368.504x152.2 colspan=2 row=48/body src=fo:table-cell@309:11
           block 93.709,212.17 362.504x148.2 src=fo:block@309:71
             line 93.709,212.17 362.504x11.4
               text 93.709,220.328 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Diese Zeile hat einen langen Text, der über viele Zeilen läuft. Eine Tabellenzeile darf"
@@ -1177,7 +1177,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
         line 90.709,362.62 459.213,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 459.213,362.62 538.833,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
         line 538.583,210.17 538.583,362.62 0.5/solid/rgb(0.1216,0.3059,0.4745)
-        block 56.943,362.87 481.39x17.4 row=38/footer src=fo:table-cell@33:13
+        block 56.943,362.87 481.39x17.4 colspan=4 row=38/footer src=fo:table-cell@33:13
           block 59.943,365.87 475.39x11.4 continued src=fo:block@33:102
             line 59.943,365.87 475.39x11.4
               text 387.476,374.042 font=2 size=9.5 color=gray(0) asc=6.916 desc=1.971 "Fortsetzung auf der nächsten Seite"
@@ -1191,7 +1191,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
           text 56.693,415.22 font=0 size=14 color=gray(0) asc=10.192 desc=2.946 "Verbund und getrennte Rahmen"
             glyphs 57:8.565 72:7.786 85:5.448 69:8.552 88:8.552 81:8.552 71:8.552 3:3.89 88:8.552 81:8.552 71:8.552 3:3.89 74:8.552 72:7.786 87:4.662 85:5.448 72:7.786 81:8.552 81:8.552 87:4.662 72:7.786 3:3.89 53:10.11 68:7.786 75:8.552 80:12.448 72:7.786 81:8.552
       block 56.693,429.501 481.89x60.2 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) src=fo:table@315:7
-        block 59.193,432.001 108.386x55.2 bg=rgb(0.9922,0.9137,0.9137) top=1/solid/rgb(0.7529,0,0) right=1/solid/rgb(0.7529,0,0) bottom=1/solid/rgb(0.7529,0,0) left=1/solid/rgb(0.7529,0,0) row=49/body src=fo:table-cell@321:13
+        block 59.193,432.001 108.386x55.2 bg=rgb(0.9922,0.9137,0.9137) top=1/solid/rgb(0.7529,0,0) right=1/solid/rgb(0.7529,0,0) bottom=1/solid/rgb(0.7529,0,0) left=1/solid/rgb(0.7529,0,0) rowspan=2 row=49/body src=fo:table-cell@321:13
           block 63.193,448.201 100.386x22.8 src=fo:block@321:143
             line 63.193,448.201 100.386x11.4
               text 63.193,456.359 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "Zwei Zeilen hoch,"
@@ -1212,7 +1212,7 @@ document title="Tabellen und Listen" subject="Korpus: Tabellen und Listen" lang=
             line 289.965,447.401 242.118x11.4
               text 289.965,455.559 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "umbricht und die Zeile höher macht."
                 glyphs 88:5.283 80:7.914 69:5.283 85:3.164 76:2.111 70:4.75 75:5.283 87:2.639 3:2.639 88:5.283 81:5.283 71:5.283 3:2.639 71:5.283 76:2.111 72:5.283 3:2.639 61:5.803 72:5.283 76:2.111 79:2.111 72:5.283 3:2.639 75:5.283 184:5.283 75:5.283 72:5.283 85:3.164 3:2.639 80:7.914 68:5.283 70:4.75 75:5.283 87:2.639 17:2.639
-        block 172.579,467.801 363.504x19.4 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) row=50/body src=fo:table-cell@326:13
+        block 172.579,467.801 363.504x19.4 top=1/solid/gray(0.6) right=1/solid/gray(0.6) bottom=1/solid/gray(0.6) left=1/solid/gray(0.6) colspan=2 row=50/body src=fo:table-cell@326:13
           block 176.579,471.801 355.504x11.4 src=fo:block@326:96
             line 176.579,471.801 355.504x11.4
               text 176.579,479.959 font=1 size=9.5 color=gray(0) asc=6.916 desc=1.999 "B2 und C2 verbunden"

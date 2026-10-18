@@ -421,26 +421,26 @@ Document lang="de-DE"
       TR
         TD
           P "46"
-        TD
+        TD colspan=2
           P "Diese Zeile hat einen langen Text, der über viele Zeilen läuft. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat. Eine Tabellenzeile darf an einer Stelle umbrochen werden, an der jede Zelle eine erlaubte Umbruchstelle hat."
         TD
           P "0,00 €"
     TFoot
       TR
-        TD
+        TD colspan=4
           P "Fortsetzung auf der nächsten Seite"
   P "Verbund und getrennte Rahmen"
   Table
     TBody
       TR
-        TD
+        TD rowspan=2
           P "Zwei Zeilen hoch, senkrecht zentriert"
         TD
           P "B1"
         TD
           P "C1 mit etwas mehr Text, der in der breiten Spalte umbricht und die Zeile höher macht."
       TR
-        TD
+        TD colspan=2
           P "B2 und C2 verbunden"
   P "Listen"
   L

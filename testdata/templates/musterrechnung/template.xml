@@ -34,8 +34,8 @@
   <pageSet id="seiten">
     <pageMaster id="erste" margin="15mm 20mm 15mm 25mm" use="first">
       <header id="erste-kopf" height="85mm">
-        <text id="briefkopf-firma" color="#1f4e79" style="st-titel" textAlign="end" w="165mm" x="0mm" y="0mm"><field id="briefkopf-firma-name" bind="inv:seller/inv:name"/></text>
-        <subform id="adressfenster" anchor="page" h="45mm" layout="positioned" w="85mm" x="20mm" y="45mm">
+        <text id="briefkopf-firma" artifact="false" color="#1f4e79" style="st-titel" textAlign="end" w="165mm" x="0mm" y="0mm"><field id="briefkopf-firma-name" bind="inv:seller/inv:name"/></text>
+        <subform id="adressfenster" anchor="page" artifact="false" h="45mm" layout="positioned" w="85mm" x="20mm" y="45mm">
           <text id="absenderzeile" style="st-klein" w="85mm" x="0mm" y="5mm"><field id="absender-name" bind="inv:seller/inv:name"/> · <field id="absender-strasse" bind="inv:seller/inv:street"/></text>
           <subform id="empfaenger" bind="inv:buyer" layout="flowed" w="85mm" x="0mm" y="12mm">
             <field id="empfaenger-name" bind="inv:name"/>
@@ -43,7 +43,7 @@
             <text id="empfaenger-ort"><field id="empfaenger-plz" bind="inv:postcode"/> <field id="empfaenger-stadt" bind="inv:city"/></text>
           </subform>
         </subform>
-        <subform id="rechnungsdaten" anchor="page" layout="flowed" w="60mm" x="125mm" y="50mm">
+        <subform id="rechnungsdaten" anchor="page" artifact="false" layout="flowed" w="60mm" x="125mm" y="50mm">
           <text id="rechnungsnummer">Rechnungsnummer: <field id="rechnungsnummer-wert" bind="inv:number" fontWeight="bold"/></text>
           <text id="rechnungsdatum">Rechnungsdatum: <field id="rechnungsdatum-wert" bind="inv:issueDate" format="datum"/></text>
         </subform>
@@ -130,7 +130,7 @@
       <text id="netto">Nettobetrag: <field id="netto-wert" bind="inv:totals/inv:net" format="betrag"/> €</text>
       <text id="steuer">Umsatzsteuer: <field id="steuer-wert" bind="inv:totals/inv:tax" format="betrag"/> €</text>
       <text id="brutto" fontWeight="bold">Gesamtbetrag: <field id="brutto-wert" bind="inv:totals/inv:gross" format="betrag"/> €</text>
-      <barcode id="girocode" type="girocode" w="30mm">
+      <barcode id="girocode" altBind="concat('GiroCode zur Überweisung von ', inv:totals/inv:gross, ' Euro an ', inv:seller/inv:name)" type="girocode" w="30mm">
         <data id="gc-name" bind="inv:seller/inv:name" name="name"/>
         <data id="gc-iban" bind="inv:seller/inv:iban" name="iban"/>
         <data id="gc-betrag" bind="inv:totals/inv:gross" name="amount"/>

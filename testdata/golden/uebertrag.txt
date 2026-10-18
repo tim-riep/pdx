@@ -519,7 +519,7 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
             line 441.37,732.322 95.213x12
               text 497.655,740.91 font=1 size=10 color=gray(0) asc=7.28 desc=2.104 "823,27 €"
                 glyphs 27:5.562 21:5.562 22:5.562 15:2.778 21:5.562 26:5.562 3:2.778 2088:5.562
-        block 56.693,746.572 382.677x16 repeat row=34/footer src=fo:table-cell@44:13
+        block 56.693,746.572 382.677x16 colspan=2 repeat row=34/footer src=fo:table-cell@44:13
           block 58.693,748.572 378.677x12 src=fo:block@44:100
             line 58.693,748.572 378.677x12
               text 356.788,757.16 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Zwischensumme"
@@ -550,7 +550,7 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,202.072 90.709,202.072 0.5/solid/gray(0)
         line 90.709,202.072 439.37,202.072 0.5/solid/gray(0)
         line 439.37,202.072 538.583,202.072 0.5/solid/gray(0)
-        block 56.693,202.322 382.677x16 row=36/header src=fo:table-cell@38:13
+        block 56.693,202.322 382.677x16 colspan=2 row=36/header src=fo:table-cell@38:13
           block 58.693,204.322 378.677x12 src=fo:block@38:69
             line 58.693,204.322 378.677x12
               text 398.462,212.924 font=2 size=10 color=gray(0) asc=7.28 desc=2.075 "Übertrag"
@@ -1139,7 +1139,7 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,701.286 90.709,701.286 0.5/solid/gray(0)
         line 90.709,701.286 439.37,701.286 0.5/solid/gray(0)
         line 439.37,701.286 538.583,701.286 0.5/solid/gray(0)
-        block 56.693,701.536 382.677x16 row=34/footer src=fo:table-cell@44:13
+        block 56.693,701.536 382.677x16 colspan=2 row=34/footer src=fo:table-cell@44:13
           block 58.693,703.536 378.677x12 src=fo:block@44:100
             line 58.693,703.536 378.677x12
               text 356.788,712.124 font=0 size=10 color=gray(0) asc=7.28 desc=2.104 "Zwischensumme"
@@ -1170,7 +1170,7 @@ document title="Überträge" subject="Korpus: Marker und Überträge" lang="de-D
         line 56.693,92.786 90.709,92.786 0.5/solid/gray(0)
         line 90.709,92.786 439.37,92.786 0.5/solid/gray(0)
         line 439.37,92.786 538.583,92.786 0.5/solid/gray(0)
-        block 56.693,93.036 382.677x16 repeat row=75/header src=fo:table-cell@38:13
+        block 56.693,93.036 382.677x16 colspan=2 repeat row=75/header src=fo:table-cell@38:13
           block 58.693,95.036 378.677x12 src=fo:block@38:69
             line 58.693,95.036 378.677x12
               text 398.462,103.638 font=2 size=10 color=gray(0) asc=7.28 desc=2.075 "Übertrag"

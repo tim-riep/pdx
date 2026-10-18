@@ -149,6 +149,9 @@ type XMPProperty struct {
 	Description string
 	// ValueType ist der XMP-Werttyp, etwa "Text" oder "Date". Leer heißt Text.
 	ValueType string
+	// Category ist "internal" oder "external" (Vorgabe) für die
+	// pdfaExtension-Beschreibung.
+	Category string
 }
 
 // FontID indiziert Document.Fonts.
@@ -323,6 +326,9 @@ type Tag struct {
 	// footer oder item (Listenpunkt).
 	Row     int
 	Section string
+	// ColSpan und RowSpan sind die Spannen einer Zelle, 0 für eine Spalte
+	// oder Zeile.
+	ColSpan, RowSpan int
 	// Static markiert Inhalt aus fo:static-content (Kopf, Fuß, Seitenzahlen),
 	// der als Artefakt gilt. Content hebt das auf (artifact="false" in der
 	// Vorlage), etwa für Anschrift und Rechnungsdaten im Kopf der ersten Seite.

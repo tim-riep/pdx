@@ -15,6 +15,7 @@ import (
 	"github.com/tim-riep/pdx/compile"
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/font"
+	"github.com/tim-riep/pdx/pdf/render"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
 )
@@ -159,6 +160,14 @@ func (t *Template) prepare(data []byte, opts TemplateOptions) ([]byte, Options, 
 // mapError übersetzt Fehler beim Setzen in Fehler mit Vorlagen-ID. Sie
 // beziehen sich auf eine Stelle im FO, das Element dort trägt die ID.
 func mapError(fo []byte, err error) error {
+	var ce render.CheckErrors
+	if errors.As(err, &ce) {
+		es := make(template.Errors, len(ce))
+		for i, e := range ce {
+			es[i] = &template.Error{ID: e.ID, Msg: e.Msg}
+		}
+		return es
+	}
 	var te *tree.Error
 	if errors.As(err, &te) {
 		return &template.Error{ID: foIDAt(fo, te.Line, te.Col), Msg: te.Msg}

@@ -37,6 +37,8 @@ var flavours = map[string]string{
 	"pdfa-2u": "2u",
 	"pdfa-3b": "3b",
 	"pdfa-3u": "3u",
+	"pdfa-3a": "3a",
+	"pdfua-1": "ua1",
 }
 
 // Flavour liefert den veraPDF-Flavour zu einem einzelnen pdx-Profil.

@@ -13,8 +13,8 @@ import (
 
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/designer/internal/model"
-	"github.com/tim-riep/pdx/designer/notices"
 	"github.com/tim-riep/pdx/designer/internal/pipeline"
+	"github.com/tim-riep/pdx/designer/notices"
 )
 
 // Emitter schickt Ereignisse an die Oberfläche.

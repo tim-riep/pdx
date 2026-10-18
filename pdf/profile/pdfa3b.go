@@ -16,10 +16,12 @@ func init() {
 	register("pdfa-2b", func() Profile { return PDFA{Part: 2, Level: "B"} })
 	register("pdfa-2u", func() Profile { return PDFA{Part: 2, Level: "U"} })
 	register("pdfa-3u", func() Profile { return PDFA{Part: 3, Level: "U"} })
+	register("pdfa-3a", func() Profile { return PDFA{Part: 3, Level: "A"} })
 }
 
 // PDFA ist PDF/A-2 oder PDF/A-3 (ISO 19005-2:2011, ISO 19005-3:2012) in der
-// Stufe B oder U. Die Klauseln beider Teile sind gleich nummeriert, PDF/A-3
+// Stufe B, U oder A. Stufe A verlangt Tagged PDF (6.7), das schaltet der
+// Renderer über den Anspruch ein. Die Klauseln beider Teile sind gleich nummeriert, PDF/A-3
 // erlaubt zusätzlich beliebige Anhänge (6.8).
 type PDFA struct {
 	Part  int
@@ -109,31 +111,33 @@ func (p PDFA3B) Prepare(ctx *Context) error { return prepareClaim(ctx, p.claim()
 // prepareClaim ergänzt die Pflichtobjekte eines Anspruchs: Output Intent
 // für PDF/A und die XMP-Metadaten mit den Kennungen aller Teile.
 func prepareClaim(ctx *Context, c Claim) error {
-	if c.PDFA == 0 {
+	if c.PDFA == 0 && c.UA == 0 {
 		return nil
 	}
-	return preparePDFA(ctx, c.PDFA, c.Level)
-}
-
-func preparePDFA(ctx *Context, part int, conformance string) error {
 	d := ctx.Doc
-	profile := d.Add(pdf.NewFlateStream(pdf.D("N", pdf.Int(3)), icc.SRGB()))
-	ctx.Catalog.Set("OutputIntents", pdf.Array{pdf.D(
-		"Type", pdf.Name("OutputIntent"),
-		"S", pdf.Name("GTS_PDFA1"),
-		"OutputConditionIdentifier", pdf.String(icc.SRGBDescription),
-		"Info", pdf.String(icc.SRGBDescription),
-		"RegistryName", pdf.String("http://www.color.org"),
-		"DestOutputProfile", profile,
-	)})
+	if c.PDFA > 0 {
+		profile := d.Add(pdf.NewFlateStream(pdf.D("N", pdf.Int(3)), icc.SRGB()))
+		ctx.Catalog.Set("OutputIntents", pdf.Array{pdf.D(
+			"Type", pdf.Name("OutputIntent"),
+			"S", pdf.Name("GTS_PDFA1"),
+			"OutputConditionIdentifier", pdf.String(icc.SRGBDescription),
+			"Info", pdf.String(icc.SRGBDescription),
+			"RegistryName", pdf.String("http://www.color.org"),
+			"DestOutputProfile", profile,
+		)})
+	}
+	if c.UA > 0 {
+		// Der Titel erscheint statt des Dateinamens (ISO 14289-1 7.1).
+		ctx.Catalog.Set("ViewerPreferences", pdf.D("DisplayDocTitle", pdf.Bool(true)))
+	}
 
 	m := ctx.Meta
 	pkt := &xmp.Packet{
-		PDFAPart: part, PDFAConformance: conformance,
+		PDFAPart: c.PDFA, PDFAConformance: c.Level, UAPart: c.UA,
 		Title: m.Title, Author: m.Author, Subject: m.Subject, Keywords: m.Keywords,
 		Creator: m.Creator, Producer: ctx.Producer,
 		Created: ctx.Date, Modified: ctx.Date,
-		Schemas: m.XMP, Extension: true,
+		Schemas: m.XMP, Extension: c.PDFA > 0,
 	}
 	data, err := pkt.Bytes()
 	if err != nil {

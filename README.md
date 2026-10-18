@@ -98,11 +98,15 @@ Feste Objektreihenfolge, sortierte Dictionary-Schlüssel, feste Zahlenformatieru
 | `pdfa-3b` | PDF/A-3b nach ISO 19005-3. Output Intent GTS_PDFA1 mit sRGB, XMP mit pdfaid, Anhänge mit AFRelationship, Transparenz erlaubt |
 | `pdfa-3u` | PDF/A-3u, zusätzlich eine Unicode-Zuordnung für jede Glyphe (6.2.11.7.2). Fehlt sie, bricht das Schreiben mit Schrift und Glyphe ab |
 | `pdfa-2b`, `pdfa-2u` | PDF/A-2 nach ISO 19005-2. Anhänge nur als PDF/A-1 oder PDF/A-2 (6.8), alle unzulässigen Anhänge in einer Meldung |
+| `pdfa-3a` | PDF/A-3a, Tagged PDF mit Strukturbaum (6.7). Verlangt Dokumentsprache und Alternativtexte für Abbildungen |
+| `pdfua-1` | PDF/UA-1 nach ISO 14289-1, kombinierbar mit PDF/A-2 und PDF/A-3, etwa `pdfa-3a,pdfua-1`. XMP mit pdfuaid, DisplayDocTitle. Verlangt zusätzlich Titel, lückenlose Überschriften ab H1, Kopfzellen in Tabellen und Verweise mit Text im Strukturbaum |
 | `pdf-1.7` | PDF 1.7 ohne Konformitätsanspruch, Schriften trotzdem immer eingebettet |
 
 Profile lassen sich kombinieren, etwa `--profile pdfa-3a,pdfua-1`. Unzulässige Kombinationen lehnt pdx vor dem Rendern mit allen Gründen ab: verschiedene PDF-Versionen (PDF/A-2, PDF/A-3 und PDF/UA-1 beruhen auf PDF 1.7, PDF/A-4 und PDF/UA-2 auf PDF 2.0), zwei PDF/A- oder zwei PDF/UA-Teile. `pdx verify` prüft mit veraPDF jeden beanspruchten Standard in einem eigenen Lauf.
 
-In Arbeit (Phase 3): 3a, PDF/UA-1, 4, 4f, PDF/UA-2, E-Rechnung.
+Unter `pdfa-3a` und `pdfua-1` prüft pdx vor dem Schreiben alles, was sich nicht auffüllen lässt, und meldet alle Befunde auf einmal mit der ID des Vorlagenelements, etwa `[girocode] Abbildung ohne Alternativtext (alt oder altBind), ISO 14289-1 7.3, ISO 19005-3 6.7`. Kopf und Fuß sind Artefakte, `artifact="false"` holt Inhalte wie Anschrift und Rechnungsdaten in den Strukturbaum. Wiederholte Tabellenköpfe, Überträge und Zwischensummen sind Artefakte.
+
+In Arbeit (Phase 3): 4, 4f, PDF/UA-2, E-Rechnung.
 
 ## FO-Teilumfang
 

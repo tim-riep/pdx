@@ -1,5 +1,17 @@
-MarkInfo Marked true, Sprache "de-DE", 42 Artefakttexte
+MarkInfo Marked true, Sprache "de-DE", 29 Artefakttexte
 Document lang="de-DE"
+  Div
+    P "Beispiel GmbH"
+  Div
+    Div
+      P "Beispiel GmbH · Hauptstraße 1"
+    Div
+      P "Muster AG"
+      P "Industriestraße 99"
+      P "70173 Stuttgart"
+  Div
+    P "Rechnungsnummer: RE-2026-0001"
+    P "Rechnungsdatum: 15.01.2026"
   H1 "Rechnung"
   Table
     THead
@@ -679,5 +691,4 @@ Document lang="de-DE"
     P "Nettobetrag: 68.060,92 €"
     P "Umsatzsteuer: 12.931,57 €"
     P "Gesamtbetrag: 80.992,49 €"
-    Div
-      Figure
+    Figure alt="GiroCode zur Überweisung von 80992.49 Euro an Beispiel GmbH"

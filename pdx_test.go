@@ -2,6 +2,7 @@ package pdx
 
 import (
 	"bytes"
+	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/internal/testutil"
+	"github.com/tim-riep/pdx/pdf/render"
 )
 
 var corpusDate = time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -43,7 +45,12 @@ func TestCorpus(t *testing.T) {
 
 // matrixProfiles sind die Profile der Konformitätsmatrix neben pdfa-3b, das
 // TestCorpus mit Golden Files prüft. Sie wächst mit jedem neuen Profil.
-var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u"}
+var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-3a,pdfua-1"}
+
+// inaccessible sind Korpusfälle, die PDF/UA bewusst nicht erfüllen
+// (Abbildungen ohne Alternativtext, Tabellen ohne Kopfzellen). Die
+// Vorprüfung muss sie mit Befund ablehnen.
+var inaccessible = map[string]bool{"barcodes": true, "bilder": true, "rechnung": true, "tabellen": true}
 
 // TestCorpusProfiles rendert jeden Fall in jedem Profil der Matrix. Mit
 // PDX_CONFORMANCE=1 prüft veraPDF jeden beanspruchten Standard. Anhänge, die
@@ -64,7 +71,14 @@ func TestCorpusProfiles(t *testing.T) {
 					if strings.HasPrefix(prof, "pdfa-2") && strings.Contains(err.Error(), "ISO 19005-2 6.8") {
 						return // Anhang ohne PDF/A, wie verlangt abgelehnt
 					}
+					var ce render.CheckErrors
+					if inaccessible[name] && errors.As(err, &ce) {
+						return // nicht barrierefrei, wie verlangt abgelehnt
+					}
 					t.Fatal(err)
+				}
+				if inaccessible[name] && strings.Contains(prof, "pdfua") {
+					t.Fatal("nicht barrierefreier Fall wurde nicht abgelehnt")
 				}
 				if _, err := testutil.CheckStructure(res.PDF); err != nil {
 					t.Fatal(err)

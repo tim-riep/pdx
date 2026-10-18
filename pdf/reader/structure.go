@@ -15,6 +15,8 @@ type Node struct {
 	Lang  string
 	Alt   string
 	Scope string
+	// ColSpan und RowSpan sind die Spannen einer Zelle, 0 ohne Angabe.
+	ColSpan, RowSpan int
 	// Text ist der Text der eigenen markierten Inhalte in Baumreihenfolge.
 	Text   string
 	Annots []string
@@ -129,6 +131,12 @@ func (f *File) ReadStructure() (*Structure, error) {
 		for _, a := range attrs(f, d["A"]) {
 			if s, ok := f.Resolve(a["Scope"]).(Name); ok {
 				n.Scope = string(s)
+			}
+			if v, ok := f.Int(a["ColSpan"]); ok {
+				n.ColSpan = v
+			}
+			if v, ok := f.Int(a["RowSpan"]); ok {
+				n.RowSpan = v
 			}
 		}
 		if p, ok := d["Pg"].(Ref); ok {
@@ -346,6 +354,12 @@ func (s *Structure) Format(w io.Writer) error {
 			}
 			if n.Scope != "" {
 				b.WriteString(" scope=" + n.Scope)
+			}
+			if n.ColSpan > 1 {
+				fmt.Fprintf(&b, " colspan=%d", n.ColSpan)
+			}
+			if n.RowSpan > 1 {
+				fmt.Fprintf(&b, " rowspan=%d", n.RowSpan)
 			}
 			if n.Alt != "" {
 				fmt.Fprintf(&b, " alt=%q", n.Alt)

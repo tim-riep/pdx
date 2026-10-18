@@ -108,9 +108,15 @@ func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
 	r := &renderer{doc: doc, opts: opts, d: pdf.NewDocument(opts.Profile), gs: map[string]pdf.Ref{}}
 	r.fonts = newFontSet(r)
 	r.images = newImageSet(r)
-	if c := profile.ClaimOf(opts.Profile); opts.Tagged || c.Level == "A" || c.UA > 0 {
+	c := profile.ClaimOf(opts.Profile)
+	if strict := c.Level == "A" || c.UA > 0; opts.Tagged || strict {
 		r.tag = newTagger(doc)
 		r.tag.plan()
+		if strict {
+			if err := r.tag.check(c); err != nil {
+				return nil, err
+			}
+		}
 	}
 	return r, nil
 }

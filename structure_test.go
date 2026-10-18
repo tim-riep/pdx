@@ -2,12 +2,15 @@ package pdx
 
 import (
 	"bytes"
+	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/tim-riep/pdx/internal/testutil"
 	"github.com/tim-riep/pdx/pdf/reader"
+	"github.com/tim-riep/pdx/template"
+	"github.com/tim-riep/pdx/template/pkg"
 )
 
 // structure liest den Strukturbaum einer Datei und verlangt, dass Baum,
@@ -76,4 +79,43 @@ func TestTemplateStructure(t *testing.T) {
 		}
 	}
 	testutil.Conform(t, "musterrechnung-tagged.pdf", res.PDF, DefaultProfile)
+}
+
+// TestTemplateAccessible rendert die Musterrechnung als PDF/A-3a mit
+// PDF/UA-1. Fehlt der Alternativtext des GiroCodes, nennt der Befund die
+// Vorlagen-ID.
+func TestTemplateAccessible(t *testing.T) {
+	p, data := loadMuster(t)
+	opts := TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3a,pdfua-1"}}
+	res, err := RenderTemplate(p, data, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	structure(t, res.PDF)
+	for _, want := range []string{"pdfuaid:part>1<", "pdfaid:conformance>A<", "/DisplayDocTitle true"} {
+		if !bytes.Contains(res.PDF, []byte(want)) {
+			t.Errorf("%q fehlt", want)
+		}
+	}
+	testutil.Conform(t, "musterrechnung-ua.pdf", res.PDF, "pdfa-3a,pdfua-1")
+
+	// Ohne Alternativtext muss der Befund die ID des GiroCodes nennen.
+	src := string(template.Write(p.Template))
+	alt := ` altBind="concat('GiroCode zur Überweisung von ', inv:totals/inv:gross, ' Euro an ', inv:seller/inv:name)"`
+	if !strings.Contains(src, alt) {
+		t.Fatal("altBind des GiroCodes nicht gefunden")
+	}
+	parsed, err := template.Parse([]byte(strings.Replace(src, alt, "", 1)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	q, err := pkg.New(parsed, p.Files)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = RenderTemplate(q, data, opts)
+	var es template.Errors
+	if !errors.As(err, &es) || len(es) != 1 || es[0].ID != "girocode" {
+		t.Fatalf("Befund ohne Vorlagen-ID girocode: %v", err)
+	}
 }

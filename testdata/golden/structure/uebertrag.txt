@@ -13,7 +13,7 @@ Document lang="de-DE"
         TH scope=Column
           P "Betrag"
       TR
-        TH scope=Column
+        TH scope=Column colspan=2
           P "Übertrag"
         TH scope=Column
           P "0,00 €"
@@ -510,7 +510,7 @@ Document lang="de-DE"
           P "153,30 €"
     TFoot
       TR
-        TD
+        TD colspan=2
           P "Zwischensumme"
         TD
           P "31.887,15 €"

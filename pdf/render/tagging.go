@@ -23,6 +23,8 @@ type structElem struct {
 	alt    string
 	lang   string
 	scope  string
+	// colSpan und rowSpan sind die Spannen einer Tabellenzelle.
+	colSpan, rowSpan int
 	id     string // Vorlagen-ID, für Meldungen
 	ref    pdf.Ref
 	// generic ist ein Block ohne Rolle: P mit eigenem Inhalt, sonst Div.
@@ -59,6 +61,8 @@ type tagCtx struct {
 	parent   *structElem
 	artifact bool
 	content  bool
+	// id ist die Vorlagen-ID des nächsten Containers, für Meldungen.
+	id string
 }
 
 type tableState struct {
@@ -87,6 +91,8 @@ type tagger struct {
 	inline map[*structElem]map[string]*structElem
 	// linkText sammelt den Text je Verweis für /Contents der Annotation.
 	linkText map[string]*strings.Builder
+	// artifactLinks sind die Vorlagen-IDs von Verweisen in Artefakten.
+	artifactLinks []string
 }
 
 func newTagger(doc *areatree.Document) *tagger {
@@ -133,13 +139,14 @@ func (t *tagger) walk(pi int, a areatree.Area, c tagCtx, top bool) {
 	case *areatree.GlyphRun:
 		t.text(pi, v, c)
 	case *areatree.Image:
-		t.figure(pi, a, v.Rect, c)
+		t.figure(pi, a, v.Rect, v.ID, c)
 	case *areatree.Path:
-		t.figure(pi, a, v.Rect, c)
+		t.figure(pi, a, v.Rect, v.ID, c)
 	case *areatree.Line, *areatree.Box:
 		t.marks[a] = mark{artifact: true}
 	case *areatree.Link:
 		if c.artifact {
+			t.artifactLinks = append(t.artifactLinks, c.id)
 			return
 		}
 		le := t.linkElem(c.parent, v.Key, v.Rect, pi)
@@ -169,13 +176,17 @@ func (t *tagger) container(pi int, v *areatree.Container, c tagCtx, top bool) {
 		}
 	}
 	content := c.content || tg.Content
+	if v.ID != "" {
+		c.id = v.ID
+	}
 	if v.Background != nil || hasBorder(v.Border) {
 		t.marks[v] = mark{artifact: true} // Hintergrund und Rahmen sind Gestaltung
 	}
 	if art {
-		t.state[v.Source] = tagCtx{parent: c.parent, artifact: true}
+		st := tagCtx{parent: c.parent, artifact: true, id: c.id}
+		t.state[v.Source] = st
 		for _, ch := range v.Children {
-			t.walk(pi, ch, tagCtx{parent: c.parent, artifact: true}, false)
+			t.walk(pi, ch, st, false)
 		}
 		return
 	}
@@ -188,7 +199,7 @@ func (t *tagger) container(pi int, v *areatree.Container, c tagCtx, top bool) {
 			se.positioned, se.order = true, tg.Order
 		}
 	}
-	st := tagCtx{parent: se, content: content}
+	st := tagCtx{parent: se, content: content, id: c.id}
 	if v.Source != "" {
 		t.state[v.Source] = st
 	}
@@ -287,7 +298,7 @@ func (t *tagger) cell(v *areatree.Container, parent *structElem, tg areatree.Tag
 			sec.kids = append(sec.kids, structKid{elem: row})
 			ts.rows[tg.Row] = row
 		}
-		se := &structElem{typ: "TD", parent: row, id: v.ID, lang: tg.Lang, alt: tg.Alt}
+		se := &structElem{typ: "TD", parent: row, id: v.ID, lang: tg.Lang, alt: tg.Alt, colSpan: tg.ColSpan, rowSpan: tg.RowSpan}
 		if tg.Section == "header" || tg.Scope != "" {
 			se.typ, se.scope = "TH", tg.Scope
 			if se.scope == "" {
@@ -362,14 +373,17 @@ func (t *tagger) text(pi int, v *areatree.GlyphRun, c tagCtx) {
 }
 
 // figure plant ein Bild oder einen Barcode als Inhalt einer Abbildung.
-func (t *tagger) figure(pi int, a areatree.Area, r areatree.Rect, c tagCtx) {
+func (t *tagger) figure(pi int, a areatree.Area, r areatree.Rect, id string, c tagCtx) {
 	if c.artifact {
 		t.marks[a] = mark{artifact: true}
 		return
 	}
 	target := c.parent
 	if target.typ != "Figure" {
-		target = &structElem{typ: "Figure", parent: c.parent, id: c.parent.id}
+		if id == "" {
+			id = c.id
+		}
+		target = &structElem{typ: "Figure", parent: c.parent, id: id}
 		c.parent.kids = append(c.parent.kids, structKid{elem: target})
 	}
 	t.marks[a] = t.content(pi, target, r)
@@ -650,8 +664,19 @@ func (t *tagger) writeElem(r *renderer, se *structElem, parent pdf.Ref) {
 	if se.alt != "" {
 		d.Set("Alt", pdf.TextString(se.alt))
 	}
-	if se.scope != "" {
-		d.Set("A", pdf.D("O", pdf.Name("Table"), "Scope", pdf.Name(se.scope)))
+	// Tabellenattribute (ISO 32000-1 14.8.5.7).
+	if se.scope != "" || se.colSpan > 1 || se.rowSpan > 1 {
+		a := pdf.D("O", pdf.Name("Table"))
+		if se.scope != "" {
+			a.Set("Scope", pdf.Name(se.scope))
+		}
+		if se.colSpan > 1 {
+			a.Set("ColSpan", pdf.Int(se.colSpan))
+		}
+		if se.rowSpan > 1 {
+			a.Set("RowSpan", pdf.Int(se.rowSpan))
+		}
+		d.Set("A", a)
 	}
 	r.d.Set(se.ref, d)
 }

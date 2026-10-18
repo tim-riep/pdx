@@ -115,6 +115,12 @@ func (pl *placer) cellTag(c *areatree.Container, cell *tree.Node, r *rowLayout, 
 		c.Tag.Section = sectionNames[r.sec]
 	}
 	c.Tag.Repeat = c.Tag.Repeat || ref.repeat
+	if n := spanAttr(cell, "number-columns-spanned"); n > 1 {
+		c.Tag.ColSpan = n
+	}
+	if n := spanAttr(cell, "number-rows-spanned"); n > 1 {
+		c.Tag.RowSpan = n
+	}
 	if r.node != nil {
 		if _, rt := tagOf(r.node); rt != nil && rt.Artifact {
 			c.Tag.Artifact = true

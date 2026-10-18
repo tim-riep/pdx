@@ -22,6 +22,8 @@ type Packet struct {
 	// lässt pdfaid weg.
 	PDFAPart        int
 	PDFAConformance string
+	// UAPart setzt pdfuaid:part (ISO 14289-1 5), 0 lässt es weg.
+	UAPart int
 
 	Title, Author, Subject, Keywords, Creator, Producer string
 	Created, Modified                                   time.Time
@@ -39,6 +41,7 @@ var builtin = map[string]string{
 	"pdf":           "http://ns.adobe.com/pdf/1.3/",
 	"xmp":           "http://ns.adobe.com/xap/1.0/",
 	"pdfaid":        "http://www.aiim.org/pdfa/ns/id/",
+	"pdfuaid":       "http://www.aiim.org/pdfua/ns/id/",
 	"pdfaExtension": "http://www.aiim.org/pdfa/ns/extension/",
 	"pdfaSchema":    "http://www.aiim.org/pdfa/ns/schema#",
 	"pdfaProperty":  "http://www.aiim.org/pdfa/ns/property#",
@@ -102,6 +105,11 @@ func (p *Packet) Bytes() ([]byte, error) {
 			}
 		})
 	}
+	if p.UAPart > 0 {
+		desc(`xmlns:pdfuaid="`+builtin["pdfuaid"]+`"`, func() {
+			simple("pdfuaid:part", fmt.Sprint(p.UAPart))
+		})
+	}
 	desc(`xmlns:dc="`+builtin["dc"]+`"`, func() {
 		simple("dc:format", "application/pdf")
 		if p.Title != "" {
@@ -135,11 +143,20 @@ func (p *Packet) Bytes() ([]byte, error) {
 			}
 		})
 	}
-	if p.Extension && len(p.Schemas) > 0 {
+	// pdfuaid ist in PDF/A nicht vordefiniert und braucht unter PDF/A eine
+	// Beschreibung im pdfaExtension-Schema (ISO 19005-3 6.6.2.3.3).
+	ext := p.Schemas
+	if p.UAPart > 0 {
+		ext = append([]areatree.XMPSchema{{
+			Prefix: "pdfuaid", NamespaceURI: builtin["pdfuaid"], Description: "PDF/UA identification schema",
+			Properties: []areatree.XMPProperty{{Name: "part", ValueType: "Integer", Description: "Indicates, which part of ISO 14289 standard is followed", Category: "internal"}},
+		}}, ext...)
+	}
+	if p.Extension && len(ext) > 0 {
 		desc(fmt.Sprintf(`xmlns:pdfaExtension="%s" xmlns:pdfaSchema="%s" xmlns:pdfaProperty="%s"`,
 			builtin["pdfaExtension"], builtin["pdfaSchema"], builtin["pdfaProperty"]), func() {
 			b.WriteString("<pdfaExtension:schemas><rdf:Bag>\n")
-			for _, s := range p.Schemas {
+			for _, s := range ext {
 				b.WriteString(`<rdf:li rdf:parseType="Resource">` + "\n")
 				simple("pdfaSchema:schema", nonEmpty(s.Description, s.Prefix))
 				simple("pdfaSchema:namespaceURI", s.NamespaceURI)
@@ -149,7 +166,7 @@ func (p *Packet) Bytes() ([]byte, error) {
 					b.WriteString(`<rdf:li rdf:parseType="Resource">`)
 					simple("pdfaProperty:name", pr.Name)
 					simple("pdfaProperty:valueType", nonEmpty(pr.ValueType, "Text"))
-					simple("pdfaProperty:category", "external")
+					simple("pdfaProperty:category", nonEmpty(pr.Category, "external"))
 					simple("pdfaProperty:description", nonEmpty(pr.Description, pr.Name))
 					b.WriteString("</rdf:li>\n")
 				}

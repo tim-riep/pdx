@@ -90,6 +90,12 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 				if t.Lang != "" {
 					fmt.Fprintf(b, " lang=%s", t.Lang)
 				}
+				if t.ColSpan > 1 {
+					fmt.Fprintf(b, " colspan=%d", t.ColSpan)
+				}
+				if t.RowSpan > 1 {
+					fmt.Fprintf(b, " rowspan=%d", t.RowSpan)
+				}
 				if t.Scope != "" {
 					fmt.Fprintf(b, " scope=%s", t.Scope)
 				}
