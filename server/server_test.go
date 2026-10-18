@@ -222,12 +222,13 @@ func TestConfigCheck(t *testing.T) {
 		{Name: "a", SHA256: "kein-hash", Rights: []string{"render"}},
 		{Name: "a", SHA256: HashKey("x"), Rights: []string{"alles"}},
 		{Name: "b", SHA256: HashKey("y")},
+		{Name: "c", SHA256: HashKey("y"), Rights: []string{"render"}},
 	}}
 	err := c.Check()
 	if err == nil {
 		t.Fatal("Fehler nicht erkannt")
 	}
-	for _, want := range []string{"kein SHA-256", "doppelt", "unbekannt", "keine Rechte"} {
+	for _, want := range []string{"kein SHA-256", "doppelt", "unbekannt", "keine Rechte", "denselben Hash"} {
 		if !strings.Contains(err.Error(), want) {
 			t.Errorf("Befund %q fehlt in %v", want, err)
 		}

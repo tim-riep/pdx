@@ -1,0 +1,34 @@
+# Eingehend nur von Pods mit dem Label pdx-client=true (beliebiger
+# Namespace) und vom Monitoring, ausgehend nur DNS. Für /v1/sign ab B-T
+# zusätzlich den Zeitstempeldienst und für B-LT OCSP und CRL freigeben.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pdx-server
+spec:
+  podSelector:
+    matchLabels:
+      app: pdx-server
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              pdx-client: "true"
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - port: 8080
+  egress:
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

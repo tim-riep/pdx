@@ -1,0 +1,9 @@
+.git
+designer
+prototype
+out
+pdx
+deploy
+**/testdata/fuzz
+*.test
+*.prof

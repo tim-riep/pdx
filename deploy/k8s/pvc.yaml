@@ -1,0 +1,12 @@
+# Gemeinsame Vorlagenablage aller Instanzen. Braucht eine StorageClass mit
+# ReadWriteMany (etwa NFS oder CephFS). Versionen werden exklusiv angelegt,
+# active atomar ersetzt, mehrere Instanzen schreiben sicher.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pdx-templates
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 1Gi

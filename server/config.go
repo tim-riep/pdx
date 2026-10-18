@@ -142,6 +142,7 @@ func (c *Config) Check() error {
 	}
 	var errs []error
 	names := map[string]bool{}
+	hashes := map[string]string{}
 	for i := range c.Keys {
 		k := &c.Keys[i]
 		h, err := hex.DecodeString(k.SHA256)
@@ -149,6 +150,11 @@ func (c *Config) Check() error {
 			errs = append(errs, fmt.Errorf("Schlüssel %q: sha256 ist kein SHA-256-Hash in Hex", k.Name))
 		}
 		k.hash = h
+		// Gleicher Hash hieße gleicher Schlüssel mit unklaren Rechten.
+		if other, dup := hashes[strings.ToLower(k.SHA256)]; dup && len(h) == sha256.Size {
+			errs = append(errs, fmt.Errorf("Schlüssel %q und %q haben denselben Hash", other, k.Name))
+		}
+		hashes[strings.ToLower(k.SHA256)] = k.Name
 		if k.Name == "" || names[k.Name] {
 			errs = append(errs, fmt.Errorf("Schlüssel %d: Name fehlt oder ist doppelt", i+1))
 		}

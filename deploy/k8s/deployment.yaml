@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdx-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdx-server
+  template:
+    metadata:
+      labels:
+        app: pdx-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: /metrics
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 45
+      containers:
+        - name: pdx-server
+          image: pdx-server
+          ports:
+            - name: http
+              containerPort: 8080
+          # Für /v1/sign: Passwort oder Token aus einem Secret, siehe
+          # secret.example.yaml, und "signer" in der Konfiguration.
+          # envFrom:
+          #   - secretRef:
+          #       name: pdx-signer
+          resources:
+            requests:
+              cpu: "1"
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 30
+            periodSeconds: 1
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pdx
+              readOnly: true
+            - name: templates
+              mountPath: /var/lib/pdx/templates
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: config
+          configMap:
+            name: pdx-server
+        - name: templates
+          persistentVolumeClaim:
+            claimName: pdx-templates
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi

@@ -1,0 +1,21 @@
+# Konfiguration ohne Geheimnisse: Schlüssel stehen nur als SHA-256-Hash
+# darin. Passwort oder Token eines Signers gehören in ein Secret
+# (secret.example.yaml), nie hierher.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pdx-server
+data:
+  pdx-server.json: |
+    {
+      "addr": ":8080",
+      "templateDir": "/var/lib/pdx/templates",
+      "maxBody": 10485760,
+      "maxConcurrent": 4,
+      "timeout": "30s",
+      "queueWait": "5s",
+      "keys": [
+        {"name": "anwendung", "sha256": "ERSETZEN-hash-key-ausgabe-anwendung-0000000000000000000000000000", "rights": ["render"]},
+        {"name": "designer", "sha256": "ERSETZEN-hash-key-ausgabe-designer-00000000000000000000000000000", "rights": ["templates"]}
+      ]
+    }
