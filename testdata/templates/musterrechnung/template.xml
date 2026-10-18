@@ -130,7 +130,7 @@
       <text id="netto">Nettobetrag: <field id="netto-wert" bind="inv:totals/inv:net" format="betrag"/> €</text>
       <text id="steuer">Umsatzsteuer: <field id="steuer-wert" bind="inv:totals/inv:tax" format="betrag"/> €</text>
       <text id="brutto" fontWeight="bold">Gesamtbetrag: <field id="brutto-wert" bind="inv:totals/inv:gross" format="betrag"/> €</text>
-      <barcode id="girocode" altBind="concat('GiroCode zur Überweisung von ', inv:totals/inv:gross, ' Euro an ', inv:seller/inv:name)" type="girocode" w="30mm">
+      <barcode id="girocode" altBind="concat('GiroCode zur Überweisung von ', format-number(xs:decimal(inv:totals/inv:gross), '#.##0,00', 'fmt-de'), ' Euro an ', inv:seller/inv:name)" type="girocode" w="30mm">
         <data id="gc-name" bind="inv:seller/inv:name" name="name"/>
         <data id="gc-iban" bind="inv:seller/inv:iban" name="iban"/>
         <data id="gc-betrag" bind="inv:totals/inv:gross" name="amount"/>

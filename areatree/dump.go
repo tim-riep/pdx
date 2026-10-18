@@ -145,6 +145,9 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 			if v.Link != "" {
 				fmt.Fprintf(b, " link=%s", v.Link)
 			}
+			if v.Decor {
+				b.WriteString(" decor")
+			}
 			b.WriteByte('\n')
 			b.WriteString(ind)
 			b.WriteString("  glyphs")

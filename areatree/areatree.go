@@ -377,6 +377,9 @@ type GlyphRun struct {
 	// Link ist der Schlüssel des fo:basic-link, zu dessen Text der Run
 	// gehört (Link.Key), sonst leer.
 	Link string
+	// Decor markiert reine Gestaltung wie die Punkte eines fo:leader. Sie
+	// wird in Tagged PDF zum Artefakt und beim Vorlesen übersprungen.
+	Decor bool
 }
 
 // Width ist die Summe der Vorschübe.

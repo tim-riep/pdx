@@ -1,26 +1,26 @@
-MarkInfo Marked true, Sprache "de-DE", 0 Artefakttexte
+MarkInfo Marked true, Sprache "de-DE", 4 Artefakttexte
 Document lang="de-DE"
   P "Inhalt"
   P
     Link
       "1 Grundlagen"
       Annotation Link "1 Grundlagen"
-    "..................................................................................................................................... 2"
+    "2"
   P
     Link
       "1.1 Area Tree"
       Annotation Link "1.1 Area Tree"
-    "............................................................................................................................... 2"
+    "2"
   P
     Link
       "2 Ausgabe"
       Annotation Link "2 Ausgabe"
-    "......................................................................................................................................... 3"
+    "3"
   P
     Link
       "2.1 PDF/A"
       Annotation Link "2.1 PDF/A"
-    ".................................................................................................................................... 3"
+    "3"
   P "Linie als Trenner:  und Leerraum: [ ]"
   P
     "Mehr zur Spezifikation unter"

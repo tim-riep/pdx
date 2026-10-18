@@ -279,7 +279,7 @@
               <xsl:text> €</xsl:text>
             </fo:block>
             <fo:block pdx:id="girocode">
-              <xsl:attribute name="pdx:alt" select="string((concat('GiroCode zur Überweisung von ', inv:totals/inv:gross, ' Euro an ', inv:seller/inv:name)))"/>
+              <xsl:attribute name="pdx:alt" select="string((concat('GiroCode zur Überweisung von ', format-number(xs:decimal(inv:totals/inv:gross), '#.##0,00', 'fmt-de'), ' Euro an ', inv:seller/inv:name)))"/>
               <fo:instream-foreign-object pdx:id="girocode" content-width="30mm">
                 <pdx:barcode type="girocode">
                   <xsl:attribute name="name" select="inv:seller/inv:name"/>

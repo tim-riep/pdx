@@ -101,7 +101,7 @@ func TestTemplateAccessible(t *testing.T) {
 
 	// Ohne Alternativtext muss der Befund die ID des GiroCodes nennen.
 	src := string(template.Write(p.Template))
-	alt := ` altBind="concat('GiroCode zur Überweisung von ', inv:totals/inv:gross, ' Euro an ', inv:seller/inv:name)"`
+	alt := ` altBind="concat('GiroCode zur Überweisung von ', format-number(xs:decimal(inv:totals/inv:gross), '#.##0,00', 'fmt-de'), ' Euro an ', inv:seller/inv:name)"`
 	if !strings.Contains(src, alt) {
 		t.Fatal("altBind des GiroCodes nicht gefunden")
 	}

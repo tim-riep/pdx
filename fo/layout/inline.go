@@ -1034,7 +1034,7 @@ func drawLeader(pc piece, x, w, baseline areatree.Length) []areatree.Area {
 		// aufeinanderfolgenden Zeilen untereinander stehen.
 		start := ((x + pw - 1) / pw) * pw
 		run := &areatree.GlyphRun{Origin: areatree.Point{X: start, Y: baseline}, Font: pc.st.fontID,
-			Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc}
+			Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc, Decor: true}
 		for pos := start; pos+dot.Advance <= x+w; pos += pw {
 			g := dot
 			g.Advance = pw

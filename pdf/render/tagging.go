@@ -372,7 +372,7 @@ func itoa(n int) string {
 // text plant einen Glyph-Run: Inhalt seines Elements, eines Verweises oder
 // eines Inline-Elements mit eigener Rolle oder Sprache.
 func (t *tagger) text(pi int, v *areatree.GlyphRun, c tagCtx) {
-	if c.artifact {
+	if c.artifact || v.Decor {
 		t.marks[v] = mark{artifact: true}
 		return
 	}
