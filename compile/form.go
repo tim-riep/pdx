@@ -1,5 +1,7 @@
 package compile
 
+import "strconv"
+
 // Formularfelder werden zu pdx:form-field in einem fo:instream-foreign-object.
 // Das Layout setzt daraus Widgets, der Renderer schreibt AcroForm-Felder.
 // Jedes Feld trägt den Pfad seines Kontextknotens in den Daten (path(.)),
@@ -29,8 +31,12 @@ func (c *compiler) formField(n *node) {
 // Attributen value und context. export ist der Wert einer Option bei
 // Optionsfeldern. Der Aufrufer schließt das Element.
 func (c *compiler) fieldElem(n *node, typ, export string) {
+	maxLen := n.Get("maxLength", "")
+	if l := c.maxLens[n.ID()]; maxLen == "" && l > 0 && typ == "text" {
+		maxLen = strconv.Itoa(l) // Höchstlänge aus dem Daten-XSD
+	}
 	attrs := []string{"type", typ, "name", n.ID(), "label", avtLiteral(n.Get("label", "")),
-		"multiline", n.Get("multiline", ""), "max-length", n.Get("maxLength", ""),
+		"multiline", n.Get("multiline", ""), "max-length", maxLen,
 		"read-only", n.Get("readOnly", ""), "required", n.Get("required", ""),
 		"editable", n.Get("editable", ""), "export", avtLiteral(export)}
 	if typ == "checkbox" {

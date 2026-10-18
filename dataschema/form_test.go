@@ -75,3 +75,29 @@ func TestFormularBroken(t *testing.T) {
 		}
 	}
 }
+
+// Die Höchstlänge kommt aus der Facette maxLength des Daten-XSD.
+func TestFormularMaxLength(t *testing.T) {
+	p, m := loadFormular(t)
+	if d := Bindings(p.Template, m)["name"]; d == nil || d.MaxLength != 40 {
+		t.Fatalf("maxLength von a:name: %+v", d)
+	}
+	if f := PackageFacets(p); f.MaxLengths["name"] != 40 || f.MaxLengths["email"] != 0 {
+		t.Errorf("Facetten %v", f.MaxLengths)
+	}
+	// Eine größere Länge in der Vorlage als im XSD ist ein Hinweis.
+	src := strings.Replace(string(template.Write(p.Template)), `maxLength="40"`, `maxLength="60"`, 1)
+	tpl, err := template.Parse([]byte(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, f := range Check(tpl, m) {
+		if f.ID == "name" && f.Level == Warning && strings.Contains(f.Msg, "maxLength 60 ist größer als die Höchstlänge 40") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("Hinweis fehlt: %v", Check(tpl, m))
+	}
+}

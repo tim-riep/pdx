@@ -329,3 +329,35 @@ func TestFlatten(t *testing.T) {
 		t.Error("ungültige Eingaben abgeflacht")
 	}
 }
+
+// Ohne maxLength in der Vorlage nimmt das Textfeld die Höchstlänge aus dem
+// Daten-XSD.
+func TestFormMaxLengthFromXSD(t *testing.T) {
+	p, err := pkg.ReadDir(formDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	src := strings.Replace(string(template.Write(p.Template)), ` maxLength="40"`, "", 1)
+	parsed, err := template.Parse([]byte(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	q, err := pkg.New(parsed, p.Files)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tpl, err := CompileTemplate(q, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, _ := p.File("samples/antrag.xml")
+	doc, err := tpl.Layout(data, TemplateOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, w := range widgets(doc) {
+		if w.Field.Name == "name" && w.Field.MaxLength != 40 {
+			t.Errorf("maxLength %d, erwartet 40 aus dem XSD", w.Field.MaxLength)
+		}
+	}
+}

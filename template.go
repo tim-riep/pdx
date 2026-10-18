@@ -45,7 +45,7 @@ type Template struct {
 // CompileTemplate kompiliert die Vorlage eines Pakets für eine Sprache (leer
 // bedeutet die Sprache der Vorlage).
 func CompileTemplate(p *pkg.Package, lang string) (*Template, error) {
-	res, err := compile.Compile(p.Template, compile.Options{Lang: lang, Enums: dataschema.PackageEnums(p)})
+	res, err := compile.Compile(p.Template, compileOptions(p, lang))
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +54,13 @@ func CompileTemplate(p *pkg.Package, lang string) (*Template, error) {
 		return nil, err
 	}
 	return &Template{Package: p, Compiled: res, lang: lang, fonts: fonts}, nil
+}
+
+// compileOptions stellt Sprache und die Facetten aus dem Daten-XSD für den
+// Compiler zusammen.
+func compileOptions(p *pkg.Package, lang string) compile.Options {
+	f := dataschema.PackageFacets(p)
+	return compile.Options{Lang: lang, Enums: f.Enums, MaxLengths: f.MaxLengths}
 }
 
 // packageFonts lädt die Schriften unter assets/ eines Pakets.

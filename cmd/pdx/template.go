@@ -56,7 +56,8 @@ func cmdCompile(args []string, stdout, stderr io.Writer) int {
 		printErr(stderr, "compile", err)
 		return 1
 	}
-	res, err := compile.Compile(p.Template, compile.Options{Lang: *lang, Enums: dataschema.PackageEnums(p)})
+	facets := dataschema.PackageFacets(p)
+	res, err := compile.Compile(p.Template, compile.Options{Lang: *lang, Enums: facets.Enums, MaxLengths: facets.MaxLengths})
 	if err != nil {
 		printErr(stderr, "compile", err)
 		return 1

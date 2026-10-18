@@ -33,6 +33,8 @@ type Decl struct {
 	Min, Max int
 	// Enum sind die erlaubten Werte eines einfachen Typs mit Aufzählung.
 	Enum []string
+	// MaxLength ist die wirksame Facette maxLength (oder length), 0 ohne.
+	MaxLength int
 
 	impl any
 }
@@ -94,6 +96,7 @@ func (m *xsdModel) decl(el *xsd.Element, lo, hi int) *Decl {
 	d := &Decl{Name: el.Name(), Min: lo, Max: hi, impl: el}
 	d.Type, d.Simple = typeInfo(el.Type())
 	d.Enum = enumOf(el.Type())
+	d.MaxLength = maxLengthOf(simpleOf(el.Type()))
 	return d
 }
 
@@ -116,21 +119,41 @@ func typeInfo(t xsd.TypeDefinition) (string, bool) {
 	return "", false
 }
 
-// enumOf liefert die Aufzählung des einfachen Inhalts, falls vorhanden.
-func enumOf(t xsd.TypeDefinition) []string {
+// simpleOf liefert den einfachen Typ des Inhalts, nil ohne einfachen Inhalt.
+func simpleOf(t xsd.TypeDefinition) *xsd.SimpleType {
 	switch t := t.(type) {
 	case *xsd.SimpleType:
-		if t != nil {
-			return t.Enumeration()
-		}
+		return t
 	case *xsd.ComplexType:
 		if t.ContentKind() == xsd.ContentSimple {
-			if st := t.SimpleContent(); st != nil {
-				return st.Enumeration()
-			}
+			return t.SimpleContent()
 		}
 	}
 	return nil
+}
+
+// enumOf liefert die Aufzählung des einfachen Inhalts, falls vorhanden.
+func enumOf(t xsd.TypeDefinition) []string {
+	if st := simpleOf(t); st != nil {
+		return st.Enumeration()
+	}
+	return nil
+}
+
+// maxLengthOf liefert die wirksame Höchstlänge eines einfachen Typs aus den
+// Facetten maxLength oder length (XSD 1.1 Teil 2 4.3.1, 4.3.3), 0 ohne.
+func maxLengthOf(st *xsd.SimpleType) int {
+	if st == nil {
+		return 0
+	}
+	f := st.Facets()
+	switch {
+	case f.Length != nil:
+		return *f.Length
+	case f.MaxLength != nil:
+		return *f.MaxLength
+	}
+	return 0
 }
 
 func simpleBase(t *xsd.SimpleType) string {
@@ -207,7 +230,7 @@ func (m *xsdModel) Children(d *Decl) ([]*Decl, bool) {
 		if a.Type != nil {
 			enum = a.Type.Enumeration()
 		}
-		out = append(out, &Decl{Name: a.Name, Attr: true, Type: simpleBase(a.Type), Simple: true, Min: lo, Max: 1, Enum: enum})
+		out = append(out, &Decl{Name: a.Name, Attr: true, Type: simpleBase(a.Type), Simple: true, Min: lo, Max: 1, Enum: enum, MaxLength: maxLengthOf(a.Type)})
 	}
 	if ct.AttributeWildcard() != nil {
 		open = true

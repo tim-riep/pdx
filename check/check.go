@@ -28,7 +28,8 @@ func Path(path string) []dataschema.Finding {
 // Package prüft ein geladenes Paket.
 func Package(p *pkg.Package) []dataschema.Finding {
 	var findings []dataschema.Finding
-	if _, err := compile.Compile(p.Template, compile.Options{Enums: dataschema.PackageEnums(p)}); err != nil {
+	facets := dataschema.PackageFacets(p)
+	if _, err := compile.Compile(p.Template, compile.Options{Enums: facets.Enums, MaxLengths: facets.MaxLengths}); err != nil {
 		findings = append(findings, FromError(err)...)
 	}
 	main, files := p.Schemas()

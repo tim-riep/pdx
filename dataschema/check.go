@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/tim-riep/pdx/template"
@@ -202,6 +203,12 @@ func (c *checker) formField(n *template.Node, cur ctx) {
 		for _, o := range n.Elements("option") {
 			if v := o.Get("value", ""); len(d.Enum) > 0 && !slices.Contains(d.Enum, v) {
 				c.report(Error, o, "Option %q steht nicht in der Enumeration von %s (%s)", v, expr, strings.Join(d.Enum, ", "))
+			}
+		}
+	case "textField":
+		if v, ok := n.Attr("maxLength"); ok && d.MaxLength > 0 {
+			if l, err := strconv.Atoi(v); err == nil && l > d.MaxLength {
+				c.report(Warning, n, "maxLength %d ist größer als die Höchstlänge %d von %s im Daten-XSD, längere Eingaben scheitern erst beim Auslesen", l, d.MaxLength, expr)
 			}
 		}
 	case "checkBox":

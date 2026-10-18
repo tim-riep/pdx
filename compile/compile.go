@@ -46,6 +46,9 @@ type Options struct {
 	// Enums sind die Werte der Enumeration im Daten-XSD je Vorlagen-ID.
 	// Auswahlfelder ohne option-Elemente bieten sie an.
 	Enums map[string][]string
+	// MaxLengths sind die Höchstlängen aus dem Daten-XSD je Vorlagen-ID,
+	// für Textfelder ohne maxLength.
+	MaxLengths map[string]int
 }
 
 // Mapping ordnet einen Zeilenbereich im Stylesheet einer Vorlagen-ID zu.
@@ -106,6 +109,7 @@ type compiler struct {
 	attachs []Attachment
 	einv    *EInvoice
 	enums   map[string][]string
+	maxLens map[string]int
 }
 
 // Compile übersetzt eine geprüfte Vorlage in XSLT 3.0.
@@ -117,6 +121,7 @@ func Compile(t *template.Template, opts Options) (*Result, error) {
 	c := &compiler{t: t, w: newWriter(), styles: map[string]*node{}, texts: map[string]string{}}
 	c.lang = opts.Lang
 	c.enums = opts.Enums
+	c.maxLens = opts.MaxLengths
 	if c.lang == "" {
 		c.lang = t.Root.Get("lang", "")
 	}
