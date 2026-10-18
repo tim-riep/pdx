@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template xmlns="https://pdx.example/ns/template/0" id="formular" dataRoot="a:antrag" lang="de-DE" profile="pdfa-3a,pdfua-1" schema="schema/antrag.xsd" title="Antrag (Formular)" version="0">
+  <namespaces>
+    <ns prefix="a" uri="https://pdx.example/ns/antrag/1"/>
+  </namespaces>
+  <styles>
+    <style id="st-basis" fontFamily="Helvetica" fontSize="10pt" lineHeight="1.4"/>
+    <style id="st-titel" fontSize="16pt" fontWeight="bold" parent="st-basis"/>
+    <style id="st-feld" border="0.5pt solid #555555" parent="st-basis"/>
+  </styles>
+  <pageSet id="seiten">
+    <pageMaster id="seite" margin="20mm" use="any"/>
+  </pageSet>
+  <body id="inhalt" style="st-basis">
+    <text id="titel" role="H1" spaceAfter="6mm" style="st-titel">Antrag</text>
+    <text id="anrede-text" spaceAfter="1mm">Anrede</text>
+    <radioGroup id="anrede" bind="a:anrede" label="Anrede"/>
+    <text id="name-text" spaceBefore="3mm">Name</text>
+    <textField id="name" bind="a:name" h="7mm" label="Name" maxLength="40" required="true" style="st-feld" w="90mm"/>
+    <text id="email-text" spaceBefore="3mm">E-Mail</text>
+    <textField id="email" bind="a:email" h="7mm" label="E-Mail-Adresse" style="st-feld" w="90mm"/>
+    <text id="land-text" spaceBefore="3mm">Land</text>
+    <comboBox id="land" bind="a:land" h="7mm" label="Land" style="st-feld" w="40mm">
+      <option id="land-de" label="Deutschland" value="DE"/>
+      <option id="land-at" label="Österreich" value="AT"/>
+      <option id="land-ch" label="Schweiz" value="CH"/>
+    </comboBox>
+    <text id="tarif-text" spaceBefore="3mm">Tarif</text>
+    <listBox id="tarif" bind="a:tarif" h="16mm" label="Tarif" style="st-feld" w="40mm"/>
+    <text id="newsletter-text" spaceBefore="3mm">Newsletter abonnieren</text>
+    <checkBox id="newsletter" bind="a:newsletter" h="5mm" label="Newsletter abonnieren" style="st-feld" w="5mm"/>
+    <text id="bemerkung-text" spaceBefore="3mm">Bemerkung</text>
+    <textField id="bemerkung" bind="a:bemerkung" h="20mm" label="Bemerkung" multiline="true" style="st-feld" w="150mm"/>
+    <text id="personen-text" role="H2" spaceAfter="2mm" spaceBefore="5mm">Personen</text>
+    <subform id="person" bind="a:personen/a:person" layout="flowed" repeat="true" spaceAfter="2mm">
+      <textField id="vorname" bind="a:vorname" h="7mm" label="Vorname" style="st-feld" w="60mm"/>
+    </subform>
+    <text id="unterschrift-text" spaceBefore="6mm">Unterschrift</text>
+    <signatureField id="unterschrift" h="15mm" label="Unterschrift" w="70mm"/>
+  </body>
+</template>

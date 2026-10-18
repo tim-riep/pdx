@@ -13,6 +13,7 @@ import (
 	"github.com/tim-riep/go-xslt/engine"
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/compile"
+	"github.com/tim-riep/pdx/dataschema"
 	"github.com/tim-riep/pdx/einvoice"
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/font"
@@ -44,7 +45,7 @@ type Template struct {
 // CompileTemplate kompiliert die Vorlage eines Pakets für eine Sprache (leer
 // bedeutet die Sprache der Vorlage).
 func CompileTemplate(p *pkg.Package, lang string) (*Template, error) {
-	res, err := compile.Compile(p.Template, compile.Options{Lang: lang})
+	res, err := compile.Compile(p.Template, compile.Options{Lang: lang, Enums: dataschema.PackageEnums(p)})
 	if err != nil {
 		return nil, err
 	}

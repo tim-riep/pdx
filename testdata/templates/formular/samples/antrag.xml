@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<antrag xmlns="https://pdx.example/ns/antrag/1">
+  <anrede>Frau</anrede>
+  <name>Erika Musterfrau</name>
+  <land>DE</land>
+  <tarif>Komfort</tarif>
+  <newsletter>false</newsletter>
+  <personen>
+    <person><vorname>Erika</vorname><geburtsjahr>1984</geburtsjahr></person>
+    <person><vorname>Max</vorname></person>
+  </personen>
+</antrag>

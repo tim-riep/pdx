@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://pdx.example/ns/antrag/1" targetNamespace="https://pdx.example/ns/antrag/1" elementFormDefault="qualified">
+  <xs:element name="antrag">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="anrede">
+          <xs:simpleType><xs:restriction base="xs:string">
+            <xs:enumeration value="Frau"/><xs:enumeration value="Herr"/><xs:enumeration value="divers"/>
+          </xs:restriction></xs:simpleType>
+        </xs:element>
+        <xs:element name="name">
+          <xs:simpleType><xs:restriction base="xs:string"><xs:maxLength value="40"/></xs:restriction></xs:simpleType>
+        </xs:element>
+        <xs:element name="email" type="xs:string" minOccurs="0"/>
+        <xs:element name="land">
+          <xs:simpleType><xs:restriction base="xs:string">
+            <xs:enumeration value="DE"/><xs:enumeration value="AT"/><xs:enumeration value="CH"/>
+          </xs:restriction></xs:simpleType>
+        </xs:element>
+        <xs:element name="tarif">
+          <xs:simpleType><xs:restriction base="xs:string">
+            <xs:enumeration value="Basis"/><xs:enumeration value="Komfort"/><xs:enumeration value="Premium"/>
+          </xs:restriction></xs:simpleType>
+        </xs:element>
+        <xs:element name="newsletter" type="xs:boolean"/>
+        <xs:element name="bemerkung" type="xs:string" minOccurs="0"/>
+        <xs:element name="personen">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="person" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="vorname" type="xs:string"/>
+                    <xs:element name="geburtsjahr" type="xs:gYear" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

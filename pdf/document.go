@@ -2,8 +2,8 @@ package pdf
 
 import (
 	"bytes"
-	"errors"
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"

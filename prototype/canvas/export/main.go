@@ -17,6 +17,7 @@ import (
 	"github.com/tim-riep/pdx"
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/compile"
+	"github.com/tim-riep/pdx/dataschema"
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/font"
 	"github.com/tim-riep/pdx/font/fonts"
@@ -96,7 +97,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	res, err := compile.Compile(p.Template, compile.Options{})
+	res, err := compile.Compile(p.Template, compile.Options{Enums: dataschema.PackageEnums(p)})
 	if err != nil {
 		return err
 	}

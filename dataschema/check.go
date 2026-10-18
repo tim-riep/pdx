@@ -3,6 +3,7 @@ package dataschema
 import (
 	"encoding/xml"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/tim-riep/pdx/template"
@@ -60,12 +61,21 @@ type checker struct {
 	out     []Finding
 	kids    map[*Decl][]*Decl
 	open    map[*Decl]bool
+	// bound ordnet Vorlagen-IDs die Deklaration ihres Datenknotens zu.
+	bound map[string]*Decl
 }
 
 // Check prüft alle Bindungen der Vorlage gegen das Modell.
-func Check(t *template.Template, m Model) []Finding {
+func Check(t *template.Template, m Model) []Finding { return run(t, m).out }
+
+// Bindings liefert je Vorlagen-ID die Deklaration des gebundenen
+// Datenknotens, soweit sie sich statisch auflösen lässt. Der Compiler nimmt
+// daraus etwa die Enumeration für Auswahllisten.
+func Bindings(t *template.Template, m Model) map[string]*Decl { return run(t, m).bound }
+
+func run(t *template.Template, m Model) *checker {
 	c := &checker{m: m, t: t, ns: map[string]string{}, formats: map[string]string{},
-		kids: map[*Decl][]*Decl{}, open: map[*Decl]bool{}}
+		kids: map[*Decl][]*Decl{}, open: map[*Decl]bool{}, bound: map[string]*Decl{}}
 	root := t.Root
 	if nss := root.First("namespaces"); nss != nil {
 		for _, n := range nss.Elements("ns") {
@@ -81,14 +91,14 @@ func Check(t *template.Template, m Model) []Finding {
 	}
 	start, ok := c.dataRoot()
 	if !ok {
-		return c.out
+		return c
 	}
 	for _, name := range []string{"pageSet", "body"} {
 		if n := root.First(name); n != nil {
 			c.walk(n, start)
 		}
 	}
-	return c.out
+	return c
 }
 
 func (c *checker) report(l Level, n *template.Node, format string, args ...any) {
@@ -164,8 +174,40 @@ func (c *checker) elem(n *template.Node, cur ctx) {
 		}
 	case "table":
 		c.table(n, cur)
+	case "textField", "checkBox", "radioGroup", "listBox", "comboBox":
+		c.formField(n, cur)
 	default:
 		c.walk(n, cur)
+	}
+}
+
+// formField prüft ein Formularfeld: die Bindung muss einen Wert liefern und
+// sich zurückschreiben lassen, Auswahlfelder brauchen Optionen.
+func (c *checker) formField(n *template.Node, cur ctx) {
+	expr := n.Get("bind", "")
+	if _, _, ok := splitPath(strings.TrimSpace(expr)); !ok {
+		c.report(Error, n, "%s ist kein einfacher Pfad, die Eingabe ließe sich nicht in die Daten zurückschreiben", expr)
+		return
+	}
+	c.value(n, "bind", cur, "")
+	d := c.bound[n.ID()]
+	if d == nil {
+		return
+	}
+	switch n.Name {
+	case "radioGroup", "listBox", "comboBox":
+		if len(n.Elements("option")) == 0 && len(d.Enum) == 0 && !(n.Name == "comboBox" && n.Get("editable", "false") == "true") {
+			c.report(Error, n, "%s hat weder option-Elemente noch eine Enumeration im Daten-XSD, das Feld hätte keine Auswahl", expr)
+		}
+		for _, o := range n.Elements("option") {
+			if v := o.Get("value", ""); len(d.Enum) > 0 && !slices.Contains(d.Enum, v) {
+				c.report(Error, o, "Option %q steht nicht in der Enumeration von %s (%s)", v, expr, strings.Join(d.Enum, ", "))
+			}
+		}
+	case "checkBox":
+		if d.Type != "" && d.Type != "boolean" && !hasAttrs(n, "onValue", "offValue") {
+			c.report(Warning, n, "%s hat den Typ xs:%s, onValue und offValue sollten zu diesem Typ passen", expr, d.Type)
+		}
 	}
 }
 
@@ -261,6 +303,9 @@ func (c *checker) value(n *template.Node, attr string, cur ctx, format string) {
 	if !r.decl.Simple {
 		c.report(Error, n, "%s hat keinen Textinhalt, sondern nur Unterelemente", expr)
 		return
+	}
+	if id := n.ID(); id != "" {
+		c.bound[id] = r.decl
 	}
 	if format == "" {
 		return
@@ -396,4 +441,13 @@ func display(n xml.Name, ns map[string]string) string {
 		return n.Local
 	}
 	return best + ":" + n.Local
+}
+
+func hasAttrs(n *template.Node, names ...string) bool {
+	for _, a := range names {
+		if _, ok := n.Attr(a); !ok {
+			return false
+		}
+	}
+	return true
 }

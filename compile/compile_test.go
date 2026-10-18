@@ -314,3 +314,37 @@ func TestInlines(t *testing.T) {
 		t.Error("Link fehlt")
 	}
 }
+
+// TestFormular prüft das XSLT des Formulars: Feldtypen, Optionen aus der
+// Enumeration und den Kontextpfad für das Zurückschreiben.
+func TestFormular(t *testing.T) {
+	p, err := pkg.ReadDir("../testdata/templates/formular")
+	if err != nil {
+		t.Fatal(err)
+	}
+	res, err := Compile(p.Template, Options{Enums: map[string][]string{"anrede": {"Frau", "Herr", "divers"}, "tarif": {"Basis", "Komfort", "Premium"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	testutil.Golden(t, "../testdata/golden/formular.xsl", res.XSLT)
+	data, _ := p.File("samples/antrag.xml")
+	fo, err := res.Transform(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		`type="radio" name="anrede" label="Anrede" export="Frau" value="Frau"`,
+		`type="text" name="name" label="Name" max-length="40" required="true" value="Erika Musterfrau"`,
+		`context="/Q{https://pdx.example/ns/antrag/1}antrag[1]/Q{https://pdx.example/ns/antrag/1}personen[1]/Q{https://pdx.example/ns/antrag/1}person[2]"`,
+		`<pdx:option value="Komfort" label="Komfort"/>`,
+		`type="signature" name="unterschrift"`,
+	} {
+		if !bytes.Contains(fo, []byte(want)) {
+			t.Errorf("%q fehlt im FO", want)
+		}
+	}
+	// Ohne Optionen und Enumeration ist die Optionsfeldgruppe ein Fehler.
+	if _, err := Compile(p.Template, Options{}); err == nil || !strings.Contains(err.Error(), "[anrede]") {
+		t.Errorf("Optionsfeldgruppe ohne Optionen: %v", err)
+	}
+}

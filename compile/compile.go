@@ -43,6 +43,9 @@ var reserved = map[string]bool{"xsl": true, "fo": true, "pdx": true, "xs": true,
 type Options struct {
 	// Lang wählt Textressourcen und Formatmuster, leer bedeutet template/@lang.
 	Lang string
+	// Enums sind die Werte der Enumeration im Daten-XSD je Vorlagen-ID.
+	// Auswahlfelder ohne option-Elemente bieten sie an.
+	Enums map[string][]string
 }
 
 // Mapping ordnet einen Zeilenbereich im Stylesheet einer Vorlagen-ID zu.
@@ -102,6 +105,7 @@ type compiler struct {
 	table   *tableCtx
 	attachs []Attachment
 	einv    *EInvoice
+	enums   map[string][]string
 }
 
 // Compile übersetzt eine geprüfte Vorlage in XSLT 3.0.
@@ -112,6 +116,7 @@ func Compile(t *template.Template, opts Options) (*Result, error) {
 	}
 	c := &compiler{t: t, w: newWriter(), styles: map[string]*node{}, texts: map[string]string{}}
 	c.lang = opts.Lang
+	c.enums = opts.Enums
 	if c.lang == "" {
 		c.lang = t.Root.Get("lang", "")
 	}
@@ -520,6 +525,10 @@ func (c *compiler) inner(n *node, wrapped bool) {
 		c.rect(n, wrapped)
 	case "barcode":
 		c.barcode(n)
+	case "textField", "checkBox", "listBox", "comboBox", "signatureField":
+		c.formField(n)
+	case "radioGroup":
+		c.radioGroup(n)
 	case "table":
 		c.tableElem(n)
 	default:

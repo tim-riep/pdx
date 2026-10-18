@@ -408,6 +408,12 @@
       <xs:element ref="barcode"/>
       <xs:element ref="pageNumber"/>
       <xs:element ref="table"/>
+      <xs:element ref="textField"/>
+      <xs:element ref="checkBox"/>
+      <xs:element ref="radioGroup"/>
+      <xs:element ref="listBox"/>
+      <xs:element ref="comboBox"/>
+      <xs:element ref="signatureField"/>
     </xs:choice>
   </xs:group>
 
@@ -542,6 +548,105 @@
       <xs:attribute name="bind" type="XPath"/>
       <xs:attribute name="moduleWidth" type="Length"/>
       <xs:attribute name="barHeight" type="Length"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Formularfelder (AcroForm) -->
+
+  <xs:attributeGroup name="formField">
+    <xs:attribute name="bind" type="XPath" use="required">
+      <xs:annotation><xs:documentation>Datenknoten des Felds. Er belegt das Feld vor und nimmt beim Auslesen (pdx extract-data) die Eingabe auf, daher nur ein einfacher Pfad aus Kindschritten.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="label" type="xs:string">
+      <xs:annotation><xs:documentation>Zugänglicher Name des Felds, den Screenreader ansagen (TU). Pflicht unter PDF/A-3a und PDF/UA.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="readOnly" type="xs:boolean" default="false"/>
+    <xs:attribute name="required" type="xs:boolean" default="false"/>
+  </xs:attributeGroup>
+
+  <xs:element name="option">
+    <xs:annotation><xs:documentation>Auswahlwert eines Optionsfelds oder einer Liste. Ohne option-Elemente gelten die Werte der Enumeration im Daten-XSD.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:ID" use="required"/>
+      <xs:attribute name="value" type="xs:string" use="required"/>
+      <xs:attribute name="label" type="xs:string">
+        <xs:annotation><xs:documentation>Angezeigter Text, ohne Angabe der Wert.</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="textField">
+    <xs:annotation><xs:documentation>Textfeld zum Ausfüllen, ein- oder mehrzeilig.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attributeGroup ref="formField"/>
+      <xs:attribute name="multiline" type="xs:boolean" default="false"/>
+      <xs:attribute name="maxLength" type="xs:positiveInteger"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="checkBox">
+    <xs:annotation><xs:documentation>Kontrollkästchen. Angehakt schreibt es onValue in die Daten, sonst offValue.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attributeGroup ref="formField"/>
+      <xs:attribute name="onValue" type="xs:string" default="true"/>
+      <xs:attribute name="offValue" type="xs:string" default="false"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="radioGroup">
+    <xs:annotation><xs:documentation>Optionsfeldgruppe, genau ein Wert wählbar. Jede Option steht mit ihrem Text in einer Zeile.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attributeGroup ref="formField"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="listBox">
+    <xs:annotation><xs:documentation>Auswahlliste mit sichtbaren Einträgen.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attributeGroup ref="formField"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="comboBox">
+    <xs:annotation><xs:documentation>Kombinationsfeld: Auswahl aus einer aufklappbaren Liste, mit editable="true" auch freie Eingabe.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attributeGroup ref="styleAttrs"/>
+      <xs:attributeGroup ref="formField"/>
+      <xs:attribute name="editable" type="xs:boolean" default="false"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="signatureField">
+    <xs:annotation><xs:documentation>Unsigniertes Signaturfeld. pdx sign kann es später signieren.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="common"/>
+      <xs:attributeGroup ref="placement"/>
+      <xs:attribute name="label" type="xs:string">
+        <xs:annotation><xs:documentation>Zugänglicher Name des Felds. Pflicht unter PDF/A-3a und PDF/UA.</xs:documentation></xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 

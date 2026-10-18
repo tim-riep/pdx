@@ -84,7 +84,9 @@ var ownerLabel = map[pdf.Name]string{
 }
 
 // AllowAction prüft eine Aktion.
-func (p PDFA) AllowAction(s, named pdf.Name) error { return pdfaAllowAction(p.Name(), p.Part, s, named) }
+func (p PDFA) AllowAction(s, named pdf.Name) error {
+	return pdfaAllowAction(p.Name(), p.Part, s, named)
+}
 
 // AllowAdditionalActions prüft ein AA-Dictionary.
 func (p PDFA) AllowAdditionalActions(owner pdf.Name, keys []pdf.Name) error {
