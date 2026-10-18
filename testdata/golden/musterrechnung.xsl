@@ -166,7 +166,7 @@
                   </fo:block>
                 </fo:table-cell>
               </fo:table-row>
-              <fo:table-row pdx:id="uebertragszeile">
+              <fo:table-row pdx:id="uebertragszeile" pdx:artifact="true">
                 <fo:table-cell pdx:id="u-label" number-columns-spanned="4" font-family="Helvetica" font-size="9.5pt" line-height="1.3" text-align="end" padding="2pt 3pt" border-bottom="0.25pt solid #cccccc">
                   <fo:block pdx:id="u-label">
                     <fo:retrieve-table-marker pdx:id="u-label" retrieve-class-name="u-label" retrieve-position-within-table="first-starting" retrieve-boundary-within-table="table-fragment"/>
@@ -180,7 +180,7 @@
               </fo:table-row>
             </fo:table-header>
             <fo:table-footer pdx:id="positionen-fuss">
-              <fo:table-row pdx:id="zwischensummenzeile">
+              <fo:table-row pdx:id="zwischensummenzeile" pdx:artifact="true">
                 <fo:table-cell pdx:id="zs-label" number-columns-spanned="4" font-family="Helvetica" font-size="9.5pt" font-weight="bold" line-height="1.3" text-align="end" padding="2pt 3pt" border-bottom="0.25pt solid #cccccc">
                   <fo:block pdx:id="zs-label-t">
                     <xsl:text>Zwischensumme</xsl:text>

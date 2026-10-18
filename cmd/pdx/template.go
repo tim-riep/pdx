@@ -107,6 +107,9 @@ func renderTemplate(tplPath, data, out string, opts pdx.TemplateOptions, foOut, 
 			return 1
 		}
 	}
+	if opts.Profile == "" {
+		opts.Profile = tpl.Profile()
+	}
 	res, err := tpl.Render(b, opts)
 	if err != nil {
 		printErr(stderr, "render", err)

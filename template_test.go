@@ -293,3 +293,30 @@ func TestRenderTrace(t *testing.T) {
 		}
 	}
 }
+
+// Ohne Angabe beim Aufruf gilt das Profil der Vorlage.
+func TestTemplateProfile(t *testing.T) {
+	p, err := pkg.ReadDir("testdata/templates/musterrechnung")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tpl, err := CompileTemplate(p, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := tpl.Profile(); got != DefaultProfile {
+		t.Fatalf("Vorgabe %q", got)
+	}
+	p.Template.Root.SetAttr("profile", "pdfa-3u")
+	if got := tpl.Profile(); got != "pdfa-3u" {
+		t.Fatalf("Profil der Vorlage %q", got)
+	}
+	data, _ := p.File("samples/rechnung.xml")
+	res, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: corpusDate}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Contains(res.PDF, []byte("<pdfaid:conformance>U</pdfaid:conformance>")) {
+		t.Fatal("Profil der Vorlage nicht angewandt")
+	}
+}

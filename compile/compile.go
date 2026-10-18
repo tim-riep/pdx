@@ -235,7 +235,9 @@ func (c *compiler) stylesheet() {
 
 func (c *compiler) foRoot() {
 	root := c.t.Root
-	r := c.open(root.ID(), "fo:root", "pdx:id", root.ID(), "xml:lang", root.Get("lang", ""))
+	// Die Dokumentsprache folgt der gewählten Sprache (Option Lang), sonst der
+	// Vorlage.
+	r := c.open(root.ID(), "fo:root", "pdx:id", root.ID(), "xml:lang", c.lang)
 	ps := root.First("pageSet")
 	c.masters(ps)
 	c.declarations()
@@ -414,13 +416,13 @@ func (c *compiler) content(n *node, positioned bool) {
 			// Das Teilformular ist selbst der Container, seine Bindung
 			// umschließt ihn.
 			c.bound(n, func() {
-				c.w.start("fo:block-container", append(attrs, c.style(n)...)...)
+				c.start("fo:block-container", n, append(attrs, c.style(n)...)...)
 				c.children(n)
 				c.w.end()
 			})
 			return
 		}
-		c.w.start("fo:block-container", attrs...)
+		c.start("fo:block-container", n, attrs...)
 		c.inner(n, true)
 		c.w.end()
 	})
@@ -483,18 +485,20 @@ func (c *compiler) inner(n *node, wrapped bool) {
 		})
 	case "text":
 		c.w.start("fo:block", append([]string{"pdx:id", n.ID()}, c.blockAttrs(n)...)...)
+		c.altBind(n)
 		c.textContent(n)
 		c.w.end()
 	case "field":
-		c.w.start("fo:block", append([]string{"pdx:id", n.ID()}, c.style(n)...)...)
+		c.start("fo:block", n, append([]string{"pdx:id", n.ID()}, c.style(n)...)...)
 		c.w.empty("xsl:value-of", "select", c.fieldExpr(n))
 		c.w.end()
 	case "pageNumber":
 		c.w.start("fo:block", append([]string{"pdx:id", n.ID()}, c.blockAttrs(n)...)...)
+		c.altBind(n)
 		c.pageNumber(n)
 		c.w.end()
 	case "image":
-		c.w.start("fo:block", "pdx:id", n.ID(), "role", n.Get("role", ""))
+		c.start("fo:block", n, "pdx:id", n.ID())
 		c.w.empty("fo:external-graphic", "pdx:id", n.ID(), "src", "url('"+n.Get("src", "")+"')",
 			"content-width", n.Get("w", ""), "content-height", n.Get("h", ""))
 		c.w.end()
@@ -522,7 +526,7 @@ func (c *compiler) line(n *node, wrapped bool) {
 		attrs = append(attrs, "width", n.Get("w", ""), "height", n.Get("h", ""))
 	}
 	attrs = append(attrs, side, border)
-	c.w.start("fo:block-container", attrs...)
+	c.start("fo:block-container", n, attrs...)
 	c.w.empty("fo:block", "pdx:id", n.ID())
 	c.w.end()
 }
@@ -533,13 +537,13 @@ func (c *compiler) rect(n *node, wrapped bool) {
 		attrs = append(attrs, "width", n.Get("w", ""), "height", n.Get("h", ""))
 	}
 	attrs = append(attrs, "background-color", n.Get("fill", ""), "border", n.Get("border", ""))
-	c.w.start("fo:block-container", attrs...)
+	c.start("fo:block-container", n, attrs...)
 	c.w.empty("fo:block", "pdx:id", n.ID())
 	c.w.end()
 }
 
 func (c *compiler) barcode(n *node) {
-	c.w.start("fo:block", "pdx:id", n.ID(), "role", n.Get("role", ""))
+	c.start("fo:block", n, "pdx:id", n.ID())
 	c.w.start("fo:instream-foreign-object", "pdx:id", n.ID(), "content-width", n.Get("w", ""), "content-height", n.Get("h", ""))
 	c.w.start("pdx:barcode", "type", n.Get("type", ""), "value", n.Get("value", ""),
 		"module-width", n.Get("moduleWidth", ""), "bar-height", n.Get("barHeight", ""))
@@ -593,18 +597,18 @@ func (c *compiler) inlines(n *node) {
 			case "span":
 				attrs := append([]string{"pdx:id", ch.ID()}, c.style(ch)...)
 				if href, ok := ch.Attr("href"); ok {
-					c.w.start("fo:basic-link", append(attrs, "external-destination", "url('"+href+"')")...)
+					c.start("fo:basic-link", ch, append(attrs, "external-destination", "url('"+href+"')")...)
 				} else {
-					c.w.start("fo:inline", attrs...)
+					c.start("fo:inline", ch, attrs...)
 				}
 				c.inlines(ch)
 				c.w.end()
 			case "field":
-				c.w.start("fo:inline", append([]string{"pdx:id", ch.ID()}, c.style(ch)...)...)
+				c.start("fo:inline", ch, append([]string{"pdx:id", ch.ID()}, c.style(ch)...)...)
 				c.w.empty("xsl:value-of", "select", c.fieldExpr(ch))
 				c.w.end()
 			case "pageNumber":
-				c.w.start("fo:inline", append([]string{"pdx:id", ch.ID()}, c.style(ch)...)...)
+				c.start("fo:inline", ch, append([]string{"pdx:id", ch.ID()}, c.style(ch)...)...)
 				c.pageNumber(ch)
 				c.w.end()
 			case "br":
@@ -775,9 +779,39 @@ func (c *compiler) styleSplit(n *node) (inh, non []string) {
 	return inh, non
 }
 
+// semantic liefert die Angaben für Tagged PDF als FO-Attribute: Rolle,
+// statischer Alternativtext, Sprache, Lesereihenfolge und Artefakt. Ein
+// Alternativtext aus den Daten (altBind) folgt mit altBind als
+// xsl:attribute direkt nach dem Start des Elements.
+func (c *compiler) semantic(n *node) []string {
+	out := []string{"role", n.Get("role", ""), "xml:lang", n.Get("lang", ""),
+		"pdx:reading-order", n.Get("readingOrder", "")}
+	if _, dyn := n.Attr("altBind"); !dyn {
+		out = append(out, "pdx:alt", n.Get("alt", ""))
+	}
+	if n.Get("artifact", "false") == "true" {
+		out = append(out, "pdx:artifact", "true")
+	}
+	return out
+}
+
+// altBind schreibt den Alternativtext aus den Daten als Attribut des eben
+// begonnenen Elements.
+func (c *compiler) altBind(n *node) {
+	if b, ok := n.Attr("altBind"); ok {
+		c.w.empty("xsl:attribute", "name", "pdx:alt", "select", "string("+paren(b)+")")
+	}
+}
+
+// start beginnt ein FO-Element mit den Angaben für Tagged PDF.
+func (c *compiler) start(name string, n *node, attrs ...string) {
+	c.w.start(name, append(attrs, c.semantic(n)...)...)
+	c.altBind(n)
+}
+
 // blockAttrs liefert Rolle, Umbrüche, Keeps und Stil eines Blockelements.
 func (c *compiler) blockAttrs(n *node) []string {
-	out := []string{"role", n.Get("role", "")}
+	out := c.semantic(n)
 	breaks := map[string]string{"page": "page", "oddPage": "odd-page", "evenPage": "even-page"}
 	if v := n.Get("breakBefore", "auto"); v != "auto" {
 		out = append(out, "break-before", breaks[v])

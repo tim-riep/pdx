@@ -81,12 +81,23 @@
   </xs:simpleType>
 
   <xs:simpleType name="Role">
-    <xs:annotation><xs:documentation>Semantische Rolle für spätere Tagged PDFs (PDF/UA).</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>Semantische Rolle für Tagged PDF (PDF/A-3a, PDF/UA). Sie bestimmt den Strukturtyp im Strukturbaum. Artifact nimmt das Element aus dem Strukturbaum (Dekor, Wiederholungen).</xs:documentation></xs:annotation>
     <xs:restriction base="xs:token">
       <xs:enumeration value="H1"/><xs:enumeration value="H2"/><xs:enumeration value="H3"/>
+      <xs:enumeration value="H4"/><xs:enumeration value="H5"/><xs:enumeration value="H6"/>
       <xs:enumeration value="P"/><xs:enumeration value="Table"/><xs:enumeration value="Figure"/>
-      <xs:enumeration value="List"/><xs:enumeration value="Note"/><xs:enumeration value="Artifact"/>
+      <xs:enumeration value="List"/><xs:enumeration value="L"/><xs:enumeration value="LI"/>
+      <xs:enumeration value="Lbl"/><xs:enumeration value="LBody"/>
+      <xs:enumeration value="Note"/><xs:enumeration value="Artifact"/>
       <xs:enumeration value="Section"/><xs:enumeration value="Caption"/><xs:enumeration value="Link"/>
+      <xs:enumeration value="Formula"/><xs:enumeration value="Reference"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ProfileList">
+    <xs:annotation><xs:documentation>Konformitätsprofile mit Komma, etwa pdfa-3a,pdfua-1.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-z0-9.\-]+(,[a-z0-9.\-]+)*"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -99,6 +110,21 @@
       <xs:annotation><xs:documentation>Das Element erscheint nur, wenn der Ausdruck wahr ist.</xs:documentation></xs:annotation>
     </xs:attribute>
     <xs:attribute name="role" type="Role"/>
+    <xs:attribute name="alt" type="xs:string">
+      <xs:annotation><xs:documentation>Alternativtext für Bilder, Barcodes und Abbildungen. Unter PDF/A-3a und PDF/UA Pflicht für Abbildungen.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="altBind" type="XPath">
+      <xs:annotation><xs:documentation>Alternativtext aus den Daten, etwa Betrag und Empfänger beim GiroCode. Geht alt vor.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="lang" type="xs:language">
+      <xs:annotation><xs:documentation>Sprache des Inhalts, wenn sie von der Dokumentsprache abweicht.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="readingOrder" type="xs:positiveInteger">
+      <xs:annotation><xs:documentation>Stelle in der Lesereihenfolge unter positionierten Geschwistern. Ohne Angabe gilt von oben nach unten und links nach rechts.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="artifact" type="xs:boolean">
+      <xs:annotation><xs:documentation>true nimmt das Element als Artefakt aus dem Strukturbaum, etwa Dekor.</xs:documentation></xs:annotation>
+    </xs:attribute>
   </xs:attributeGroup>
 
   <xs:attributeGroup name="placement">
@@ -166,9 +192,13 @@
         <xs:element ref="pageSet"/>
         <xs:element ref="body"/>
         <xs:element ref="attachments" minOccurs="0"/>
+        <xs:element ref="einvoice" minOccurs="0"/>
       </xs:sequence>
       <xs:attribute name="id" type="xs:ID" use="required"/>
       <xs:attribute name="version" type="xs:string" use="required" fixed="0"/>
+      <xs:attribute name="profile" type="ProfileList">
+        <xs:annotation><xs:documentation>Konformitätsprofile der Ausgabe, Vorgabe pdfa-3b. Eine Angabe beim Aufruf geht vor.</xs:documentation></xs:annotation>
+      </xs:attribute>
       <xs:attribute name="lang" type="xs:language" use="required"/>
       <xs:attribute name="schema" type="xs:string">
         <xs:annotation><xs:documentation>Pfad des Daten-XSD im Vorlagenpaket, etwa schema/cii.xsd.</xs:documentation></xs:annotation>
@@ -581,6 +611,12 @@
                 <xs:attributeGroup ref="common"/>
                 <xs:attributeGroup ref="styleAttrs"/>
                 <xs:attribute name="colspan" type="xs:positiveInteger" default="1"/>
+                <xs:attribute name="scope">
+                  <xs:annotation><xs:documentation>Bezug einer Kopfzelle: Column (Spaltenkopf, Vorgabe im Tabellenkopf), Row (Zeilenkopf) oder Both.</xs:documentation></xs:annotation>
+                  <xs:simpleType><xs:restriction base="xs:token">
+                    <xs:enumeration value="Column"/><xs:enumeration value="Row"/><xs:enumeration value="Both"/>
+                  </xs:restriction></xs:simpleType>
+                </xs:attribute>
                 <xs:attribute name="rowspan" type="xs:positiveInteger" default="1"/>
                 <xs:attribute name="verticalAlign" default="top">
                   <xs:simpleType><xs:restriction base="xs:token">
@@ -622,6 +658,20 @@
   <xs:element name="total">
     <xs:annotation><xs:documentation>Summe über alle Datenknoten der Tabelle.</xs:documentation></xs:annotation>
     <xs:complexType><xs:attributeGroup ref="sum"/></xs:complexType>
+  </xs:element>
+
+  <!-- E-Rechnung -->
+
+  <xs:element name="einvoice">
+    <xs:annotation><xs:documentation>Hybride Rechnung nach Factur-X und ZUGFeRD: die Daten (CII) werden als factur-x.xml eingebettet. Die Konformitätsstufe wird aus der Guideline-ID der Daten abgeleitet.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="afRelationship">
+        <xs:annotation><xs:documentation>Beziehung des XML zum PDF. Ohne Angabe Data für MINIMUM und BASIC WL, sonst Alternative.</xs:documentation></xs:annotation>
+        <xs:simpleType><xs:restriction base="xs:token">
+          <xs:enumeration value="Data"/><xs:enumeration value="Alternative"/><xs:enumeration value="Source"/>
+        </xs:restriction></xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
   </xs:element>
 
   <!-- Anhänge -->

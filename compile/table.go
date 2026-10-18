@@ -59,6 +59,7 @@ func (c *compiler) tableElem(n *node) {
 		attrs = append(attrs, "table-omit-footer-at-break", "true")
 	}
 	c.w.start("fo:table", append(attrs, c.blockAttrs(n)...)...)
+	c.altBind(n)
 	cols := n.Elements("column")
 	for _, col := range cols {
 		w := col.Get("width", "1*")
@@ -296,13 +297,30 @@ func (c *compiler) sumValue(s *node, arg string) string {
 func (c *compiler) row(r *node, markers func()) {
 	ri := c.w.enter(r.ID())
 	c.presence(r, func() {
-		c.w.start("fo:table-row", append([]string{"pdx:id", r.ID()}, c.blockAttrs(r)...)...)
+		attrs := append([]string{"pdx:id", r.ID()}, c.blockAttrs(r)...)
+		// Übertrag und Zwischensumme sind Folgen des Seitenumbruchs, keine
+		// Rechnungsdaten. Ihre Zeilen sind Artefakte, die Summe bleibt Inhalt.
+		if sumRow(r) && r.Get("artifact", "") == "" {
+			attrs = append(attrs, "pdx:artifact", "true")
+		}
+		c.w.start("fo:table-row", attrs...)
+		c.altBind(r)
 		for i, cell := range r.Elements("cell") {
 			c.cell(cell, i == 0 && markers != nil, markers)
 		}
 		c.w.end()
 	})
 	c.w.leave(ri)
+}
+
+// sumRow meldet eine Zeile mit Übertrag oder Zwischensumme.
+func sumRow(r *node) bool {
+	for _, cell := range r.Elements("cell") {
+		if cell.First("carryOver") != nil || cell.First("subtotal") != nil {
+			return true
+		}
+	}
+	return false
 }
 
 var displayAlign = map[string]string{"top": "before", "middle": "center", "bottom": "after"}
@@ -320,7 +338,10 @@ func (c *compiler) cell(cell *node, first bool, markers func()) {
 	if v := cell.Get("verticalAlign", "top"); v != "top" {
 		attrs = append(attrs, "display-align", displayAlign[v])
 	}
-	c.w.start("fo:table-cell", append(attrs, c.style(cell)...)...)
+	if v := cell.Get("scope", ""); v != "" {
+		attrs = append(attrs, "pdx:scope", v)
+	}
+	c.start("fo:table-cell", cell, append(attrs, c.style(cell)...)...)
 	if first {
 		markers()
 	}

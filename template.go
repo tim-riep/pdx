@@ -87,11 +87,20 @@ func (t *Template) Render(data []byte, opts TemplateOptions) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
+	if o.Profile == "" {
+		o.Profile = t.Profile()
+	}
 	res, err := Render(bytes.NewReader(fo), o)
 	if err != nil {
 		return nil, mapError(fo, err)
 	}
 	return res, nil
+}
+
+// Profile liefert die Profile der Vorlage (template/@profile), ohne Angabe
+// das Standardprofil.
+func (t *Template) Profile() string {
+	return t.Package.Template.Root.Get("profile", DefaultProfile)
 }
 
 // Layout setzt einen Datensatz und liefert nur den Area Tree, ohne PDF.

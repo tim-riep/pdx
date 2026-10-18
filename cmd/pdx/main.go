@@ -111,7 +111,7 @@ func cmdRender(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("render", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	out := fs.String("o", "", "Ausgabedatei (Vorgabe: Eingabe mit Endung .pdf)")
-	prof := fs.String("profile", pdx.DefaultProfile, "Konformitätsprofil")
+	prof := fs.String("profile", "", "Konformitätsprofile mit Komma (Vorgabe: Profil der Vorlage, sonst "+pdx.DefaultProfile+")")
 	date := fs.String("creation-date", "", "Erstellungsdatum RFC 3339 (Vorgabe: SOURCE_DATE_EPOCH oder jetzt)")
 	tree := fs.String("area-tree", "", "Area Tree zusätzlich als Text in diese Datei schreiben")
 	tpl := fs.String("template", "", "Vorlage (ZIP oder Verzeichnis), die Eingabe sind dann Daten")
