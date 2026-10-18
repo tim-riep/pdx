@@ -665,6 +665,7 @@
   <xs:element name="einvoice">
     <xs:annotation><xs:documentation>Hybride Rechnung nach Factur-X und ZUGFeRD: die Daten (CII) werden als factur-x.xml eingebettet. Die Konformitätsstufe wird aus der Guideline-ID der Daten abgeleitet.</xs:documentation></xs:annotation>
     <xs:complexType>
+      <xs:attribute name="id" type="xs:ID" use="required"/>
       <xs:attribute name="afRelationship">
         <xs:annotation><xs:documentation>Beziehung des XML zum PDF. Ohne Angabe Data für MINIMUM und BASIC WL, sonst Alternative.</xs:documentation></xs:annotation>
         <xs:simpleType><xs:restriction base="xs:token">

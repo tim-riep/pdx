@@ -56,6 +56,8 @@ type Options struct {
 	// Tagged schreibt Tagged PDF mit Strukturbaum, auch wenn das Profil es
 	// nicht verlangt.
 	Tagged bool
+	// XMP sind zusätzliche XMP-Schemata, etwa fx der E-Rechnung.
+	XMP []areatree.XMPSchema
 }
 
 // Result enthält das PDF und den Area Tree.
@@ -109,6 +111,7 @@ func Layout(fo io.Reader, opts Options) (*areatree.Document, error) {
 		return nil, err
 	}
 	doc.Attachments = append(doc.Attachments, opts.Attachments...)
+	doc.Meta.XMP = append(doc.Meta.XMP, opts.XMP...)
 	return doc, nil
 }
 

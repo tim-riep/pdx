@@ -26,8 +26,8 @@ type structElem struct {
 	scope  string
 	// colSpan und rowSpan sind die Spannen einer Tabellenzelle.
 	colSpan, rowSpan int
-	id     string // Vorlagen-ID, für Meldungen
-	ref    pdf.Ref
+	id               string // Vorlagen-ID, für Meldungen
+	ref              pdf.Ref
 	// generic ist ein Block ohne Rolle: P mit eigenem Inhalt, sonst Div.
 	generic bool
 	hasMC   bool

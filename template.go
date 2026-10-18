@@ -13,8 +13,10 @@ import (
 	"github.com/tim-riep/go-xslt/engine"
 	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/compile"
+	"github.com/tim-riep/pdx/einvoice"
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/font"
+	"github.com/tim-riep/pdx/pdf/profile"
 	"github.com/tim-riep/pdx/pdf/render"
 	"github.com/tim-riep/pdx/template"
 	"github.com/tim-riep/pdx/template/pkg"
@@ -91,11 +93,31 @@ func (t *Template) Render(data []byte, opts TemplateOptions) (*Result, error) {
 	if o.Profile == "" {
 		o.Profile = t.Profile()
 	}
+	if err := t.checkEInvoice(o.Profile); err != nil {
+		return nil, err
+	}
 	res, err := Render(bytes.NewReader(fo), o)
 	if err != nil {
 		return nil, mapError(fo, err)
 	}
 	return res, nil
+}
+
+// checkEInvoice verlangt für eine E-Rechnung PDF/A-3. Factur-X und ZUGFeRD
+// beschreiben nur PDF/A-3 (Factur-X 1.0 Kapitel 6, ZUGFeRD 2 Teil A).
+func (t *Template) checkEInvoice(spec string) error {
+	e := t.Compiled.EInvoice
+	if e == nil {
+		return nil
+	}
+	p, err := profile.Lookup(spec)
+	if err != nil {
+		return err
+	}
+	if c := profile.ClaimOf(p); c.PDFA != 3 {
+		return &template.Error{ID: e.ID, Msg: fmt.Sprintf("E-Rechnung verlangt PDF/A-3 (pdfa-3b, pdfa-3u oder pdfa-3a,pdfua-1), angegeben ist %s", spec)}
+	}
+	return nil
 }
 
 // Profile liefert die Profile der Vorlage (template/@profile), ohne Angabe
@@ -131,11 +153,24 @@ func (t *Template) prepare(data []byte, opts TemplateOptions) ([]byte, Options, 
 			return nil, Options{}, err
 		}
 	}
+	// Eine E-Rechnung wird vor der Transformation erkannt, damit falsche
+	// Daten (etwa UBL) eine genaue Meldung bekommen.
+	var info *einvoice.Info
+	if e := t.Compiled.EInvoice; e != nil {
+		var err error
+		if info, err = einvoice.Detect(data); err != nil {
+			return nil, Options{}, &template.Error{ID: e.ID, Msg: err.Error()}
+		}
+	}
 	fo, err := t.Compiled.Transform(data)
 	if err != nil {
 		return nil, Options{}, err
 	}
 	o := opts.Options
+	if info != nil {
+		o.Attachments = append(o.Attachments, info.Attachment(data, areatree.Relationship(t.Compiled.EInvoice.Relationship)))
+		o.XMP = append(o.XMP, info.XMP())
+	}
 	if len(t.fonts) > 0 {
 		// Schriften des Pakets haben Vorrang vor den eingebauten. Add
 		// registriert jede Schrift je Registry nur einmal.

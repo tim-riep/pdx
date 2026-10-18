@@ -57,11 +57,19 @@ type Attachment struct {
 	ID, Name, MIMEType, Relationship, Description string
 }
 
+// EInvoice ist das Element einvoice: die Daten werden als Factur-X oder
+// ZUGFeRD eingebettet. Relationship ist leer, wenn die Stufe entscheidet.
+type EInvoice struct {
+	ID, Relationship string
+}
+
 // Result ist eine kompilierte Vorlage.
 type Result struct {
 	XSLT        []byte
 	SourceMap   []Mapping
 	Attachments []Attachment
+	// EInvoice ist gesetzt, wenn die Vorlage eine E-Rechnung erzeugt.
+	EInvoice *EInvoice
 
 	sheet *engine.Stylesheet
 }
@@ -93,6 +101,7 @@ type compiler struct {
 	lang    string
 	table   *tableCtx
 	attachs []Attachment
+	einv    *EInvoice
 }
 
 // Compile übersetzt eine geprüfte Vorlage in XSLT 3.0.
@@ -111,7 +120,7 @@ func Compile(t *template.Template, opts Options) (*Result, error) {
 	if len(c.errs) > 0 {
 		return nil, c.errs
 	}
-	res := &Result{XSLT: c.w.bytes(), SourceMap: c.w.srcmap, Attachments: c.attachs}
+	res := &Result{XSLT: c.w.bytes(), SourceMap: c.w.srcmap, Attachments: c.attachs, EInvoice: c.einv}
 	if err := res.check(); err != nil {
 		return nil, err
 	}
@@ -365,6 +374,9 @@ func (c *compiler) declarations() {
 			}
 			files = append(files, a)
 		}
+	}
+	if e := root.First("einvoice"); e != nil {
+		c.einv = &EInvoice{ID: e.ID(), Relationship: e.Get("afRelationship", "")}
 	}
 	title := root.Get("title", "")
 	if title == "" && len(files) == 0 {

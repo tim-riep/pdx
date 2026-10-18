@@ -28,7 +28,7 @@ func TestCheckAllErrors(t *testing.T) {
 				block("unter", "fo:block@3:1", "H4"),
 				block("tabelle", "fo:table@4:1", "", cell("z1", "fo:table-cell@5:1")),
 				&areatree.Container{Kind: areatree.KindRegion, ID: "kopf", Source: "fo:region-before@6:1",
-					Tag: &areatree.Tag{Static: true},
+					Tag:      &areatree.Tag{Static: true},
 					Children: []areatree.Area{&areatree.Link{URI: "https://example.org/"}}},
 			},
 		}},

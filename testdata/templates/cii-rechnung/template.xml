@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template xmlns="https://pdx.example/ns/template/0" id="cii-rechnung" dataRoot="rsm:CrossIndustryInvoice" lang="de-DE" profile="pdfa-3a,pdfua-1" title="E-Rechnung (CII)" version="0">
+  <namespaces>
+    <ns prefix="rsm" uri="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"/>
+    <ns prefix="ram" uri="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"/>
+    <ns prefix="udt" uri="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"/>
+  </namespaces>
+  <styles>
+    <style id="st-basis" fontFamily="Helvetica" fontSize="9.5pt" lineHeight="1.3"/>
+    <style id="st-klein" color="#555555" fontSize="7.5pt" parent="st-basis"/>
+    <style id="st-titel" fontSize="16pt" fontWeight="bold" parent="st-basis"/>
+    <style id="st-kopfzeile" backgroundColor="#1f4e79" color="#ffffff" fontWeight="bold" padding="2pt 3pt" parent="st-basis"/>
+    <style id="st-zelle" borderBottom="0.25pt solid #cccccc" padding="2pt 3pt" parent="st-basis"/>
+    <style id="st-betrag" parent="st-zelle" textAlign="end"/>
+  </styles>
+  <formats>
+    <locale id="fmt-de" decimalSeparator="," groupingSeparator="." lang="de-DE">
+      <pattern id="fmt-de-betrag" kind="number" name="betrag" picture="#.##0,00"/>
+      <pattern id="fmt-de-menge" kind="number" name="menge" picture="#.##0,###"/>
+    </locale>
+  </formats>
+  <pageSet id="seiten">
+    <pageMaster id="seite" margin="15mm 20mm 15mm 25mm" use="any">
+      <footer id="fuss" height="12mm">
+        <pageNumber id="seitenzahl" pattern="Seite {current} von {total}" style="st-klein" textAlign="center" w="165mm" x="0mm" y="4mm"/>
+      </footer>
+    </pageMaster>
+  </pageSet>
+  <body id="inhalt" style="st-basis">
+    <subform id="verkaeufer" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty" layout="flowed">
+      <text id="verkaeufer-zeile" style="st-klein"><field id="v-name" bind="ram:Name"/> · <field id="v-strasse" bind="ram:PostalTradeAddress/ram:LineOne"/> · <field id="v-plz" bind="ram:PostalTradeAddress/ram:PostcodeCode"/> <field id="v-ort" bind="ram:PostalTradeAddress/ram:CityName"/></text>
+    </subform>
+    <subform id="kaeufer" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty" layout="flowed" spaceBefore="3mm">
+      <field id="k-name" bind="ram:Name"/>
+      <field id="k-strasse" bind="ram:PostalTradeAddress/ram:LineOne"/>
+      <text id="k-ort"><field id="k-plz" bind="ram:PostalTradeAddress/ram:PostcodeCode"/> <field id="k-stadt" bind="ram:PostalTradeAddress/ram:CityName"/></text>
+    </subform>
+    <text id="titel" role="H1" spaceAfter="2mm" spaceBefore="8mm" style="st-titel">Rechnung <field id="nummer" bind="rsm:ExchangedDocument/ram:ID"/></text>
+    <text id="datum">Rechnungsdatum: <field id="datum-wert" bind="concat(substring(rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString, 7, 2), '.', substring(rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString, 5, 2), '.', substring(rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString, 1, 4))"/></text>
+    <table id="positionen" bind="rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem" role="Table" spaceBefore="4mm">
+      <column id="sp-pos" width="12mm"/>
+      <column id="sp-leistung" width="1*"/>
+      <column id="sp-menge" width="22mm"/>
+      <column id="sp-preis" width="25mm"/>
+      <column id="sp-betrag" width="28mm"/>
+      <header id="kopf" repeat="true">
+        <row id="kopfzeile">
+          <cell id="h-pos" style="st-kopfzeile" textAlign="end">
+            <text id="h-pos-t">Pos.</text>
+          </cell>
+          <cell id="h-leistung" style="st-kopfzeile">
+            <text id="h-leistung-t">Leistung</text>
+          </cell>
+          <cell id="h-menge" style="st-kopfzeile" textAlign="end">
+            <text id="h-menge-t">Menge</text>
+          </cell>
+          <cell id="h-preis" style="st-kopfzeile" textAlign="end">
+            <text id="h-preis-t">Einzelpreis</text>
+          </cell>
+          <cell id="h-betrag" style="st-kopfzeile" textAlign="end">
+            <text id="h-betrag-t">Betrag</text>
+          </cell>
+        </row>
+      </header>
+      <rows id="zeilen">
+        <row id="zeile">
+          <cell id="z-pos" style="st-betrag">
+            <field id="z-pos-f" bind="ram:AssociatedDocumentLineDocument/ram:LineID"/>
+          </cell>
+          <cell id="z-leistung" style="st-zelle">
+            <field id="z-leistung-f" bind="ram:SpecifiedTradeProduct/ram:Name"/>
+          </cell>
+          <cell id="z-menge" style="st-betrag">
+            <field id="z-menge-f" bind="ram:SpecifiedLineTradeDelivery/ram:BilledQuantity" format="menge"/>
+          </cell>
+          <cell id="z-preis" style="st-betrag">
+            <field id="z-preis-f" bind="ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:ChargeAmount" format="betrag"/>
+          </cell>
+          <cell id="z-betrag" style="st-betrag">
+            <field id="z-betrag-f" bind="ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount" format="betrag"/>
+          </cell>
+        </row>
+      </rows>
+    </table>
+    <subform id="summen" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation" keepTogether="always" layout="flowed" spaceBefore="4mm">
+      <text id="netto">Nettobetrag: <field id="netto-wert" bind="ram:TaxBasisTotalAmount" format="betrag"/> €</text>
+      <text id="steuer">Umsatzsteuer: <field id="steuer-wert" bind="ram:TaxTotalAmount" format="betrag"/> €</text>
+      <text id="brutto" fontWeight="bold">Gesamtbetrag: <field id="brutto-wert" bind="ram:GrandTotalAmount" format="betrag"/> €</text>
+    </subform>
+    <text id="zahlung" spaceBefore="4mm"><field id="zahlung-text" bind="rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms/ram:Description"/>. Die Rechnungsdaten liegen dieser Datei maschinenlesbar bei.</text>
+  </body>
+  <einvoice id="erechnung"/>
+</template>
