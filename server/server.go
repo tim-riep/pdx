@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	_ "embed"
 	"errors"
 	"fmt"
 	"io"
@@ -29,6 +30,7 @@ type Server struct {
 	cache   *lru
 	group   flight
 	metrics *metrics
+	mux     *http.ServeMux
 	// Verifier prüft mit veraPDF, nil schaltet /v1/verify ab.
 	Verifier verapdf.Runner
 	// Signer und TSA signieren für /v1/sign, ohne Signer ist es aus.
@@ -50,27 +52,51 @@ func New(cfg *Config, store Store, log *slog.Logger) (*Server, error) {
 		cache: newLRU(32), metrics: newMetrics(), now: time.Now}, nil
 }
 
+//go:embed openapi.json
+var openAPI []byte
+
+// route ist ein Muster des Routings mit seinem Handler.
+type route struct {
+	pattern string
+	h       http.Handler
+}
+
+// routes sind alle Routen, die Spezifikation in openapi.json beschreibt
+// genau diese (Test).
+func (s *Server) routes() []route {
+	return []route{
+		{"GET /healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			io.WriteString(w, "ok\n")
+		})},
+		{"GET /readyz", http.HandlerFunc(s.ready)},
+		{"GET /metrics", http.HandlerFunc(s.serveMetrics)},
+		{"GET /openapi.json", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(openAPI)
+		})},
+		{"POST /v1/render/{id}", s.auth(RightRender, s.render)},
+		{"POST /v1/render/{id}/batch", s.auth(RightRender, s.batch)},
+		{"GET /v1/templates", s.auth(RightTemplates, s.listTemplates)},
+		{"POST /v1/templates/{id}", s.auth(RightTemplates, s.uploadTemplate)},
+		{"GET /v1/templates/{id}/versions", s.auth(RightTemplates, s.listVersions)},
+		{"GET /v1/templates/{id}/versions/{version}", s.auth(RightTemplates, s.getVersion)},
+		{"PUT /v1/templates/{id}/active", s.auth(RightTemplates, s.activate)},
+		{"POST /v1/verify", s.auth(RightVerify, s.verify)},
+		{"POST /v1/sign", s.auth(RightSign, s.sign)},
+	}
+}
+
 // Handler liefert die Routen des Dienstes.
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		io.WriteString(w, "ok\n")
-	})
-	mux.HandleFunc("GET /readyz", s.ready)
-	mux.HandleFunc("GET /metrics", s.serveMetrics)
-	mux.Handle("POST /v1/render/{id}/batch", s.auth(RightRender, s.batch))
-	mux.Handle("POST /v1/verify", s.auth(RightVerify, s.verify))
-	mux.Handle("POST /v1/sign", s.auth(RightSign, s.sign))
-	mux.Handle("POST /v1/render/{id}", s.auth(RightRender, s.render))
-	mux.Handle("GET /v1/templates", s.auth(RightTemplates, s.listTemplates))
-	mux.Handle("POST /v1/templates/{id}", s.auth(RightTemplates, s.uploadTemplate))
-	mux.Handle("GET /v1/templates/{id}/versions", s.auth(RightTemplates, s.listVersions))
-	mux.Handle("GET /v1/templates/{id}/versions/{version}", s.auth(RightTemplates, s.getVersion))
-	mux.Handle("PUT /v1/templates/{id}/active", s.auth(RightTemplates, s.activate))
+	for _, rt := range s.routes() {
+		mux.Handle(rt.pattern, rt.h)
+	}
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		writeProblem(w, Problem{Status: http.StatusNotFound, Title: "Pfad unbekannt"})
 	})
+	s.mux = mux
 	return s.logRequests(mux)
 }
 

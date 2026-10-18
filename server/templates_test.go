@@ -35,7 +35,7 @@ func TestTemplateLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	srv := httptest.NewServer(s.Handler())
+	srv := httptest.NewServer(specHandler(t, s))
 	defer srv.Close()
 	p, data := muster(t)
 	v1, _ := p.Bytes()

@@ -58,7 +58,7 @@ func newTest(t *testing.T, cfg *Config, logw io.Writer) (*httptest.Server, []byt
 		t.Fatal(err)
 	}
 	s.now = func() time.Time { return time.Date(2026, 10, 18, 12, 0, 0, 0, time.UTC) }
-	srv := httptest.NewServer(s.Handler())
+	srv := httptest.NewServer(specHandler(t, s))
 	t.Cleanup(srv.Close)
 	return srv, data
 }

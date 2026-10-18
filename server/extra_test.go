@@ -117,7 +117,7 @@ func TestVerify(t *testing.T) {
 	store.Put(context.Background(), "rechnung", raw)
 	store.Activate(context.Background(), "rechnung", "1")
 	s, _ := New(allRightsConfig(), store, nil)
-	srv := httptest.NewServer(s.Handler())
+	srv := httptest.NewServer(specHandler(t, s))
 	defer srv.Close()
 	_ = data
 	resp, b := post(t, srv.URL+"/v1/verify", keyRender, []byte("%PDF-1.7"))
@@ -152,7 +152,7 @@ func TestSignEndpoint(t *testing.T) {
 	store.Put(context.Background(), "rechnung", raw)
 	store.Activate(context.Background(), "rechnung", "1")
 	s, _ := New(allRightsConfig(), store, nil)
-	srv := httptest.NewServer(s.Handler())
+	srv := httptest.NewServer(specHandler(t, s))
 	defer srv.Close()
 	_, pdf := post(t, srv.URL+"/v1/render/rechnung", keyRender, data)
 	resp, b := post(t, srv.URL+"/v1/sign", keyRender, pdf)
@@ -221,7 +221,7 @@ func TestVerifyVeraPDF(t *testing.T) {
 	store.Activate(context.Background(), "rechnung", "1")
 	s, _ := New(cfg, store, nil)
 	s.Verifier = r
-	srv := httptest.NewServer(s.Handler())
+	srv := httptest.NewServer(specHandler(t, s))
 	defer srv.Close()
 	_, pdf := post(t, srv.URL+"/v1/render/rechnung?profile=pdfa-3b", keyRender, data)
 	resp, b := post(t, srv.URL+"/v1/verify?profile=pdfa-3b", keyRender, pdf)
