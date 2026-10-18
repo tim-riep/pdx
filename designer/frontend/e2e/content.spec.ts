@@ -64,3 +64,25 @@ test("@-Menü bei langsamem Backend", async ({ page }) => {
   await page.unroute("**/wails/runtime**");
   await page.keyboard.press("Escape");
 });
+
+// Chromium unter Linux und Windows setzt den Cursor mit Ende in das Feld
+// am Zeilenende. Der Editor holt ihn heraus, die Eingabe kommt an.
+test("Cursor im Feld landet dahinter", async ({ page }) => {
+  await openMuster(page);
+  await selectInTree(page, ["seiten", "erste", "erste-kopf", "rechnungsdaten", "rechnungsnummer"]);
+  const editor = page.getByTestId("inspector-content").getByTestId("content-editor");
+  await expect(editor.locator(".chip")).toHaveText("inv:number");
+  await editor.click({ position: { x: 4, y: 4 } });
+  await editor.evaluate((el) => {
+    const t = el.querySelector(".chip")!.firstChild!;
+    const r = document.createRange();
+    r.setStart(t, t.textContent!.length);
+    r.collapse(true);
+    getSelection()!.removeAllRanges();
+    getSelection()!.addRange(r);
+  });
+  await page.keyboard.type(" vom @issue");
+  await expect(page.getByTestId("content-menu")).toContainText("inv:issueDate");
+  await page.keyboard.press("Escape");
+  await expect(editor).toContainText("vom");
+});

@@ -54,9 +54,14 @@ export async function selectInTree(page: Page, ids: string[]) {
   await page.getByRole("tab", { name: "Hierarchie" }).click();
   const tree = page.getByTestId("hierarchy");
   const row = (id: string) => tree.getByRole("treeitem").filter({ has: page.locator(".id", { hasText: new RegExp(`^${id}$`) }) });
+  // Erst auf die Zeile warten, dann nach aria-expanded aufklappen. Eine
+  // Prüfung auf den Knopf vor dem Zeichnen des Baums übersprang sonst das
+  // Aufklappen.
   for (const id of ids.slice(0, -1)) {
-    const open = row(id).getByRole("button", { name: "Aufklappen" });
-    if (await open.count()) await open.click();
+    const r = row(id);
+    await expect(r).toBeVisible();
+    if ((await r.getAttribute("aria-expanded")) === "false") await r.getByRole("button", { name: "Aufklappen" }).click();
+    await expect(r).toHaveAttribute("aria-expanded", "true");
   }
   await row(ids[ids.length - 1]).locator("button.name").click();
 }

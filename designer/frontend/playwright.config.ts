@@ -17,9 +17,9 @@ const designerDir = resolve(import.meta.dirname, "..");
 const rootDir = resolve(designerDir, "..");
 const bin = resolve(rootDir, "out", `designer-server${exe}`);
 // veraPDF ersetzt eine Attrappe mit festem Bericht, damit die Tests schnell
-// und ohne Docker laufen. Unter Windows fehlt die Shell, dort entfällt der Test.
+// und ohne Docker laufen, unter Windows über eine .cmd-Datei.
 // Mit PDX_E2E_REAL_VERAPDF=1 prüft das echte veraPDF (lokal oder Docker).
-const stub = process.env.PDX_E2E_REAL_VERAPDF || process.platform === "win32" ? "" : join(import.meta.dirname, "e2e/fixtures/verapdf-attrappe");
+const stub = process.env.PDX_E2E_REAL_VERAPDF ? "" : join(import.meta.dirname, "e2e", "fixtures", `verapdf-attrappe${process.platform === "win32" ? ".cmd" : ""}`);
 const verapdf = process.env.PDX_VERAPDF ?? stub;
 
 // Ein echter pdx-server für das Veröffentlichen, mit Testschlüssel und

@@ -85,6 +85,27 @@
     });
   });
 
+  // Chromium unter Linux und Windows setzt den Cursor mit Ende oder Pfeilen
+  // auch in ein Feld (contenteditable=false), dort geht jede Eingabe
+  // verloren. Ein Cursor im Feld kommt deshalb dahinter.
+  function caretOutOfChip() {
+    const sel = getSelection();
+    const a = sel?.anchorNode;
+    if (!focused || !sel || !sel.isCollapsed || !a || !el?.contains(a)) return;
+    const chipEl = (a.nodeType === Node.ELEMENT_NODE ? (a as Element) : a.parentElement)?.closest(".chip");
+    if (!chipEl || !el.contains(chipEl)) return;
+    const r = document.createRange();
+    r.setStartAfter(chipEl);
+    r.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+
+  onMount(() => {
+    document.addEventListener("selectionchange", caretOutOfChip);
+    return () => document.removeEventListener("selectionchange", caretOutOfChip);
+  });
+
   onMount(() => {
     if (autofocus && el) {
       el.focus();
@@ -200,6 +221,9 @@
   }
 
   function onkeydown(e: KeyboardEvent) {
+    // selectionchange kommt asynchron, vor dem Einfügen eines Zeichens hier
+    // noch einmal prüfen.
+    caretOutOfChip();
     if (query !== null && matches.length) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         index = (index + (e.key === "ArrowDown" ? 1 : matches.length - 1)) % matches.length;

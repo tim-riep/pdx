@@ -3,7 +3,6 @@ import { openMuster, selectInTree } from "./helpers";
 
 // Läuft mit der veraPDF-Attrappe aus e2e/fixtures (siehe playwright.config.ts).
 test("Konformität: Befunde nach Regeln, Klick führt zum Element", async ({ page }) => {
-  test.skip(process.platform === "win32", "Attrappe braucht eine Shell");
   await openMuster(page, true);
   await page.getByRole("tab", { name: "Konformität" }).click();
   const panel = page.getByTestId("conformance");

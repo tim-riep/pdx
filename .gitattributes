@@ -10,3 +10,6 @@
 *.jpg binary
 *.icc binary
 *.zip binary
+
+# Batch-Dateien brauchen unter Windows CRLF.
+*.cmd text eol=crlf
