@@ -73,8 +73,8 @@
           <fo:block pdx:id="name-text" space-before="3mm">
             <xsl:text>Name</xsl:text>
           </fo:block>
-          <fo:block pdx:id="name" font-family="Helvetica" font-size="10pt" line-height="1.4" border="0.5pt solid #555555">
-            <fo:instream-foreign-object pdx:id="name" content-width="90mm" content-height="7mm">
+          <fo:block pdx:id="name" font-family="Helvetica" font-size="10pt" line-height="1.4">
+            <fo:instream-foreign-object pdx:id="name" content-width="90mm" content-height="7mm" border="0.5pt solid #555555">
               <pdx:form-field type="text" name="name" label="Name" max-length="40" required="true">
                 <xsl:attribute name="value" select="string(a:name[1])"/>
                 <xsl:attribute name="context" select="path(.)"/>
@@ -84,8 +84,8 @@
           <fo:block pdx:id="email-text" space-before="3mm">
             <xsl:text>E-Mail</xsl:text>
           </fo:block>
-          <fo:block pdx:id="email" font-family="Helvetica" font-size="10pt" line-height="1.4" border="0.5pt solid #555555">
-            <fo:instream-foreign-object pdx:id="email" content-width="90mm" content-height="7mm">
+          <fo:block pdx:id="email" font-family="Helvetica" font-size="10pt" line-height="1.4">
+            <fo:instream-foreign-object pdx:id="email" content-width="90mm" content-height="7mm" border="0.5pt solid #555555">
               <pdx:form-field type="text" name="email" label="E-Mail-Adresse">
                 <xsl:attribute name="value" select="string(a:email[1])"/>
                 <xsl:attribute name="context" select="path(.)"/>
@@ -95,8 +95,8 @@
           <fo:block pdx:id="land-text" space-before="3mm">
             <xsl:text>Land</xsl:text>
           </fo:block>
-          <fo:block pdx:id="land" font-family="Helvetica" font-size="10pt" line-height="1.4" border="0.5pt solid #555555">
-            <fo:instream-foreign-object pdx:id="land" content-width="40mm" content-height="7mm">
+          <fo:block pdx:id="land" font-family="Helvetica" font-size="10pt" line-height="1.4">
+            <fo:instream-foreign-object pdx:id="land" content-width="40mm" content-height="7mm" border="0.5pt solid #555555">
               <pdx:form-field type="combo" name="land" label="Land">
                 <xsl:attribute name="value" select="string(a:land[1])"/>
                 <xsl:attribute name="context" select="path(.)"/>
@@ -109,8 +109,8 @@
           <fo:block pdx:id="tarif-text" space-before="3mm">
             <xsl:text>Tarif</xsl:text>
           </fo:block>
-          <fo:block pdx:id="tarif" font-family="Helvetica" font-size="10pt" line-height="1.4" border="0.5pt solid #555555">
-            <fo:instream-foreign-object pdx:id="tarif" content-width="40mm" content-height="16mm">
+          <fo:block pdx:id="tarif" font-family="Helvetica" font-size="10pt" line-height="1.4">
+            <fo:instream-foreign-object pdx:id="tarif" content-width="40mm" content-height="16mm" border="0.5pt solid #555555">
               <pdx:form-field type="list" name="tarif" label="Tarif">
                 <xsl:attribute name="value" select="string(a:tarif[1])"/>
                 <xsl:attribute name="context" select="path(.)"/>
@@ -123,8 +123,8 @@
           <fo:block pdx:id="newsletter-text" space-before="3mm">
             <xsl:text>Newsletter abonnieren</xsl:text>
           </fo:block>
-          <fo:block pdx:id="newsletter" font-family="Helvetica" font-size="10pt" line-height="1.4" border="0.5pt solid #555555">
-            <fo:instream-foreign-object pdx:id="newsletter" content-width="5mm" content-height="5mm">
+          <fo:block pdx:id="newsletter" font-family="Helvetica" font-size="10pt" line-height="1.4">
+            <fo:instream-foreign-object pdx:id="newsletter" content-width="5mm" content-height="5mm" border="0.5pt solid #555555">
               <pdx:form-field type="checkbox" name="newsletter" label="Newsletter abonnieren" on-value="true" off-value="false">
                 <xsl:attribute name="value" select="string(a:newsletter[1])"/>
                 <xsl:attribute name="context" select="path(.)"/>
@@ -134,8 +134,8 @@
           <fo:block pdx:id="bemerkung-text" space-before="3mm">
             <xsl:text>Bemerkung</xsl:text>
           </fo:block>
-          <fo:block pdx:id="bemerkung" font-family="Helvetica" font-size="10pt" line-height="1.4" border="0.5pt solid #555555">
-            <fo:instream-foreign-object pdx:id="bemerkung" content-width="150mm" content-height="20mm">
+          <fo:block pdx:id="bemerkung" font-family="Helvetica" font-size="10pt" line-height="1.4">
+            <fo:instream-foreign-object pdx:id="bemerkung" content-width="150mm" content-height="20mm" border="0.5pt solid #555555">
               <pdx:form-field type="text" name="bemerkung" label="Bemerkung" multiline="true">
                 <xsl:attribute name="value" select="string(a:bemerkung[1])"/>
                 <xsl:attribute name="context" select="path(.)"/>
@@ -147,8 +147,8 @@
           </fo:block>
           <xsl:for-each select="a:personen/a:person">
             <fo:block pdx:id="person" space-after="2mm">
-              <fo:block pdx:id="vorname" font-family="Helvetica" font-size="10pt" line-height="1.4" border="0.5pt solid #555555">
-                <fo:instream-foreign-object pdx:id="vorname" content-width="60mm" content-height="7mm">
+              <fo:block pdx:id="vorname" font-family="Helvetica" font-size="10pt" line-height="1.4">
+                <fo:instream-foreign-object pdx:id="vorname" content-width="60mm" content-height="7mm" border="0.5pt solid #555555">
                   <pdx:form-field type="text" name="vorname" label="Vorname">
                     <xsl:attribute name="value" select="string(a:vorname[1])"/>
                     <xsl:attribute name="context" select="path(.)"/>

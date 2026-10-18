@@ -188,6 +188,40 @@ func dumpAreas(b *bytes.Buffer, areas []Area, depth int) {
 				target += " key=" + v.Key
 			}
 			fmt.Fprintf(b, "link %s %s\n", rect(v.Rect), target)
+		case *Widget:
+			f := v.Field
+			fmt.Fprintf(b, "widget %s %s name=%s value=%s", rect(v.Rect), f.Type, strconv.Quote(f.Name), strconv.Quote(f.Value))
+			if f.Export != "" {
+				fmt.Fprintf(b, " export=%s", strconv.Quote(f.Export))
+			}
+			if f.Label != "" {
+				fmt.Fprintf(b, " label=%s", strconv.Quote(f.Label))
+			}
+			for _, o := range f.Options {
+				fmt.Fprintf(b, " option=%s", strconv.Quote(o.Value))
+			}
+			for _, flag := range []struct {
+				on   bool
+				name string
+			}{{f.Multiline, "multiline"}, {f.ReadOnly, "readonly"}, {f.Required, "required"}, {f.Editable, "editable"}} {
+				if flag.on {
+					b.WriteString(" " + flag.name)
+				}
+			}
+			if f.MaxLength > 0 {
+				fmt.Fprintf(b, " maxlength=%d", f.MaxLength)
+			}
+			if v.ID != "" {
+				fmt.Fprintf(b, " id=%s", strconv.Quote(v.ID))
+			}
+			b.WriteByte('\n')
+			for _, r := range v.Runs {
+				var txt strings.Builder
+				for _, g := range r.Glyphs {
+					txt.WriteString(g.Text)
+				}
+				fmt.Fprintf(b, "%s  text %s,%s %s\n", ind, r.Origin.X, r.Origin.Y, strconv.Quote(txt.String()))
+			}
 		case *Box:
 			fmt.Fprintf(b, "box %s", rect(v.Rect))
 			if v.Fill != nil {

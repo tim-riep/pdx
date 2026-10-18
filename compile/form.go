@@ -13,8 +13,11 @@ var fieldTypes = map[string]string{
 
 // formField übersetzt Textfeld, Kontrollkästchen, Listen und Signaturfeld.
 func (c *compiler) formField(n *node) {
-	c.start("fo:block", n, append([]string{"pdx:id", n.ID()}, c.style(n)...)...)
-	c.w.start("fo:instream-foreign-object", "pdx:id", n.ID(), "content-width", n.Get("w", ""), "content-height", n.Get("h", ""))
+	// Schrift und Farbe erbt das Feld vom Block, Rahmen, Hintergrund und
+	// Innenabstand gehören zum Feld selbst.
+	inh, non := c.styleSplit(n)
+	c.start("fo:block", n, append([]string{"pdx:id", n.ID()}, inh...)...)
+	c.w.start("fo:instream-foreign-object", append([]string{"pdx:id", n.ID(), "content-width", n.Get("w", ""), "content-height", n.Get("h", "")}, non...)...)
 	c.fieldElem(n, fieldTypes[n.Name], "")
 	c.options(n)
 	c.w.end()

@@ -132,6 +132,8 @@ type piece struct {
 	leader *leaderSpec
 	// code ist bei Barcodes gesetzt (pGraphic ohne Bild).
 	code *codeArt
+	// widget ist bei Formularfeldern gesetzt.
+	widget *widgetArt
 	// decos sind die Inline-Elemente mit Hintergrund, Rahmen oder Padding,
 	// in denen das Stück liegt, von außen nach innen. Bei pEdge ist decos[0]
 	// das Element der Kante und start gibt an, ob es die Anfangskante ist.
@@ -959,6 +961,13 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			x += w
 		case pGraphic:
 			run = nil
+			if pc.widget != nil {
+				wd := pc.widget.build(x, baseline-pc.height, pc.width, pc.height)
+				wd.ID = pc.tid
+				line.areas = append(line.areas, wd)
+				x += pc.width
+				continue
+			}
 			if pc.code != nil {
 				path := pc.code.path(x, baseline-pc.height, pc.width, pc.height)
 				path.ID = pc.tid

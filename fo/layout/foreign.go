@@ -33,8 +33,11 @@ func (pa *paragraph) foreign(n *tree.Node, parent *props.Computed) error {
 	var bn *tree.Node
 	for _, c := range n.Children {
 		if c.Kind == tree.Element {
+			if c.Is(tree.NSPDX, "form-field") {
+				return pa.formField(n, c, p)
+			}
 			if !c.Is(tree.NSPDX, "barcode") {
-				return tree.Errorf(c, "in fo:instream-foreign-object wird nur pdx:barcode unterstützt")
+				return tree.Errorf(c, "in fo:instream-foreign-object werden nur pdx:barcode und pdx:form-field unterstützt")
 			}
 			bn = c
 		}

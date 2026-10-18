@@ -439,6 +439,56 @@ type Link struct {
 
 func (*Link) isArea() {}
 
+// Widget ist ein Formularfeld (AcroForm) an einer Stelle der Seite. Runs
+// sind die vom Layout gesetzten Glyphen des Erscheinungsbilds, absolut auf
+// der Seite wie alle Bereiche.
+type Widget struct {
+	Rect
+	Field Field
+	Runs  []*GlyphRun
+	// Selected ist bei Auswahllisten das Rechteck der gewählten Zeile, nil
+	// ohne Auswahl.
+	Selected *Rect
+	// ID ist die ID des Vorlagenelements.
+	ID string
+}
+
+func (*Widget) isArea() {}
+
+// Field beschreibt ein Formularfeld. Mehrere Widgets mit gleichem Namen
+// bilden ein Feld, etwa die Optionsfelder einer Gruppe.
+type Field struct {
+	// Type ist text, checkbox, radio, list, combo oder signature.
+	Type string
+	// Name ist der Feldname aus der Vorlage, Label der zugängliche Name.
+	Name, Label string
+	// Value ist der vorbelegte Wert, Export bei Optionsfeldern der Wert
+	// dieser Option, OnValue und OffValue die Werte eines Kontrollkästchens.
+	Value, Export     string
+	OnValue, OffValue string
+	Options           []FieldOption
+	Multiline         bool
+	ReadOnly          bool
+	Required          bool
+	Editable          bool
+	MaxLength         int
+	// Context ist der Pfad des Kontextknotens in den Daten (fn:path), zu
+	// dem die Bindung des Felds gehört.
+	Context string
+	// Schrift, Größe und Farbe für Erscheinungsbild und Eingabe.
+	Font  FontID
+	Size  Length
+	Color Color
+	// Rahmen und Hintergrund des Felds.
+	Border     Border
+	Background *Color
+}
+
+// FieldOption ist ein Auswahlwert mit angezeigtem Text.
+type FieldOption struct {
+	Value, Label string
+}
+
 // Path ist eine Menge gefüllter Rechtecke in einer Farbe, etwa die Module
 // eines Barcodes. Die Rechtecke sind absolut auf der Seite.
 type Path struct {

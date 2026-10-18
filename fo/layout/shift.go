@@ -48,6 +48,21 @@ func shift(a areatree.Area, dx, dy areatree.Length) areatree.Area {
 			pp.Rects[i] = r
 		}
 		return &pp
+	case *areatree.Widget:
+		w := *v
+		w.X += dx
+		w.Y += dy
+		w.Runs = make([]*areatree.GlyphRun, len(v.Runs))
+		for i, r := range v.Runs {
+			w.Runs[i] = shift(r, dx, dy).(*areatree.GlyphRun)
+		}
+		if v.Selected != nil {
+			sel := *v.Selected
+			sel.X += dx
+			sel.Y += dy
+			w.Selected = &sel
+		}
+		return &w
 	case *areatree.Link:
 		l := *v
 		l.X += dx
