@@ -9,4 +9,6 @@ require (
 	github.com/tim-riep/go-xslt v0.1.2
 )
 
-require golang.org/x/text v0.38.0
+require golang.org/x/text v0.43.0
+
+require golang.org/x/crypto v0.58.0

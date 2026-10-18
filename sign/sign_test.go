@@ -1,0 +1,159 @@
+package sign_test
+
+import (
+	"bytes"
+	"context"
+	"crypto"
+	"crypto/ecdsa"
+	"crypto/sha256"
+	"crypto/x509"
+	"encoding/asn1"
+	"io"
+	"net/http"
+	"testing"
+	"time"
+
+	"golang.org/x/crypto/ocsp"
+
+	"github.com/tim-riep/pdx/internal/testpki"
+	"github.com/tim-riep/pdx/sign"
+)
+
+type signerInfo struct {
+	Version     int
+	SID         asn1.RawValue
+	DigestAlg   asn1.RawValue
+	SignedAttrs asn1.RawValue `asn1:"tag:0"`
+	SigAlg      asn1.RawValue
+	Signature   []byte
+	Unsigned    asn1.RawValue `asn1:"optional,tag:1"`
+}
+
+type attribute struct {
+	Type   asn1.ObjectIdentifier
+	Values asn1.RawValue `asn1:"set"`
+}
+
+// verify prüft die Signatur eines SignerInfo unabhängig vom Erzeuger und
+// liefert die signierten Attribute nach Typ.
+func verify(t *testing.T, si []byte, cert *x509.Certificate, content []byte) (map[string][]byte, signerInfo) {
+	t.Helper()
+	var s signerInfo
+	if _, err := asn1.Unmarshal(si, &s); err != nil {
+		t.Fatal(err)
+	}
+	attrs := append([]byte(nil), s.SignedAttrs.FullBytes...)
+	attrs[0] = 0x31 // signiert wird die Kodierung als SET
+	sum := sha256.Sum256(attrs)
+	if !ecdsa.VerifyASN1(cert.PublicKey.(*ecdsa.PublicKey), sum[:], s.Signature) {
+		t.Fatal("Signatur ungültig")
+	}
+	out := map[string][]byte{}
+	for rest := s.SignedAttrs.Bytes; len(rest) > 0; {
+		var a attribute
+		var err error
+		if rest, err = asn1.Unmarshal(rest, &a); err != nil {
+			t.Fatal(err)
+		}
+		out[a.Type.String()] = a.Values.Bytes
+	}
+	var md []byte
+	asn1.Unmarshal(out["1.2.840.113549.1.9.4"], &md)
+	if c := sha256.Sum256(content); !bytes.Equal(md, c[:]) {
+		t.Error("message-digest passt nicht zum Inhalt")
+	}
+	return out, s
+}
+
+// SignedData trägt die von PAdES verlangten Attribute, kein signing-time,
+// und ist mit dem Zertifikat prüfbar. Mit Zeitstempel als unsigniertes
+// Attribut entsteht B-T.
+func TestSignedDataPAdES(t *testing.T) {
+	pki := testpki.New(t)
+	s := pki.KeySigner(t, pki.Signer)
+	content := []byte("die Bytes der ByteRange")
+	tsa := &sign.TSA{URL: pki.TSAURL()}
+	der, err := sign.SignedData(context.Background(), s, content, sign.SignedOptions{Detached: true,
+		Unsigned: func(sig []byte) ([][]byte, error) {
+			tok, err := tsa.Timestamp(context.Background(), sig)
+			if err != nil {
+				return nil, err
+			}
+			return [][]byte{sign.TimeStampAttribute(tok)}, nil
+		}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sd, err := sign.ParseSignedData(der)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sd.SignerInfos) != 1 || len(sd.Content) != 0 || len(sd.Certificates) != 2 || !sd.Certificates[0].Equal(pki.Signer.Cert) {
+		t.Fatalf("Aufbau: %d SignerInfos, Inhalt %d Bytes, %d Zertifikate", len(sd.SignerInfos), len(sd.Content), len(sd.Certificates))
+	}
+	attrs, si := verify(t, sd.SignerInfos[0], pki.Signer.Cert, content)
+	for _, o := range []string{"1.2.840.113549.1.9.3", "1.2.840.113549.1.9.4", "1.2.840.113549.1.9.16.2.47"} {
+		if attrs[o] == nil {
+			t.Errorf("signiertes Attribut %s fehlt", o)
+		}
+	}
+	if attrs["1.2.840.113549.1.9.5"] != nil {
+		t.Error("signing-time ist unter PAdES verboten")
+	}
+	if !bytes.Contains(si.Unsigned.Bytes, []byte{0x06, 0x0b, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x09, 0x10, 0x02, 0x0e}) {
+		t.Error("Zeitstempel als unsigniertes Attribut fehlt")
+	}
+}
+
+// Der Zeitstempeldienst der Test-PKI liefert Tokens mit Abdruck, Zeit und
+// Zertifikat, OCSP und CRL kennen das gesperrte Zertifikat.
+func TestTestPKI(t *testing.T) {
+	pki := testpki.New(t)
+	tok, err := (&sign.TSA{URL: pki.TSAURL()}).Timestamp(context.Background(), []byte("x"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	info, err := sign.ParseTimeStamp(tok)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if time.Since(info.Time) > time.Minute || len(info.Certificates) == 0 || !info.Certificates[0].Equal(pki.TSA.Cert) {
+		t.Errorf("Zeitstempel %+v", info)
+	}
+	sd, _ := sign.ParseSignedData(tok)
+	verify(t, sd.SignerInfos[0], pki.TSA.Cert, sd.Content)
+
+	status := func(c *x509.Certificate) int {
+		req, err := ocsp.CreateRequest(c, pki.Inter.Cert, &ocsp.RequestOptions{Hash: crypto.SHA256})
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp, err := http.Post(c.OCSPServer[0], "application/ocsp-request", bytes.NewReader(req))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+		r, err := ocsp.ParseResponseForCert(body, c, pki.Inter.Cert)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return r.Status
+	}
+	if status(pki.Signer.Cert) != ocsp.Good || status(pki.Revoked.Cert) != ocsp.Revoked {
+		t.Error("OCSP-Status falsch")
+	}
+	resp, err := http.Get(pki.Signer.Cert.CRLDistributionPoints[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	crl, err := x509.ParseRevocationList(body)
+	if err != nil || crl.CheckSignatureFrom(pki.Inter.Cert) != nil {
+		t.Fatalf("CRL: %v", err)
+	}
+	if len(crl.RevokedCertificateEntries) != 1 || crl.RevokedCertificateEntries[0].SerialNumber.Cmp(pki.Revoked.Cert.SerialNumber) != 0 {
+		t.Error("CRL nennt das gesperrte Zertifikat nicht")
+	}
+}
