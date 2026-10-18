@@ -1,6 +1,10 @@
 <script lang="ts">
   import { t } from "../../lib/i18n";
   import { ELEMENT_MIME, insertAtSelection, kinds, type Kind } from "../../lib/insert";
+  import { tpl } from "../../lib/template.svelte";
+
+  // Bis die Struktur der Vorlage geladen ist, hätte ein Klick kein Ziel.
+  const ready = $derived(!!tpl.snapshot);
 
   // Einfache Symbole als SVG-Pfade, 16 mal 16.
   const icons: Record<Kind, string> = {
@@ -31,7 +35,7 @@
 <div class="palette" role="toolbar" aria-label={t("insert.palette")} data-testid="palette">
   {#each kinds as k}
     {#if k === "textField"}<span class="sep" aria-hidden="true"></span>{/if}
-    <button draggable="true" title={t(`insert.${k}`)} aria-label={t(`insert.${k}`)} data-kind={k}
+    <button draggable={ready} disabled={!ready} title={t(`insert.${k}`)} aria-label={t(`insert.${k}`)} data-kind={k}
       ondragstart={(e) => dragstart(e, k)} onclick={() => insertAtSelection(k)}>
       <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d={icons[k]} /></svg>
     </button>
