@@ -197,47 +197,72 @@ func TestSignPDF(t *testing.T) {
 	}
 }
 
-// Das Signaturfeld aus der Vorlage wird signiert, das Formular bleibt unter
-// 3a und UA-1 konform. Ein zweites Signieren desselben Felds scheitert.
+// Das Signaturfeld aus der Vorlage wird signiert und zeigt danach
+// Unterzeichner, Datum und Grund, mit demselben Text in Contents. Das
+// Formular bleibt unter 3a mit UA-1 und unter 4 mit UA-2 konform. Ein
+// zweites Signieren desselben Felds scheitert.
 func TestSignFormField(t *testing.T) {
 	pki := testpki.New(t)
 	tpl, data := loadForm(t)
-	const prof = "pdfa-3a,pdfua-1"
-	res, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: prof}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	f0, _ := reader.Open(res.PDF)
-	var name string
-	for _, fl := range f0.Fields() {
-		if fl.Type == "Sig" {
-			name = fl.Name
-		}
-	}
-	if name == "" {
-		t.Fatal("Formular ohne Signaturfeld")
-	}
-	out, err := sign.SignPDF(context.Background(), res.PDF, pki.KeySigner(t, pki.Signer), sign.PDFOptions{
-		Level: sign.LevelT, TSA: &sign.TSA{URL: pki.TSAURL()}, Field: name,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	f, _ := reader.Open(out)
-	d := sigDicts(t, f)[name]
-	if d == nil {
-		t.Fatal("Feld nicht signiert")
-	}
-	checkSig(t, out, d, pki.Signer.Cert)
-	if len(f.Fields()) != len(f0.Fields()) {
-		t.Error("neues Feld angelegt statt das vorhandene zu nutzen")
-	}
-	testutil.Conform(t, "formular-signiert.pdf", out, prof)
-	if _, err := sign.SignPDF(context.Background(), out, pki.KeySigner(t, pki.Signer), sign.PDFOptions{Field: name}); err == nil || !strings.Contains(err.Error(), "bereits signiert") {
-		t.Errorf("zweites Signieren: %v", err)
-	}
-	if _, err := sign.SignPDF(context.Background(), out, pki.KeySigner(t, pki.Signer), sign.PDFOptions{Field: "gibtsnicht"}); err == nil {
-		t.Error("fehlendes Feld nicht gemeldet")
+	for _, prof := range []string{"pdfa-3a,pdfua-1", "pdfa-4,pdfua-2"} {
+		t.Run(prof, func(t *testing.T) {
+			res, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: prof}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			f0, _ := reader.Open(res.PDF)
+			var name string
+			for _, fl := range f0.Fields() {
+				if fl.Type == "Sig" {
+					name = fl.Name
+				}
+			}
+			if name == "" {
+				t.Fatal("Formular ohne Signaturfeld")
+			}
+			now := time.Now().UTC().Truncate(time.Minute)
+			out, err := sign.SignPDF(context.Background(), res.PDF, pki.KeySigner(t, pki.Signer), sign.PDFOptions{
+				Level: sign.LevelT, TSA: &sign.TSA{URL: pki.TSAURL()}, Field: name, Reason: "Antrag geprüft",
+				Time: now,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			f, _ := reader.Open(out)
+			d := sigDicts(t, f)[name]
+			if d == nil {
+				t.Fatal("Feld nicht signiert")
+			}
+			checkSig(t, out, d, pki.Signer.Cert)
+			if len(f.Fields()) != len(f0.Fields()) {
+				t.Error("neues Feld angelegt statt das vorhandene zu nutzen")
+			}
+			var widget reader.Dict
+			for _, o := range f.Array(f.Dict(f.Root()["AcroForm"])["Fields"]) {
+				if w := f.Dict(o); w["FT"] == reader.Name("Sig") {
+					widget = w
+				}
+			}
+			want := "Digital signiert von Erika Musterfrau, Datum: " + now.Format("2006-01-02 15:04") + " UTC, Grund: Antrag geprüft"
+			if c, _ := f.Resolve(widget["Contents"]).(reader.String); reader.TextString(c) != want {
+				t.Errorf("Contents %q", reader.TextString(c))
+			}
+			ap, ok := f.Resolve(f.Dict(widget["AP"])["N"]).(*reader.Stream)
+			if !ok {
+				t.Fatal("Erscheinungsbild fehlt")
+			}
+			raw, err := f.Decode(ap)
+			if err != nil || !bytes.Contains(raw, []byte("/Bg Do")) || !bytes.Contains(raw, []byte("Tj")) {
+				t.Errorf("Erscheinungsbild ohne Hintergrund oder Text: %s", raw)
+			}
+			testutil.Conform(t, "formular-signiert.pdf", out, prof)
+			if _, err := sign.SignPDF(context.Background(), out, pki.KeySigner(t, pki.Signer), sign.PDFOptions{Field: name}); err == nil || !strings.Contains(err.Error(), "bereits signiert") {
+				t.Errorf("zweites Signieren: %v", err)
+			}
+			if _, err := sign.SignPDF(context.Background(), out, pki.KeySigner(t, pki.Signer), sign.PDFOptions{Field: "gibtsnicht"}); err == nil {
+				t.Error("fehlendes Feld nicht gemeldet")
+			}
+		})
 	}
 }
 
@@ -324,5 +349,27 @@ func TestSignDSS(t *testing.T) {
 				testutil.Conform(t, "dss-"+prof+"-"+string(lvl)+".pdf", out, prof)
 			})
 		}
+	}
+}
+
+// Ein unsichtbares Signaturfeld (Rect 0, ohne Fläche und ohne Inhalt für
+// Hilfstechnik) lässt Formulare unter UA-1 und UA-2 konform.
+func TestSignInvisibleUA(t *testing.T) {
+	pki := testpki.New(t)
+	tpl, data := loadForm(t)
+	for _, prof := range []string{"pdfa-3a,pdfua-1", "pdfa-4,pdfua-2"} {
+		t.Run(prof, func(t *testing.T) {
+			res, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: prof}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			out, err := sign.SignPDF(context.Background(), res.PDF, pki.KeySigner(t, pki.Signer), sign.PDFOptions{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			f, _ := reader.Open(out)
+			checkSig(t, out, sigDicts(t, f)["Signatur1"], pki.Signer.Cert)
+			testutil.Conform(t, "unsichtbar.pdf", out, prof)
+		})
 	}
 }

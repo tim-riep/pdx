@@ -101,7 +101,18 @@ func SignPDF(ctx context.Context, in []byte, s Signer, opt PDFOptions) ([]byte, 
 			sig.Set(pdf.Name(kv[0]), pdf.TextString(kv[1]))
 		}
 	}
-	out, err := signRevision(in, opt.Field, "Signatur", sig, opt.Reserve, func(content []byte) ([]byte, error) {
+	name := opt.Name
+	if name == "" {
+		name = certs[0].Subject.CommonName
+	}
+	lines := []string{"Digital signiert von " + name, "Datum: " + opt.Time.UTC().Format("2006-01-02 15:04 MST")}
+	if opt.Reason != "" {
+		lines = append(lines, "Grund: "+opt.Reason)
+	}
+	if opt.Location != "" {
+		lines = append(lines, "Ort: "+opt.Location)
+	}
+	out, err := signRevision(in, opt.Field, "Signatur", sig, lines, opt.Reserve, func(content []byte) ([]byte, error) {
 		so := SignedOptions{Detached: true}
 		if rank >= 1 {
 			so.Unsigned = func(signature []byte) ([][]byte, error) {
@@ -130,7 +141,7 @@ func SignPDF(ctx context.Context, in []byte, s Signer, opt PDFOptions) ([]byte, 
 		"SubFilter", pdf.Name("ETSI.RFC3161"),
 	)
 	var docToken []byte
-	out, err = signRevision(out, "", "Zeitstempel", docTS, 8<<10, func(content []byte) ([]byte, error) {
+	out, err = signRevision(out, "", "Zeitstempel", docTS, nil, 8<<10, func(content []byte) ([]byte, error) {
 		tok, err := opt.TSA.Timestamp(ctx, content)
 		docToken = tok
 		return tok, err
@@ -161,8 +172,9 @@ var byteRangeMark = pdf.Array{pdf.Int(0), pdf.Int(1111111111), pdf.Int(222222222
 
 // signRevision hängt ein Signaturdictionary an ein Signaturfeld und setzt
 // nach dem Schreiben ByteRange und Contents ein. contents liefert aus den
-// Bytes der ByteRange den Inhalt von Contents (CMS oder Zeitstempel).
-func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, reserve int, contents func([]byte) ([]byte, error)) ([]byte, error) {
+// Bytes der ByteRange den Inhalt von Contents (CMS oder Zeitstempel). Ein
+// sichtbares Feld aus der Vorlage zeigt danach lines.
+func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, lines []string, reserve int, contents func([]byte) ([]byte, error)) ([]byte, error) {
 	u, err := incr.Open(in)
 	if err != nil {
 		return nil, err
@@ -193,6 +205,13 @@ func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, reserve in
 		}
 		if field.Has("V") {
 			return nil, fmt.Errorf("Signaturfeld %q ist bereits signiert", fieldName)
+		}
+		// Feld und Widget sind bei pdx ein Objekt. Das neue Bild nennt
+		// Unterzeichner und Zeit, Contents trägt denselben Text für
+		// Hilfstechnik (ISO 32000-1 12.5.2, ISO 14289-2 8.10.2.3).
+		if ap := signatureAppearance(f, f.Dict(r), lines); ap != nil && !field.Has("Kids") {
+			field.Set("AP", pdf.D("N", u.Add(ap)))
+			field.Set("Contents", pdf.TextString(strings.Join(lines, ", ")))
 		}
 	} else {
 		pages, pageRefs := f.Pages()

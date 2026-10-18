@@ -217,3 +217,15 @@ func (c *Content) BeginActualText(text string) {
 
 // EndMarked beendet eine markierte Inhaltsfolge: EMC.
 func (c *Content) EndMarked() { c.op("EMC") }
+
+// ShowBytes schreibt Tj mit einbyteigen Codes einer einfachen Schrift als
+// Hexstring.
+func (c *Content) ShowBytes(codes []byte) {
+	const hex = "0123456789ABCDEF"
+	c.b.WriteByte('<')
+	for _, b := range codes {
+		c.b.WriteByte(hex[b>>4])
+		c.b.WriteByte(hex[b&15])
+	}
+	c.op("> Tj")
+}
