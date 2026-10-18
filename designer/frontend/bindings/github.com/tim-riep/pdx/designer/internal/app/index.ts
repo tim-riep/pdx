@@ -27,6 +27,7 @@ export {
     ConformanceItem,
     ContentEdit,
     Drop,
+    EInvoice,
     Field,
     Info,
     Insert,

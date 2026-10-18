@@ -565,5 +565,13 @@
   "struct.Note": "Fußnote",
   "struct.FENote": "Fußnote",
   "struct.Caption": "Beschriftung",
-  "struct.Reference": "Querverweis"
+  "struct.Reference": "Querverweis",
+  "einvoice.title": "E-Rechnung (ZUGFeRD, Factur-X)",
+  "einvoice.level": "Stufe",
+  "einvoice.file": "Eingebettet als",
+  "einvoice.relationship": "Beziehung",
+  "einvoice.byLevel": "nach Stufe",
+  "einvoice.from": "Erkannt aus {file}. Die Stufe steht in den Daten (Guideline-ID).",
+  "einvoice.noSample": "Ohne Beispieldaten lässt sich die Stufe nicht erkennen. Lege unter Beispiele eine CII-Rechnung an.",
+  "el.einvoice": "E-Rechnung"
 }

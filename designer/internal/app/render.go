@@ -10,7 +10,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tim-riep/pdx"
+	"github.com/tim-riep/pdx/areatree"
 	"github.com/tim-riep/pdx/designer/internal/pipeline"
+	"github.com/tim-riep/pdx/einvoice"
+	"github.com/tim-riep/pdx/pdf/profile"
 	"github.com/tim-riep/pdx/template"
 )
 
@@ -76,6 +80,55 @@ func (s *RenderService) Access() (*pipeline.Access, error) {
 	in := pipeline.Input{Canon: template.Write(c.doc.Pkg.Template), Files: maps.Clone(c.doc.Pkg.Files), Data: data}
 	c.mu.Unlock()
 	return c.r.pipe.Access(context.Background(), in)
+}
+
+// EInvoice beschreibt die E-Rechnung einer Vorlage mit den Daten der
+// Vorschau: erkannte Stufe, Dateiname, Beziehung und ob das Profil passt.
+type EInvoice struct {
+	Present      bool   `json:"present"`
+	Level        string `json:"level"`
+	Guideline    string `json:"guideline"`
+	FileName     string `json:"fileName"`
+	Relationship string `json:"relationship"`
+	// Overridden meldet, dass die Vorlage die Beziehung vorgibt.
+	Overridden bool   `json:"overridden"`
+	Sample     string `json:"sample"`
+	Error      string `json:"error"`
+	// ProfileError ist gesetzt, wenn das Ausgabeprofil nicht PDF/A-3 ist.
+	ProfileError string `json:"profileError"`
+}
+
+// EInvoice erkennt die E-Rechnung in den Daten der Vorschau.
+func (s *RenderService) EInvoice() (EInvoice, error) {
+	c := s.c
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.doc == nil {
+		return EInvoice{}, errors.New("keine Vorlage geöffnet")
+	}
+	root := c.doc.Pkg.Template.Root
+	e := root.First("einvoice")
+	if e == nil {
+		return EInvoice{}, nil
+	}
+	data, sample := c.previewDataLocked()
+	out := EInvoice{Present: true, Sample: sample}
+	spec := root.Get("profile", pdx.DefaultProfile)
+	if p, err := profile.Lookup(spec); err != nil {
+		out.ProfileError = err.Error()
+	} else if profile.ClaimOf(p).PDFA != 3 {
+		out.ProfileError = "E-Rechnungen verlangen PDF/A-3, das Ausgabeprofil ist " + spec
+	}
+	info, err := einvoice.Detect(data)
+	if err != nil {
+		out.Error = err.Error()
+		return out, nil
+	}
+	rel := areatree.Relationship(e.Get("afRelationship", ""))
+	a := info.Attachment(nil, rel)
+	out.Level, out.Guideline, out.FileName = info.Level.Name, info.Guideline, a.Name
+	out.Relationship, out.Overridden = string(a.Relationship), rel != ""
+	return out, nil
 }
 
 // Latest liefert das zuletzt gesetzte Manifest.

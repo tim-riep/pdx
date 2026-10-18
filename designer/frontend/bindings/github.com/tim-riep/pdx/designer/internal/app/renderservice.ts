@@ -29,6 +29,15 @@ export function Access(): $CancellablePromise<pipeline$0.Access | null> {
 }
 
 /**
+ * EInvoice erkennt die E-Rechnung in den Daten der Vorschau.
+ */
+export function EInvoice(): $CancellablePromise<$models.EInvoice> {
+    return $Call.ByID(349482167).then(($result: any) => {
+        return $$createType2($result);
+    });
+}
+
+/**
  * ExportPDF schreibt das PDF des aktuellen Stands in eine Datei.
  */
 export function ExportPDF(path: string): $CancellablePromise<void> {
@@ -48,7 +57,7 @@ export function ExportPDFDialog(): $CancellablePromise<string> {
  */
 export function Latest(): $CancellablePromise<$models.Manifest> {
     return $Call.ByID(1942259250).then(($result: any) => {
-        return $$createType2($result);
+        return $$createType3($result);
     });
 }
 
@@ -71,4 +80,5 @@ export function SetView(view: string, sample: string): $CancellablePromise<void>
 // Private type creation functions
 const $$createType0 = pipeline$0.Access.createFrom;
 const $$createType1 = $Create.Nullable($$createType0);
-const $$createType2 = $models.Manifest.createFrom;
+const $$createType2 = $models.EInvoice.createFrom;
+const $$createType3 = $models.Manifest.createFrom;

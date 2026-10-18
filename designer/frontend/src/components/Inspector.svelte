@@ -8,6 +8,7 @@
   import PresenceEditor from "./PresenceEditor.svelte";
   import ContentEditor from "./ContentEditor.svelte";
   import AlignTools from "./AlignTools.svelte";
+  import EInvoiceInfo from "./EInvoiceInfo.svelte";
   import { resolveColor, tokens } from "../lib/tokens.svelte";
 
   let query = $state("");
@@ -57,6 +58,7 @@
       {#if !n.ref.startsWith("~")}<code>{n.ref}</code>{/if}
     </header>
     <TableTools {n} />
+    {#if n.name === "einvoice"}<EInvoiceInfo />{/if}
     <AlignTools {n} />
     {#if type.text}
       <section class="content" data-testid="inspector-content">

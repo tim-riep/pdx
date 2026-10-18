@@ -333,6 +333,71 @@ export class Drop {
 }
 
 /**
+ * EInvoice beschreibt die E-Rechnung einer Vorlage mit den Daten der
+ * Vorschau: erkannte Stufe, Dateiname, Beziehung und ob das Profil passt.
+ */
+export class EInvoice {
+    "present": boolean;
+    "level": string;
+    "guideline": string;
+    "fileName": string;
+    "relationship": string;
+
+    /**
+     * Overridden meldet, dass die Vorlage die Beziehung vorgibt.
+     */
+    "overridden": boolean;
+    "sample": string;
+    "error": string;
+
+    /**
+     * ProfileError ist gesetzt, wenn das Ausgabeprofil nicht PDF/A-3 ist.
+     */
+    "profileError": string;
+
+    /** Creates a new EInvoice instance. */
+    constructor($$source: Partial<EInvoice> = {}) {
+        if (!("present" in $$source)) {
+            this["present"] = false;
+        }
+        if (!("level" in $$source)) {
+            this["level"] = "";
+        }
+        if (!("guideline" in $$source)) {
+            this["guideline"] = "";
+        }
+        if (!("fileName" in $$source)) {
+            this["fileName"] = "";
+        }
+        if (!("relationship" in $$source)) {
+            this["relationship"] = "";
+        }
+        if (!("overridden" in $$source)) {
+            this["overridden"] = false;
+        }
+        if (!("sample" in $$source)) {
+            this["sample"] = "";
+        }
+        if (!("error" in $$source)) {
+            this["error"] = "";
+        }
+        if (!("profileError" in $$source)) {
+            this["profileError"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new EInvoice instance from a string or object.
+     */
+    static createFrom($$source: any = {}): EInvoice {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new EInvoice($$parsedSource as Partial<EInvoice>);
+    }
+}
+
+/**
  * Field ist ein Datenknoten, relativ zum Kontext eines Elements.
  */
 export class Field {

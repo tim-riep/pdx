@@ -58,3 +58,29 @@ func TestAccess(t *testing.T) {
 		t.Errorf("Befunde %+v", a.Findings)
 	}
 }
+
+// Die E-Rechnung der CII-Vorlage zeigt die Stufe der Beispieldaten.
+func TestEInvoiceInfo(t *testing.T) {
+	c := NewCore(&recorder{}, nil, t.TempDir())
+	if _, err := NewProjectService(c).Open("../../../testdata/templates/cii-rechnung"); err != nil {
+		t.Fatal(err)
+	}
+	rs := NewRenderService(c)
+	e, err := rs.EInvoice()
+	if err != nil || !e.Present || e.Level != "EN 16931" || e.FileName != "factur-x.xml" || e.Relationship != "Alternative" || e.ProfileError != "" {
+		t.Fatalf("%+v %v", e, err)
+	}
+	rs.SetView(ViewPreview, "samples/xrechnung.xml")
+	c.doc.Pkg.Template.Root.SetAttr("profile", "pdfa-4f,pdfua-2")
+	e, _ = rs.EInvoice()
+	if e.Level != "XRECHNUNG" || e.FileName != "xrechnung.xml" || e.ProfileError == "" {
+		t.Errorf("%+v", e)
+	}
+	// Die Musterrechnung hat keine E-Rechnung.
+	if _, err := NewProjectService(c).Open(muster); err != nil {
+		t.Fatal(err)
+	}
+	if e, _ := rs.EInvoice(); e.Present {
+		t.Errorf("%+v", e)
+	}
+}
