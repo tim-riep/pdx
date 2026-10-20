@@ -98,23 +98,22 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev libwebkitgtk-6.0-dev xvfb
       - run: npm ci --ignore-scripts
         working-directory: designer/frontend
-      - name: Bauen und Smoke-Test
+      - name: Bauen, Smoke-Test, Paket und Installationstest
         run: |
           make build
           ./smoke.sh
+          make package
+          packaging/test-install.sh
       - name: Archiv
         run: |
           set -eu
-          EXT=""; [ "$RUNNER_OS" = "Windows" ] && EXT=".exe"
           name="pdx-designer-${GITHUB_REF_NAME}-${{ matrix.name }}"
-          mkdir -p "../build/$name" ../dist
-          cp "../out/pdx-designer$EXT" "../build/$name/"
-          cp ../LICENSE ../NOTICE README.md "../build/$name/"
-          cp notices/THIRD_PARTY_NOTICES.txt "../build/$name/"
+          mkdir -p ../dist
+          mv ../out/package/pdx-designer "../out/package/$name"
           if [ "$RUNNER_OS" = "Windows" ]; then
-            (cd ../build && 7z a -tzip -bso0 "../dist/$name.zip" "$name")
+            (cd ../out/package && 7z a -tzip -bso0 "../../dist/$name.zip" "$name")
           else
-            tar -C ../build -czf "../dist/$name.tar.gz" "$name"
+            tar -C ../out/package -czf "../dist/$name.tar.gz" "$name"
           fi
       - uses: actions/upload-artifact@v4
         with:

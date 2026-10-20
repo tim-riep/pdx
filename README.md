@@ -1,174 +1,213 @@
 # pdx
 
-pdx erzeugt PDF-Dateien in PDF/A-2, PDF/A-3 und PDF/A-4, barrierefrei nach PDF/UA-1 und PDF/UA-2 sowie als E-Rechnung nach ZUGFeRD und Factur-X aus XSL-FO, komplett in Go und ohne cgo. Es ist die Engine eines Dokumentdesigners nach dem Vorbild von Adobe LiveCycle Designer. Ein XSD beschreibt die Datenschnittstelle, ein Desktop-Designer gestaltet das Dokument, die Engine setzt es. veraPDF ist die verbindliche Prüfinstanz für die Konformität.
+pdx creates PDF files from XSL-FO and templates: PDF/A-2, PDF/A-3 and PDF/A-4, accessible PDF/UA-1 and PDF/UA-2, and hybrid e-invoices after ZUGFeRD and Factur-X. It is written entirely in Go without cgo. An XSD describes the data interface, the desktop Designer lays out the document, and the engine typesets it. veraPDF is the reference validator for conformance.
 
-Stand: Phase 4 (ausfüllbare Formulare, PAdES-Signaturen bis B-LTA, Render-Dienst über HTTP). Davor Phase 3 mit PDF/A-2, -3, -4, PDF/UA-1, -2, Tagged PDF und E-Rechnung. Der Desktop-Designer (Wails und Svelte) liegt in [`designer/`](designer/README.md), mit ihm lässt sich die Musterrechnung ohne XML nachbauen. Darunter die Layout-Engine für Geschäftsdokumente (Seitenfolgen, Tabellen, Listen, Keeps, Marker, Knuth-Plass, Silbentrennung, Links, Lesezeichen, Barcodes), Vorlagenformat 1 mit Compiler nach XSLT 3.0, Bindungsprüfung gegen das Daten-XSD, Vergleich mit Apache FOP, Design-Tokens im Vorlagenformat.
+The repository contains:
 
-## Aufruf
+* the layout engine for business documents (page sequences, tables, lists, keeps, markers, Knuth-Plass line breaking, hyphenation, links, bookmarks, barcodes)
+* template format 1 with a compiler to XSLT 3.0 and binding checks against the data XSD
+* fillable forms, PAdES signatures up to B-LTA and an HTTP render service
+* the desktop Designer (Wails and Svelte) in [`designer/`](designer/README.md), which can rebuild the sample invoice without writing XML
+
+## Installation
+
+Release archives for Linux, macOS and Windows are on the [releases page](https://github.com/tim-riep/pdx/releases), each with `SHA256SUMS`.
+
+* `pdx-<version>-<os>-<arch>` contains the command line tool `pdx` and the render service `pdx-server`. Both are single static binaries, put them anywhere on your `PATH`.
+* `pdx-designer-<version>-<os>` contains the Designer and an install script.
+* The render service is also available as a container image: `docker pull ghcr.io/tim-riep/pdx-server:<version>`.
+
+### Where pdx Designer is installed
+
+pdx Designer is installed per user, without administrator rights. The install script in the archive copies it to the following places, running it again updates the installation.
+
+| System | Program | Menu entry | Settings and autosaves |
+|---|---|---|---|
+| macOS | `~/Applications/pdx Designer.app` | Launchpad, Spotlight | `~/Library/Application Support/pdx-designer` |
+| Linux | `~/.local/bin/pdx-designer` | `~/.local/share/applications/pdx-designer.desktop` | `~/.config/pdx-designer` |
+| Windows | `%LOCALAPPDATA%\Programs\pdx\pdx-designer.exe` | Start menu, pdx Designer | `%APPDATA%\pdx-designer` |
+
+```bash
+./install.sh
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1
+```
+
+`./install.sh --uninstall` or `install.ps1 -Uninstall` removes the program and the menu entry. Settings and autosaves stay in place. On Linux the license files go to `~/.local/share/doc/pdx-designer`, on macOS they are inside the app bundle, on Windows next to the program. `PDX_DESIGNER_DATA` replaces the settings directory, for example for tests.
+
+The Designer needs GTK 4 and WebKitGTK 6 on Linux and the WebView2 runtime on Windows (included in Windows 11). The binaries are not signed or notarized. The macOS install script removes the quarantine flag of the download, without the script open the app once with right click and Open.
+
+## Usage
 
 ```bash
 go build -o pdx ./cmd/pdx
 ```
 
 ```bash
-pdx render eingabe.fo -o ausgabe.pdf --profile pdfa-3b --attach factur-x.xml:Alternative:text/xml --creation-date 2026-01-01T00:00:00Z
+pdx render input.fo -o output.pdf --profile pdfa-3b --attach factur-x.xml:Alternative:text/xml --creation-date 2026-01-01T00:00:00Z
 ```
 
 ```bash
-pdx verify ausgabe.pdf --profile pdfa-3b
+pdx verify output.pdf --profile pdfa-3b
 ```
 
-`render` schreibt das PDF. Ohne `--creation-date` gilt `SOURCE_DATE_EPOCH`, sonst die aktuelle Zeit. Weitere Optionen: `--font DATEI` (wiederholbar) registriert eigene Schriften, `--area-tree DATEI` schreibt den Area Tree als Text, `--tagged` schreibt Tagged PDF mit Strukturbaum auch dann, wenn das Profil es nicht verlangt.
+`render` writes the PDF. Without `--creation-date`, `SOURCE_DATE_EPOCH` applies, otherwise the current time. More options: `--font FILE` (repeatable) registers additional fonts, `--area-tree FILE` writes the area tree as text, `--tagged` writes tagged PDF with a structure tree even when the profile does not require it.
 
 ```bash
-pdx structure ausgabe.pdf
+pdx structure output.pdf
 ```
 
-`structure` gibt den logischen Strukturbaum aus: je Element Typ, Sprache, Alternativtext, Bezug von Kopfzellen und Text in Lesereihenfolge. Widersprüche zwischen Baum, ParentTree und markiertem Inhalt (unmarkierter Inhalt, fehlende oder verwaiste MCIDs) erscheinen als Befund und ergeben Exit-Code 1.
+`structure` prints the logical structure tree: type, language, alternate text, header cell references and text in reading order for each element. Contradictions between the tree, the ParentTree and the marked content (unmarked content, missing or orphaned MCIDs) are reported as findings and give exit code 1.
 
-Mit einer Vorlage (ZIP-Paket oder Verzeichnis mit `template.xml`) werden aus Daten Dokumente:
-
-```bash
-pdx render --template vorlage.zip daten.xml -o ausgabe.pdf --profile pdfa-3b --strict
-```
+With a template (a ZIP package or a directory with `template.xml`), data becomes documents:
 
 ```bash
-pdx check vorlage.zip
+pdx render --template template.zip data.xml -o output.pdf --profile pdfa-3b --strict
 ```
 
 ```bash
-pdx compile vorlage.zip -o vorlage.xsl --source-map vorlage.map.json
+pdx check template.zip
 ```
 
-`--strict` prüft die Daten vorher gegen das Daten-XSD des Pakets, `--lang` wählt Textressourcen und Formatmuster, `--fo DATEI` schreibt das erzeugte FO mit. `check` meldet Fehler in Vorlage, Paket, Übersetzung und Bindungen mit der ID des Vorlagenelements (`--format json` für den Designer). `pdx fmt -w template.xml` schreibt die Vorlage kanonisch, `pdx pack verzeichnis -o vorlage.zip` packt sie deterministisch.
+```bash
+pdx compile template.zip -o template.xsl --source-map template.map.json
+```
 
-`verify` prüft eine Datei mit veraPDF und gibt jeden Befund mit Spezifikation, Klausel, Testnummer, Beschreibung und Objektkontext aus (`--format json` für Maschinen). Exit-Codes: 0 konform, 1 mindestens ein fehlgeschlagener Test oder ein Fehler, 2 Bedienfehler.
+`--strict` validates the data against the data XSD of the package first, `--lang` selects text resources and format patterns, `--fo FILE` also writes the generated FO. `check` reports errors in template, package, translations and bindings with the ID of the template element (`--format json` for the Designer). `pdx fmt -w template.xml` writes the template in canonical form, `pdx pack directory -o template.zip` packs it deterministically.
 
-## Architektur
+`verify` validates a file with veraPDF and prints every finding with specification, clause, test number, description and object context (`--format json` for machines). Exit codes: 0 conformant, 1 at least one failed test or an error, 2 usage error.
+
+## Architecture
 
 ```
-Vorlage ──compile──▶ XSLT 3.0 ──go-xslt──▶ XSL-FO      Daten-XSD ──dataschema──▶ Befunde
-(template, template/pkg)   ▲ Daten                │
+template ──compile──▶ XSLT 3.0 ──go-xslt──▶ XSL-FO      data XSD ──dataschema──▶ findings
+(template, template/pkg)   ▲ data                 │
                                                   ▼
-XSL-FO ──fo/tree──▶ FO-Baum ──fo/layout──▶ Area Tree ──pdf/render──▶ PDF
+XSL-FO ──fo/tree──▶ FO tree ──fo/layout──▶ area tree ──pdf/render──▶ PDF
                      fo/props   fo/linebreak   │           pdf, pdf/profile,
                                 font, image,    │           pdf/xmp, icc
                                 hyph, barcode   ▼
-                                     später: Canvas im Designer, Rastertests
+                                     Designer canvas, raster tests
 ```
 
-| Paket | Aufgabe |
+| Package | Purpose |
 |---|---|
-| `pdx` (Wurzel) | Fassade `Render`, `RenderFile`, `RenderTemplate` und `CompileTemplate` für CLI, Designer und Server |
-| `cmd/pdx` | CLI |
-| `areatree` | stabiles Zwischenformat: Seiten, Container, Glyph-Runs, Bilder, Linien in Millipunkt, Ursprung oben links. Keine Abhängigkeit zu anderen pdx-Paketen |
-| `fo/tree` | FO-Parser mit Zeilen- und Spaltenangaben, Prüfung des Teilumfangs |
-| `fo/props` | Längen, Farben, Shorthands, Vererbung, Ränder zu Einzügen |
-| `fo/linebreak` | Box-Glue-Penalty-Modell, Schnittstelle `Breaker`, Knuth-Plass mit den Parametern von FOP, Greedy als Rückfall |
-| `fo/layout` | Galley und Seitenumbruch, Seitenfolgen, Tabellen, Listen, Keeps, Marker, Verweise über mehrere Durchläufe, Links, Lesezeichen, Barcodes |
-| `hyph` | Silbentrennung nach Liang mit Mustern aus hyph-utf8 (de-1996, en-us) |
-| `barcode` | QR, GiroCode (EPC069-12), DataMatrix, Code 128 als Modulraster |
-| `template` | Vorlagenformat 1: XSD, Parser, kanonischer Writer |
-| `template/pkg` | Vorlagenpakete aus ZIP oder Verzeichnis, deterministisches Schreiben |
-| `compile` | Vorlage zu XSLT 3.0 mit Überträgen, Formaten und Quellzuordnung |
-| `dataschema` | statische Prüfung der Bindungen gegen das Daten-XSD |
-| `check` | alle Prüfungen von `pdx check` für CLI und Designer |
-| `font` | Laden über textshape, Shaping, Subsetting, Type0 mit Identity-H, `/W`, ToUnicode, Registry mit Liberation-Schriften |
-| `image` | JPEG durchreichen, PNG nach Flate, Alpha getrennt |
-| `pdf` | Objektmodell, Content Streams, Xref, Trailer, Prüfung des Objektgraphen gegen die Policy |
-| `pdf/profile` | Konformitätsprofile |
-| `pdf/xmp` | XMP mit pdfaid und pdfaExtension-Schema |
-| `pdf/render` | Area Tree zu PDF |
-| `icc` | selbst berechnetes sRGB-Profil (ICC 2.1) für das Output Intent |
-| `verapdf` | veraPDF-Aufruf und Auswertung des mrr-Berichts |
-| `internal/fopcompare` | Vergleich mit Apache FOP 2.11 über Docker: Area Tree, Textpositionen, Pixel |
+| `pdx` (root) | facade `Render`, `RenderFile`, `RenderTemplate` and `CompileTemplate` for CLI, Designer and server |
+| `cmd/pdx` | command line tool |
+| `cmd/pdx-server` | render service |
+| `areatree` | stable intermediate format: pages, containers, glyph runs, images, lines in millipoints, origin top left. No dependency on other pdx packages |
+| `fo/tree` | FO parser with line and column positions, checks the supported subset |
+| `fo/props` | lengths, colors, shorthands, inheritance, margins to indents |
+| `fo/linebreak` | box glue penalty model, `Breaker` interface, Knuth-Plass with the parameters of FOP, greedy as fallback |
+| `fo/layout` | galley and page breaking, page sequences, tables, lists, keeps, markers, multi-pass references, links, bookmarks, barcodes |
+| `hyph` | Liang hyphenation with patterns from hyph-utf8 (de-1996, en-us) |
+| `barcode` | QR, GiroCode (EPC069-12), DataMatrix, Code 128 as module grids |
+| `template` | template format 1: XSD, parser, canonical writer |
+| `template/pkg` | template packages from ZIP or directory, deterministic writing |
+| `compile` | template to XSLT 3.0 with carry-overs, formats and source map |
+| `dataschema` | static check of bindings against the data XSD |
+| `check` | all checks of `pdx check` for CLI and Designer |
+| `font` | loading through textshape, shaping, subsetting, Type0 with Identity-H, `/W`, ToUnicode, registry with the Liberation fonts |
+| `image` | JPEG passed through, PNG to Flate, separate alpha |
+| `pdf` | object model, content streams, xref, trailer, check of the object graph against the policy |
+| `pdf/profile` | conformance profiles |
+| `pdf/xmp` | XMP with pdfaid and the pdfaExtension schema |
+| `pdf/render` | area tree to PDF |
+| `pdf/reader`, `pdf/incr` | reading PDF and incremental updates |
+| `sign` | CMS, RFC 3161 time stamps and PAdES signatures |
+| `server` | HTTP render service |
+| `icc` | self-computed sRGB profile (ICC 2.1) for the output intent |
+| `verapdf` | calling veraPDF and reading the mrr report |
+| `internal/fopcompare` | comparison with Apache FOP 2.11 through Docker: area tree, text positions, pixels |
 
-### Konformität durch Konstruktion
+### Conformance by construction
 
-Ein Profil implementiert `pdf.Policy` (`Allow(Feature)`) und `Prepare`. Jede kritische Funktion (Transparenz, Anhänge, LZW, externe Inhalte, nicht eingebettete Schriften) wird vor der Nutzung angefragt. Vor dem Schreiben durchsucht der Writer zusätzlich den gesamten Objektgraphen. Was das Profil nicht erlaubt, bricht mit einem Fehler samt Normklausel ab, statt eine nicht konforme Datei zu erzeugen. JavaScript, XFA und Verschlüsselung schreibt pdx nie.
+A profile implements `pdf.Policy` (`Allow(Feature)`) and `Prepare`. Every critical feature (transparency, attachments, LZW, external content, non-embedded fonts) is requested before use. Before writing, the writer also scans the whole object graph. Anything the profile does not allow stops with an error that names the clause of the standard, instead of producing a non-conformant file. pdx never writes JavaScript, XFA or encryption.
 
-### Reproduzierbarkeit
+### Reproducibility
 
-Feste Objektreihenfolge, sortierte Dictionary-Schlüssel, feste Zahlenformatierung, injizierbares Erstellungsdatum, Teilmengen-Präfixe aus Hashes und eine Datei-ID aus dem MD5 der Dateibytes. Gleiche Eingabe und gleiches Datum ergeben byte-identische Dateien (`TestReproducible`).
+Fixed object order, sorted dictionary keys, fixed number formatting, an injectable creation date, subset prefixes from hashes and a file ID from the MD5 of the file bytes. The same input and date give byte-identical files (`TestReproducible`).
 
-## Profile
+## Profiles
 
-| Name | Bedeutung |
+| Name | Meaning |
 |---|---|
-| `pdfa-3b` | PDF/A-3b nach ISO 19005-3. Output Intent GTS_PDFA1 mit sRGB, XMP mit pdfaid, Anhänge mit AFRelationship, Transparenz erlaubt |
-| `pdfa-3u` | PDF/A-3u, zusätzlich eine Unicode-Zuordnung für jede Glyphe (6.2.11.7.2). Fehlt sie, bricht das Schreiben mit Schrift und Glyphe ab |
-| `pdfa-2b`, `pdfa-2u` | PDF/A-2 nach ISO 19005-2. Anhänge nur als PDF/A-1 oder PDF/A-2 (6.8), alle unzulässigen Anhänge in einer Meldung |
-| `pdfa-3a` | PDF/A-3a, Tagged PDF mit Strukturbaum (6.7). Verlangt Dokumentsprache und Alternativtexte für Abbildungen |
-| `pdfa-4`, `pdfa-4f` | PDF/A-4 nach ISO 19005-4 auf Grundlage von PDF 2.0. Kopf `%PDF-2.0`, kein Info-Dictionary, Metadaten nur im XMP mit `pdfaid:rev` 2020. Unter `pdfa-4` Anhänge nur als PDF/A-1, -2 oder -4 (6.9), `pdfa-4f` erlaubt beliebige Anhänge und verlangt mindestens einen |
-| `pdf-2.0` | PDF 2.0 ohne Konformitätsanspruch, Metadaten im XMP |
-| `pdfua-2` | PDF/UA-2 nach ISO 14289-2 auf Grundlage von PDF 2.0, kombinierbar mit PDF/A-4, etwa `pdfa-4f,pdfua-2`. Strukturelemente im Namespace von PDF 2.0, Fußnoten als FENote, interne Verweise und Lesezeichen mit Strukturziel, Anhänge mit Beschreibung, `pdfuaid:rev` 2024 |
-| `pdfua-1` | PDF/UA-1 nach ISO 14289-1, kombinierbar mit PDF/A-2 und PDF/A-3, etwa `pdfa-3a,pdfua-1`. XMP mit pdfuaid, DisplayDocTitle. Verlangt zusätzlich Titel, lückenlose Überschriften ab H1, Kopfzellen in Tabellen und Verweise mit Text im Strukturbaum |
-| `pdf-1.7` | PDF 1.7 ohne Konformitätsanspruch, Schriften trotzdem immer eingebettet |
+| `pdfa-3b` | PDF/A-3b after ISO 19005-3. Output intent GTS_PDFA1 with sRGB, XMP with pdfaid, attachments with AFRelationship, transparency allowed |
+| `pdfa-3u` | PDF/A-3u, additionally a Unicode mapping for every glyph (6.2.11.7.2). Without one, writing stops and names the font and glyph |
+| `pdfa-2b`, `pdfa-2u` | PDF/A-2 after ISO 19005-2. Attachments only as PDF/A-1 or PDF/A-2 (6.8), all invalid attachments in one message |
+| `pdfa-3a` | PDF/A-3a, tagged PDF with a structure tree (6.7). Requires a document language and alternate texts for figures |
+| `pdfa-4`, `pdfa-4f` | PDF/A-4 after ISO 19005-4, based on PDF 2.0. Header `%PDF-2.0`, no info dictionary, metadata only in XMP with `pdfaid:rev` 2020. With `pdfa-4` attachments only as PDF/A-1, -2 or -4 (6.9), `pdfa-4f` allows any attachment and requires at least one |
+| `pdf-2.0` | PDF 2.0 without a conformance claim, metadata in XMP |
+| `pdfua-2` | PDF/UA-2 after ISO 14289-2, based on PDF 2.0, combinable with PDF/A-4, for example `pdfa-4f,pdfua-2`. Structure elements in the PDF 2.0 namespace, footnotes as FENote, internal links and bookmarks with structure destinations, attachments with descriptions, `pdfuaid:rev` 2024 |
+| `pdfua-1` | PDF/UA-1 after ISO 14289-1, combinable with PDF/A-2 and PDF/A-3, for example `pdfa-3a,pdfua-1`. XMP with pdfuaid, DisplayDocTitle. Also requires a title, headings starting at H1 without gaps, header cells in tables and links with text in the structure tree |
+| `pdf-1.7` | PDF 1.7 without a conformance claim, fonts are still always embedded |
 
-Profile lassen sich kombinieren, etwa `--profile pdfa-3a,pdfua-1`. Unzulässige Kombinationen lehnt pdx vor dem Rendern mit allen Gründen ab: verschiedene PDF-Versionen (PDF/A-2, PDF/A-3 und PDF/UA-1 beruhen auf PDF 1.7, PDF/A-4 und PDF/UA-2 auf PDF 2.0), zwei PDF/A- oder zwei PDF/UA-Teile. `pdx verify` prüft mit veraPDF jeden beanspruchten Standard in einem eigenen Lauf.
+Profiles can be combined, for example `--profile pdfa-3a,pdfua-1`. pdx rejects invalid combinations before rendering, with all reasons: different PDF versions (PDF/A-2, PDF/A-3 and PDF/UA-1 are based on PDF 1.7, PDF/A-4 and PDF/UA-2 on PDF 2.0), or two PDF/A or two PDF/UA parts. `pdx verify` checks every claimed standard with veraPDF in a separate run.
 
-Unter `pdfa-3a` und `pdfua-1` prüft pdx vor dem Schreiben alles, was sich nicht auffüllen lässt, und meldet alle Befunde auf einmal mit der ID des Vorlagenelements, etwa `[girocode] Abbildung ohne Alternativtext (alt oder altBind), ISO 14289-1 7.3, ISO 19005-3 6.7`. Kopf und Fuß sind Artefakte, `artifact="false"` holt Inhalte wie Anschrift und Rechnungsdaten in den Strukturbaum. Wiederholte Tabellenköpfe, Überträge und Zwischensummen sind Artefakte.
+With `pdfa-3a` and `pdfua-1`, pdx checks everything that cannot be filled in automatically before writing and reports all findings at once with the ID of the template element, for example `[girocode] Abbildung ohne Alternativtext (alt oder altBind), ISO 14289-1 7.3, ISO 19005-3 6.7`. Headers and footers are artifacts, `artifact="false"` moves content such as the address and invoice details into the structure tree. Repeated table headers, carry-overs and subtotals are artifacts.
 
-Listen bekommen `ListNumbering` aus dem Text ihrer Marken (Ziffern Decimal, Buchstaben LowerAlpha oder UpperAlpha, sonst Disc bzw. Unordered unter PDF 2.0).
+Lists get `ListNumbering` from the text of their labels (digits Decimal, letters LowerAlpha or UpperAlpha, otherwise Disc, or Unordered under PDF 2.0).
 
-## Barrierefreiheit
+## Accessibility
 
-Mit `pdfa-3a`, `pdfua-1` oder `pdfua-2` (oder `--tagged`) schreibt pdx Tagged PDF. Der Strukturbaum entsteht aus den Rollen der Vorlage: Überschriften, Absätze, Tabellen mit Kopf, Rumpf, Fuß und Kopfzellen samt Bezug, Listen mit Marke und Inhalt, Abbildungen mit Alternativtext, Verweise mit Annotation. Die Lesereihenfolge folgt dem Fluss, frei platzierte Elemente ordnet `readingOrder`, sonst gilt oben nach unten und links nach rechts.
+With `pdfa-3a`, `pdfua-1` or `pdfua-2` (or `--tagged`), pdx writes tagged PDF. The structure tree comes from the roles in the template: headings, paragraphs, tables with head, body, foot and header cells with their references, lists with label and body, figures with alternate text, links with annotations. The reading order follows the flow, `readingOrder` orders freely placed elements, otherwise top to bottom and left to right applies.
 
-In der Vorlage dienen dazu die Attribute `role`, `alt`, `altBind` (Alternativtext aus den Daten, etwa beim GiroCode), `lang`, `readingOrder`, `artifact` und an Zellen `scope`. `pdx structure ausgabe.pdf` zeigt den Baum mit Text in Lesereihenfolge.
+The template attributes for this are `role`, `alt`, `altBind` (alternate text from the data, for example for the GiroCode), `lang`, `readingOrder`, `artifact` and `scope` on cells. `pdx structure output.pdf` shows the tree with text in reading order.
 
-Was keine Software entscheiden kann, etwa ob ein Alternativtext inhaltlich stimmt, listet der Designer als Checkliste nach dem Matterhorn Protocol 1.1 (PDF Association, CC BY 4.0).
+What no software can decide, for example whether an alternate text is correct, the Designer lists as a checklist after the Matterhorn Protocol 1.1 (PDF Association, CC BY 4.0).
 
-### Kurztest mit Screenreader
+### Quick test with a screen reader
 
-VoiceOver (macOS) mit Vorschau, geprüft am 18.10.2026 mit der Musterrechnung als `pdfa-3a,pdfua-1`:
+VoiceOver (macOS) with Preview, checked on 18 October 2026 with the sample invoice as `pdfa-3a,pdfua-1`:
 
 1. `pdx render --profile pdfa-3a,pdfua-1 --template testdata/templates/musterrechnung -o rechnung.pdf testdata/templates/musterrechnung/samples/rechnung.xml`
-2. Die Datei in Vorschau öffnen, VoiceOver mit Cmd+F5 einschalten, mit Ctrl+Option+Pfeil rechts durch das Dokument gehen.
-3. Erwartet: Briefkopf, Absenderzeile, Anschrift und Rechnungsdaten vor der Überschrift „Rechnung“ (als Überschrift angesagt), danach die Tabelle mit Zeilen und Zellen, Seitenzahlen und wiederholte Tabellenköpfe werden übersprungen, der GiroCode wird mit seinem Alternativtext angesagt.
+2. Open the file in Preview, turn on VoiceOver with Cmd+F5 and move through the document with Ctrl+Option+Right.
+3. Expected: letterhead, sender line, address and invoice details before the heading "Rechnung" (announced as a heading), then the table with rows and cells. Page numbers and repeated table headers are skipped, the GiroCode is announced with its alternate text.
 
-Ergebnis: Vorschau liefert VoiceOver die Überschrift, die Tabelle als Zeilen und Zellen und das Bild mit Alternativtext aus dem Strukturbaum, in der Reihenfolge des Baums. Dieselbe Rechnung ohne Tags (`pdfa-3b`) hat keine Überschrift, die Tabellenzeilen rät Vorschau dort aus dem Layout. Vorschau wertet nicht alles aus, was PDF/UA beschreibt, etwa den Bezug der Kopfzellen. Für eine vollständige Prüfung eignen sich NVDA mit Adobe Acrobat Reader unter Windows oder der PDF Accessibility Checker (PAC).
+Result: Preview gives VoiceOver the heading, the table as rows and cells and the image with alternate text from the structure tree, in the order of the tree. The same invoice without tags (`pdfa-3b`) has no heading, and Preview guesses the table rows from the layout. Preview does not evaluate everything PDF/UA describes, for example the header cell references. For a complete check use NVDA on Windows with a PDF reader that supports tagged PDF, or the PDF Accessibility Checker (PAC).
 
-NVDA (Windows): Datei in Acrobat Reader öffnen, mit H von Überschrift zu Überschrift springen, mit T zur Tabelle, in der Tabelle mit Strg+Alt+Pfeiltasten von Zelle zu Zelle. NVDA sagt dabei die Spaltenköpfe an.
+NVDA (Windows): open the file, jump from heading to heading with H, to the table with T, and from cell to cell inside the table with Ctrl+Alt+arrow keys. NVDA announces the column headers.
 
-## E-Rechnung
+## E-invoices
 
-Eine Vorlage mit dem Element `einvoice` erzeugt hybride Rechnungen nach ZUGFeRD 2 und Factur-X 1.0. Die Daten müssen eine CII-Rechnung sein (`rsm:CrossIndustryInvoice`), UBL lehnt pdx mit Meldung ab. Die Stufe steht in den Daten (Guideline-ID, BT-24): MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED oder XRECHNUNG. pdx bettet die Daten als `factur-x.xml` ein (bei XRECHNUNG `xrechnung.xml`), mit `AFRelationship` Data für MINIMUM und BASIC WL, sonst Alternative (`afRelationship` am Element überschreibt das), und schreibt das XMP-Schema `fx`. Die Werte sind gegen die Referenzimplementierung Mustang geprüft.
+A template with the element `einvoice` produces hybrid invoices after ZUGFeRD 2 and Factur-X 1.0. The data must be a CII invoice (`rsm:CrossIndustryInvoice`), pdx rejects UBL with a message. The profile level is taken from the data (guideline ID, BT-24): MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED or XRECHNUNG. pdx embeds the data as `factur-x.xml` (`xrechnung.xml` for XRECHNUNG), with `AFRelationship` Data for MINIMUM and BASIC WL and Alternative otherwise (`afRelationship` on the element overrides this), and writes the XMP schema `fx`. The values are checked against the reference implementation Mustang.
 
-E-Rechnungen verlangen PDF/A-3, also `pdfa-3b`, `pdfa-3u` oder `pdfa-3a,pdfua-1`. Andere Profile lehnt pdx mit der ID des Elements ab. Eine Prüfung der Rechnungsdaten gegen die Schematron-Regeln von EN 16931 und XRechnung macht pdx nicht. Beispiel: `testdata/templates/cii-rechnung` mit Daten der Stufen EN 16931 und XRECHNUNG.
+E-invoices require PDF/A-3, that is `pdfa-3b`, `pdfa-3u` or `pdfa-3a,pdfua-1`. pdx rejects other profiles with the ID of the element. pdx does not validate the invoice data against the Schematron rules of EN 16931 and XRechnung. Example: `testdata/templates/cii-rechnung` with data for the levels EN 16931 and XRECHNUNG.
 
-## Formulare
+## Forms
 
-Vorlagen können ausfüllbare Felder enthalten: `textField` (auch mehrzeilig, mit `maxLength`), `checkBox`, `radioGroup`, `listBox`, `comboBox` und `signatureField`. Jedes Feld ist an einen Datenpfad gebunden. Optionen kommen aus der Vorlage oder aus der Enumeration im Daten-XSD, die Höchstlänge aus `maxLength` der Vorlage oder der XSD-Facette. pdx schreibt AcroForm mit eigenem Erscheinungsbild je Widget und einer eingebetteten Standardschrift (DR), nie NeedAppearances, nie XFA und nie JavaScript, auch keine Aktionen an Feldern. In barrierefreien Profilen ist `label` Pflicht und wird zum zugänglichen Namen (TU, unter PDF/UA-2 zusätzlich Contents am Widget). Jedes Widget hängt als Form-Element im Strukturbaum, die Tab-Reihenfolge folgt der Struktur (`/Tabs /S`).
+Templates can contain fillable fields: `textField` (also multi-line, with `maxLength`), `checkBox`, `radioGroup`, `listBox`, `comboBox` and `signatureField`. Every field is bound to a data path. Options come from the template or from the enumeration in the data XSD, the maximum length from `maxLength` in the template or the XSD facet. pdx writes AcroForm with its own appearance for every widget and an embedded default font (DR). It never writes NeedAppearances, XFA or JavaScript, and no actions on fields. In accessible profiles `label` is required and becomes the accessible name (TU, under PDF/UA-2 also Contents on the widget). Every widget is a Form element in the structure tree, the tab order follows the structure (`/Tabs /S`).
 
 ```bash
-pdx extract-data formular.pdf --template vorlage.zip -o daten.xml
+pdx extract-data form.pdf --template template.zip -o data.xml
 ```
 
 ```bash
-pdx flatten formular.pdf --template vorlage.zip -o statisch.pdf --profile pdfa-3a,pdfua-1
+pdx flatten form.pdf --template template.zip -o static.pdf --profile pdfa-3a,pdfua-1
 ```
 
-`extract-data` liest die Feldwerte, setzt sie in die eingebetteten Originaldaten ein (oder in `--data`), ergänzt fehlende Knoten in der Reihenfolge des XSD und prüft das Ergebnis gegen das Daten-XSD, mit allen Befunden auf einmal. `flatten` rendert das Dokument mit diesen Daten neu und zeichnet die Felder als festen Inhalt, damit bleibt die Konformität durch Konstruktion erhalten. Ausfüllbare Formulare sind mit veraPDF geprüft unter PDF/A-3a mit PDF/UA-1 und PDF/A-4f mit PDF/UA-2.
+`extract-data` reads the field values, inserts them into the embedded original data (or into `--data`), adds missing nodes in XSD order and validates the result against the data XSD, with all findings at once. `flatten` renders the document again with this data and draws the fields as fixed content, so conformance by construction is kept. Fillable forms are checked with veraPDF under PDF/A-3a with PDF/UA-1 and under PDF/A-4f with PDF/UA-2.
 
-## Signaturen
+## Signatures
 
 ```bash
-PDX_SIGN_PASSWORD=… pdx sign rechnung.pdf -o signiert.pdf --level B-LTA --signer pkcs12:schluessel.p12 --tsa https://tsa.example.org --field unterschrift
+PDX_SIGN_PASSWORD=… pdx sign invoice.pdf -o signed.pdf --level B-LTA --signer pkcs12:key.p12 --tsa https://tsa.example.org --field signature
 ```
 
-`sign` signiert ein fertiges PDF nach PAdES baseline (ETSI EN 319 142-1) ausschließlich per inkrementellem Update, PDF/A-Konformität und frühere Signaturen bleiben erhalten.
+`sign` signs a finished PDF after PAdES baseline (ETSI EN 319 142-1), only through an incremental update, so PDF/A conformance and earlier signatures are kept.
 
-* B-B: CMS mit SubFilter ETSI.CAdES.detached, signierte Attribute content-type, message-digest und signing-certificate-v2, Zeit in /M, ByteRange über die ganze Datei außer Contents, genau ein SignerInfo mit Signaturzertifikat.
-* B-T: zusätzlich ein Zeitstempel nach RFC 3161 über den Signaturwert.
-* B-LT: zusätzlich ein DSS mit allen Zertifikaten bis zur Wurzel, OCSP-Antworten und CRLs für Signatur und Zeitstempeldienst, über AIA und CDP geholt.
-* B-LTA: zusätzlich ein Dokument-Zeitstempel (ETSI.RFC3161) und erneut der DSS.
+* B-B: CMS with SubFilter ETSI.CAdES.detached, signed attributes content-type, message-digest and signing-certificate-v2, time in /M, ByteRange over the whole file except Contents, exactly one SignerInfo with the signing certificate.
+* B-T: additionally an RFC 3161 time stamp over the signature value.
+* B-LT: additionally a DSS with all certificates up to the root, OCSP responses and CRLs for the signature and the time stamp service, fetched through AIA and CDP.
+* B-LTA: additionally a document time stamp (ETSI.RFC3161) and the DSS again.
 
-Ohne `--field` legt pdx ein unsichtbares Signaturfeld an. Ein Feld aus der Vorlage zeigt nach dem Signieren Unterzeichner, Datum, Grund und Ort in der Schrift des Formulars, mit demselben Text für Hilfstechnik. Abgelaufene und gesperrte Zertifikate werden abgelehnt.
+Without `--field`, pdx adds an invisible signature field. A field from the template shows signer, date, reason and location in the form font after signing, with the same text for assistive technology. Expired and revoked certificates are rejected.
 
-Signer: `pkcs12:datei.p12` mit Passwort aus `PDX_SIGN_PASSWORD` oder einer Abfrage am Terminal ohne Echo, oder `remote:https://dienst` für einen Signaturdienst mit Token aus `PDX_SIGN_TOKEN`. Der Signaturdienst bekommt nur den Hashwert (`GET /certificates`, `POST /sign` mit JSON), jede Antwort wird vor dem Einsetzen gegen das Zertifikat geprüft. Passwörter und Token sind nie Kommandozeilenargumente, Schlüssel bleiben im Speicher und erscheinen in keiner Ausgabe.
+Signers: `pkcs12:file.p12` with the password from `PDX_SIGN_PASSWORD` or a prompt on the terminal without echo, or `remote:https://service` for a signing service with the token from `PDX_SIGN_TOKEN`. The signing service only receives the hash (`GET /certificates`, `POST /sign` with JSON), every response is checked against the certificate before it is used. Passwords and tokens are never command line arguments, keys stay in memory and never appear in any output.
 
-Geprüft wird mit dem EU DSS Validator 6.5.1 (`dssval`, lokal gebautes Image aus `esig/dss-demonstrations`, Version, Commit und Basisimages gepinnt). Die Tests erzeugen eine eigene Test-PKI mit Wurzel, Zwischen-CA, OCSP, CRL und Zeitstempeldienst, echte Schlüssel gibt es im Repository nicht. Alle Stufen ergeben TOTAL_PASSED für die Musterrechnung in PDF/A-3b und PDF/A-4f, veraPDF besteht danach weiter.
+Signatures are validated with the EU DSS validator 6.5.1 (`dssval`, a locally built image from `esig/dss-demonstrations` with version, commit and base images pinned). The tests create their own test PKI with root, intermediate CA, OCSP, CRL and time stamp service, there are no real keys in the repository. All levels give TOTAL_PASSED for the sample invoice in PDF/A-3b and PDF/A-4f, and veraPDF still passes afterwards.
 
 ```bash
 make dss-image
@@ -178,23 +217,23 @@ make dss-image
 make dss
 ```
 
-## Render-Dienst
+## Render service
 
-`pdx-server` rendert Vorlagen über HTTP, nur mit der Standardbibliothek von Go.
+`pdx-server` renders templates over HTTP, using only the Go standard library.
 
 ```bash
 go build -o pdx-server ./cmd/pdx-server
 ```
 
 ```bash
-pdx-server hash-key < schluessel.txt
+pdx-server hash-key < key.txt
 ```
 
 ```bash
 pdx-server -config pdx-server.json
 ```
 
-Die Konfiguration ist JSON. API-Schlüssel stehen darin nur als SHA-256-Hash mit Rechten je Schlüssel (`render`, `templates`, `verify`, `sign`), `hash-key` liest den Schlüssel von der Standardeingabe.
+The configuration is JSON. API keys are stored only as SHA-256 hashes with rights per key (`render`, `templates`, `verify`, `sign`), `hash-key` reads the key from standard input.
 
 ```json
 {
@@ -202,119 +241,119 @@ Die Konfiguration ist JSON. API-Schlüssel stehen darin nur als SHA-256-Hash mit
   "templateDir": "/var/lib/pdx/templates",
   "maxConcurrent": 8,
   "timeout": "30s",
-  "keys": [{"name": "anwendung", "sha256": "…", "rights": ["render"]}],
+  "keys": [{"name": "app", "sha256": "…", "rights": ["render"]}],
   "verapdf": "docker",
-  "signer": "pkcs12:/etc/pdx-signer/schluessel.p12",
+  "signer": "pkcs12:/etc/pdx-signer/key.p12",
   "tsa": "https://tsa.example.org"
 }
 ```
 
-Weitere Grenzen: `maxBody` (Daten, 10 MiB), `maxTemplate` (Paket, 50 MiB), `maxPDF` (verify und sign, 50 MiB), `maxBatch` und `maxBatchEntries` (Stapel, 100 MiB und 1000 Datensätze), `queueWait` (Wartezeit auf einen freien Platz, 5 s), `batchTimeout` (10 min).
+More limits: `maxBody` (data, 10 MiB), `maxTemplate` (package, 50 MiB), `maxPDF` (verify and sign, 50 MiB), `maxBatch` and `maxBatchEntries` (batch, 100 MiB and 1000 records), `queueWait` (wait for a free slot, 5 s), `batchTimeout` (10 min).
 
-| Endpunkt | Recht | Zweck |
+| Endpoint | Right | Purpose |
 |---|---|---|
-| `POST /v1/render/{id}` | render | Daten-XML zu PDF, Parameter `version`, `profile`, `lang`, `strict`, `creationDate` |
-| `POST /v1/render/{id}/batch` | render | ZIP mit XML-Dateien zu ZIP mit PDFs und `ergebnis.json` |
-| `POST /v1/templates/{id}` | templates | Vorlagenpaket als neue Version, `activate=true` aktiviert sie |
-| `GET /v1/templates`, `GET /v1/templates/{id}/versions` | templates | Vorlagen und Versionen |
-| `GET /v1/templates/{id}/versions/{version}` | templates | Paket einer Version |
-| `PUT /v1/templates/{id}/active` | templates | Version aktivieren |
-| `POST /v1/verify` | verify | PDF mit veraPDF prüfen |
-| `POST /v1/sign` | sign | PDF nach PAdES signieren |
-| `GET /healthz`, `GET /readyz`, `GET /metrics`, `GET /openapi.json` | keines | Betrieb |
+| `POST /v1/render/{id}` | render | data XML to PDF, parameters `version`, `profile`, `lang`, `strict`, `creationDate` |
+| `POST /v1/render/{id}/batch` | render | ZIP with XML files to a ZIP with PDFs and `ergebnis.json` |
+| `POST /v1/templates/{id}` | templates | template package as a new version, `activate=true` activates it |
+| `GET /v1/templates`, `GET /v1/templates/{id}/versions` | templates | templates and versions |
+| `GET /v1/templates/{id}/versions/{version}` | templates | package of a version |
+| `PUT /v1/templates/{id}/active` | templates | activate a version |
+| `POST /v1/verify` | verify | validate a PDF with veraPDF |
+| `POST /v1/sign` | sign | sign a PDF after PAdES |
+| `GET /healthz`, `GET /readyz`, `GET /metrics`, `GET /openapi.json` | none | operations |
 
-Die Schnittstelle beschreibt `server/openapi.json` (OpenAPI 3.1), die Tests prüfen jede Antwort dagegen. Fehler kommen als Problem Details nach RFC 9457 mit allen Befunden und Vorlagen-IDs. Versionen sind unveränderlich und fortlaufend nummeriert, gleicher Inhalt ergibt keine neue Version. Die Ablage ist ein Verzeichnis, auch auf einem gemeinsamen Volume für mehrere Instanzen. Kompilierte Vorlagen liegen in einem LRU-Cache. `/metrics` liefert Anfragen und Dauer je Route und Status im Textformat von Prometheus.
+`server/openapi.json` (OpenAPI 3.1) describes the interface, the tests check every response against it. Errors are Problem Details after RFC 9457 with all findings and template IDs, their types are below `https://github.com/tim-riep/pdx/problems/`. Versions are immutable and numbered sequentially, the same content does not create a new version. The store is a directory, also on a shared volume for several instances. Compiled templates are kept in an LRU cache. `/metrics` reports requests and durations per route and status in the Prometheus text format.
 
-Der Designer veröffentlicht Vorlagen direkt: Adresse und Schlüssel eingeben, Vergleich mit der aktiven Version (Dateien und `template.xml` zeilenweise), hochladen, aktivieren.
+The Designer publishes templates directly: enter address and key, compare with the active version (files, and `template.xml` line by line), upload, activate.
 
-### Betrieb
+### Operations
 
 ```bash
 make image
 ```
 
-Das Image (`deploy/Dockerfile`) baut auf distroless static als Nutzer nonroot, Go ohne cgo mit `-trimpath`, Basisimages per Digest, für linux/amd64 und linux/arm64. Zweimal gebaut ergibt es denselben Digest. Es läuft mit schreibgeschütztem Dateisystem, die Konfiguration kommt nach `/etc/pdx/pdx-server.json`, die Ablage nach `/var/lib/pdx/templates`. `deploy/k8s` enthält ein Beispiel für Kubernetes mit Namespace unter Pod Security restricted, ConfigMap, gemeinsamem Volume (ReadWriteMany), Deployment ohne Rechte mit Proben, Service, NetworkPolicy, HPA und PodDisruptionBudget, geprüft in einem lokalen k3d-Cluster.
+The image (`deploy/Dockerfile`) is based on distroless static as user nonroot, Go without cgo with `-trimpath`, base images pinned by digest, for linux/amd64 and linux/arm64. Two builds give the same digest. It runs with a read-only file system, the configuration goes to `/etc/pdx/pdx-server.json`, the store to `/var/lib/pdx/templates`. `deploy/k8s` contains a Kubernetes example with a namespace under the restricted Pod Security standard, a ConfigMap, a shared volume (ReadWriteMany), a Deployment without privileges with probes, a Service, a NetworkPolicy, an HPA and a PodDisruptionBudget, tested in a local k3d cluster.
 
-Lasttest mit dem Lasttreiber `deploy/last` (Schlüssel aus `PDX_KEY`):
+Load test with the load driver `deploy/last` (key from `PDX_KEY`):
 
 ```bash
 go run ./deploy/last -url http://127.0.0.1:8080 -id rechnung -data testdata/templates/musterrechnung/samples/rechnung.xml -c 8 -d 30s -p95 300ms -rate 30
 ```
 
-Vereinbarte Zielwerte für die Musterrechnung (drei Seiten, PDF/A-3b) bei 8 parallelen Anfragen auf 4 CPUs: p95 unter 300 ms und mindestens 30 PDFs pro Sekunde. Gemessen im Container mit 4 CPUs und 1 GiB auf einem Apple M4 mit `GOGC=400` und `GOMEMLIMIT=800MiB` (so im Deployment): 43 bis 85 PDFs pro Sekunde, p95 135 bis 263 ms, je nach übriger Last des Rechners. Ohne diese Einstellungen 42 bis 56 PDFs pro Sekunde mit p95 bis 310 ms. Der Mac ist nicht die Zielumgebung, auf dem Zielsystem bitte erneut messen.
+Agreed targets for the sample invoice (three pages, PDF/A-3b) with 8 parallel requests on 4 CPUs: p95 below 300 ms and at least 30 PDFs per second. Measured in a container with 4 CPUs and 1 GiB on an Apple M4 with `GOGC=400` and `GOMEMLIMIT=800MiB` (as in the Deployment): 43 to 85 PDFs per second, p95 135 to 263 ms, depending on other load on the machine. Without these settings 42 to 56 PDFs per second with p95 up to 310 ms. The Mac is not the target environment, measure again on the target system.
 
-### Sicherheit und Datenschutz
+### Security and privacy
 
-* Keine Nutzdaten in Logs oder Metriken: Logs (JSON über `log/slog`) enthalten Methode, Muster der Route, Status, Dauer, Größe und den Namen des Schlüssels, nie Rümpfe, Abfragen oder Werte aus dem Pfad.
-* Nichts wird über die Anfrage hinaus gespeichert außer den Vorlagen. `verify` legt das PDF nur für die Dauer der Prüfung in einer temporären Datei ab.
-* API-Schlüssel nur als Hash, Vergleich in konstanter Zeit, Rechte je Schlüssel. Der Client und der Designer verlangen HTTPS außer für localhost. TLS gehört vor den Dienst (Ingress oder Proxy).
-* Passwort und Token des Signers nur aus der Umgebung, beim Start gelesen und dort entfernt. Im Kubernetes-Beispiel kommen sie aus einem Secret.
-* Grenzen für Größe, Parallelität und Laufzeit jeder Anfrage. Externe Entitäten in XML-Daten lehnt der Parser ab.
-* Fuzz-Targets für Hochladen, Rendern, Signieren und das Lesen von PDF.
+* No payload data in logs or metrics: logs (JSON through `log/slog`) contain method, route pattern, status, duration, size and the name of the key, never bodies, queries or values from the path.
+* Nothing is stored beyond the request except templates. `verify` keeps the PDF in a temporary file only while validating.
+* API keys only as hashes, compared in constant time, rights per key. The client and the Designer require HTTPS except for localhost. TLS belongs in front of the service (ingress or proxy).
+* The password and token of the signer only come from the environment, are read at startup and removed from it. In the Kubernetes example they come from a Secret.
+* Limits for size, concurrency and run time of every request. The XML parser rejects external entities in data.
+* Fuzz targets for upload, rendering, signing and reading PDF.
 
-## FO-Teilumfang
+## Supported FO subset
 
-Seitenaufbau: `fo:simple-page-master` mit allen fünf Regionen, `fo:page-sequence-master` mit `fo:single-page-master-reference`, `fo:repeatable-page-master-reference`, `fo:repeatable-page-master-alternatives` und `fo:conditional-page-master-reference` (`page-position`, `odd-or-even`, `blank-or-not-blank`), `force-page-count`, `initial-page-number`.
+Page layout: `fo:simple-page-master` with all five regions, `fo:page-sequence-master` with `fo:single-page-master-reference`, `fo:repeatable-page-master-reference`, `fo:repeatable-page-master-alternatives` and `fo:conditional-page-master-reference` (`page-position`, `odd-or-even`, `blank-or-not-blank`), `force-page-count`, `initial-page-number`.
 
-Blöcke und Inline: `fo:block`, `fo:block-container` (auch `absolute-position`), `fo:inline`, `fo:leader`, `fo:basic-link`, `fo:external-graphic`, `fo:instream-foreign-object`, `fo:page-number`, `fo:page-number-citation`, `fo:page-number-citation-last`.
+Blocks and inlines: `fo:block`, `fo:block-container` (also `absolute-position`), `fo:inline`, `fo:leader`, `fo:basic-link`, `fo:external-graphic`, `fo:instream-foreign-object`, `fo:page-number`, `fo:page-number-citation`, `fo:page-number-citation-last`.
 
-Tabellen und Listen: `fo:table` mit festem Layout, proportionalen Spalten, Kopf und Fuß mit Wiederholung, Zellen über mehrere Spalten und Zeilen, Rahmenmodelle `separate` und `collapse` (vereinfacht). `fo:list-block` mit `label-end()` und `body-start()`.
+Tables and lists: `fo:table` with fixed layout, proportional columns, repeated header and footer, cells spanning columns and rows, border models `separate` and `collapse` (simplified). `fo:list-block` with `label-end()` and `body-start()`.
 
-Umbruch: `keep-together`, `keep-with-next`, `keep-with-previous` mit Stärken, `break-before`, `break-after`, `widows`, `orphans`. Zeilenumbruch mit Knuth-Plass, Blocksatz mit `text-align-last`, Silbentrennung mit `hyphenate`, `language`, `hyphenation-character` und den Mindestlängen.
+Breaking: `keep-together`, `keep-with-next`, `keep-with-previous` with strengths, `break-before`, `break-after`, `widows`, `orphans`. Line breaking with Knuth-Plass, justification with `text-align-last`, hyphenation with `hyphenate`, `language`, `hyphenation-character` and the minimum lengths.
 
-Marker und Gliederung: `fo:marker`, `fo:retrieve-marker` mit allen Positionen und Grenzen, `fo:retrieve-table-marker` in Kopf und Fuß, `fo:bookmark-tree`.
+Markers and outlines: `fo:marker`, `fo:retrieve-marker` with all positions and boundaries, `fo:retrieve-table-marker` in table headers and footers, `fo:bookmark-tree`.
 
-Bewusste Abweichungen von Apache FOP stehen mit Begründung aus der Spezifikation in `testdata/suites/DEVIATIONS.md`.
+Deliberate deviations from Apache FOP are listed with reasons from the specification in `testdata/suites/DEVIATIONS.md`.
 
-### Erweiterungen
+### Extensions
 
-Namespace `https://github.com/tim-riep/pdx/ns/fo/1`. Metadaten und Anhänge stehen in `fo:declarations`, Barcodes in `fo:instream-foreign-object`, dem Ort, den XSL 1.1 für fremde Inhalte vorsieht:
+Namespace `https://github.com/tim-riep/pdx/ns/fo/1`. Metadata and attachments go into `fo:declarations`, barcodes into `fo:instream-foreign-object`, the place XSL 1.1 provides for foreign content:
 
 ```xml
 <fo:declarations>
-  <pdx:metadata title="Rechnung" author="Beispiel GmbH" subject="..." keywords="..." creator="..."/>
+  <pdx:metadata title="Invoice" author="Example Ltd" subject="..." keywords="..." creator="..."/>
   <pdx:attachment src="factur-x.xml" name="factur-x.xml" mime-type="text/xml"
-                  relationship="Alternative" description="Rechnungsdaten"/>
+                  relationship="Alternative" description="Invoice data"/>
 </fo:declarations>
 
 <fo:instream-foreign-object content-width="30mm">
-  <pdx:barcode type="girocode" name="Beispiel GmbH" iban="DE02120300000000202051" amount="1190.00" text="RE-2026-0001"/>
+  <pdx:barcode type="girocode" name="Example Ltd" iban="DE02120300000000202051" amount="1190.00" text="RE-2026-0001"/>
 </fo:instream-foreign-object>
 ```
 
-Das erzeugte FO einer Vorlage trägt an jedem Element `pdx:id` mit der ID des Vorlagenelements. FOP 2.11 überspringt `fo:declarations`, setzt Barcodes aber nicht und lehnt `pdx:id` ohne `fop -r` ab (siehe DEVIATIONS.md).
+The FO generated from a template carries `pdx:id` with the ID of the template element on every element. FOP 2.11 skips `fo:declarations`, but does not render barcodes and rejects `pdx:id` without `fop -r` (see DEVIATIONS.md).
 
-## Vorlagen
+## Templates
 
-Eine Vorlage beschreibt das Dokument unabhängig von den Daten: Seitenvorlagen für erste, folgende und letzte Seiten, Kopf und Fuß mit positioniertem Inhalt, Teilformulare (positioniert oder fließend, auch wiederholt), Texte mit eingebetteten Feldern, Tabellen mit Kopf, Fuß, Gruppen, Zwischensumme (`subtotal`), Übertrag (`carryOver`) und Summe (`total`), Barcodes, Seitenzahlen („Seite {current} von {total}“), Stile, Formatmuster je Gebietsschema und Textressourcen je Sprache. Bindungen sind XPath-Ausdrücke gegen das Daten-XSD. Das Format beschreibt `template/schema/template-v1.xsd`, Namen sind englisch in camelCase. Namespace ist `https://github.com/tim-riep/pdx/ns/template/1` mit `version="1"`. Vorlagen im Format 0 bis pdx 0.1.0 (Namespace `https://pdx.example/ns/template/0`) liest pdx weiter und hebt sie beim Laden auf Format 1, `pdx fmt -w template.xml` schreibt sie dauerhaft um. Dasselbe gilt für den alten Namespace der FO-Erweiterungen.
+A template describes the document independently of the data: page masters for first, following and last pages, headers and footers with positioned content, subforms (positioned or flowing, also repeated), texts with embedded fields, tables with header, footer, groups, subtotal (`subtotal`), carry-over (`carryOver`) and total (`total`), barcodes, page numbers ("Seite {current} von {total}"), styles, format patterns per locale and text resources per language. Bindings are XPath expressions against the data XSD. `template/schema/template-v1.xsd` describes the format, names are English in camelCase. The namespace is `https://github.com/tim-riep/pdx/ns/template/1` with `version="1"`. pdx still reads templates in format 0 up to pdx 0.1.0 (namespace `https://pdx.example/ns/template/0`) and upgrades them to format 1 when loading, `pdx fmt -w template.xml` rewrites them permanently. The same applies to the old namespace of the FO extensions.
 
-Design-Tokens benennen Farben, Längen und Schriften an einer Stelle (`<tokens>` nach `<styles>`). Stile und Elemente verweisen mit `$id` darauf, etwa `color="$primaer"`, `padding="$abstand-m 2mm"` oder `border="0.5pt solid $linie"`. Ein Schrift-Token setzt über `font="$fliesstext"` Familie, Größe, Stärke und Stil, ausdrücklich gesetzte Attribute desselben Elements gehen vor. Tokens dürfen auf Tokens derselben Art verweisen. Der Compiler löst die Verweise auf und meldet unbekannte Tokens, falsche Arten und Kreise mit Vorlagen-ID.
+Design tokens name colors, lengths and fonts in one place (`<tokens>` after `<styles>`). Styles and elements refer to them with `$id`, for example `color="$primaer"`, `padding="$abstand-m 2mm"` or `border="0.5pt solid $linie"`. A font token sets family, size, weight and style through `font="$fliesstext"`, attributes set explicitly on the same element take precedence. Tokens may refer to tokens of the same kind. The compiler resolves the references and reports unknown tokens, wrong kinds and cycles with the template ID.
 
-Ein Paket enthält `template.xml` und die Ordner `schema` (Daten-XSD), `assets`, `samples` und `texts`. Beispiel: `testdata/templates/musterrechnung` mit 60 Positionen auf drei Seiten, Adressfenster nach DIN 5008, Übertrag und Zwischensumme je Seite, GiroCode und den Rechnungsdaten als eingebettetem XML (PDF/A-3b).
+A package contains `template.xml` and the folders `schema` (data XSD), `assets`, `samples` and `texts`. Example: `testdata/templates/musterrechnung` with 60 line items on three pages, an address window after DIN 5008, carry-over and subtotal per page, a GiroCode and the invoice data as embedded XML (PDF/A-3b).
 
-Der Compiler erzeugt lesbares, deterministisches XSLT 3.0. Laufende Summen entstehen mit `xsl:iterate`, Überträge laufen über Marker je Tabellenzeile. Eine Quellzuordnung übersetzt Fehler beim Transformieren und Setzen in Vorlagen-IDs.
+The compiler produces readable, deterministic XSLT 3.0. Running totals use `xsl:iterate`, carry-overs use markers per table row. A source map translates errors during transformation and typesetting into template IDs.
 
-## Leistung
+## Performance
 
-Musterrechnung (60 Positionen, drei Seiten, PDF/A-3b mit Anhang), Apple M4, Go 1.26:
+Sample invoice (60 line items, three pages, PDF/A-3b with attachment), Apple M4, Go 1.26:
 
-| Benchmark | Zeit | Speicher |
+| Benchmark | Time | Memory |
 |---|---|---|
-| `BenchmarkCompileInvoice` (Vorlage zu kompiliertem XSLT) | 1,4 ms | 0,7 MB |
-| `BenchmarkRenderInvoice` (Transformation, Layout, PDF) | 65 ms | 36 MB |
-| `BenchmarkParallelRender` mit 8 Kernen, je PDF | 11,5 ms | 35 MB |
+| `BenchmarkCompileInvoice` (template to compiled XSLT) | 1.4 ms | 0.7 MB |
+| `BenchmarkRenderInvoice` (transformation, layout, PDF) | 65 ms | 36 MB |
+| `BenchmarkParallelRender` with 8 cores, per PDF | 11.5 ms | 35 MB |
 
 ```bash
 go test -run '^$' -bench Invoice -benchmem .
 ```
 
-## Schriften
+## Fonts
 
-Schriften werden ausnahmslos als Teilmenge eingebettet. `Helvetica`, `Arial`, `sans-serif` werden auf Liberation Sans abgebildet, `Times` und `serif` auf Liberation Serif, `Courier` und `monospace` auf Liberation Mono (eingebettet im Programm, SIL OFL 1.1). Fehlt einem Wort ein Zeichen, versucht pdx die Liberation-Schriften als Ersatz. Gibt es keines, endet das Rendern mit einem Fehler, weil PDF/A die .notdef-Glyphe verbietet.
+Fonts are always embedded as subsets. `Helvetica`, `Arial` and `sans-serif` map to Liberation Sans, `Times` and `serif` to Liberation Serif, `Courier` and `monospace` to Liberation Mono (embedded in the program, SIL OFL 1.1). If a word lacks a glyph, pdx tries the Liberation fonts as fallback. If none has it, rendering stops with an error, because PDF/A forbids the .notdef glyph.
 
 ## veraPDF
 
-Version 1.30.3, konfiguriert nur in `verapdf`. Eine lokale CLI wird genutzt, wenn ihre Version passt, sonst das Docker-Image `docker.io/verapdf/cli:v1.30.3` (per Digest gepinnt). Auf ghcr.io gibt es nur Entwicklerstände 1.31, das Release liegt auf Docker Hub. `PDX_VERAPDF=local|docker|<pfad>` erzwingt eine Variante.
+Version 1.30.3, configured only in `verapdf`. A local CLI is used when its version matches, otherwise the Docker image `docker.io/verapdf/cli:v1.30.3` (pinned by digest). ghcr.io only has development builds of 1.31, the release is on Docker Hub. `PDX_VERAPDF=local|docker|<path>` forces a variant.
 
 ## Tests
 
@@ -330,22 +369,22 @@ make conformance
 PDX_CONFORMANCE=1 go test ./...
 ```
 
-* `make test` führt alle Unit-, Golden-File- und Reproduzierbarkeitstests aus.
-* `make conformance` rendert den Korpus `testdata/fo` und die Vorlagen unter `testdata/templates` per CLI und prüft jede Datei mit veraPDF.
-* `make fo-conformance` setzt die FO-Testsuiten (ausgewählte Fälle aus Apache FOP 2.11 und die W3C XSL Test Suite, die beim ersten Lauf heruntergeladen wird) und vergleicht sie mit Erwartungen aus FOP. Bericht je Kategorie in `out/fo-conformance.md`, deaktivierte Fälle mit Begründung in `testdata/suites/disabled.txt`, bekannte und offene Abweichungen in `testdata/suites/deviating.txt`. `make fo-reference` erzeugt die Erwartungen neu (Docker).
-* `make fop-compare` vergleicht Korpus und Musterrechnung mit Apache FOP 2.11 (Docker, `PDX_FOP=1`). Toleranz: Positionen 1 pt, höchstens 0,5 % abweichende Pixel je Seite bei 72 dpi.
-* Mit `PDX_CONFORMANCE=1` rufen auch die Go-Tests veraPDF auf.
-* `make golden` schreibt Golden Files nach bewusster Änderung neu (`UPDATE_GOLDEN=1`).
-* `make fuzz` spielt die Fuzz-Targets `FuzzParse` (FO-Parser), `FuzzLoad` (Schriften), `FuzzTemplateParse` (Vorlagen), `FuzzCompile` (Compiler), `FuzzExtractData` (Formulare lesen), `FuzzSignPDF` (Signieren beliebiger Dateien), `FuzzUpload` und `FuzzRender` (Render-Dienst) an.
-* `make dss` prüft alle PAdES-Stufen mit dem EU DSS Validator (`PDX_DSS=1`, Image aus `make dss-image`).
-* `make image` baut das Image von pdx-server zweimal und vergleicht die Digests.
+* `make test` runs all unit, golden file and reproducibility tests.
+* `make conformance` renders the corpus `testdata/fo` and the templates in `testdata/templates` with the CLI and validates every file with veraPDF.
+* `make fo-conformance` typesets the FO test suites (selected cases from Apache FOP 2.11 and the W3C XSL test suite, which is downloaded on the first run) and compares them with expectations from FOP. Report per category in `out/fo-conformance.md`, disabled cases with reasons in `testdata/suites/disabled.txt`, known and open deviations in `testdata/suites/deviating.txt`. `make fo-reference` regenerates the expectations (Docker).
+* `make fop-compare` compares the corpus and the sample invoice with Apache FOP 2.11 (Docker, `PDX_FOP=1`). Tolerance: positions 1 pt, at most 0.5 % differing pixels per page at 72 dpi.
+* With `PDX_CONFORMANCE=1` the Go tests also call veraPDF.
+* `make golden` rewrites golden files after a deliberate change (`UPDATE_GOLDEN=1`).
+* `make fuzz` runs the fuzz targets `FuzzParse` (FO parser), `FuzzLoad` (fonts), `FuzzTemplateParse` (templates), `FuzzCompile` (compiler), `FuzzExtractData` (reading forms), `FuzzSignPDF` (signing arbitrary files), `FuzzUpload` and `FuzzRender` (render service).
+* `make dss` validates all PAdES levels with the EU DSS validator (`PDX_DSS=1`, image from `make dss-image`).
+* `make image` builds the pdx-server image twice and compares the digests.
 
-## Lizenz
+## License
 
-pdx steht unter der Apache License 2.0, siehe `LICENSE` und `NOTICE`. `THIRD_PARTY_NOTICES.txt` enthält die vollständigen Lizenztexte aller Fremdbestandteile, die in `pdx` und `pdx-server` enthalten sind: die eingebetteten Liberation-Schriften (SIL Open Font License 1.1), die Trennmuster aus hyph-utf8 (MIT und freie Weitergabe mit Hinweis), die Laufzeit von Go und alle gelinkten Go-Module.
+pdx is licensed under the Apache License 2.0, see `LICENSE` and `NOTICE`. `THIRD_PARTY_NOTICES.txt` contains the full license texts of all third-party components included in `pdx` and `pdx-server`: the embedded Liberation fonts (SIL Open Font License 1.1), the hyphenation patterns from hyph-utf8 (MIT, and free redistribution with notice), the Go runtime and all linked Go modules.
 
 ```bash
 pdx licenses --list
 ```
 
-`pdx licenses` und `pdx-server licenses` geben alle Texte aus, das Image legt sie unter `/usr/share/doc/pdx/` ab. Der Designer zeigt sie über den Knopf Lizenzen, samt Wails und den npm-Paketen des Frontends. `make notices` erzeugt die Datei nach einer Änderung der Abhängigkeiten neu, ein Test meldet einen veralteten Stand. Nur im Repository für Tests liegen Fälle aus Apache FOP (Apache License 2.0) und Source Serif 4 (SIL Open Font License 1.1), siehe `NOTICE`. Die Liberation-Schriften und Source Serif 4 (nur Testdaten) stehen unter der SIL Open Font License 1.1. Das sRGB-Profil berechnet pdx selbst.
+`pdx licenses` and `pdx-server licenses` print all texts, the image puts them in `/usr/share/doc/pdx/`. The Designer shows them through its Lizenzen (licenses) button, including Wails and the npm packages of the frontend. `make notices` regenerates the file after a change of dependencies, a test reports an outdated file. Test cases from Apache FOP (Apache License 2.0) and the Source Serif 4 font (SIL Open Font License 1.1) are only in the repository for tests, see `NOTICE`. pdx computes the sRGB profile itself.

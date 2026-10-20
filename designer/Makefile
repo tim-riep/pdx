@@ -12,7 +12,7 @@ export CGO_CFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 export CGO_LDFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 endif
 
-.PHONY: all deps bindings frontend build server test check e2e smoke clean notices notices-check
+.PHONY: all deps bindings frontend build bundle package server test check e2e smoke clean notices notices-check
 
 all: build
 
@@ -37,6 +37,36 @@ notices-check: notices
 build: frontend
 	$(GO) build -o $(OUT)/pdx-designer$(EXE) .
 
+VERSION := $(shell sed -n 's/^const Version = "\(.*\)"/\1/p' internal/app/app.go)
+APP := $(OUT)/pdx Designer.app
+PKG := $(OUT)/package/pdx-designer
+
+# macOS: App-Bündel aus dem nativen Binary.
+bundle: build
+	rm -rf "$(APP)"
+	mkdir -p "$(APP)/Contents/MacOS" "$(APP)/Contents/Resources"
+	cp $(OUT)/pdx-designer "$(APP)/Contents/MacOS/pdx-designer"
+	sed 's/@VERSION@/$(VERSION)/g' packaging/Info.plist.in > "$(APP)/Contents/Info.plist"
+	printf 'APPL????' > "$(APP)/Contents/PkgInfo"
+	cp ../LICENSE ../NOTICE notices/THIRD_PARTY_NOTICES.txt "$(APP)/Contents/Resources/"
+
+# Inhalt des Release-Archivs für dieses System mit Installationsskript nach
+# der Konvention pro Benutzer (siehe README).
+ifeq ($(OS),Windows_NT)
+package: build
+	rm -rf "$(PKG)" && mkdir -p "$(PKG)"
+	cp $(OUT)/pdx-designer.exe packaging/install.ps1 "$(PKG)/"
+else ifeq ($(shell uname -s),Darwin)
+package: bundle
+	rm -rf "$(PKG)" && mkdir -p "$(PKG)"
+	cp -R "$(APP)" packaging/install.sh "$(PKG)/"
+else
+package: build
+	rm -rf "$(PKG)" && mkdir -p "$(PKG)"
+	cp $(OUT)/pdx-designer packaging/install.sh "$(PKG)/"
+endif
+	cp ../LICENSE ../NOTICE notices/THIRD_PARTY_NOTICES.txt README.md "$(PKG)/"
+
 server: frontend
 	CGO_ENABLED=0 $(GO) build -tags server -o $(OUT)/designer-server$(EXE) .
 
@@ -55,4 +85,4 @@ smoke: build
 	$(OUT)/pdx-designer$(EXE) --smoke --open ../testdata/templates/musterrechnung
 
 clean:
-	rm -rf frontend/dist $(OUT)/pdx-designer$(EXE) $(OUT)/designer-server$(EXE)
+	rm -rf frontend/dist $(OUT)/pdx-designer$(EXE) $(OUT)/designer-server$(EXE) "$(APP)" $(OUT)/package

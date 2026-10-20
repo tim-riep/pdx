@@ -13,3 +13,6 @@
 
 # Batch-Dateien brauchen unter Windows CRLF.
 *.cmd text eol=crlf
+
+# PowerShell unter Windows mit CRLF.
+*.ps1 text eol=crlf

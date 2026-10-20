@@ -1,98 +1,120 @@
 # pdx Designer
 
-Desktop-Anwendung, mit der man Dokumente gegen ein Daten-XSD gestaltet, ohne XML zu schreiben. Grundlage ist die Engine von pdx (Ordner darüber). Gespeichert wird ausschließlich im Vorlagenformat 1, verlustfrei und mit stabilen Git-Diffs. Ergebnis ist ein PDF/A-3b mit eingebetteten Daten.
+Desktop application for laying out documents against a data XSD without writing XML. It is built on the pdx engine (parent directory). It saves only in template format 1, lossless and with stable Git diffs. The result is a PDF in the profile of the template, by default PDF/A-3b with embedded data. The user interface is in German.
 
-Stand: Phase 2 (Designer-MVP). Die Musterrechnung lässt sich im Designer von Grund auf nachbauen und besteht veraPDF 1.30.3 gegen PDF/A-3b (Ende-zu-Ende-Test `e2e/rebuild.spec.ts`).
+The sample invoice can be rebuilt from scratch in the Designer and passes veraPDF 1.30.3 against PDF/A-3b (end-to-end test `e2e/rebuild.spec.ts`).
 
-## Bedienkonzept
+## Installation
 
-Das Fenster hat drei Spalten mit Tabs und einen Bereich unten.
+Release archives contain the Designer and an install script. pdx Designer is installed per user, without administrator rights:
 
-| Bereich | Tabs | Zweck |
+| System | Program | Menu entry | Settings and autosaves |
+|---|---|---|---|
+| macOS | `~/Applications/pdx Designer.app` | Launchpad, Spotlight | `~/Library/Application Support/pdx-designer` |
+| Linux | `~/.local/bin/pdx-designer` | `~/.local/share/applications/pdx-designer.desktop` | `~/.config/pdx-designer` |
+| Windows | `%LOCALAPPDATA%\Programs\pdx\pdx-designer.exe` | Start menu, pdx Designer | `%APPDATA%\pdx-designer` |
+
+```bash
+./install.sh
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1
+```
+
+Running the script again updates the installation, `--uninstall` (`-Uninstall` on Windows) removes program and menu entry and keeps settings and autosaves. The scripts live in `packaging/`, `make package` assembles the archive content for the current system, `packaging/test-install.sh` checks install and uninstall in CI.
+
+## Concept
+
+The window has three columns with tabs and a panel at the bottom.
+
+| Area | Tabs | Purpose |
 | --- | --- | --- |
-| links | Daten, Hierarchie, Beispiele | Datenbaum des XSD zum Ziehen, Baum der Vorlage, Beispieldaten und Randfälle |
-| Mitte | Entwurf, Vorschau, PDF | Canvas mit Platzhaltern oder Beispieldaten, das fertige PDF mit pdf.js |
-| rechts | Inspektor, Stile | Eigenschaften des gewählten Elements, Design-Tokens und Stile |
-| unten | Probleme, Konformität, Barrierefreiheit, XPath | laufende Prüfung, veraPDF, Strukturbaum und Lesereihenfolge, großer XPath-Editor |
+| left | Daten, Hierarchie, Beispiele | data tree of the XSD for dragging, tree of the template, sample data and edge cases |
+| center | Entwurf, Vorschau, PDF | canvas with placeholders or sample data, the finished PDF with pdf.js |
+| right | Inspektor, Stile | properties of the selected element, design tokens and styles |
+| bottom | Probleme, Konformität, Barrierefreiheit, XPath | live checks, veraPDF, structure tree and reading order, large XPath editor |
 
-Grundsätze:
+Principles:
 
-* **Klick wählt das Vorlagenelement.** Alle Vorkommen im Satz (etwa eine Tabellenzeile auf jeder Seite) werden markiert. Klick in Hierarchie, Problemliste oder Konformität führt zum Element.
-* **Daten ziehen statt Pfade tippen.** Ein Datenknoten aus dem Tab Daten wird beim Ablegen zum passenden Element: Datum und Dezimalzahl zu Feldern mit Format, wiederholte Knoten zur Tabelle, Gruppen zum gebundenen Teilformular, optionale Knoten mit Präsenzbedingung.
-* **Bausteine** (Text, Teilformular positioniert oder fließend, Linie, Rechteck, Bild, Barcode, Seitenzahl, Tabelle) kommen aus der Leiste über dem Canvas, per Klick in die Auswahl oder per Ziehen an eine Stelle.
-* **Text mit Feldern** wird direkt bearbeitet: Doppelklick im Canvas oder Inhalt im Inspektor. Felder stehen als Chips im Text, `@` schlägt Datenknoten vor.
-* **Jede Änderung ist ein Befehl** mit Undo und Redo. Das Modell lebt nur im Backend, die Oberfläche zeigt eine Projektion.
-* **Prüfen läuft mit.** Die Problemliste meldet nach jeder Änderung Fehler aus Vorlage, Übersetzung, Bindungen und Beispieldaten. Die Konformität prüft auf Knopfdruck mit veraPDF gegen jede Norm des Ausgabeprofils und ordnet Befunde über Seite und Operator den Elementen zu.
+* **A click selects the template element.** All occurrences in the typeset document (for example a table row on every page) are highlighted. A click in the hierarchy, the problem list or the conformance panel leads to the element.
+* **Drag data instead of typing paths.** A data node from the Daten tab becomes the matching element when dropped: dates and decimals become fields with formats, repeated nodes become tables, groups become bound subforms, optional nodes get a presence condition.
+* **Building blocks** (text, positioned or flowing subform, line, rectangle, image, barcode, page number, table, form fields) come from the palette above the canvas, by click into the selection or by dragging to a position.
+* **Text with fields** is edited in place: double click in the canvas or the content editor in the inspector. Fields are chips in the text, `@` suggests data nodes.
+* **Every change is a command** with undo and redo. The model lives only in the backend, the user interface shows a projection.
+* **Checks run continuously.** After every change the problem list reports errors from template, translations, bindings and sample data. The conformance panel validates with veraPDF against every standard of the output profile on request and maps findings to elements through page and operator.
 
-Weitere Werkzeuge:
+More tools:
 
-* **Struktur:** Kontextmenü in Hierarchie und Canvas fügt jedes erlaubte Kind ein (etwa Formate, Textressourcen, Seitenvorlagen mit Kopf und Fuß, Anhänge), dupliziert, verschiebt und löscht.
-* **Tabellen:** Spalten und Zeilen einfügen, Kopf und Fuß mit Wiederholung, Zellen über Spalten, Zwischensumme, Übertrag und Summe über Zahlenspalten.
-* **XPath:** Felder im Inspektor mit Vorschlägen und Prüfzeile (Wert mit den Beispieldaten), der Tab XPath als großer Editor, Präsenz über eine Auswahl (immer, wenn vorhanden, wenn nicht leer, eigener Ausdruck).
-* **Tokens und Stile:** Farben, Längen und Schriften benennen und mit `$name` verwenden, Umbenennen zieht alle Verweise mit.
-* **Schemaänderung:** Ein neues XSD zeigt erst die Unterschiede, stellt Bindungen auf umbenannte Knoten um und lässt eine Aufgabenliste für den Rest.
-* **Beispieldaten:** importieren, wählen, Randfälle erzeugen (minimal, maximal, lange Texte).
-* **Ausgabeprofil:** Die Vorlage wählt ihr Profil aus den zulässigen Kombinationen, etwa PDF/A-3a mit PDF/UA-1 oder PDF/A-4f mit PDF/UA-2, jeweils mit einem Satz Erklärung.
-* **Barrierefreiheit:** Der Inspektor hat eine eigene Gruppe für Rolle, Alternativtext (fest oder aus den Daten), Sprache, Lesereihenfolge, Dekoration und Kopfbezug. Das Panel Barrierefreiheit zeigt die Befunde der Vorprüfung und den Strukturbaum in Lesereihenfolge, blendet die Reihenfolge als Nummern auf der Seite ein, verschiebt frei platzierte Elemente mit Pfeilen und führt die manuellen Prüfpunkte nach Matterhorn 1.1 als Checkliste. Verlangt das Profil keine Barrierefreiheit, prüft es zur Vorschau nach PDF/A-3a mit PDF/UA-1.
-* **E-Rechnung:** Am Element E-Rechnung zeigt der Inspektor die aus den Beispieldaten erkannte Stufe, die eingebettete Datei und die Beziehung und warnt, wenn das Profil nicht PDF/A-3 ist.
-* **Formulare:** Textfelder, Kontrollkästchen, Optionsgruppen, Listen und Signaturfelder aus der Palette, Optionen aus der Enumeration des XSD, in der Vorschau ausfüllbar, Tab-Reihenfolge als Nummern auf der Seite.
-* **Veröffentlichen:** Der Dialog Veröffentlichen verbindet sich mit einem pdx-server (Adresse und API-Schlüssel mit Recht templates), vergleicht die Vorlage mit der aktiven Version auf dem Server Datei für Datei und `template.xml` Zeile für Zeile, lädt sie als neue Version hoch und aktiviert sie. Der Schlüssel bleibt nur im Speicher der Sitzung, gespeichert wird nur die Adresse.
-* **Ansicht:** Lineale in mm oder pt, Raster, Einrasten an Kanten und Mitten, Seitenübersicht, Ausrichten und Verteilen mit Mehrfachauswahl (Umschalt+Klick).
+* **Structure:** the context menu in hierarchy and canvas inserts every allowed child (for example formats, text resources, page masters with header and footer, attachments), duplicates, moves and deletes.
+* **Tables:** insert columns and rows, header and footer with repetition, cells spanning columns, subtotal, carry-over and total over numeric columns.
+* **XPath:** fields in the inspector with suggestions and a check line (value with the sample data), the XPath tab as a large editor, presence through a choice (always, if present, if not empty, custom expression).
+* **Tokens and styles:** name colors, lengths and fonts and use them with `$name`, renaming updates all references.
+* **Schema change:** a new XSD first shows the differences, moves bindings to renamed nodes and leaves a task list for the rest.
+* **Sample data:** import, select, generate edge cases (minimal, maximal, long texts).
+* **Output profile:** the template chooses its profile from the valid combinations, for example PDF/A-3a with PDF/UA-1 or PDF/A-4f with PDF/UA-2, each with a short explanation.
+* **Accessibility:** the inspector has its own group for role, alternate text (fixed or from the data), language, reading order, decoration and header references. The Barrierefreiheit panel shows the findings of the pre-check and the structure tree in reading order, overlays the order as numbers on the page, moves freely placed elements with arrows and lists the manual checkpoints of Matterhorn 1.1 as a checklist. If the profile does not require accessibility, it checks against PDF/A-3a with PDF/UA-1 for preview.
+* **E-invoice:** on the e-invoice element the inspector shows the level detected from the sample data, the embedded file and the relationship, and warns if the profile is not PDF/A-3.
+* **Forms:** text fields, check boxes, radio groups, lists and signature fields from the palette, options from the XSD enumeration, fillable in the preview, tab order as numbers on the page.
+* **Publish:** the Veröffentlichen dialog connects to a pdx-server (address and API key with the templates right), compares the template with the active version on the server file by file and `template.xml` line by line, uploads it as a new version and activates it. The key stays in memory for the session only, only the address is saved.
+* **Licenses:** the Lizenzen button in the toolbar (also in the About dialog and the command palette) shows the Designer's own license and every included component with its license and full text, with search and copy.
+* **View:** rulers in mm or pt, grid, snapping to edges and centers, page overview, align and distribute with multiple selection (Shift+click).
 
-## Tastenkürzel
+## Keyboard shortcuts
 
-Unter macOS steht ⌘ für Strg, ⌥ für Alt.
+On macOS, ⌘ stands for Ctrl and ⌥ for Alt.
 
-| Kürzel | Wirkung |
+| Shortcut | Action |
 | --- | --- |
-| Strg+K oder Strg+Umschalt+P | Befehlspalette mit allen Aktionen und Suche nach Elementen |
-| Strg+N, Strg+O, Strg+S, Strg+Umschalt+S | Neu, Öffnen, Speichern, Speichern unter |
-| Strg+Z, Strg+Umschalt+Z oder Strg+Y | Rückgängig, Wiederholen |
-| Strg+D | Duplizieren |
-| Entf oder Rücktaste | Löschen |
-| Alt+Pfeil hoch oder runter | unter den Geschwistern verschieben |
-| Pfeiltasten | positioniertes Element um 1 mm oder 1 pt verschieben, mit Umschalt um 10 |
-| Pfeiltasten in der Hierarchie | Zeile wählen, Rechts klappt auf, Links zu oder zum Elternelement |
-| Umschalt+F10 oder Kontextmenütaste | Kontextmenü des Elements |
-| Doppelklick auf Text | Text an Ort und Stelle bearbeiten, Eingabe übernimmt, Escape verwirft |
-| @ im Text | Feld einfügen, Umschalt+Eingabe bricht die Zeile um |
-| Strg+Leertaste im XPath-Feld | Vorschläge, Strg+Eingabe übernimmt im Tab XPath |
-| Escape | Menü schließen, sonst Auswahl aufheben |
+| Ctrl+K or Ctrl+Shift+P | command palette with all actions and search for elements |
+| Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S | new, open, save, save as |
+| Ctrl+Z, Ctrl+Shift+Z or Ctrl+Y | undo, redo |
+| Ctrl+D | duplicate |
+| Delete or Backspace | delete |
+| Alt+Up or Down | move among siblings |
+| arrow keys | move a positioned element by 1 mm or 1 pt, with Shift by 10 |
+| arrow keys in the hierarchy | select a row, Right expands, Left collapses or goes to the parent |
+| Shift+F10 or context menu key | context menu of the element |
+| double click on text | edit text in place, Enter applies, Escape discards |
+| @ in text | insert a field, Shift+Enter inserts a line break |
+| Ctrl+Space in an XPath field | suggestions, Ctrl+Enter applies in the XPath tab |
+| Escape | close a menu, otherwise clear the selection |
 
-## Architektur
+## Architecture
 
 ```
 designer/
-  main.go               einzige Stelle mit Wails (und cgo im App-Binary)
-  internal/app/         Services als normale Go-Typen, ohne Wails, cgo-frei
-  internal/model/       Dokument, Befehle mit Inverse, Katalog aus dem XSD, Projektion und Patches
-  internal/pipeline/    Satz mit Caches, Seiten als kompaktes JSON, PDF mit Render-Spur
-  internal/schema/      Datenbaum des Daten-XSD, Kontext von Bindungen, Platzhalter und Randfälle
-  internal/xpath/       Pfade prüfen, auswerten (go-xslt), vervollständigen
-  notices/              Drittanbieterhinweise (make notices)
-  frontend/             Svelte 5, TypeScript, Vite, alles lokal gebündelt
+  main.go               the only place with Wails (and cgo in the app binary)
+  internal/app/         services as plain Go types, without Wails, cgo free
+  internal/model/       document, commands with inverses, catalog from the XSD, projection and patches
+  internal/pipeline/    typesetting with caches, pages as compact JSON, PDF with render trace
+  internal/schema/      data tree of the data XSD, binding context, placeholders and edge cases
+  internal/xpath/       check, evaluate (go-xslt) and complete paths
+  notices/              third-party notices (make notices)
+  packaging/            macOS bundle metadata, install scripts and install test
+  frontend/             Svelte 5, TypeScript, Vite, everything bundled locally
 ```
 
-* **Eine Wahrheit:** Die Vorlage (`template.Template`) lebt nur im Backend. Die Oberfläche schickt Befehle (`setAttr`, `insert`, `remove`, `move`, `content`, `batch`, `setFile`) und erhält Patches einer Projektion über das Ereignis `template:changed`. Nach jedem Befehl prüft das Backend gegen das XSD des Formats und die Verweise im Paket und nimmt ihn sonst zurück.
-* **Kein Layout im Frontend:** Alles Sichtbare kommt aus dem Area Tree der Engine. Jeder Bereich trägt die Vorlagen-ID, darauf beruhen Auswahl, Treffertest, Hilfslinien und das Zuordnen von Befunden.
-* **Services:** AppService (Info, Lizenzen), ProjectService (Öffnen, Speichern, Autosave alle 30 s, Wiederherstellung), TemplateService (Befehle, Tabellen, Struktur, Inhalt, Tokens, XPath), RenderService (Ansicht, Seiten, Schriften, Bilder und PDF über `/pdx/`), SchemaService (Datenbaum, Import, Vergleich und Ersetzen), SampleDataService, ValidationService und ConformanceService.
-* **Pipeline:** 80 ms nach der letzten Änderung setzt das Backend neu. Der Compiler läuft nur bei geändertem Inhalt, ein neuer Lauf bricht den alten ab. Nur Seiten mit neuem Hash werden übertragen.
-* **Prüfung:** dieselben Prüfungen wie `pdx check` (Paket `check` der Engine), dazu Pfade in Präsenzbedingungen. veraPDF läuft lokal oder in Docker im Hintergrund.
+* **One source of truth:** the template (`template.Template`) lives only in the backend. The user interface sends commands (`setAttr`, `insert`, `remove`, `move`, `content`, `batch`, `setFile`) and receives patches of a projection through the event `template:changed`. After every command the backend validates against the format XSD and the references in the package and reverts the command otherwise.
+* **No layout in the frontend:** everything visible comes from the area tree of the engine. Every area carries the template ID, selection, hit testing, guides and the mapping of findings rely on it.
+* **Services:** AppService (info, licenses), ProjectService (open, save, autosave every 30 s, recovery), TemplateService (commands, tables, structure, content, tokens, XPath), RenderService (view, pages, fonts, images and PDF through `/pdx/`), SchemaService (data tree, import, compare and replace), SampleDataService, ValidationService, ConformanceService and PublishService.
+* **Pipeline:** 80 ms after the last change the backend typesets again. The compiler only runs when the content changed, a new run cancels the previous one. Only pages with a new hash are transferred.
+* **Checks:** the same checks as `pdx check` (engine package `check`), plus paths in presence conditions. veraPDF runs locally or in Docker in the background.
 
-Lizenzen: Der Designer steht unter der Apache License 2.0. Alles Mitgelieferte steht unter MIT, BSD, Apache 2.0 oder (für die eingebetteten Liberation-Schriften) der SIL Open Font License 1.1, die Trennmuster unter MIT und freier Weitergabe mit Hinweis. Die Volltexte erzeugt `make notices` mit dem gemeinsamen Werkzeug `../internal/tools/notices` nach `notices/THIRD_PARTY_NOTICES.txt`. Die App zeigt sie über den Knopf Lizenzen in der Werkzeugleiste (auch unter Über und in der Befehlspalette): die eigene Lizenz und jeden Bestandteil mit Lizenz und vollem Text, mit Suche und zum Kopieren.
+Licenses: the Designer is licensed under the Apache License 2.0. Everything included is under MIT, BSD, Apache 2.0 or, for the embedded Liberation fonts, the SIL Open Font License 1.1, the hyphenation patterns under MIT and free redistribution with notice. `make notices` generates the full texts with the shared tool `../internal/tools/notices` into `notices/THIRD_PARTY_NOTICES.txt`.
 
-## Leistung
+## Performance
 
-Gemessen auf Apple M4 mit der Musterrechnung (60 Positionen, drei Seiten).
+Measured on an Apple M4 with the sample invoice (60 line items, three pages).
 
-| Messung | Ergebnis | Ziel | Messort |
+| Measurement | Result | Target | Where |
 | --- | --- | --- | --- |
-| Befehl bis Patch, p95 | 4,8 ms | 20 ms | `BenchmarkCommandPatch` |
-| Neu setzen nach einer Änderung, Mittel | 58 ms | 300 ms | `BenchmarkDesignerEdit` |
-| Bearbeiten bis zur neuen Seite im Canvas, p95 | 200 ms | 300 ms | `e2e/perf.spec.ts` (mit 80 ms Entprellung) |
-| Ziehen, Frame-Abstand p95 | 16,8 ms (60 fps) | 33 ms | `e2e/perf.spec.ts` |
-| Öffnen bis zur ersten Seite | 160 ms | 1,5 s | `e2e/perf.spec.ts` |
-| Start der App bis zur ersten Seite | 280 ms | 1,5 s | `--smoke` |
+| command to patch, p95 | 4.8 ms | 20 ms | `BenchmarkCommandPatch` |
+| typeset again after a change, mean | 58 ms | 300 ms | `BenchmarkDesignerEdit` |
+| edit to new page in the canvas, p95 | 200 ms | 300 ms | `e2e/perf.spec.ts` (with 80 ms debounce) |
+| dragging, frame interval p95 | 16.8 ms (60 fps) | 33 ms | `e2e/perf.spec.ts` |
+| open to first page | 160 ms | 1.5 s | `e2e/perf.spec.ts` |
+| app start to first page | 280 ms | 1.5 s | `--smoke` |
 
 ```bash
 go test -run '^$' -bench . ./internal/...
@@ -102,9 +124,9 @@ go test -run '^$' -bench . ./internal/...
 PDX_PERF=1 npx playwright test e2e/perf.spec.ts --project chromium
 ```
 
-## Bauen und testen
+## Build and test
 
-Voraussetzungen: Go 1.26, Node 24. Unter Linux GTK ab 4.10 und WebKitGTK 6.0 (`libgtk-4-dev libwebkitgtk-6.0-dev`, etwa Ubuntu 24.04 oder Debian 13). In Containern braucht WebKitGTK `WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1`.
+Requirements: Go 1.26, Node 24. On Linux GTK 4.10 or later and WebKitGTK 6.0 (`libgtk-4-dev libwebkitgtk-6.0-dev`, for example Ubuntu 24.04 or Debian 13). In containers WebKitGTK needs `WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1`.
 
 ```bash
 make deps
@@ -114,23 +136,25 @@ make deps
 make build
 ```
 
-| Ziel | Wirkung |
+| Target | Effect |
 | --- | --- |
-| `make build` | Frontend bauen, natives Binary nach `../out/pdx-designer` |
-| `make server` | Server-Build ohne Fenster und ohne cgo (für Playwright) |
-| `make test` | Go-Tests der Services (`CGO_ENABLED=0`) und Vitest |
-| `make check` | `go vet` und svelte-check |
-| `make e2e` | Playwright in Chromium und WebKit gegen den Server-Build |
-| `make smoke` | natives Binary starten, Musterrechnung setzen, beenden |
-| `make bindings` | TypeScript-Bindungen der Services neu erzeugen |
-| `make notices` | Drittanbieterhinweise neu schreiben, `notices-check` prüft sie |
+| `make build` | build the frontend, native binary to `../out/pdx-designer` |
+| `make bundle` | macOS: app bundle `../out/pdx Designer.app` |
+| `make package` | archive content for this system with install script in `../out/package/pdx-designer` |
+| `make server` | server build without window and without cgo (for Playwright) |
+| `make test` | Go tests of the services (`CGO_ENABLED=0`) and Vitest |
+| `make check` | `go vet` and svelte-check |
+| `make e2e` | Playwright in Chromium and WebKit against the server build |
+| `make smoke` | start the native binary, typeset the sample invoice, quit |
+| `make bindings` | regenerate the TypeScript bindings of the services |
+| `make notices` | rewrite the third-party notices, `notices-check` checks them |
 
-Die Ende-zu-Ende-Tests nutzen eine veraPDF-Attrappe. Mit echtem veraPDF (lokal 1.30.3 oder Docker):
+The end-to-end tests use a veraPDF stand-in. With real veraPDF (local 1.30.3 or Docker):
 
 ```bash
 PDX_E2E_REAL_VERAPDF=1 npx playwright test e2e/rebuild.spec.ts --project chromium
 ```
 
-Startoptionen des Binarys: `--open <paket>` öffnet ein Paket, `--smoke` setzt es und beendet sich (Code 1 bei Fehlern). `PDX_DESIGNER_DATA` ersetzt das Datenverzeichnis für Einstellungen und automatische Sicherungen, `PDX_VERAPDF` wählt veraPDF (`docker`, `local` oder ein Pfad).
+Command line options of the binary: `--open <package>` opens a package, `--smoke` typesets it and quits (exit code 1 on errors). `PDX_DESIGNER_DATA` replaces the data directory for settings and autosaves, `PDX_VERAPDF` selects veraPDF (`docker`, `local` or a path).
 
-CI (`.github/workflows/ci.yml`) baut auf macOS, Windows und Linux, startet den Smoke-Test und führt alle Tests aus.
+CI (`.github/workflows/ci.yml`) builds on macOS, Windows and Linux, runs the smoke test, checks the installation and runs all tests.
