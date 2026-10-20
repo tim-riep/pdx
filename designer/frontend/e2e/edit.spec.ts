@@ -2,10 +2,15 @@ import { expect, test } from "@playwright/test";
 import { openMuster, selectInTree } from "./helpers";
 
 async function selectAddress(page: import("@playwright/test").Page) {
-  const zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
-  // Rand des Adressfensters, außerhalb des inneren Teilformulars.
-  await page.locator('[data-page="1"]').click({ position: { x: 62 * zoom, y: 248 * zoom } });
-  await expect(page.locator("[data-sel]")).toHaveAttribute("data-sel", "adressfenster");
+  // Rand des Adressfensters, außerhalb des inneren Teilformulars. Der Zoom
+  // kann sich nach dem Öffnen noch ändern (Breite einpassen), daher Zoom
+  // lesen und klicken, bis die Auswahl steht.
+  let zoom = 1;
+  await expect(async () => {
+    zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
+    await page.locator('[data-page="1"]').click({ position: { x: 62 * zoom, y: 248 * zoom } });
+    await expect(page.locator("[data-sel]")).toHaveAttribute("data-sel", "adressfenster", { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   return zoom;
 }
 
