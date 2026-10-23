@@ -1,6 +1,6 @@
-// Einheit und Hilfen der Ansicht: mm oder pt für Lineale, Abstände und neue
-// Werte, Lineale und Seitenübersicht ein oder aus. Gilt je Betrachter und
-// bleibt im Browser gespeichert, die Vorlage ändert sich dadurch nicht.
+// Unit and aids of the view: mm or pt for rulers, distances and new
+// values, rulers and page overview on or off. Applies per viewer and
+// stays stored in the browser, the template does not change because of it.
 
 import { PT_PER_MM, fmtMM } from "./geometry";
 
@@ -23,12 +23,12 @@ $effect.root(() => {
     try {
       localStorage.setItem("pdx.view", s);
     } catch {
-      // ohne Speicher gilt die Wahl nur bis zum Neuladen
+      // without storage the choice applies only until reloading
     }
   });
 });
 
-// fmtLen schreibt Millimeter in der gewählten Einheit, pt auf halbe Punkte.
+// fmtLen writes millimeters in the chosen unit, pt to half points.
 export function fmtLen(mm: number): string {
   if (view.unit === "pt") {
     const pt = Math.round(mm * PT_PER_MM * 2) / 2;
@@ -37,5 +37,5 @@ export function fmtLen(mm: number): string {
   return fmtMM(mm);
 }
 
-// step ist ein Schritt der Pfeiltasten in Millimetern: 1 mm oder 1 pt.
+// step is one step of the arrow keys in millimeters: 1 mm or 1 pt.
 export const step = (n: number) => (view.unit === "pt" ? n / PT_PER_MM : n);

@@ -13,7 +13,7 @@ func TestMusterrechnung(t *testing.T) {
 	}
 }
 
-// TestBinding erwartet einen Befund mit der ID eines falsch gebundenen Felds.
+// TestBinding expects a finding with the ID of a wrongly bound field.
 func TestBinding(t *testing.T) {
 	p, err := pkg.ReadDir("../testdata/templates/musterrechnung")
 	if err != nil {

@@ -14,18 +14,18 @@ test("XSD laden, Felder und Tabelle ziehen, Vorschau wechseln", async ({ page })
   const data = page.getByTestId("data");
   await expect(data.locator('[data-path="d:invoice"]')).toBeVisible();
 
-  // Ein einfaches Feld auf die leere Seite ziehen.
+  // Drag a simple field onto the empty page.
   const pageEl = page.locator('[data-page="1"]');
   await dragData(page, data.locator('[data-path="d:invoice/d:number"]'), pageEl, { x: 100, y: 100 });
   await expect(page.locator("[data-sel]")).toHaveAttribute("data-sel", "number");
 
-  // Ein wiederholter Knoten wird zur Tabelle.
+  // A repeated node becomes a table.
   await data.locator('[data-path="d:invoice/d:items"] .twisty').click();
   await dragData(page, data.locator('[data-path="d:invoice/d:items/d:item"]'), pageEl, { x: 100, y: 200 });
   await expect(page.getByTestId("inspector").locator("header strong")).toHaveText("Tabelle");
   await expect(page.getByTestId("inspector").locator('[data-prop="bind"] input')).toHaveValue("d:items/d:item");
 
-  // Entwurf zeigt Platzhalter, die Tabelle hat drei Zeilen.
+  // The draft shows placeholders, the table has three rows.
   await expect(page.getByTestId("render-info")).toContainText("1 Seite");
   await page.getByRole("tab", { name: "Hierarchie" }).click();
   await expect(page.getByTestId("hierarchy").getByText("item", { exact: true })).toBeVisible();

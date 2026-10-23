@@ -8,7 +8,7 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// srcURI entfernt url(...) und Anführungszeichen aus einem src-Attribut.
+// srcURI removes url(...) and quotation marks from a src attribute.
 func srcURI(s string) string {
 	s = strings.TrimSpace(s)
 	if strings.HasPrefix(s, "url(") && strings.HasSuffix(s, ")") {
@@ -17,8 +17,8 @@ func srcURI(s string) string {
 	return strings.Trim(s, `"'`)
 }
 
-// graphic nimmt ein fo:external-graphic als Inline-Box auf. Die Grundlinie
-// liegt an der Unterkante des Bildes.
+// graphic takes an fo:external-graphic as an inline box. The baseline
+// lies at the bottom edge of the image.
 func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
 	avail := pa.g.contentW(pa.p)
 	p, err := props.Compute(parent, n, avail)
@@ -38,8 +38,8 @@ func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
 	if err != nil {
 		return err
 	}
-	// width und height legen den Viewport fest (XSL 1.1 6.6.5), der Inhalt
-	// liegt darin oben am Anfang (display-align und text-align auto).
+	// width and height define the viewport (XSL 1.1 6.6.5), the content
+	// lies inside it at the top start (display-align and text-align auto).
 	vw, vh := w, h
 	if p.Width != nil {
 		vw = *p.Width
@@ -47,8 +47,8 @@ func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
 	if p.Height != nil {
 		vh = *p.Height
 	}
-	// Rahmen und Padding gehören zum Inline-Bereich des Bildes (XSL 1.1
-	// 4.2.2). Die Unterkante der Rahmenbox liegt auf der Grundlinie.
+	// Border and padding belong to the inline area of the image (XSL 1.1
+	// 4.2.2). The bottom edge of the border box lies on the baseline.
 	pc := piece{kind: pGraphic, img: id, width: vw, height: vh}
 	if vw != w || vh != h {
 		pc.box = &graphicBox{p: p, n: n, imgW: w, imgH: h}
@@ -62,18 +62,18 @@ func (pa *paragraph) graphic(n *tree.Node, parent *props.Computed) error {
 	return nil
 }
 
-// graphicBox beschreibt Rahmen, Padding und Hintergrund eines Bildes.
+// graphicBox describes border, padding and background of an image.
 type graphicBox struct {
 	p             *props.Computed
 	n             *tree.Node
 	start, before areatree.Length
-	// imgW und imgH sind die Größe des Bildes im Viewport.
+	// imgW and imgH are the size of the image in the viewport.
 	imgW, imgH areatree.Length
 }
 
-// graphicSize bestimmt die Größe nach content-width, content-height und
-// scaling (XSL 1.1 7.15). Prozentangaben beziehen sich auf die natürliche
-// Größe, scale-to-fit auf width und height des Viewports.
+// graphicSize determines the size from content-width, content-height and
+// scaling (XSL 1.1 7.15). Percentages refer to the natural
+// size, scale-to-fit to width and height of the viewport.
 func graphicSize(n *tree.Node, p *props.Computed, iw, ih, avail areatree.Length) (areatree.Length, areatree.Length, error) {
 	if iw <= 0 || ih <= 0 {
 		return 0, 0, tree.Errorf(n, "Bild hat keine Größe")

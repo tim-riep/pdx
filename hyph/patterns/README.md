@@ -1,16 +1,16 @@
-# Trennmuster
+# Hyphenation patterns
 
-Die Muster stammen aus dem Paket hyph-utf8 (https://github.com/hyphenation/tex-hyphen),
-Stand vom 17.10.2026, und werden unverändert übernommen. pdx liest die
-Textfassungen (`*.pat.txt` mit Mustern, `*.hyp.txt` mit Ausnahmen).
+The patterns come from the hyph-utf8 package (https://github.com/hyphenation/tex-hyphen),
+as of 2026-10-17, and are included unchanged. pdx reads the
+text versions (`*.pat.txt` with patterns, `*.hyp.txt` with exceptions).
 
-| Datei | Sprache | Lizenz |
+| File | Language | License |
 |---|---|---|
-| de-1996.pat.txt | Deutsch, reformierte Rechtschreibung (de-1996), Version 2024-02-28 | MIT |
-| en-us.pat.txt, en-us.hyp.txt | Englisch, amerikanische Schreibung (en-us), Version 2005-05-30 | freie Weitergabe mit Hinweis, siehe unten |
+| de-1996.pat.txt | German, reformed spelling (de-1996), version 2024-02-28 | MIT |
+| en-us.pat.txt, en-us.hyp.txt | English, American spelling (en-us), version 2005-05-30 | free redistribution with notice, see below |
 
-Die Kopfzeilen der Originaldateien mit Copyright und Lizenz folgen
-unverändert.
+The header lines of the original files with copyright and license follow
+unchanged.
 
 ## de-1996
 

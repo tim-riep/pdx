@@ -18,9 +18,9 @@ type predKind uint8
 
 const (
 	predNone predKind = iota
-	// predIndex wählt einen Knoten aus, etwa [1] oder [last()].
+	// predIndex selects a node, such as [1] or [last()].
 	predIndex
-	// predFilter filtert, die Bindung kann dann leer sein.
+	// predFilter filters, the binding can then be empty.
 	predFilter
 )
 
@@ -37,8 +37,8 @@ var (
 	indexRe = regexp.MustCompile(`^\s*([0-9]+|last\(\))\s*$`)
 )
 
-// splitPath zerlegt einfache Pfade wie inv:items/inv:item[1]/@unit. Alles
-// andere (Funktionen, Operatoren, //, Platzhalter) liefert ok=false.
+// splitPath splits simple paths such as inv:items/inv:item[1]/@unit.
+// Everything else (functions, operators, //, wildcards) yields ok=false.
 func splitPath(expr string) (steps []step, abs bool, ok bool) {
 	if expr == "" || strings.Contains(expr, "//") {
 		return nil, false, false
@@ -64,7 +64,7 @@ func splitPath(expr string) (steps []step, abs bool, ok bool) {
 	return steps, abs, true
 }
 
-// splitTop trennt an Schrägstrichen außerhalb von Prädikaten und Literalen.
+// splitTop splits at slashes outside of predicates and literals.
 func splitTop(s string) ([]string, bool) {
 	var out []string
 	depth, start := 0, 0
@@ -142,7 +142,7 @@ func parseStep(seg string) (step, bool) {
 	return st, true
 }
 
-// closing liefert den Index der schließenden Klammer zum ersten Zeichen.
+// closing returns the index of the closing bracket for the first character.
 func closing(s string) int {
 	depth := 0
 	var quote rune

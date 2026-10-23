@@ -1,10 +1,10 @@
-// Package pdf ist der Low-Level-Writer von pdx: ein kleines Objektmodell,
-// indirekte Objekte, Flate-Streams, Xref-Tabelle und Trailer.
+// Package pdf is the low-level writer of pdx: a small object model,
+// indirect objects, Flate streams, xref table and trailer.
 //
-// Das Paket kennt weder Layout noch Schriften. Es schreibt deterministisch:
-// Dictionary-Schlüssel werden sortiert, Zahlen fest formatiert und Objekte in
-// der Reihenfolge ihres Anlegens nummeriert. Gleiche Aufrufe ergeben daher
-// byte-identische Dateien.
+// The package knows neither layout nor fonts. It writes deterministically:
+// dictionary keys are sorted, numbers have a fixed format and objects are
+// numbered in the order of their creation. Identical calls therefore yield
+// byte-identical files.
 package pdf
 
 import (
@@ -14,52 +14,52 @@ import (
 	"unicode/utf16"
 )
 
-// Object ist ein beliebiges PDF-Objekt.
+// Object is any PDF object.
 type Object interface {
 	writePDF(b *bytes.Buffer)
 }
 
-// Null ist das PDF-Objekt null.
+// Null is the PDF object null.
 type Null struct{}
 
-// Bool ist ein Wahrheitswert.
+// Bool is a boolean value.
 type Bool bool
 
-// Int ist eine ganze Zahl.
+// Int is an integer.
 type Int int64
 
-// Real ist eine Gleitkommazahl. Sie wird mit höchstens fünf Nachkommastellen
-// geschrieben, ohne Exponent und ohne abschließende Nullen.
+// Real is a floating-point number. It is written with at most five decimal
+// places, without exponent and without trailing zeros.
 type Real float64
 
-// Name ist ein PDF-Name ohne den führenden Schrägstrich.
+// Name is a PDF name without the leading slash.
 type Name string
 
-// String ist ein literaler String in runden Klammern. Die Bytes werden
-// unverändert übernommen und nur maskiert.
+// String is a literal string in parentheses. The bytes are taken over
+// unchanged and only escaped.
 type String []byte
 
-// HexString ist ein String in Hexadezimalschreibweise.
+// HexString is a string in hexadecimal notation.
 type HexString []byte
 
-// Array ist ein PDF-Array.
+// Array is a PDF array.
 type Array []Object
 
-// Ref verweist auf ein indirektes Objekt.
+// Ref refers to an indirect object.
 type Ref struct {
 	Num int
 }
 
-// Dict ist ein PDF-Dictionary. Die Schlüssel werden beim Schreiben sortiert.
+// Dict is a PDF dictionary. The keys are sorted when writing.
 type Dict struct {
 	m map[Name]Object
 }
 
-// NewDict legt ein leeres Dictionary an.
+// NewDict creates an empty dictionary.
 func NewDict() *Dict { return &Dict{m: map[Name]Object{}} }
 
-// D ist eine Kurzform, um ein Dictionary aus Schlüssel-Wert-Paaren zu bauen.
-// Werte vom Typ nil werden übersprungen.
+// D is a shorthand to build a dictionary from key-value pairs.
+// Values of type nil are skipped.
 func D(kv ...any) *Dict {
 	if len(kv)%2 != 0 {
 		panic("pdf.D: ungerade Anzahl von Argumenten")
@@ -78,7 +78,7 @@ func D(kv ...any) *Dict {
 	return d
 }
 
-// Set setzt einen Eintrag. Ein Wert nil entfernt den Schlüssel.
+// Set sets an entry. A nil value removes the key.
 func (d *Dict) Set(k Name, v Object) *Dict {
 	if v == nil {
 		delete(d.m, k)
@@ -88,13 +88,13 @@ func (d *Dict) Set(k Name, v Object) *Dict {
 	return d
 }
 
-// Get liefert einen Eintrag oder nil.
+// Get returns an entry or nil.
 func (d *Dict) Get(k Name) Object { return d.m[k] }
 
-// Has meldet, ob der Schlüssel vorhanden ist.
+// Has reports whether the key is present.
 func (d *Dict) Has(k Name) bool { _, ok := d.m[k]; return ok }
 
-// Keys liefert die Schlüssel sortiert.
+// Keys returns the keys sorted.
 func (d *Dict) Keys() []Name {
 	ks := make([]Name, 0, len(d.m))
 	for k := range d.m {
@@ -104,11 +104,11 @@ func (d *Dict) Keys() []Name {
 	return ks
 }
 
-// Len liefert die Anzahl der Einträge.
+// Len returns the number of entries.
 func (d *Dict) Len() int { return len(d.m) }
 
-// TextString kodiert einen Textstring nach ISO 32000 7.9.2.2. Reiner
-// ASCII-Text bleibt literal, alles andere wird UTF-16BE mit BOM.
+// TextString encodes a text string according to ISO 32000 7.9.2.2. Pure
+// ASCII text stays literal, everything else becomes UTF-16BE with BOM.
 func TextString(s string) Object {
 	ascii := true
 	for i := 0; i < len(s); i++ {
@@ -143,8 +143,8 @@ func (v Int) writePDF(b *bytes.Buffer) { b.WriteString(strconv.FormatInt(int64(v
 
 func (v Real) writePDF(b *bytes.Buffer) { b.WriteString(FormatNumber(float64(v))) }
 
-// FormatNumber formatiert eine Zahl für PDF: höchstens fünf Nachkommastellen,
-// kein Exponent, keine abschließenden Nullen, kein negatives Null.
+// FormatNumber formats a number for PDF: at most five decimal places,
+// no exponent, no trailing zeros, no negative zero.
 func FormatNumber(v float64) string {
 	s := strconv.FormatFloat(v, 'f', 5, 64)
 	s = trimZeros(s)
@@ -254,7 +254,7 @@ func (d *Dict) writePDF(b *bytes.Buffer) {
 	b.WriteString(">>")
 }
 
-// Serialize liefert die PDF-Schreibweise eines Objekts, etwa für Tests.
+// Serialize returns the PDF notation of an object, for example for tests.
 func Serialize(o Object) string {
 	var b bytes.Buffer
 	o.writePDF(&b)

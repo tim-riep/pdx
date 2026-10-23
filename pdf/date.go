@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// Date formatiert einen Zeitpunkt als PDF-Datum nach ISO 32000 7.9.4,
-// etwa D:20260101000000+00'00'. Die Zeitzone des Zeitpunkts bleibt erhalten.
+// Date formats a point in time as a PDF date according to ISO 32000 7.9.4,
+// for example D:20260101000000+00'00'. The time zone of the time is kept.
 func Date(t time.Time) String {
 	_, off := t.Zone()
 	sign := byte('+')

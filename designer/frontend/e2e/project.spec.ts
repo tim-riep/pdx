@@ -9,7 +9,7 @@ test("Vorlage anlegen, speichern und wieder öffnen", async ({ page }) => {
   await page.getByRole("button", { name: "Neu", exact: true }).first().click();
   await expect(page.getByTestId("doc-title")).toHaveText("Neue Vorlage");
 
-  // Im Browser gibt es keine nativen Dialoge, der Designer fragt nach dem Pfad.
+  // The browser has no native dialogs, the designer asks for the path.
   const target = join(mkdtempSync(join(tmpdir(), "pdx-save-")), "neu.zip");
   await page.keyboard.press("ControlOrMeta+s");
   await page.getByRole("dialog").getByRole("textbox").fill(target);

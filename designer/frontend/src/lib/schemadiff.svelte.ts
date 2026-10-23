@@ -1,5 +1,5 @@
-// Ablauf einer Schemaänderung: neues XSD wählen, Unterschiede zeigen,
-// übernehmen mit Umstellung der Bindungen, danach eine Aufgabenliste.
+// Flow of a schema change: choose a new XSD, show the differences,
+// apply with the bindings switched over, then a task list.
 
 import { AppAPI, SchemaAPI, message, type SchemaChange, type SchemaDiff } from "./api";
 import { t } from "./i18n";
@@ -30,7 +30,7 @@ async function pick(askPath: (title: string) => Promise<string | null>): Promise
   }
 }
 
-// changeSchema zeigt die Unterschiede zu einem neuen XSD.
+// changeSchema shows the differences to a new XSD.
 export async function changeSchema(askPath: (title: string) => Promise<string | null>) {
   const path = await pick(askPath);
   if (!path) return;
@@ -64,7 +64,7 @@ export async function applyChange() {
     ui.error = message(e);
     return;
   }
-  // Übrig bleiben Knoten mit betroffenen Elementen, die nicht umgestellt sind.
+  // What remains are nodes with affected elements that are not switched over.
   sd.tasks = diff.changes
     .filter((c) => c.refs.length > 0 && !(c.kind === "renamed" && sd.rename[c.path]) && c.kind !== "added")
     .map((c) => ({ id: `${c.kind}:${c.path}`, text: taskText(c), refs: c.refs }));

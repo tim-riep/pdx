@@ -9,9 +9,9 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/model"
 )
 
-// BenchmarkCommandPatch misst einen Befehl vom Aufruf bis zum Patch der
-// Projektion: Anwenden, XSD- und Paketprüfung, Projektion und Diff. Ziel:
-// p95 unter 20 ms bei der Musterrechnung.
+// BenchmarkCommandPatch measures a command from the call to the patch of the
+// projection: apply, XSD and package check, projection and diff. Goal:
+// p95 below 20 ms for the sample invoice.
 func BenchmarkCommandPatch(b *testing.B) {
 	c := NewCore(nil, nil, b.TempDir())
 	if _, err := NewProjectService(c).Open(muster); err != nil {

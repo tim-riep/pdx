@@ -1,6 +1,6 @@
-// Zustand des XPath-Editors. Feld im Inspektor und Tab XPath bearbeiten
-// denselben Entwurf: das zuletzt fokussierte XPath-Attribut eines Elements.
-// Der Entwurf ist nur Eingabe, ins Modell kommt er als Befehl.
+// State of the XPath editor. The field in the inspector and the XPath tab edit
+// the same draft: the last focused XPath attribute of an element.
+// The draft is input only, it reaches the model as a command.
 
 import { TemplateAPI, type Completion, type XPathInfo } from "./api";
 import { apply } from "./template.svelte";
@@ -10,16 +10,16 @@ export const xp = $state({
   ref: "",
   prop: "",
   draft: "",
-  // info gehört zum Ausdruck infoExpr, ältere Antworten werden verworfen.
+  // info belongs to the expression infoExpr, older responses are discarded.
   info: null as XPathInfo | null,
   infoExpr: "",
-  // caret ist die letzte Cursorstelle im Entwurf, für Einfügen aus Listen.
+  // caret is the last cursor position in the draft, for inserting from lists.
   caret: 0,
 });
 
 export const isActive = (ref: string, prop: string) => xp.ref === ref && xp.prop === prop;
 
-// edit macht ein Attribut zum bearbeiteten Ausdruck.
+// edit makes an attribute the edited expression.
 export function edit(ref: string, prop: string, value: string) {
   if (isActive(ref, prop)) return;
   xp.ref = ref;
@@ -38,7 +38,7 @@ export function setDraft(v: string) {
 let timer: ReturnType<typeof setTimeout> | undefined;
 let seq = 0;
 
-// check prüft den Entwurf nach kurzer Pause beim Tippen.
+// check checks the draft after a short pause while typing.
 export function check(delay = 120) {
   clearTimeout(timer);
   const s = ++seq;
@@ -58,7 +58,7 @@ export function check(delay = 120) {
 
 let cseq = 0;
 
-// complete liefert Vorschläge, veraltete Antworten ergeben null.
+// complete returns suggestions, outdated responses yield null.
 export async function complete(ref: string, expr: string, cursor: number): Promise<Completion | null> {
   const s = ++cseq;
   try {
@@ -69,14 +69,14 @@ export async function complete(ref: string, expr: string, cursor: number): Promi
   }
 }
 
-// commit schreibt den Entwurf ins Modell, wenn er sich vom Wert unterscheidet.
+// commit writes the draft into the model if it differs from the value.
 export async function commit(current: string): Promise<boolean> {
   const value = xp.draft.trim();
   if (value === current) return true;
   return apply(t("cmd.setAttr", { prop: propLabel(xp.prop) }), { op: "setAttr", ref: xp.ref, name: xp.prop, value });
 }
 
-// insert fügt Text an der letzten Cursorstelle ein.
+// insert inserts text at the last cursor position.
 export function insert(text: string) {
   const at = Math.min(xp.caret, xp.draft.length);
   setDraft(xp.draft.slice(0, at) + text + xp.draft.slice(at));

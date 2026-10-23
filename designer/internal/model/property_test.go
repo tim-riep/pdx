@@ -10,12 +10,12 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// gen erzeugt zufällige, teils ungültige Befehle für eine Vorlage.
+// gen generates random, partly invalid commands for a template.
 type gen struct {
 	r   *rand.Rand
 	d   *Document
 	cat Catalog
-	n   int // Zähler für neue IDs
+	n   int // counter for new IDs
 }
 
 func (g *gen) elements() []*template.Node {
@@ -39,7 +39,7 @@ func (g *gen) pick(list []*template.Node) *template.Node { return list[g.r.IntN(
 func (g *gen) value(p Property) string {
 	switch {
 	case g.r.IntN(6) == 0:
-		return "" // entfernen
+		return "" // remove
 	case p.Kind == "enum":
 		return p.Enum[g.r.IntN(len(p.Enum))]
 	case p.Kind == "length":
@@ -61,7 +61,7 @@ func (g *gen) value(p Property) string {
 	return []string{"Test", "inv:totals/inv:net", "", "§ äöü"}[g.r.IntN(4)]
 }
 
-// renamed kopiert einen Teilbaum mit neuen IDs.
+// renamed copies a subtree with new IDs.
 func (g *gen) renamed(n *template.Node) *template.Node {
 	c := n.Clone()
 	var walk func(x *template.Node)
@@ -99,7 +99,7 @@ func (g *gen) command(depth int) Command {
 		var b bytes.Buffer
 		tmp := &template.Template{Root: g.renamed(src)}
 		w := template.Write(tmp)
-		b.Write(w[bytes.IndexByte(w, '\n')+1:]) // ohne XML-Deklaration
+		b.Write(w[bytes.IndexByte(w, '\n')+1:]) // without XML declaration
 		xml := bytes.ReplaceAll(b.Bytes(), []byte(` xmlns="`+template.NS+`"`), nil)
 		return Command{Op: "insert", Parent: Ref(target), Index: g.r.IntN(len(target.Children)+2) - 1, XML: string(xml)}
 	default:
@@ -114,9 +114,9 @@ func (g *gen) command(depth int) Command {
 	}
 }
 
-// TestRandomCommands wendet zufällige Befehlsfolgen an. Fehlgeschlagene
-// Befehle ändern nichts, vollständiges Undo ergibt die Ausgangsvorlage,
-// Redo den Endstand, Speichern und Laden ist verlustfrei.
+// TestRandomCommands applies random command sequences. Failed
+// commands change nothing, full Undo yields the initial template,
+// Redo the final state, saving and loading is lossless.
 func TestRandomCommands(t *testing.T) {
 	cat, err := LoadCatalog()
 	if err != nil {
@@ -147,7 +147,7 @@ func TestRandomCommands(t *testing.T) {
 				}
 			}
 			end := canon(d)
-			// Speichern und Laden.
+			// Save and load.
 			path := filepath.Join(t.TempDir(), "v.zip")
 			if err := d.SaveAs(path); err != nil {
 				t.Fatal(err)

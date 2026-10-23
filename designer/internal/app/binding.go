@@ -11,21 +11,21 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Drop beschreibt, wohin ein Datenknoten gezogen wurde.
+// Drop describes where a data node was dragged to.
 type Drop struct {
-	// Path ist der Pfad des Datenknotens im Datenbaum.
+	// Path is the path of the data node in the data tree.
 	Path string `json:"path"`
-	// Parent ist das Vorlagenelement, das den neuen Inhalt aufnimmt.
+	// Parent is the template element that receives the new content.
 	Parent string `json:"parent"`
-	// Index ist die Position unter den Kindern, -1 hängt an.
+	// Index is the position among the children, -1 appends.
 	Index int `json:"index"`
-	// X und Y sind bei positionierten Eltern die Lage in Millimetern relativ
-	// zum Elternelement.
+	// X and Y are the position in millimeters relative to the parent element
+	// when the parent is positioned.
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 }
 
-// positioned meldet, ob die Kinder eines Elements positioniert sind.
+// positioned reports whether the children of an element are positioned.
 func positioned(n *template.Node) bool {
 	switch n.Name {
 	case "header", "footer":
@@ -36,7 +36,7 @@ func positioned(n *template.Node) bool {
 	return false
 }
 
-// buildDrop erzeugt den Befehl für einen gezogenen Datenknoten.
+// buildDrop creates the command for a dragged data node.
 func buildDrop(t *template.Template, s *schema.Schema, drop Drop) (model.Command, string, error) {
 	if s == nil {
 		return model.Command{}, "", errors.New("die Vorlage hat kein Daten-XSD")
@@ -87,14 +87,14 @@ func buildDrop(t *template.Template, s *schema.Schema, drop Drop) (model.Command
 	}
 	xml := fragment(top)
 	cmd := model.Command{Op: "insert", Parent: drop.Parent, Index: drop.Index, XML: xml}
-	// Namespaces, die die Vorlage noch nicht kennt, werden deklariert.
+	// Namespaces the template does not know yet are declared.
 	if decl := nsCommands(t, s); len(decl) > 0 {
 		cmd = model.Command{Op: "batch", Cmds: append(decl, cmd)}
 	}
 	return cmd, el.ID(), nil
 }
 
-// childContext ist der Datenkontext für neue Kinder eines Elements.
+// childContext is the data context for new children of an element.
 func childContext(t *template.Template, parent *template.Node) (string, error) {
 	probe := template.NewElement("probe")
 	parent.InsertChild(-1, probe)
@@ -109,11 +109,11 @@ func mm(v float64) string {
 	return strings.TrimSuffix(strings.TrimRight(fmt.Sprintf("%.1f", v), "0"), ".") + "mm"
 }
 
-// builder erzeugt Elemente mit eindeutigen IDs.
+// builder creates elements with unique IDs.
 type builder struct {
 	t       *template.Template
 	used    map[string]bool
-	formats map[string]string // Art (number, date, dateTime) zu Name des Musters
+	formats map[string]string // kind (number, date, dateTime) to name of the pattern
 	numeric func(*template.Node) bool
 }
 
@@ -127,7 +127,7 @@ func (b *builder) id(base string) string {
 	return id
 }
 
-// sanitize macht aus einem Datennamen eine gültige ID.
+// sanitize turns a data name into a valid ID.
 func sanitize(s string) string {
 	if i := strings.LastIndex(s, ":"); i >= 0 {
 		s = s[i+1:]
@@ -176,7 +176,7 @@ func (b *builder) subform(n *schema.Node, bind string) *template.Node {
 	return sf
 }
 
-// maxColumns begrenzt die Spalten einer erzeugten Tabelle.
+// maxColumns limits the columns of a generated table.
 const maxColumns = 8
 
 func (b *builder) table(n *schema.Node, bind string) *template.Node {
@@ -217,7 +217,7 @@ func (b *builder) table(n *schema.Node, bind string) *template.Node {
 	return tbl
 }
 
-// simpleChildren liefert die Kinder mit einfachem Inhalt.
+// simpleChildren returns the children with simple content.
 func simpleChildren(n *schema.Node) []*schema.Node {
 	var out []*schema.Node
 	for _, c := range n.Children {
@@ -235,7 +235,7 @@ func localStep(n *schema.Node) string {
 	return n.Path
 }
 
-// title macht aus einem Datennamen eine Spaltenüberschrift.
+// title turns a data name into a column heading.
 func title(name string) string {
 	s := sanitize(name)
 	if s == "" {
@@ -244,7 +244,7 @@ func title(name string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
 }
 
-// formats liefert je Art das erste Formatmuster der Vorlage.
+// formats returns the first format pattern of the template for each kind.
 func formats(t *template.Template) map[string]string {
 	out := map[string]string{}
 	f := t.Root.First("formats")
@@ -261,7 +261,7 @@ func formats(t *template.Template) map[string]string {
 	return out
 }
 
-// nsCommands deklariert fehlende Namespaces in der Vorlage.
+// nsCommands declares missing namespaces in the template.
 func nsCommands(t *template.Template, s *schema.Schema) []model.Command {
 	if len(s.Missing) == 0 {
 		return nil
@@ -281,7 +281,7 @@ func nsCommands(t *template.Template, s *schema.Schema) []model.Command {
 	return []model.Command{{Op: "insert", Parent: model.Ref(t.Root), Index: 0, XML: "<namespaces>" + xml.String() + "</namespaces>"}}
 }
 
-// fragment schreibt ein Element als XML im Vorlagenformat ohne Namespace.
+// fragment writes an element as XML in the template format without namespace.
 func fragment(n *template.Node) string {
 	root := template.NewElement("template")
 	root.InsertChild(-1, n)

@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
-# Image des Render-Dienstes pdx-server. Reproduzierbar: Basisimages per
-# Digest, Go ohne cgo mit -trimpath und ohne Build-ID, Zeitstempel aus
-# SOURCE_DATE_EPOCH (deploy/build.sh). Zweimal gebaut ergibt denselben
-# Digest.
+# Image of the render service pdx-server. Reproducible: base images by
+# digest, Go without cgo with -trimpath and without build ID, timestamps
+# from SOURCE_DATE_EPOCH (deploy/build.sh). Building twice yields the same
+# digest.
 FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26.4-bookworm@sha256:b305420a68d0f229d91eb3b3ed9e519fcf2cf5461da4bef997bf927e8c0bfd2b AS build
 ARG TARGETOS TARGETARCH
 WORKDIR /src
@@ -12,7 +12,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOFLAGS=-mod=readonly \
     go build -trimpath -ldflags="-s -w -buildid=" -o /out/pdx-server ./cmd/pdx-server
 
-# Laufzeit ohne Shell und Paketverwaltung, als Nutzer nonroot (65532).
+# Runtime without shell and package manager, as user nonroot (65532).
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab
 COPY --from=build /out/pdx-server /pdx-server
 COPY --from=build /src/LICENSE /src/NOTICE /src/THIRD_PARTY_NOTICES.txt /usr/share/doc/pdx/

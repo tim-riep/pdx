@@ -10,8 +10,8 @@ import (
 	"github.com/tim-riep/pdx/internal/testutil"
 )
 
-// textDoc setzt einige Zeilen in Liberation Sans (TrueType) und Source Serif 4
-// (OpenType/CFF) ohne Layoutengine.
+// textDoc sets a few lines in Liberation Sans (TrueType) and Source Serif 4
+// (OpenType/CFF) without layout engine.
 func textDoc(t testing.TB) *areatree.Document {
 	t.Helper()
 	reg := font.NewRegistry()

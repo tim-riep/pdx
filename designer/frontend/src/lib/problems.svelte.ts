@@ -1,4 +1,4 @@
-// Befunde der laufenden Prüfung und des letzten Satzlaufs als Lesecache.
+// Findings of the running check and of the last layout run as a read cache.
 
 import { EVENT, ValidationAPI, on, type ProjectState, type Report } from "./api";
 import { render } from "./render.svelte";
@@ -28,8 +28,8 @@ on<ProjectState>(EVENT.project, (s) => {
   }
 });
 
-// entries vereint Prüfung und Satz, Fehler zuerst. Doppelte Befunde (der
-// Compiler meldet sich in beiden) erscheinen einmal.
+// entries merges check and layout, errors first. Duplicate findings (the
+// compiler reports in both) appear once.
 export function entries(): Entry[] {
   const out: Entry[] = [];
   const seen = new Set<string>();

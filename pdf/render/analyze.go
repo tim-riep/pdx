@@ -8,25 +8,25 @@ import (
 	"github.com/tim-riep/pdx/pdf/profile"
 )
 
-// StructNode ist ein Strukturelement für Werkzeuge wie den Designer: Typ,
-// Vorlagen-ID, eigener Text (gekürzt) und Kinder in Lesereihenfolge.
+// StructNode is a structure element for tools like the designer: type,
+// template ID, own text (truncated) and kids in reading order.
 type StructNode struct {
 	Type string        `json:"type"`
 	ID   string        `json:"id"`
 	Text string        `json:"text"`
 	Alt  string        `json:"alt"`
 	Lang string        `json:"lang"`
-	Page int           `json:"page"` // ab 1, 0 ohne Lage
+	Page int           `json:"page"` // from 1, 0 without position
 	Kids []*StructNode `json:"kids"`
 }
 
-// maxText begrenzt den Text je Knoten.
+// maxText limits the text per node.
 const maxText = 80
 
-// Analyze plant den Strukturbaum eines Dokuments, ohne ein PDF zu schreiben,
-// und prüft ihn gegen den Anspruch wie beim Schreiben. Der Baum steht in
-// Lesereihenfolge, die Befunde sind leer, wenn der Anspruch keine
-// Barrierefreiheit verlangt.
+// Analyze plans the structure tree of a document without writing a PDF,
+// and checks it against the claim as when writing. The tree is in
+// reading order, the findings are empty if the claim does not require
+// accessibility.
 func Analyze(doc *areatree.Document, c profile.Claim) (*StructNode, CheckErrors) {
 	t := newTagger(doc)
 	t.pdf2 = c.Version == "2.0"

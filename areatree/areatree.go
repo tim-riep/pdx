@@ -1,25 +1,25 @@
-// Package areatree definiert den Area Tree von pdx: Seiten mit absolut
-// positionierten Bereichen, Glyph-Runs, Bildern, Linien und Rechtecken.
+// Package areatree defines the area tree of pdx: pages with absolutely
+// positioned areas, glyph runs, images, lines and rectangles.
 //
-// Der Area Tree ist das stabile Zwischenformat zwischen Layout und Ausgabe.
-// Der PDF-Writer, die spätere Canvas-Vorschau im Designer und Rastertests
-// lesen ihn. Er hängt deshalb von keinem anderen pdx-Paket ab.
+// The area tree is the stable intermediate format between layout and output.
+// The PDF writer, the later canvas preview in the designer and raster tests
+// read it. It therefore depends on no other pdx package.
 //
-// Alle Längen sind ganze Millipunkt (1/1000 pt). Koordinaten sind absolut auf
-// der Seite, Ursprung oben links, y wächst nach unten. Die Verschachtelung von
-// Bereichen bildet nur die Struktur ab (für Auswahl im Designer und später für
-// Tagging), nicht die Lage.
+// All lengths are whole millipoints (1/1000 pt). Coordinates are absolute on
+// the page, origin top left, y grows downward. The nesting of
+// areas only reflects the structure (for selection in the designer and later
+// for tagging), not the position.
 package areatree
 
 import "strconv"
 
-// Length ist eine Länge in Millipunkt.
+// Length is a length in millipoints.
 type Length int64
 
-// Pt ist ein Punkt (1/72 Zoll).
+// Pt is one point (1/72 inch).
 const Pt Length = 1000
 
-// Points rechnet Punkt in Length um und rundet kaufmännisch.
+// Points converts points to Length and rounds half away from zero.
 func Points(f float64) Length {
 	if f < 0 {
 		return -Length(-f*1000 + 0.5)
@@ -27,10 +27,10 @@ func Points(f float64) Length {
 	return Length(f*1000 + 0.5)
 }
 
-// Pt liefert die Länge in Punkt.
+// Pt returns the length in points.
 func (l Length) Pt() float64 { return float64(l) / 1000 }
 
-// String formatiert die Länge in Punkt ohne abschließende Nullen.
+// String formats the length in points without trailing zeros.
 func (l Length) String() string {
 	neg := l < 0
 	if neg {
@@ -50,75 +50,75 @@ func (l Length) String() string {
 	return s
 }
 
-// Point ist ein Punkt auf der Seite.
+// Point is a point on the page.
 type Point struct{ X, Y Length }
 
-// Rect ist ein Rechteck mit linker oberer Ecke X, Y.
+// Rect is a rectangle with top left corner X, Y.
 type Rect struct{ X, Y, W, H Length }
 
-// Bounds liefert das Rechteck selbst und erfüllt so einen Teil von Area.
+// Bounds returns the rectangle itself and so satisfies part of Area.
 func (r Rect) Bounds() Rect { return r }
 
-// ColorSpace ist der Farbraum einer Farbe.
+// ColorSpace is the color space of a color.
 type ColorSpace uint8
 
 const (
-	// Gray ist DeviceGray, eine Komponente.
+	// Gray is DeviceGray, one component.
 	Gray ColorSpace = iota
-	// RGB ist DeviceRGB, drei Komponenten. Unter PDF/A gilt das Output Intent.
+	// RGB is DeviceRGB, three components. Under PDF/A the output intent applies.
 	RGB
-	// CMYK ist DeviceCMYK, vier Komponenten. In Phase 0 nicht ausgegeben.
+	// CMYK is DeviceCMYK, four components. Not output in phase 0.
 	CMYK
 )
 
-// Color ist eine Farbe mit Komponenten im Bereich 0 bis 1.
+// Color is a color with components in the range 0 to 1.
 type Color struct {
 	Space ColorSpace
 	C     [4]float64
 }
 
-// Black ist Schwarz in DeviceGray.
+// Black is black in DeviceGray.
 var Black = Color{Space: Gray}
 
-// RGBColor baut eine RGB-Farbe.
+// RGBColor builds an RGB color.
 func RGBColor(r, g, b float64) Color { return Color{Space: RGB, C: [4]float64{r, g, b}} }
 
-// GrayColor baut eine Graustufe.
+// GrayColor builds a gray level.
 func GrayColor(v float64) Color { return Color{Space: Gray, C: [4]float64{v}} }
 
-// Document ist ein vollständig gesetztes Dokument.
+// Document is a fully laid out document.
 type Document struct {
 	Pages       []*Page
 	Fonts       []FontRef
 	Images      []ImageRef
 	Attachments []Attachment
 	Meta        Metadata
-	// Dests ordnet IDs ihre Lage zu, für interne Verweise und Lesezeichen.
+	// Dests maps IDs to their position, for internal links and bookmarks.
 	Dests map[string]Dest
-	// Bookmarks sind die Lesezeichen (fo:bookmark-tree).
+	// Bookmarks are the bookmarks (fo:bookmark-tree).
 	Bookmarks []Bookmark
-	// Inline enthält Rolle und Angaben für Tagged PDF von Inline-Elementen
-	// (Spans, Felder, Verweise) nach Vorlagen-ID. Ihre Glyphen tragen die ID,
-	// einen eigenen Container haben sie nur mit Hintergrund oder Rahmen.
+	// Inline holds role and details for Tagged PDF of inline elements
+	// (spans, fields, links) by template ID. Their glyphs carry the ID,
+	// they get a container of their own only with background or border.
 	Inline map[string]InlineTag
 }
 
-// InlineTag sind Rolle und Angaben eines Inline-Elements.
+// InlineTag holds role and details of an inline element.
 type InlineTag struct {
 	Role string
 	Tag  Tag
 }
 
-// Dest ist ein Sprungziel: Seitenindex (ab 0) und Punkt auf der Seite.
+// Dest is a jump target: page index (from 0) and point on the page.
 type Dest struct {
 	Page int
 	At   Point
-	// Source ist die Quelle (Container.Source) des Elements am Ziel, für
-	// Strukturziele in Tagged PDF. Leer, wenn das Ziel eine Seite ist.
+	// Source is the source (Container.Source) of the element at the target, for
+	// structure destinations in Tagged PDF. Empty if the target is a page.
 	Source string
 }
 
-// Bookmark ist ein Lesezeichen. Ziel ist entweder Dest (eine ID) oder URI.
+// Bookmark is a bookmark. The target is either Dest (an ID) or URI.
 type Bookmark struct {
 	Title    string
 	Dest     string
@@ -127,17 +127,17 @@ type Bookmark struct {
 	Children []Bookmark
 }
 
-// Metadata sind die Dokumentmetadaten.
+// Metadata is the document metadata.
 type Metadata struct {
 	Title, Author, Subject, Keywords, Creator string
-	// Lang ist die Dokumentsprache nach BCP 47, etwa "de-DE".
+	// Lang is the document language per BCP 47, such as "de-DE".
 	Lang string
-	// XMP sind zusätzliche XMP-Schemata. Unter PDF/A wird für jedes ein
-	// pdfaExtension-Schema geschrieben.
+	// XMP holds additional XMP schemas. Under PDF/A a pdfaExtension
+	// schema is written for each one.
 	XMP []XMPSchema
 }
 
-// XMPSchema ist ein eigenes XMP-Schema mit Werten.
+// XMPSchema is a custom XMP schema with values.
 type XMPSchema struct {
 	NamespaceURI string
 	Prefix       string
@@ -145,51 +145,51 @@ type XMPSchema struct {
 	Properties   []XMPProperty
 }
 
-// XMPProperty ist eine einfache Texteigenschaft eines XMP-Schemas.
+// XMPProperty is a simple text property of an XMP schema.
 type XMPProperty struct {
 	Name        string
 	Value       string
 	Description string
-	// ValueType ist der XMP-Werttyp, etwa "Text" oder "Date". Leer heißt Text.
+	// ValueType is the XMP value type, such as "Text" or "Date". Empty means Text.
 	ValueType string
-	// Category ist "internal" oder "external" (Vorgabe) für die
-	// pdfaExtension-Beschreibung.
+	// Category is "internal" or "external" (default) for the
+	// pdfaExtension description.
 	Category string
 }
 
-// FontID indiziert Document.Fonts.
+// FontID indexes Document.Fonts.
 type FontID int
 
-// FontSource ist die Schrift hinter einer FontRef, typischerweise *font.Face.
+// FontSource is the font behind a FontRef, typically *font.Face.
 type FontSource interface {
 	PostScriptName() string
 }
 
-// FontRef verbindet eine FontID mit ihrer Schrift.
+// FontRef connects a FontID with its font.
 type FontRef struct {
 	Source FontSource
 }
 
-// ImageID indiziert Document.Images.
+// ImageID indexes Document.Images.
 type ImageID int
 
-// ImageSource ist das Bild hinter einer ImageRef, typischerweise *image.Image.
+// ImageSource is the image behind an ImageRef, typically *image.Image.
 type ImageSource interface {
-	// Key identifiziert das Bild eindeutig, etwa über einen Inhaltshash.
+	// Key identifies the image uniquely, for example by a content hash.
 	Key() string
-	// PixelSize liefert Breite und Höhe in Pixel.
+	// PixelSize returns width and height in pixels.
 	PixelSize() (w, h int)
 }
 
-// ImageRef verbindet eine ImageID mit ihrem Bild.
+// ImageRef connects an ImageID with its image.
 type ImageRef struct {
 	Source ImageSource
 }
 
-// Relationship ist der Wert von /AFRelationship nach ISO 32000-2.
+// Relationship is the value of /AFRelationship according to ISO 32000-2.
 type Relationship string
 
-// Werte für Relationship.
+// Values for Relationship.
 const (
 	Source           Relationship = "Source"
 	Data             Relationship = "Data"
@@ -201,7 +201,7 @@ const (
 	Unspecified      Relationship = "Unspecified"
 )
 
-// Attachment ist eine eingebettete Datei.
+// Attachment is an embedded file.
 type Attachment struct {
 	Name         string
 	MIMEType     string
@@ -210,37 +210,37 @@ type Attachment struct {
 	Data         []byte
 }
 
-// Page ist eine Seite.
+// Page is a page.
 type Page struct {
-	// Number ist die Seitenzahl ab 1.
+	// Number is the page number from 1.
 	Number int
 	Width  Length
 	Height Length
-	// TrimBox und BleedBox sind optional.
+	// TrimBox and BleedBox are optional.
 	TrimBox  *Rect
 	BleedBox *Rect
 	Areas    []Area
 }
 
-// Area ist ein Bereich auf einer Seite.
+// Area is an area on a page.
 type Area interface {
 	Bounds() Rect
 	isArea()
 }
 
-// Kind unterscheidet Container.
+// Kind distinguishes containers.
 type Kind uint8
 
 const (
-	// KindBlock ist ein Blockbereich.
+	// KindBlock is a block area.
 	KindBlock Kind = iota
-	// KindLine ist ein Zeilenbereich.
+	// KindLine is a line area.
 	KindLine
-	// KindInline ist ein Inlinebereich.
+	// KindInline is an inline area.
 	KindInline
-	// KindRegion ist eine Region der Seitenvorlage.
+	// KindRegion is a region of the page master.
 	KindRegion
-	// KindViewport ist ein Bereich, der seinen Inhalt beschneidet.
+	// KindViewport is an area that clips its content.
 	KindViewport
 )
 
@@ -248,22 +248,22 @@ var kindNames = [...]string{"block", "line", "inline", "region", "viewport"}
 
 func (k Kind) String() string { return kindNames[k] }
 
-// BorderStyle ist der Linienstil eines Rahmens oder einer Linie.
+// BorderStyle is the line style of a border or a line.
 type BorderStyle uint8
 
 const (
-	// None zeichnet nichts.
+	// None draws nothing.
 	None BorderStyle = iota
-	// Solid zeichnet eine durchgezogene Linie.
+	// Solid draws a solid line.
 	Solid
-	// Dashed zeichnet eine gestrichelte Linie.
+	// Dashed draws a dashed line.
 	Dashed
-	// Dotted zeichnet eine gepunktete Linie.
+	// Dotted draws a dotted line.
 	Dotted
-	// Double zeichnet eine Doppellinie.
+	// Double draws a double line.
 	Double
-	// Hidden zeichnet nichts wie None, gewinnt aber bei zusammenfallenden
-	// Tabellenrahmen gegen alle anderen Stile (CSS2 17.6.2.1).
+	// Hidden draws nothing like None, but wins against all other styles for
+	// collapsing table borders (CSS2 17.6.2.1).
 	Hidden
 )
 
@@ -271,17 +271,17 @@ var styleNames = [...]string{"none", "solid", "dashed", "dotted", "double", "hid
 
 func (s BorderStyle) String() string { return styleNames[s] }
 
-// Border ist eine Rahmenkante.
+// Border is a border edge.
 type Border struct {
 	Width Length
 	Style BorderStyle
 	Color Color
 }
 
-// Visible meldet, ob die Kante gezeichnet wird.
+// Visible reports whether the edge is drawn.
 func (b Border) Visible() bool { return b.Style != None && b.Style != Hidden && b.Width > 0 }
 
-// Seiten für Container.Border.
+// Sides for Container.Border.
 const (
 	Top = iota
 	Right
@@ -289,100 +289,100 @@ const (
 	Left
 )
 
-// Container ist ein Block-, Zeilen-, Inline-, Regions- oder Viewport-Bereich.
-// Hintergrund und Rahmen beziehen sich auf das Rechteck einschließlich
-// Padding, der Rahmen liegt außen darum.
+// Container is a block, line, inline, region or viewport area.
+// Background and border refer to the rectangle including
+// padding, the border lies outside around it.
 type Container struct {
 	Rect
 	Kind       Kind
 	Background *Color
 	Border     [4]Border
 	Children   []Area
-	// Role ist die semantische Rolle aus der Vorlage (FO-Attribut role),
-	// Grundlage des Strukturtyps im Strukturbaum.
+	// Role is the semantic role from the template (FO attribute role),
+	// the basis of the structure type in the structure tree.
 	Role string
-	// Tag trägt weitere Angaben für Tagged PDF, nil ohne solche Angaben.
+	// Tag carries further details for Tagged PDF, nil without such details.
 	Tag *Tag
-	// Source verweist auf den Ursprung im Eingabedokument, etwa "fo:block@12:5".
+	// Source refers to the origin in the input document, such as "fo:block@12:5".
 	Source string
-	// ID ist die ID des Vorlagenelements (pdx:id im FO), geerbt vom nächsten
-	// Vorfahren. Leer bei FO ohne Vorlage.
+	// ID is the ID of the template element (pdx:id in the FO), inherited from the
+	// nearest ancestor. Empty for FO without a template.
 	ID string
 }
 
-// Tag beschreibt einen Container für Tagged PDF über die Rolle hinaus.
+// Tag describes a container for Tagged PDF beyond the role.
 type Tag struct {
-	// Alt ist der Alternativtext, Lang die Sprache, wenn sie abweicht,
-	// Scope der Bezug einer Kopfzelle (Column, Row oder Both).
+	// Alt is the alternative text, Lang the language if it differs,
+	// Scope the reference of a header cell (Column, Row or Both).
 	Alt, Lang, Scope string
-	// Order ist die Stelle in der Lesereihenfolge unter positionierten
-	// Geschwistern, 0 ohne Angabe.
+	// Order is the position in the reading order among positioned
+	// siblings, 0 if not given.
 	Order int
-	// Artifact nimmt den Bereich mit allen Kindern aus dem Strukturbaum.
+	// Artifact removes the area with all children from the structure tree.
 	Artifact bool
-	// Repeat markiert eine Wiederholung: Tabellenkopf oder -fuß auf einer
-	// Folgeseite oder den Inhalt eines abgerufenen Markers. Wiederholungen
-	// sind Artefakte, damit Vorlesen sie nicht mehrfach liest.
+	// Repeat marks a repetition: table header or footer on a
+	// following page or the content of a retrieved marker. Repetitions
+	// are artifacts so that screen readers do not read them more than once.
 	Repeat bool
-	// Row nummeriert die Zeilen einer Tabelle oder Liste je Dokument, Zellen
-	// derselben Zeile tragen dieselbe Nummer. Section ist header, body,
-	// footer oder item (Listenpunkt).
+	// Row numbers the rows of a table or list per document, cells
+	// of the same row carry the same number. Section is header, body,
+	// footer or item (list item).
 	Row     int
 	Section string
-	// ColSpan und RowSpan sind die Spannen einer Zelle, 0 für eine Spalte
-	// oder Zeile.
+	// ColSpan and RowSpan are the spans of a cell, 0 for one column
+	// or row.
 	ColSpan, RowSpan int
-	// Static markiert Inhalt aus fo:static-content (Kopf, Fuß, Seitenzahlen),
-	// der als Artefakt gilt. Content hebt das auf (artifact="false" in der
-	// Vorlage), etwa für Anschrift und Rechnungsdaten im Kopf der ersten Seite.
+	// Static marks content from fo:static-content (header, footer, page numbers)
+	// that counts as an artifact. Content cancels that (artifact="false" in the
+	// template), for example for address and invoice data in the header of the first page.
 	Static, Content bool
-	// Continued markiert ein Fragment, das einen Block oder eine Zelle von
-	// einer vorigen Seite fortsetzt.
+	// Continued marks a fragment that continues a block or a cell from
+	// a previous page.
 	Continued bool
-	// Parent ist bei absolut positionierten Containern die Quelle (Source)
-	// des nächsten absolut positionierten Vorfahren. Das Layout legt alle
-	// positionierten Container auf Seitenebene, Parent erhält die
-	// Verschachtelung für Struktur und Lesereihenfolge.
+	// Parent is, for absolutely positioned containers, the source (Source)
+	// of the nearest absolutely positioned ancestor. The layout places all
+	// positioned containers at page level, Parent preserves the
+	// nesting for structure and reading order.
 	Parent string
 }
 
-// Glyph ist eine positionierte Glyphe.
+// Glyph is a positioned glyph.
 type Glyph struct {
 	ID uint16
-	// Advance ist die Vorschubbreite einschließlich Kerning.
+	// Advance is the advance width including kerning.
 	Advance Length
-	// XOffset und YOffset verschieben die Glyphe ohne den Vorschub zu ändern.
+	// XOffset and YOffset shift the glyph without changing the advance.
 	XOffset, YOffset Length
-	// Text ist der Unicode-Text, den die Glyphe darstellt. Bei Ligaturen
-	// trägt die erste Glyphe den ganzen Cluster, Folgeglyphen bleiben leer.
+	// Text is the Unicode text that the glyph represents. For ligatures
+	// the first glyph carries the whole cluster, subsequent glyphs stay empty.
 	Text string
-	// Hyphen markiert den Trennstrich der automatischen Silbentrennung. Er
-	// gehört nicht zum Text des Wortes.
+	// Hyphen marks the hyphen of automatic hyphenation. It
+	// does not belong to the text of the word.
 	Hyphen bool
 }
 
-// GlyphRun ist eine Folge von Glyphen einer Schrift auf einer Grundlinie.
+// GlyphRun is a sequence of glyphs of one font on one baseline.
 type GlyphRun struct {
-	// Origin ist der Anfang der Grundlinie.
+	// Origin is the start of the baseline.
 	Origin Point
 	Font   FontID
 	Size   Length
 	Color  Color
 	Glyphs []Glyph
-	// Ascent und Descent (positiv) begrenzen den Run vertikal.
+	// Ascent and Descent (positive) bound the run vertically.
 	Ascent, Descent Length
-	// ID ist die ID des Vorlagenelements, wenn sie von der des umgebenden
-	// Containers abweicht, etwa bei einem Feld in einem Text. Sonst leer.
+	// ID is the ID of the template element if it differs from that of the
+	// enclosing container, for example for a field in a text. Else empty.
 	ID string
-	// Link ist der Schlüssel des fo:basic-link, zu dessen Text der Run
-	// gehört (Link.Key), sonst leer.
+	// Link is the key of the fo:basic-link whose text the run
+	// belongs to (Link.Key), else empty.
 	Link string
-	// Decor markiert reine Gestaltung wie die Punkte eines fo:leader. Sie
-	// wird in Tagged PDF zum Artefakt und beim Vorlesen übersprungen.
+	// Decor marks pure decoration such as the dots of an fo:leader. It
+	// becomes an artifact in Tagged PDF and is skipped by screen readers.
 	Decor bool
 }
 
-// Width ist die Summe der Vorschübe.
+// Width is the sum of the advances.
 func (g *GlyphRun) Width() Length {
 	var w Length
 	for _, gl := range g.Glyphs {
@@ -391,20 +391,20 @@ func (g *GlyphRun) Width() Length {
 	return w
 }
 
-// Bounds liefert das Rechteck aus Grundlinie, Ascent und Descent.
+// Bounds returns the rectangle from baseline, ascent and descent.
 func (g *GlyphRun) Bounds() Rect {
 	return Rect{X: g.Origin.X, Y: g.Origin.Y - g.Ascent, W: g.Width(), H: g.Ascent + g.Descent}
 }
 
-// Image ist ein platziertes Bild, skaliert auf das Rechteck.
+// Image is a placed image, scaled to the rectangle.
 type Image struct {
 	Rect
 	Image ImageID
-	// ID ist die ID des Vorlagenelements wie bei GlyphRun.
+	// ID is the ID of the template element as for GlyphRun.
 	ID string
 }
 
-// Line ist eine gerade Linie.
+// Line is a straight line.
 type Line struct {
 	From, To Point
 	Width    Length
@@ -412,58 +412,58 @@ type Line struct {
 	Color    Color
 }
 
-// Bounds liefert das umschließende Rechteck ohne Linienbreite.
+// Bounds returns the bounding rectangle without line width.
 func (l *Line) Bounds() Rect {
 	x0, x1 := min(l.From.X, l.To.X), max(l.From.X, l.To.X)
 	y0, y1 := min(l.From.Y, l.To.Y), max(l.From.Y, l.To.Y)
 	return Rect{X: x0, Y: y0, W: x1 - x0, H: y1 - y0}
 }
 
-// Box ist ein gefülltes und optional umrandetes Rechteck.
+// Box is a filled and optionally stroked rectangle.
 type Box struct {
 	Rect
 	Fill   *Color
 	Stroke *Border
 }
 
-// Link ist ein anklickbarer Bereich. Ziel ist entweder Dest (eine ID im
-// Dokument) oder URI.
+// Link is a clickable area. The target is either Dest (an ID in the
+// document) or URI.
 type Link struct {
 	Rect
 	Dest string
 	URI  string
-	// Key kennzeichnet den fo:basic-link, die Glyphen seines Textes tragen
-	// denselben Schlüssel (GlyphRun.Link).
+	// Key identifies the fo:basic-link, the glyphs of its text carry
+	// the same key (GlyphRun.Link).
 	Key string
 }
 
 func (*Link) isArea() {}
 
-// Widget ist ein Formularfeld (AcroForm) an einer Stelle der Seite. Runs
-// sind die vom Layout gesetzten Glyphen des Erscheinungsbilds, absolut auf
-// der Seite wie alle Bereiche.
+// Widget is a form field (AcroForm) at a position on the page. Runs
+// are the glyphs of the appearance laid out by the layout, absolute on
+// the page like all areas.
 type Widget struct {
 	Rect
 	Field Field
 	Runs  []*GlyphRun
-	// Selected ist bei Auswahllisten das Rechteck der gewählten Zeile, nil
-	// ohne Auswahl.
+	// Selected is, for list boxes, the rectangle of the selected row, nil
+	// without a selection.
 	Selected *Rect
-	// ID ist die ID des Vorlagenelements.
+	// ID is the ID of the template element.
 	ID string
 }
 
 func (*Widget) isArea() {}
 
-// Field beschreibt ein Formularfeld. Mehrere Widgets mit gleichem Namen
-// bilden ein Feld, etwa die Optionsfelder einer Gruppe.
+// Field describes a form field. Several widgets with the same name
+// form one field, for example the radio buttons of a group.
 type Field struct {
-	// Type ist text, checkbox, radio, list, combo oder signature.
+	// Type is text, checkbox, radio, list, combo or signature.
 	Type string
-	// Name ist der Feldname aus der Vorlage, Label der zugängliche Name.
+	// Name is the field name from the template, Label the accessible name.
 	Name, Label string
-	// Value ist der vorbelegte Wert, Export bei Optionsfeldern der Wert
-	// dieser Option, OnValue und OffValue die Werte eines Kontrollkästchens.
+	// Value is the preset value, Export for radio buttons the value of
+	// this option, OnValue and OffValue the values of a checkbox.
 	Value, Export     string
 	OnValue, OffValue string
 	Options           []FieldOption
@@ -472,32 +472,32 @@ type Field struct {
 	Required          bool
 	Editable          bool
 	MaxLength         int
-	// Context ist der Pfad des Kontextknotens in den Daten (fn:path), zu
-	// dem die Bindung des Felds gehört.
+	// Context is the path of the context node in the data (fn:path) to
+	// which the binding of the field belongs.
 	Context string
-	// Schrift, Größe und Farbe für Erscheinungsbild und Eingabe.
+	// Font, size and color for appearance and input.
 	Font  FontID
 	Size  Length
 	Color Color
-	// Rahmen und Hintergrund des Felds.
+	// Border and background of the field.
 	Border     Border
 	Background *Color
 }
 
-// FieldOption ist ein Auswahlwert mit angezeigtem Text.
+// FieldOption is a choice value with displayed text.
 type FieldOption struct {
 	Value, Label string
 }
 
-// Path ist eine Menge gefüllter Rechtecke in einer Farbe, etwa die Module
-// eines Barcodes. Die Rechtecke sind absolut auf der Seite.
+// Path is a set of filled rectangles in one color, such as the modules
+// of a barcode. The rectangles are absolute on the page.
 type Path struct {
 	Rect
 	Fill  Color
 	Rects []Rect
-	// Source beschreibt den Inhalt für Dump und Designer, etwa "qr:…".
+	// Source describes the content for Dump and the designer, such as "qr:…".
 	Source string
-	// ID ist die ID des Vorlagenelements wie bei GlyphRun.
+	// ID is the ID of the template element as for GlyphRun.
 	ID string
 }
 
@@ -509,8 +509,8 @@ func (*Image) isArea()     {}
 func (*Line) isArea()      {}
 func (*Box) isArea()       {}
 
-// Walk besucht alle Bereiche einer Seite in Zeichenreihenfolge. Liefert fn
-// false, werden die Kinder des Bereichs übersprungen.
+// Walk visits all areas of a page in drawing order. If fn returns
+// false, the children of the area are skipped.
 func Walk(areas []Area, fn func(Area) bool) {
 	for _, a := range areas {
 		if !fn(a) {

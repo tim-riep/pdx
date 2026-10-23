@@ -10,19 +10,19 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// Simple ist eine einfache TrueType-Schrift mit WinAnsiEncoding.
+// Simple is a simple TrueType font with WinAnsiEncoding.
 type Simple struct {
 	Ref      pdf.Ref
 	BaseFont string
 }
 
-// EmbedWinAnsi bettet eine einfache TrueType-Schrift mit WinAnsiEncoding
-// ein, deren Teilmenge alle Zeichen von WinAnsi enthält, die die Schrift
-// hat. Formularfelder nennen sie als Standardschrift (DR, DA), damit ein
-// Betrachter auch eingetippten Text darstellen kann (ISO 32000-1 12.7.3.3).
-// Für nicht symbolische TrueType-Schriften verlangt PDF/A WinAnsiEncoding
-// oder MacRomanEncoding und eine cmap (3,1) im Schriftprogramm
-// (ISO 19005-2 6.2.11.6). CFF-Schriften werden nicht unterstützt.
+// EmbedWinAnsi embeds a simple TrueType font with WinAnsiEncoding
+// whose subset contains all WinAnsi characters that the font
+// has. Form fields name it as their default font (DR, DA) so that a
+// viewer can also display typed text (ISO 32000-1 12.7.3.3).
+// For non-symbolic TrueType fonts PDF/A requires WinAnsiEncoding
+// or MacRomanEncoding and a (3,1) cmap in the font program
+// (ISO 19005-2 6.2.11.6). CFF fonts are not supported.
 func EmbedWinAnsi(d *pdf.Document, f *Face) (*Simple, error) {
 	if !f.Embeddable() {
 		return nil, fmt.Errorf("Schrift %s darf laut Lizenz (OS/2 fsType) nicht eingebettet werden", f.PostScript)
@@ -34,7 +34,7 @@ func EmbedWinAnsi(d *pdf.Document, f *Face) (*Simple, error) {
 	in.Flags |= subset.FlagNoLayoutClosure | subset.FlagDropLayoutTables
 	in.AddGlyph(0)
 	var gids []uint16
-	codes := make([]rune, 256) // Zeichen je Code, 0 ohne Glyphe
+	codes := make([]rune, 256) // character per code, 0 without glyph
 	for c := 32; c < 256; c++ {
 		r := charmap.Windows1252.DecodeByte(byte(c))
 		if r == 0xFFFD {
@@ -67,7 +67,7 @@ func EmbedWinAnsi(d *pdf.Document, f *Face) (*Simple, error) {
 		g, _ := f.GlyphFor(codes[c])
 		widths = append(widths, pdf.Real(f.scale1000(f.Advance(g))))
 	}
-	flags := 32 // nicht symbolisch
+	flags := 32 // non-symbolic
 	if f.FixedPitch {
 		flags |= 1
 	}

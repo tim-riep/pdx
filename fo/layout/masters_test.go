@@ -42,7 +42,7 @@ func TestSelector(t *testing.T) {
 		{pageCond{number: 5, last: true}, "letzte"},
 	}
 	for _, w := range want {
-		// Vorausschau darf nichts verbrauchen.
+		// Lookahead must not consume anything.
 		if _, err := s.pick(w.c, false); err != nil {
 			t.Fatal(err)
 		}
@@ -54,8 +54,8 @@ func TestSelector(t *testing.T) {
 			t.Errorf("Seite %d: falsche Vorlage, erwartet %s", w.c.number, w.name)
 		}
 	}
-	// Erschöpfte Folge: die zuletzt verwendete Vorlage gilt weiter (XSL 1.1
-	// 6.4.5), ohne verwendete Vorlage ist es ein Fehler.
+	// Exhausted sequence: the most recently used master still applies (XSL 1.1
+	// 6.4.5), without a used master it is an error.
 	s2 := &selector{e: e, sm: &seqMaster{node: n, specs: []pageSpec{{kind: specSingle, master: "einmal", max: 1, node: n}}}}
 	s2.pick(pageCond{number: 1}, true)
 	if m, err := s2.pick(pageCond{number: 2}, true); err != nil || m != e.masters["einmal"] {

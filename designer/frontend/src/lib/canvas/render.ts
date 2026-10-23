@@ -1,9 +1,9 @@
-// Zeichnet eine Seite aus dem Area Tree in einen Canvas. Es wird nichts
-// gesetzt: jede Glyphe steht dort, wo die Engine sie berechnet hat.
+// Draws a page from the area tree into a canvas. Nothing is
+// laid out here: each glyph sits where the engine computed it.
 
 import type { Border, Page, Rect } from "./model";
 
-// images liefert ein geladenes Bild zu einem Schlüssel oder undefined.
+// images returns a loaded image for a key or undefined.
 export type ImageSource = (key: string) => HTMLImageElement | undefined;
 
 export function drawPage(ctx: CanvasRenderingContext2D, page: Page, scale: number, images: ImageSource): void {
@@ -62,7 +62,7 @@ export function drawPage(ctx: CanvasRenderingContext2D, page: Page, scale: numbe
             ctx.fill();
           }
         } else if (it.on) {
-          // Haken wie im Erscheinungsbild des PDF.
+          // Check mark as in the appearance of the PDF.
           ctx.strokeStyle = it.c;
           ctx.lineWidth = s * 0.12;
           ctx.beginPath();
@@ -88,8 +88,8 @@ export function drawPage(ctx: CanvasRenderingContext2D, page: Page, scale: numbe
   ctx.restore();
 }
 
-// borders zeichnet die Kanten außerhalb des Rechtecks: oben, rechts, unten,
-// links, wie im Area Tree.
+// borders draws the edges outside the rectangle: top, right, bottom,
+// left, as in the area tree.
 function borders(ctx: CanvasRenderingContext2D, r: Rect, b: Border[]): void {
   const [x, y, w, h] = r;
   const [t, rt, bt, l] = b;
@@ -108,7 +108,7 @@ function line(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number,
   ctx.save();
   ctx.strokeStyle = c;
   if (st === "double") {
-    // Zwei Linien je ein Drittel der Breite.
+    // Two lines of one third of the width each.
     const t = w / 3;
     const dx = y1 === y2 ? 0 : t, dy = y1 === y2 ? t : 0;
     ctx.lineWidth = t;

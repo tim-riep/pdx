@@ -12,14 +12,14 @@ import (
 	"time"
 )
 
-// buckets sind die Grenzen des Histogramms der Dauer in Sekunden.
+// buckets are the bounds of the duration histogram in seconds.
 var buckets = []float64{0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30}
 
-// metrics zählt Anfragen im Textformat von Prometheus (Exposition Format
-// 0.0.4). Labels sind nur Route und Status, nie Nutzdaten oder IDs.
+// metrics counts requests in the Prometheus text format (Exposition Format
+// 0.0.4). Labels are only route and status, never payload data or IDs.
 type metrics struct {
 	mu       sync.Mutex
-	requests map[[2]string]uint64 // Route, Status
+	requests map[[2]string]uint64 // route, status
 	hist     map[string]*histogram
 	inFlight atomic.Int64
 	batch    atomic.Uint64

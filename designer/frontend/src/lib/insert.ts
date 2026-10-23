@@ -1,4 +1,4 @@
-// Einfügen von Bausteinen aus der Leiste über dem Canvas.
+// Inserting building blocks from the bar above the canvas.
 
 import { AppAPI, TemplateAPI, message } from "./api";
 import { askPath, ui } from "./project.svelte";
@@ -12,7 +12,7 @@ export const kinds = ["text", "positioned", "flowed", "line", "rect", "image", "
   "textField", "checkBox", "radioGroup", "comboBox", "listBox", "signatureField"] as const;
 export type Kind = (typeof kinds)[number];
 
-// elementName ist der Elementname eines Bausteins in der Vorlage.
+// elementName is the element name of a building block in the template.
 export const elementName: Record<Kind, string> = {
   text: "text", positioned: "subform", flowed: "subform", line: "line", rect: "rect",
   image: "image", barcode: "barcode", pageNumber: "pageNumber", table: "table",
@@ -20,13 +20,13 @@ export const elementName: Record<Kind, string> = {
   listBox: "listBox", signatureField: "signatureField",
 };
 
-// acceptsContent meldet, ob ein Element Inhalt wie Felder aufnimmt.
+// acceptsContent reports whether an element accepts content such as fields.
 export function acceptsContent(ref: string): boolean {
   const n = node(ref);
   return !!typeOf(n)?.children?.some((c) => c?.name === "field");
 }
 
-// imageFile fragt nach einer Bilddatei, im Browser über die Pfadabfrage.
+// imageFile asks for an image file, in the browser via the path prompt.
 async function imageFile(): Promise<string | null> {
   try {
     const path = await AppAPI.PickFile(t("insert.image"), t("insert.imageFilter"), "*.png;*.jpg;*.jpeg");
@@ -57,14 +57,14 @@ export async function insertElement(kind: Kind, parent: string, index: number, x
   }
 }
 
-// accepts meldet, ob ein Element den Baustein als Kind erlaubt. Ein Text
-// nimmt Felder auf, aber keinen weiteren Text.
+// accepts reports whether an element allows the building block as a child. A text
+// accepts fields, but no further text.
 function accepts(ref: string, kind: Kind): boolean {
   return !!typeOf(node(ref))?.children?.some((c) => c?.name === elementName[kind]);
 }
 
-// insertAtSelection fügt in die Auswahl ein, wenn sie den Baustein erlaubt,
-// sonst hinter die Auswahl, ohne Auswahl ans Ende des Inhalts.
+// insertAtSelection inserts into the selection if it allows the building block,
+// otherwise after the selection, without a selection at the end of the content.
 export function insertAtSelection(kind: Kind) {
   const sel = node(selection.ref);
   if (sel && accepts(sel.ref, kind)) return insertElement(kind, sel.ref, -1);

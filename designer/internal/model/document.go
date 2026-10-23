@@ -1,6 +1,6 @@
-// Package model hält das Vorlagenmodell des Designers: das geöffnete Paket,
-// seine Revision und später die Befehle mit Undo und Redo. Es ist die einzige
-// Wahrheit, die Oberfläche sieht nur Projektionen davon.
+// Package model holds the template model of the designer: the open package,
+// its revision and later the commands with Undo and Redo. It is the single
+// source of truth, the UI only sees projections of it.
 package model
 
 import (
@@ -15,31 +15,31 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// Format ist die Ablage eines Pakets.
+// Format is the storage form of a package.
 type Format string
 
 const (
-	// Zip ist ein Paket als ZIP-Datei.
+	// Zip is a package as a ZIP file.
 	Zip Format = "zip"
-	// Dir ist ein Paket als Verzeichnis mit template.xml.
+	// Dir is a package as a directory with template.xml.
 	Dir Format = "dir"
 )
 
-// Document ist ein geöffnetes Vorlagenpaket.
+// Document is an open template package.
 type Document struct {
 	Pkg    *pkg.Package
-	Path   string // leer bei einer neuen, noch nicht gespeicherten Vorlage
+	Path   string // empty for a new template that has not been saved yet
 	Format Format
 
-	// rev steigt mit jeder Änderung, auch durch Undo, und dient Caches.
+	// rev increases with every change, also through Undo, and serves caches.
 	rev uint64
-	// state kennzeichnet den Inhalt. Undo kehrt zu einer früheren Kennung
-	// zurück, savedState ist die des gespeicherten Stands.
+	// state identifies the content. Undo returns to an earlier ID,
+	// savedState is the one of the saved state.
 	state, savedState, nextState uint64
 	undo, redo                   []entry
 }
 
-// newTemplate ist die Vorlage für „Neu“: eine A4-Seite und ein leerer Rumpf.
+// newTemplate is the template for "New": an A4 page and an empty body.
 const newTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="vorlage" lang="de" version="1">
   <pageSet id="seiten">
@@ -49,7 +49,7 @@ const newTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 </template>
 `
 
-// New legt eine neue, leere Vorlage an.
+// New creates a new, empty template.
 func New() *Document {
 	t, err := template.Parse([]byte(newTemplate))
 	if err != nil {
@@ -62,7 +62,7 @@ func New() *Document {
 	return &Document{Pkg: p, Format: Zip}
 }
 
-// Open lädt ein Paket aus einer ZIP-Datei oder einem Verzeichnis.
+// Open loads a package from a ZIP file or a directory.
 func Open(path string) (*Document, error) {
 	p, err := pkg.Open(path)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -78,8 +78,8 @@ func Open(path string) (*Document, error) {
 	return &Document{Pkg: p, Path: abs, Format: formatOf(abs)}, nil
 }
 
-// formatOf leitet das Format aus dem Pfad ab: ein Verzeichnis oder eine
-// Datei ohne .zip ist ein Verzeichnis, sonst ZIP.
+// formatOf derives the format from the path: a directory or a
+// file without .zip is a directory, otherwise ZIP.
 func formatOf(path string) Format {
 	if st, err := os.Stat(path); err == nil && st.IsDir() {
 		return Dir
@@ -90,7 +90,7 @@ func formatOf(path string) Format {
 	return Dir
 }
 
-// Name ist der Anzeigename, etwa der Dateiname ohne .zip.
+// Name is the display name, for example the file name without .zip.
 func (d *Document) Name() string {
 	if d.Path == "" {
 		if t, ok := d.Pkg.Template.Root.Attr("title"); ok && t != "" {
@@ -101,10 +101,10 @@ func (d *Document) Name() string {
 	return strings.TrimSuffix(filepath.Base(d.Path), filepath.Ext(d.Path))
 }
 
-// Rev ist die Revision, sie steigt mit jeder Änderung.
+// Rev is the revision, it increases with every change.
 func (d *Document) Rev() uint64 { return d.rev }
 
-// Touch vermerkt eine Änderung außerhalb des Befehlsmodells.
+// Touch records a change outside the command model.
 func (d *Document) Touch() { d.touchState() }
 
 func (d *Document) touchState() {
@@ -113,10 +113,10 @@ func (d *Document) touchState() {
 	d.state = d.nextState
 }
 
-// Dirty meldet ungespeicherte Änderungen.
+// Dirty reports unsaved changes.
 func (d *Document) Dirty() bool { return d.state != d.savedState || d.Path == "" && d.state != 0 }
 
-// Save schreibt das Paket an seinen Pfad im bisherigen Format.
+// Save writes the package to its path in the previous format.
 func (d *Document) Save() error {
 	if d.Path == "" {
 		return fmt.Errorf("die Vorlage hat noch keinen Speicherort")
@@ -124,8 +124,8 @@ func (d *Document) Save() error {
 	return d.SaveAs(d.Path)
 }
 
-// SaveAs schreibt das Paket an einen neuen Pfad. Endet er auf .zip, entsteht
-// eine ZIP-Datei, sonst ein Verzeichnis.
+// SaveAs writes the package to a new path. If it ends in .zip, the result
+// is a ZIP file, otherwise a directory.
 func (d *Document) SaveAs(path string) error {
 	abs, err := filepath.Abs(path)
 	if err != nil {
@@ -150,10 +150,10 @@ func (d *Document) SaveAs(path string) error {
 	return nil
 }
 
-// Bytes liefert das Paket als ZIP, etwa für die automatische Sicherung.
+// Bytes returns the package as a ZIP, for example for the automatic backup.
 func (d *Document) Bytes() ([]byte, error) { return d.Pkg.Bytes() }
 
-// writeAtomic schreibt eine Datei erst neben das Ziel und benennt sie dann um.
+// writeAtomic writes a file next to the target first and then renames it.
 func writeAtomic(path string, data []byte) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err

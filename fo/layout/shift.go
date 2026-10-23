@@ -7,7 +7,7 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// shift liefert eine um dx, dy verschobene Kopie eines Bereichs.
+// shift returns a copy of an area shifted by dx, dy.
 func shift(a areatree.Area, dx, dy areatree.Length) areatree.Area {
 	switch v := a.(type) {
 	case *areatree.Container:

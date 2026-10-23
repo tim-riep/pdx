@@ -1,6 +1,6 @@
 <script lang="ts">
-  // Lineal entlang einer Seitenkante in mm oder pt. band markiert die
-  // Ausdehnung der Auswahl (in pt von der Seitenkante).
+  // Ruler along a page edge in mm or pt. band marks the
+  // extent of the selection (in pt from the page edge).
   import { PT_PER_MM } from "../../lib/geometry";
 
   let {
@@ -13,7 +13,7 @@
 
   const size = 16;
   const unitPt = $derived(unit === "mm" ? PT_PER_MM : 1);
-  const px = $derived(unitPt * zoom); // Pixel je Einheit
+  const px = $derived(unitPt * zoom); // pixels per unit
   const major = $derived([1, 2, 5, 10, 20, 50, 100, 200, 500, 1000].find((m) => m * px >= 36) ?? 1000);
   const minor = $derived([10, 5, 2, 1].map((d) => major / d).find((m) => m * px >= 4) ?? major);
   const ticks = $derived.by(() => {

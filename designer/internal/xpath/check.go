@@ -7,20 +7,20 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/schema"
 )
 
-// Problem ist ein Befund zu einem Teil des Ausdrucks.
+// Problem is a finding for a part of the expression.
 type Problem struct {
-	Pos     int    `json:"pos"` // Byte-Bereich im Ausdruck
+	Pos     int    `json:"pos"` // byte range in the expression
 	End     int    `json:"end"`
 	Message string `json:"message"`
 }
 
-// unknown steht für einen Kontext, den die Prüfung nicht kennt, etwa nach
-// einer Variablen. Pfade darin werden nicht geprüft.
+// unknown stands for a context the check does not know, for example after
+// a variable. Paths inside it are not checked.
 const unknown = "\x00"
 
-// Paths prüft die Pfade eines Ausdrucks gegen den Datenbaum. ctx ist der
-// Datenkontext als Pfad im Baum. target ist der Knoten, auf den der ganze
-// Ausdruck zeigt, wenn er ein einfacher Pfad ist.
+// Paths checks the paths of an expression against the data tree. ctx is the
+// data context as a path in the tree. target is the node the whole
+// expression points to, if it is a simple path.
 func Paths(sc *schema.Schema, ctx, expr string) (problems []Problem, target string) {
 	if sc == nil {
 		return nil, ""
@@ -37,10 +37,10 @@ type checker struct {
 	sc   *schema.Schema
 	toks []token
 	out  []Problem
-	// targets sind alle aufgelösten Pfade im Ausdruck.
+	// targets are all resolved paths in the expression.
 	targets []string
-	// single ist das Ziel eines Pfads, der am ersten Token beginnt,
-	// singleEnd das Token danach.
+	// single is the target of a path that starts at the first token,
+	// singleEnd the token after it.
 	single    string
 	singleEnd int
 }
@@ -52,7 +52,7 @@ func (c *checker) at(i int) token {
 	return token{kind: tSym, text: "", pos: -1}
 }
 
-// match liefert das Token mit der schließenden Klammer zu i, sonst end.
+// match returns the token with the closing bracket for i, otherwise end.
 func (c *checker) match(i, end int) int {
 	open, close := c.toks[i].text, map[string]string{"(": ")", "[": "]", "{": "}"}[c.toks[i].text]
 	depth := 0
@@ -70,16 +70,16 @@ func (c *checker) match(i, end int) int {
 	return end
 }
 
-// expr durchläuft die Tokens [i, end) im Kontext ctx.
+// expr walks the tokens [i, end) in the context ctx.
 func (c *checker) expr(i, end int, ctx string) {
 	operand := true
-	skip := false // der nächste Pfad bezieht sich auf einen unbekannten Kontext
+	skip := false // the next path refers to an unknown context
 	for i < end {
 		t := c.toks[i]
 		next := c.at(i + 1)
 		switch {
 		case t.kind == tName && next.is("(") && !next.is("::"):
-			// Funktionsaufruf, Argumente im selben Kontext
+			// function call, arguments in the same context
 			j := c.match(i+1, end)
 			c.expr(i+2, j, ctx)
 			i = c.steps(j+1, end)
@@ -112,7 +112,7 @@ func (c *checker) expr(i, end int, ctx string) {
 			j := c.match(i, end)
 			cx := ctx
 			if t.is("[") {
-				cx = unknown // Prädikat hinter einem Ausdruck ohne Pfad
+				cx = unknown // predicate after an expression without a path
 			}
 			c.expr(i+1, j, cx)
 			i = c.steps(j+1, end)
@@ -124,7 +124,7 @@ func (c *checker) expr(i, end int, ctx string) {
 			i++
 			operand = false
 		case t.is("!"):
-			// einfache Abbildung: rechts gilt jedes Element links als Kontext
+			// simple map: on the right every item on the left is the context
 			i++
 			operand, skip = true, true
 		default:
@@ -134,7 +134,7 @@ func (c *checker) expr(i, end int, ctx string) {
 	}
 }
 
-// typeName überspringt einen Typnamen nach as oder instance of.
+// typeName skips a type name after as or instance of.
 func (c *checker) typeName(i, end int) int {
 	if i < end && c.toks[i].kind == tName {
 		i++
@@ -152,8 +152,8 @@ func (c *checker) startsPath(t token) bool {
 	return t.kind == tName || t.is("@") || t.is(".") || t.is("..") || t.is("/") || t.is("//") || t.is("*")
 }
 
-// steps überspringt Pfadschritte hinter einem Ausdruck ohne bekannten Knoten,
-// etwa $x/inv:name. Prädikate darin werden ebenfalls nicht geprüft.
+// steps skips path steps after an expression without a known node,
+// for example $x/inv:name. Predicates in them are not checked either.
 func (c *checker) steps(i, end int) int {
 	for i < end && (c.toks[i].is("/") || c.toks[i].is("//") || c.toks[i].is("[")) {
 		if c.toks[i].is("[") {
@@ -168,8 +168,8 @@ func (c *checker) steps(i, end int) int {
 	return i
 }
 
-// path prüft einen Pfad ab Token i und liefert das Token danach sowie das
-// Ziel, wenn es bekannt ist.
+// path checks a path from token i and returns the token after it and the
+// target, if it is known.
 func (c *checker) path(i, end int, ctx string) (int, string) {
 	cur, known := ctx, ctx != unknown
 	if i < end && c.toks[i].is("/") {
@@ -187,7 +187,7 @@ func (c *checker) path(i, end int, ctx string) (int, string) {
 		step, pos, stepEnd := "", t.pos, t.pos+len(t.text)
 		switch {
 		case t.kind == tName && c.at(i+1).is("::"):
-			// Achsen prüft der Designer nicht
+			// the designer does not check axes
 			known = false
 			i += 2
 			continue
@@ -202,7 +202,7 @@ func (c *checker) path(i, end int, ctx string) (int, string) {
 				i++
 			}
 		case t.kind == tName && c.at(i+1).is("("):
-			// Knotentest oder Funktion als Schritt, etwa text() oder string()
+			// node test or function as a step, for example text() or string()
 			j := c.match(i+1, end)
 			c.expr(i+2, j, unknown)
 			known = false
@@ -275,9 +275,9 @@ func (c *checker) path(i, end int, ctx string) (int, string) {
 	return i, cur
 }
 
-// Targets liefert die Datenknoten, auf die die Pfade eines Ausdrucks zeigen,
-// soweit sie sich auflösen lassen (auch Pfade in Funktionen und
-// Prädikaten), ohne Doppelte.
+// Targets returns the data nodes the paths of an expression point to,
+// as far as they can be resolved (including paths in functions and
+// predicates), without duplicates.
 func Targets(sc *schema.Schema, ctx, expr string) []string {
 	if sc == nil {
 		return nil
@@ -295,7 +295,7 @@ func Targets(sc *schema.Schema, ctx, expr string) []string {
 	return out
 }
 
-// open meldet einen Knoten, dessen Inhalt das Schema offen lässt.
+// open reports a node whose content the schema leaves open.
 func (c *checker) open(path string) bool {
 	n := c.sc.Find(path)
 	return n != nil && (n.Open || n.Recursive)

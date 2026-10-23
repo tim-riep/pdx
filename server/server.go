@@ -21,7 +21,7 @@ import (
 	"github.com/tim-riep/pdx/verapdf"
 )
 
-// Server ist der Render-Dienst.
+// Server is the render service.
 type Server struct {
 	cfg     *Config
 	store   Store
@@ -31,16 +31,16 @@ type Server struct {
 	group   flight
 	metrics *metrics
 	mux     *http.ServeMux
-	// Verifier prüft mit veraPDF, nil schaltet /v1/verify ab.
+	// Verifier checks with veraPDF, nil disables /v1/verify.
 	Verifier verapdf.Runner
-	// Signer und TSA signieren für /v1/sign, ohne Signer ist es aus.
+	// Signer and TSA sign for /v1/sign, without Signer it is off.
 	Signer sign.Signer
 	TSA    *sign.TSA
-	// now liefert die Zeit, in Tests fest.
+	// now returns the time, fixed in tests.
 	now func() time.Time
 }
 
-// New legt den Dienst an. log darf nil sein.
+// New creates the service. log may be nil.
 func New(cfg *Config, store Store, log *slog.Logger) (*Server, error) {
 	if err := cfg.Check(); err != nil {
 		return nil, err
@@ -55,14 +55,14 @@ func New(cfg *Config, store Store, log *slog.Logger) (*Server, error) {
 //go:embed openapi.json
 var openAPI []byte
 
-// route ist ein Muster des Routings mit seinem Handler.
+// route is a routing pattern with its handler.
 type route struct {
 	pattern string
 	h       http.Handler
 }
 
-// routes sind alle Routen, die Spezifikation in openapi.json beschreibt
-// genau diese (Test).
+// routes are all routes, the specification in openapi.json describes
+// exactly these (test).
 func (s *Server) routes() []route {
 	return []route{
 		{"GET /healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +87,7 @@ func (s *Server) routes() []route {
 	}
 }
 
-// Handler liefert die Routen des Dienstes.
+// Handler returns the routes of the service.
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	for _, rt := range s.routes() {
@@ -100,7 +100,7 @@ func (s *Server) Handler() http.Handler {
 	return s.logRequests(mux)
 }
 
-// ready meldet Bereitschaft, wenn die Ablage lesbar ist.
+// ready reports readiness if the store is readable.
 func (s *Server) ready(w http.ResponseWriter, r *http.Request) {
 	if _, err := s.store.List(r.Context()); err != nil {
 		writeProblem(w, Problem{Status: http.StatusServiceUnavailable, Title: "Ablage nicht verfügbar"})
@@ -112,8 +112,8 @@ func (s *Server) ready(w http.ResponseWriter, r *http.Request) {
 
 type keyCtx struct{}
 
-// auth verlangt einen API-Schlüssel mit dem Recht right, als
-// "Authorization: Bearer" oder "X-API-Key".
+// auth requires an API key with the permission right, as
+// "Authorization: Bearer" or "X-API-Key".
 func (s *Server) auth(right string, h http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		key := r.Header.Get("X-API-Key")
@@ -137,7 +137,7 @@ func (s *Server) auth(right string, h http.HandlerFunc) http.Handler {
 	})
 }
 
-// recorder merkt sich Status und Größe für das Log.
+// recorder remembers status and size for the log.
 type recorder struct {
 	http.ResponseWriter
 	status int
@@ -163,9 +163,9 @@ func (r *recorder) Write(b []byte) (int, error) {
 
 func (r *recorder) Unwrap() http.ResponseWriter { return r.ResponseWriter }
 
-// logRequests protokolliert je Anfrage Methode, Muster der Route, Status,
-// Dauer, Größe und Namen des Schlüssels. Nie Rumpf, Abfrage oder Werte
-// aus dem Pfad, so kommen keine Nutzdaten ins Log.
+// logRequests logs per request the method, route pattern, status,
+// duration, size and key name. Never body, query or values from the
+// path, so no payload data ends up in the log.
 func (s *Server) logRequests(h *http.ServeMux) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -186,7 +186,7 @@ func (s *Server) logRequests(h *http.ServeMux) http.Handler {
 	})
 }
 
-// acquire wartet auf einen freien Platz, höchstens QueueWait.
+// acquire waits for a free slot, at most QueueWait.
 func (s *Server) acquire(ctx context.Context) bool {
 	t := time.NewTimer(s.cfg.QueueWait.Duration)
 	defer t.Stop()
@@ -202,8 +202,8 @@ func (s *Server) acquire(ctx context.Context) bool {
 
 func (s *Server) release() { <-s.sem }
 
-// template liefert die kompilierte Vorlage aus dem Cache oder der Ablage.
-// Gleichzeitige Anfragen kompilieren dieselbe Version nur einmal.
+// template returns the compiled template from the cache or the store.
+// Concurrent requests compile the same version only once.
 func (s *Server) template(ctx context.Context, id, version, lang string) (*compiled, string, error) {
 	raw, ver, err := s.store.Get(ctx, id, version)
 	if err != nil {
@@ -232,7 +232,7 @@ func (s *Server) template(ctx context.Context, id, version, lang string) (*compi
 	return v.(*compiled), ver, nil
 }
 
-// renderOptions liest die Parameter zum Rendern, alle Befunde auf einmal.
+// renderOptions reads the render parameters, all findings at once.
 func (s *Server) renderOptions(r *http.Request) (pdx.TemplateOptions, []Finding) {
 	q := r.URL.Query()
 	opts := pdx.TemplateOptions{Strict: q.Get("strict") == "true"}
@@ -254,7 +254,7 @@ func (s *Server) renderOptions(r *http.Request) (pdx.TemplateOptions, []Finding)
 	return opts, bad
 }
 
-// readBody liest den Rumpf bis max Bytes und meldet Fehler als Problem.
+// readBody reads the body up to max bytes and reports errors as a Problem.
 func readBody(w http.ResponseWriter, r *http.Request, max int64) ([]byte, bool) {
 	data, err := io.ReadAll(http.MaxBytesReader(w, r.Body, max))
 	if err != nil {
@@ -270,7 +270,7 @@ func readBody(w http.ResponseWriter, r *http.Request, max int64) ([]byte, bool) 
 	return data, true
 }
 
-// templateProblem meldet einen Fehler beim Laden der Vorlage.
+// templateProblem reports an error while loading the template.
 func templateProblem(w http.ResponseWriter, err error) {
 	if errors.Is(err, ErrNotFound) {
 		writeProblem(w, Problem{Status: http.StatusNotFound, Title: "Vorlage oder Version unbekannt"})
@@ -279,8 +279,8 @@ func templateProblem(w http.ResponseWriter, err error) {
 	writeProblem(w, Problem{Type: typeBase + "vorlage", Status: http.StatusUnprocessableEntity, Title: "Vorlage fehlerhaft", Findings: findings(err)})
 }
 
-// render setzt einen Datensatz: POST /v1/render/{id}?version=&profile=
-// &lang=&strict=&creationDate=, Daten-XML im Rumpf, PDF als Antwort.
+// render typesets a record: POST /v1/render/{id}?version=&profile=
+// &lang=&strict=&creationDate=, data XML in the body, PDF as response.
 func (s *Server) render(w http.ResponseWriter, r *http.Request) {
 	opts, bad := s.renderOptions(r)
 	if len(bad) > 0 {

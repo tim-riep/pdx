@@ -22,8 +22,8 @@ func findNode(n *render.StructNode, id string) *render.StructNode {
 	return nil
 }
 
-// Die Musterrechnung verlangt keine Barrierefreiheit, geprüft wird
-// ersatzweise nach PDF/A-3a mit PDF/UA-1. Der Baum trägt Vorlagen-IDs.
+// The sample invoice does not require accessibility, so the check falls
+// back to PDF/A-3a with PDF/UA-1. The tree carries template IDs.
 func TestAccess(t *testing.T) {
 	c := NewCore(&recorder{}, nil, t.TempDir())
 	if _, err := NewProjectService(c).Open(muster); err != nil {
@@ -39,7 +39,7 @@ func TestAccess(t *testing.T) {
 	if n := findNode(a.Tree, "titel"); n == nil || n.Type != "H1" || n.Text != "Rechnung" {
 		t.Errorf("Überschrift %+v", n)
 	}
-	// Ohne Alternativtext am GiroCode meldet die Vorprüfung ihn.
+	// Without alternative text on the GiroCode the pre-check reports it.
 	var strip func(n *template.Node)
 	strip = func(n *template.Node) {
 		if n.ID() == "girocode" {
@@ -59,7 +59,7 @@ func TestAccess(t *testing.T) {
 	}
 }
 
-// Die E-Rechnung der CII-Vorlage zeigt die Stufe der Beispieldaten.
+// The e-invoice of the CII template shows the level of the sample data.
 func TestEInvoiceInfo(t *testing.T) {
 	c := NewCore(&recorder{}, nil, t.TempDir())
 	if _, err := NewProjectService(c).Open("../../../testdata/templates/cii-rechnung"); err != nil {
@@ -76,7 +76,7 @@ func TestEInvoiceInfo(t *testing.T) {
 	if e.Level != "XRECHNUNG" || e.FileName != "xrechnung.xml" || e.ProfileError == "" {
 		t.Errorf("%+v", e)
 	}
-	// Die Musterrechnung hat keine E-Rechnung.
+	// The sample invoice has no e-invoice.
 	if _, err := NewProjectService(c).Open(muster); err != nil {
 		t.Fatal(err)
 	}

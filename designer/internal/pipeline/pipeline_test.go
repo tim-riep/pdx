@@ -53,7 +53,7 @@ func TestRun(t *testing.T) {
 		t.Error("Schrift nicht abrufbar")
 	}
 
-	// Zweiter Lauf ohne Änderung: kein Kompilieren, gleiche Seiten.
+	// Second run without change: no compiling, same pages.
 	again, err := p.Run(context.Background(), in)
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +67,7 @@ func TestRun(t *testing.T) {
 		}
 	}
 
-	// Änderung nur auf der letzten Seite.
+	// Change only on the last page.
 	in.Canon = bytes.Replace(in.Canon, []byte(`Nettobetrag:`), []byte(`Netto:`), 1)
 	changed, err := p.Run(context.Background(), in)
 	if err != nil {
@@ -106,8 +106,8 @@ func TestRunProblems(t *testing.T) {
 	}
 }
 
-// BenchmarkDesignerEdit misst eine Änderung an der Vorlage bis zu den neuen
-// Seiten: Kompilieren, Transformieren, Setzen, Übersetzen und Hashen.
+// BenchmarkDesignerEdit measures a change to the template up to the new
+// pages: compile, transform, typeset, translate and hash.
 func BenchmarkDesignerEdit(b *testing.B) {
 	in := input(b)
 	p := New()

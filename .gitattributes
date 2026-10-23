@@ -1,6 +1,6 @@
-# Textdateien überall mit LF auschecken, auch unter Windows. Eingebettete
-# Dateien (Lizenzen, Schemas, Trennmuster) und Golden Files müssen auf allen
-# Systemen dieselben Bytes haben.
+# Check out text files with LF everywhere, including Windows. Embedded
+# files (licenses, schemas, hyphenation patterns) and golden files must have
+# the same bytes on all systems.
 * text=auto eol=lf
 
 *.ttf binary
@@ -11,11 +11,11 @@
 *.icc binary
 *.zip binary
 
-# Batch-Dateien brauchen unter Windows CRLF.
+# Batch files need CRLF on Windows.
 *.cmd text eol=crlf
 
-# PowerShell unter Windows mit CRLF.
+# PowerShell on Windows with CRLF.
 *.ps1 text eol=crlf
 
-# Inno Setup unter Windows mit CRLF.
+# Inno Setup on Windows with CRLF.
 *.iss text eol=crlf

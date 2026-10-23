@@ -26,8 +26,8 @@
   const active = $derived(isActive(ref, prop));
   const shown = $derived(active ? xp.draft : value);
 
-  // Ändert sich der Wert im Modell (Undo, anderer Editor), folgt der Entwurf,
-  // solange hier niemand tippt.
+  // If the value changes in the model (undo, other editor), the draft follows,
+  // as long as nobody is typing here.
   $effect(() => {
     const v = value;
     untrack(() => {
@@ -56,7 +56,7 @@
     items = [];
   }
 
-  // Wörter, Schrägstriche und @ öffnen die Vorschläge.
+  // Words, slashes and @ open the suggestions.
   function caret() {
     if (el && active) xp.caret = el.selectionStart ?? xp.draft.length;
   }
@@ -144,7 +144,7 @@
   {#if items.length}
     <ul id={uid} class="menu" role="listbox" aria-label={t("xpath.suggestions")} data-testid="xpath-menu">
       {#each items as it, i (it.kind + it.label)}
-        <!-- mousedown statt click, damit das Feld den Fokus behält -->
+        <!-- mousedown instead of click, so the field keeps the focus -->
         <li role="option" aria-selected={i === index} class:sel={i === index} class={it.kind}
           onmousedown={(e) => {
             e.preventDefault();

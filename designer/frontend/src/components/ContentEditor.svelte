@@ -1,8 +1,8 @@
 <script lang="ts">
-  // Text mit eingebetteten Feldern als Chips. Der Text ist direkt
-  // editierbar, Felder und andere eingebettete Elemente stehen als nicht
-  // editierbare Chips darin. Übernommen wird als ein Befehl beim Verlassen
-  // oder mit Eingabe.
+  // Text with embedded fields as chips. The text is directly
+  // editable, fields and other embedded elements sit in it as non
+  // editable chips. Applied as one command on leaving
+  // or with Enter.
   import { onMount, untrack } from "svelte";
   import { TemplateAPI, message, type DataField, type Segment } from "../lib/api";
   import { label, t } from "../lib/i18n";
@@ -22,11 +22,11 @@
   const plain = $derived(!type?.mixed);
   const allowsBr = $derived(!!type?.children.some((c) => c.name === "br"));
 
-  // Vorschläge nach @: Felder relativ zum Kontext des Textes.
+  // Suggestions after @: fields relative to the context of the text.
   let fields: DataField[] = $state.raw([]);
   let query = $state<string | null>(null);
   let index = $state(0);
-  // Genaue Treffer zuerst, dann Treffer am Anfang, dann der Rest.
+  // Exact matches first, then matches at the start, then the rest.
   const matches = $derived.by(() => {
     if (query === null) return [];
     const q = query.toLowerCase();
@@ -63,7 +63,7 @@
     return s;
   }
 
-  // render baut den Inhalt aus dem Lesecache auf.
+  // render builds the content from the read cache.
   function render() {
     if (!el || !n) return;
     el.replaceChildren();
@@ -77,7 +77,7 @@
     dirty = false;
   }
 
-  // Neu aufbauen, wenn sich der Inhalt im Modell ändert und hier niemand tippt.
+  // Rebuild when the content changes in the model and nobody is typing here.
   $effect(() => {
     void n?.children;
     untrack(() => {
@@ -85,9 +85,9 @@
     });
   });
 
-  // Chromium unter Linux und Windows setzt den Cursor mit Ende oder Pfeilen
-  // auch in ein Feld (contenteditable=false), dort geht jede Eingabe
-  // verloren. Ein Cursor im Feld kommt deshalb dahinter.
+  // Chromium on Linux and Windows puts the cursor with End or arrows
+  // into a field too (contenteditable=false), where every input is
+  // lost. A cursor in the field is therefore moved behind it.
   function caretOutOfChip() {
     const sel = getSelection();
     const a = sel?.anchorNode;
@@ -117,7 +117,7 @@
     }
   });
 
-  // segments liest den Inhalt zurück: Text, Chips und Zeilenumbrüche.
+  // segments reads the content back: text, chips and line breaks.
   function segments(): Segment[] {
     const out: Segment[] = [];
     const text = (s: string) => {
@@ -129,12 +129,12 @@
       parent.childNodes.forEach((c, i) => {
         if (c.nodeType === Node.TEXT_NODE) text((c.textContent ?? "").replace(/ /g, " "));
         else if (c instanceof HTMLBRElement) {
-          // Ein abschließendes br fügt der Browser selbst ein.
+          // The browser adds a trailing br itself.
           if (!(parent === el && i === parent.childNodes.length - 1)) text("\n");
         } else if (c instanceof HTMLElement && c.classList.contains("chip")) {
           out.push({ text: "", ref: c.dataset.ref ?? "", bind: c.dataset.bind ?? "" });
         } else if (c instanceof HTMLElement) {
-          // div oder p aus dem Browser bei Zeilenumbruch
+          // div or p from the browser on a line break
           if (out.length) text("\n");
           walk(c);
         }
@@ -173,7 +173,7 @@
     dirty = true;
   }
 
-  // atQuery liefert den Text nach dem letzten @ vor dem Cursor.
+  // atQuery returns the text after the last @ before the cursor.
   function atQuery(): string | null {
     const sel = getSelection();
     const a = sel?.anchorNode;
@@ -183,8 +183,8 @@
     return m ? m[1] : null;
   }
 
-  // loading verhindert parallele Abfragen der Felder, während nach dem @
-  // weiter getippt wird.
+  // loading prevents parallel queries of the fields while typing
+  // continues after the @.
   let loading: Promise<void> | null = null;
 
   async function oninput() {
@@ -197,8 +197,8 @@
         .finally(() => (loading = null));
       await loading;
     }
-    // Nach dem Warten gilt die Eingabe von jetzt, nicht die vom Start der
-    // Abfrage, sonst bliebe das Menü auf einem älteren Stand.
+    // After waiting, the current input applies, not the one from the start of the
+    // query, otherwise the menu would stay on an older state.
     query = atQuery();
     index = 0;
   }
@@ -207,7 +207,7 @@
     const sel = getSelection();
     const a = sel?.anchorNode;
     if (a && a.nodeType === Node.TEXT_NODE && query !== null) {
-      // @ und Suchtext entfernen
+      // remove @ and search text
       const off = sel!.anchorOffset;
       const start = off - query.length - 1;
       const r = document.createRange();
@@ -221,8 +221,8 @@
   }
 
   function onkeydown(e: KeyboardEvent) {
-    // selectionchange kommt asynchron, vor dem Einfügen eines Zeichens hier
-    // noch einmal prüfen.
+    // selectionchange arrives asynchronously, check again here before
+    // a character is inserted.
     caretOutOfChip();
     if (query !== null && matches.length) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -252,7 +252,7 @@
       e.preventDefault();
       if (e.shiftKey && allowsBr) {
         insertNode(document.createElement("br"));
-        // Ein br am Ende braucht ein zweites, damit der Cursor sichtbar wird.
+        // A br at the end needs a second one, so the cursor becomes visible.
         if (el?.lastChild instanceof HTMLBRElement) el.append(document.createElement("br"));
         return;
       }
@@ -265,7 +265,7 @@
     if (!path || plain) return;
     e.preventDefault();
     e.stopPropagation();
-    // Cursor an die Ablagestelle setzen.
+    // Put the cursor at the drop position.
     const doc = document as Document & { caretRangeFromPoint?: (x: number, y: number) => Range | null };
     const r = doc.caretRangeFromPoint?.(e.clientX, e.clientY);
     if (r && el?.contains(r.startContainer)) {

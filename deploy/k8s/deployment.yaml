@@ -32,15 +32,15 @@ spec:
             - name: http
               containerPort: 8080
           env:
-            # Weniger Speicherbereinigung bei vielen kurzen Läufen, begrenzt
-            # durch GOMEMLIMIT unter dem Limit des Containers. Gemessen mit
-            # 4 CPUs: 50 statt 38 PDFs pro Sekunde, p95 218 statt 310 ms.
+            # Less garbage collection with many short runs, bounded by
+            # GOMEMLIMIT below the container limit. Measured with 4 CPUs:
+            # 50 instead of 38 PDFs per second, p95 218 instead of 310 ms.
             - name: GOGC
               value: "400"
             - name: GOMEMLIMIT
               value: 800MiB
-          # Für /v1/sign: Passwort oder Token aus einem Secret, siehe
-          # secret.example.yaml, und "signer" in der Konfiguration.
+          # For /v1/sign: password or token from a Secret, see
+          # secret.example.yaml, and "signer" in the configuration.
           # envFrom:
           #   - secretRef:
           #       name: pdx-signer

@@ -2,9 +2,9 @@ package pdf
 
 import "testing"
 
-// countOps zerlegt einen Content Stream grob und zählt die Operatoren: alle
-// Wörter, die keine Zahl, kein Name und kein Teil eines Arrays oder
-// Hex-Strings sind.
+// countOps roughly splits a content stream and counts the operators: all
+// words that are not a number, not a name and not part of an array or
+// hex string.
 func countOps(b []byte) int {
 	n := 0
 	for i := 0; i < len(b); {
@@ -36,7 +36,7 @@ func countOps(b []byte) int {
 	return n
 }
 
-// TestContentOps prüft die Zählung der Operatoren für jede Methode.
+// TestContentOps checks the operator count for every method.
 func TestContentOps(t *testing.T) {
 	var c Content
 	c.Save()

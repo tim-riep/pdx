@@ -5,42 +5,42 @@ import (
 	"strings"
 )
 
-// License ist der Text der Apache License 2.0, unter der pdx steht.
+// License is the text of the Apache License 2.0, under which pdx is licensed.
 //
 //go:embed LICENSE
 var License string
 
-// Notice ist der Hinweis von pdx nach Abschnitt 4 d der Apache License.
+// Notice is the notice of pdx according to section 4 d of the Apache License.
 //
 //go:embed NOTICE
 var Notice string
 
-// ThirdPartyNotices sind die Lizenztexte aller Fremdbestandteile von pdx und
-// pdx-server, erzeugt mit make notices.
+// ThirdPartyNotices are the license texts of all third-party components of
+// pdx and pdx-server, generated with make notices.
 //
 //go:embed THIRD_PARTY_NOTICES.txt
 var ThirdPartyNotices string
 
-// Component ist ein Abschnitt der Drittanbieterhinweise.
+// Component is a section of the third-party notices.
 type Component struct {
-	// Name ist die Überschrift, etwa "golang.org/x/text v0.43.0".
+	// Name is the heading, for example "golang.org/x/text v0.43.0".
 	Name string `json:"name"`
-	// License ist die erkannte Lizenz in Kurzform, etwa "MIT", leer wenn
-	// unbekannt.
+	// License is the detected license in short form, for example "MIT", empty
+	// if unknown.
 	License string `json:"license"`
 	Text    string `json:"text"`
 }
 
 const sectionRule = "========================================================================"
 
-// Components zerlegt Drittanbieterhinweise in ihre Abschnitte. Der Kopf
-// vor dem ersten Abschnitt entfällt.
+// Components splits third-party notices into their sections. The header
+// before the first section is dropped.
 func Components(notices string) []Component {
-	// Unter Windows kann Git die Datei mit CRLF auschecken.
+	// On Windows, Git may check out the file with CRLF.
 	notices = strings.ReplaceAll(notices, "\r\n", "\n")
 	parts := strings.Split(notices, "\n"+sectionRule+"\n")
 	var out []Component
-	// Auf jede Überschrift folgt eine weitere Linie, dann der Text.
+	// Each heading is followed by another rule line, then the text.
 	for i := 1; i+1 < len(parts); i += 2 {
 		name := strings.TrimSpace(parts[i])
 		text := strings.TrimSpace(parts[i+1])
@@ -49,7 +49,7 @@ func Components(notices string) []Component {
 	return out
 }
 
-// detectLicense erkennt die Lizenz an der Überschrift oder am Text.
+// detectLicense detects the license from the heading or the text.
 func detectLicense(name, text string) string {
 	if i := strings.LastIndex(name, ", "); i > 0 && strings.HasSuffix(name, ")") && strings.Contains(name, "(npm") {
 		return strings.TrimSuffix(name[i+2:], ")")

@@ -41,7 +41,7 @@ MINGW*|MSYS*|CYGWIN*)
   [ -f "$lnk" ] || fail "Startmenüeintrag fehlt"
   [ -f "$dir/unins000.exe" ] || fail "Deinstallationsprogramm fehlt"
   powershell -NoProfile -Command "Start-Process -Wait -FilePath '$(win "$dir/unins000.exe")' -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART'"
-  # Das Deinstallationsprogramm läuft als Kopie weiter, auf das Ende warten.
+  # The uninstaller keeps running as a copy, wait for it to finish.
   for _ in $(seq 60); do [ -e "$dir/pdx-designer.exe" ] || break; sleep 1; done
   [ ! -e "$dir/pdx-designer.exe" ] && [ ! -e "$lnk" ] || fail "nach Deinstallation noch vorhanden"
   ;;

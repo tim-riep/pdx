@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Seitenübersicht: kleine Bilder aller Seiten, ein Klick springt hin.
+  // Page overview: small images of all pages, a click jumps there.
   import type { Page } from "../../lib/canvas/model";
   import { drawPage, type ImageSource } from "../../lib/canvas/render";
   import { t } from "../../lib/i18n";
@@ -19,7 +19,7 @@
     drawPage(c.getContext("2d")!, page, scale, image);
   }
 
-  // Svelte-Aktion: neu zeichnen, wenn sich die Seite ändert.
+  // Svelte action: redraw when the page changes.
   function thumb(c: HTMLCanvasElement, page: Page) {
     draw(c, page);
     return { update: (p: Page) => draw(c, p) };

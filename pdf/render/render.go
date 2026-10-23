@@ -1,6 +1,6 @@
-// Package render schreibt einen Area Tree als PDF. Es übersetzt Bereiche in
-// Content Streams, bettet Schriften und Bilder ein und lässt das
-// Konformitätsprofil Pflichtobjekte wie Output Intent und XMP ergänzen.
+// Package render writes an area tree as PDF. It translates areas into
+// content streams, embeds fonts and images and lets the
+// conformance profile add required objects such as output intent and XMP.
 package render
 
 import (
@@ -12,47 +12,47 @@ import (
 	"github.com/tim-riep/pdx/pdf/profile"
 )
 
-// Options steuert die Ausgabe.
+// Options controls the output.
 type Options struct {
-	// Profile ist das Konformitätsprofil. nil bedeutet pdf-1.7.
+	// Profile is the conformance profile. nil means pdf-1.7.
 	Profile profile.Profile
-	// CreationDate wird als Erstellungs- und Änderungsdatum geschrieben. Für
-	// reproduzierbare Ausgabe muss es gesetzt sein.
+	// CreationDate is written as creation and modification date. For
+	// reproducible output it must be set.
 	CreationDate time.Time
-	// Producer erscheint im Info-Dictionary und im XMP.
+	// Producer appears in the info dictionary and in the XMP.
 	Producer string
-	// Trace erhält, wenn gesetzt, je Seite die Operatorbereiche mit der
-	// Vorlagen-ID der Bereiche. Die Ausgabe bleibt unverändert.
+	// Trace receives, if set, the operator ranges per page with the
+	// template ID of the areas. The output stays unchanged.
 	Trace *Trace
-	// Tagged schreibt Tagged PDF mit Strukturbaum. Profile, die Tagging
-	// verlangen (PDF/A Stufe A, PDF/UA), schalten es immer ein.
+	// Tagged writes Tagged PDF with a structure tree. Profiles that require
+	// tagging (PDF/A level A, PDF/UA) always switch it on.
 	Tagged bool
-	// Flatten zeichnet Formularfelder als festen Seiteninhalt statt als
-	// ausfüllbare Felder (pdx flatten).
+	// Flatten draws form fields as fixed page content instead of as
+	// fillable fields (pdx flatten).
 	Flatten bool
 }
 
-// Trace ordnet Operatoren der Inhaltsströme den Vorlagenelementen zu, damit
-// Befunde von veraPDF (Kontext pages[i]/contentStream[0]/operators[n]) auf
-// Elemente zeigen.
+// Trace maps operators of the content streams to the template elements so
+// that findings of veraPDF (context pages[i]/contentStream[0]/operators[n])
+// point to elements.
 type Trace struct {
 	Pages []PageTrace
 }
 
-// PageTrace sind die Operatorbereiche einer Seite in Zeichenreihenfolge.
-// Innere Bereiche folgen nach dem Bereich ihres Containers.
+// PageTrace are the operator ranges of a page in drawing order.
+// Inner ranges follow after the range of their container.
 type PageTrace struct {
 	Ops []OpRange
 }
 
-// OpRange sind die Operatoren First bis ausschließlich Last eines Bereichs.
+// OpRange are the operators First up to but excluding Last of an area.
 type OpRange struct {
 	First, Last int
 	ID          string
 }
 
-// IDAt liefert die Vorlagen-ID zum Operator op auf Seite page (ab 0), den
-// kleinsten Bereich, der ihn enthält. Leer, wenn keiner passt.
+// IDAt returns the template ID for the operator op on page page (from 0), the
+// smallest range that contains it. Empty if none matches.
 func (t *Trace) IDAt(page, op int) string {
 	if t == nil || page < 0 || page >= len(t.Pages) {
 		return ""
@@ -66,7 +66,7 @@ func (t *Trace) IDAt(page, op int) string {
 	return id
 }
 
-// Render schreibt das Dokument als PDF-Bytes.
+// Render writes the document as PDF bytes.
 func Render(doc *areatree.Document, opts Options) ([]byte, error) {
 	r, err := newRenderer(doc, opts)
 	if err != nil {
@@ -94,12 +94,12 @@ type renderer struct {
 	pageRefs []pdf.Ref
 	pageIdx  int
 
-	// tag plant den Strukturbaum, nil ohne Tagged PDF.
+	// tag plans the structure tree, nil without Tagged PDF.
 	tag *tagger
-	// claim ist der Anspruch des Profils mit PDF-Version.
+	// claim is the claim of the profile with PDF version.
 	claim profile.Claim
-	// form sammelt die Formularfelder, nil ohne Felder. flat zählt die
-	// abgeflachten Felder für Ressourcennamen.
+	// form collects the form fields, nil without fields. flat counts the
+	// flattened fields for resource names.
 	form *formState
 	flat int
 }
@@ -134,7 +134,7 @@ func newRenderer(doc *areatree.Document, opts Options) (*renderer, error) {
 	return r, nil
 }
 
-// pageRes sammelt die Ressourcen einer Seite.
+// pageRes collects the resources of a page.
 type pageRes struct {
 	fonts    *pdf.Dict
 	xobjects *pdf.Dict
@@ -152,8 +152,8 @@ func (r *renderer) build() error {
 	if err := r.fonts.embed(); err != nil {
 		return err
 	}
-	// Seitenobjekte vorab reservieren, damit Verweise auf spätere Seiten zeigen
-	// können.
+	// Reserve page objects in advance so that references can point to later
+	// pages.
 	r.pageRefs = make([]pdf.Ref, len(r.doc.Pages))
 	for i := range r.doc.Pages {
 		r.pageRefs[i] = r.d.Reserve()
@@ -180,8 +180,8 @@ func (r *renderer) build() error {
 	if r.tag != nil {
 		r.tag.write(r)
 	}
-	// PDF 2.0 ersetzt das Info-Dictionary durch XMP (ISO 32000-2 14.3.3),
-	// PDF/A-4 verbietet es ohne PieceInfo (ISO 19005-4 6.1.3).
+	// PDF 2.0 replaces the info dictionary with XMP (ISO 32000-2 14.3.3),
+	// PDF/A-4 forbids it without PieceInfo (ISO 19005-4 6.1.3).
 	if r.claim.Version != "2.0" {
 		r.info = r.infoDict()
 	}
@@ -267,7 +267,7 @@ func (r *renderer) page(p *areatree.Page) (pdf.Ref, error) {
 		if len(r.tag.pages[r.pageIdx]) > 0 {
 			page.Set("StructParents", pdf.Int(r.pageIdx))
 		}
-		// Tabulatorreihenfolge nach Struktur (ISO 14289-1 7.18.3).
+		// Tab order by structure (ISO 14289-1 7.18.3).
 		page.Set("Tabs", pdf.Name("S"))
 	}
 	ref := r.pageRefs[r.pageIdx]

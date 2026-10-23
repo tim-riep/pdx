@@ -1,5 +1,5 @@
-// Command fopsee zeigt die Zeilen aus FOPs Area Tree eines Falls (nur zur
-// Analyse, liest out/suites/ref).
+// Command fopsee shows the lines from FOP's area tree for a case (for
+// analysis only, reads out/suites/ref).
 package main
 
 import (

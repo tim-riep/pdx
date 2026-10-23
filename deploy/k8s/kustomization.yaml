@@ -1,8 +1,8 @@
-# Beispiel für den Betrieb von pdx-server in Kubernetes:
+# Example for running pdx-server in Kubernetes:
 #   kubectl apply -k deploy/k8s
-# Vorher in configmap.yaml die Hashes der API-Schlüssel eintragen
-# (pdx-server hash-key < schluessel.txt) und das Image auf die eigene
-# Registry mit Digest setzen.
+# First enter the hashes of the API keys in configmap.yaml
+# (pdx-server hash-key < schluessel.txt) and point the image to your own
+# registry with a digest.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: pdx

@@ -8,8 +8,8 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// TestCheckAllErrors verlangt alle Befunde der Vorprüfung auf einmal, je
-// mit Vorlagen-ID.
+// TestCheckAllErrors requires all findings of the pre-check at once, each
+// with template ID.
 func TestCheckAllErrors(t *testing.T) {
 	block := func(id, src, role string, kids ...areatree.Area) *areatree.Container {
 		return &areatree.Container{Kind: areatree.KindBlock, ID: id, Source: src, Role: role, Children: kids}
@@ -33,7 +33,7 @@ func TestCheckAllErrors(t *testing.T) {
 			},
 		}},
 	}
-	// Leere Blöcke verschwinden aus dem Baum, also bekommen sie Text.
+	// Empty blocks disappear from the tree, so they get text.
 	for _, a := range doc.Pages[0].Areas[:4] {
 		c := a.(*areatree.Container)
 		if c.ID != "logo-box" {
@@ -66,14 +66,14 @@ func TestCheckAllErrors(t *testing.T) {
 		t.Errorf("Befunde:\n%q\nerwartet:\n%q", got, want)
 	}
 
-	// PDF/A-3a allein verlangt Sprache und Alternativtexte, nicht die
-	// Regeln von PDF/UA.
+	// PDF/A-3a alone requires language and alternative texts, not the
+	// rules of PDF/UA.
 	_, err = Render(doc, Options{Profile: lookup(t, "pdfa-3a"), CreationDate: testDate})
 	if !errors.As(err, &ce) || len(ce) != 2 {
 		t.Errorf("PDF/A-3a: %v", err)
 	}
-	// Ohne Anspruch auf Barrierefreiheit gibt es keine Vorprüfung. Das
-	// Bild ohne Daten scheitert erst beim Schreiben.
+	// Without an accessibility claim there is no pre-check. The
+	// image without data only fails when writing.
 	_, err = Render(doc, Options{Profile: pdfa3b(t), CreationDate: testDate, Tagged: true})
 	if errors.As(err, &ce) {
 		t.Errorf("Vorprüfung ohne Anspruch: %v", err)

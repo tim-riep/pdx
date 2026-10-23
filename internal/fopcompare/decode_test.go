@@ -9,8 +9,8 @@ import (
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
-// TestBarcodesDecode prüft, dass die vektoriellen Barcodes des Korpus von
-// zbar gelesen werden und den erwarteten Inhalt tragen.
+// TestBarcodesDecode checks that the vector barcodes of the corpus are read
+// by zbar and carry the expected content.
 func TestBarcodesDecode(t *testing.T) {
 	if !fopcompare.Enabled() {
 		t.Skip("PDX_FOP=1 setzen, um Barcodes mit zbar zu dekodieren")

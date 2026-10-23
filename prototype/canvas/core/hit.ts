@@ -1,9 +1,9 @@
-// Treffertest: Welcher Bereich liegt unter einem Punkt der Seite? Gewinnt
-// der kleinste Bereich, damit innere Elemente vor ihren Containern kommen.
+// Hit test: which area lies under a point of the page? The smallest
+// area wins, so inner elements come before their containers.
 
 import type { Element, Page } from "./model";
 
-const cell = 32; // Rastergröße in Punkt
+const cell = 32; // grid size in points
 
 export class HitIndex {
   private grid = new Map<number, Element[]>();

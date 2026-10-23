@@ -15,14 +15,14 @@ import (
 	"github.com/tim-riep/pdx/sign"
 )
 
-// passwordEnv ist die Umgebungsvariable für das Passwort der Schlüsseldatei.
-// Als Kommandozeilenargument wäre es in der Prozessliste sichtbar.
+// passwordEnv is the environment variable for the password of the key file.
+// As a command line argument it would be visible in the process list.
 const passwordEnv = "PDX_SIGN_PASSWORD"
 
-// tokenEnv ist die Umgebungsvariable für den Token eines Signaturdienstes.
+// tokenEnv is the environment variable for the token of a signing service.
 const tokenEnv = "PDX_SIGN_TOKEN"
 
-// cmdSign signiert ein fertiges PDF nach PAdES per inkrementellem Update.
+// cmdSign signs a finished PDF according to PAdES via incremental update.
 func cmdSign(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("sign", flag.ContinueOnError)
 	fs.SetOutput(stderr)
@@ -72,7 +72,7 @@ func cmdSign(args []string, stdout, stderr io.Writer) int {
 	return 0
 }
 
-// loadSigner liest einen Signer aus der Angabe ART:ORT.
+// loadSigner reads a signer from the specification ART:ORT.
 func loadSigner(spec string, stdin *os.File, stderr io.Writer) (sign.Signer, error) {
 	kind, loc, ok := strings.Cut(spec, ":")
 	if !ok || loc == "" {
@@ -95,8 +95,8 @@ func loadSigner(spec string, stdin *os.File, stderr io.Writer) (sign.Signer, err
 	return nil, fmt.Errorf("Signer-Art %q ist unbekannt, erlaubt sind pkcs12 und remote", kind)
 }
 
-// password liest das Passwort aus der Umgebung oder fragt es am Terminal
-// ohne Echo ab.
+// password reads the password from the environment or prompts for it on
+// the terminal without echo.
 func password(stdin *os.File, stderr io.Writer) (string, error) {
 	if pw, ok := os.LookupEnv(passwordEnv); ok {
 		return pw, nil

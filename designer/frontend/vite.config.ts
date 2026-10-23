@@ -4,8 +4,8 @@ import wails from "@wailsio/runtime/plugins/vite";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-// bundled schreibt die Pakete aus node_modules, die im Bündel landen, nach
-// bundled-packages.json. Daraus entstehen die Drittanbieterhinweise.
+// bundled writes the packages from node_modules that end up in the bundle to
+// bundled-packages.json. The third-party notices are built from it.
 function bundled(): Plugin {
   return {
     name: "pdx-bundled-packages",
@@ -19,7 +19,7 @@ function bundled(): Plugin {
           if (m) names.add(m[1]);
         }
       }
-      // Der Worker von pdf.js kommt als Datei dazu.
+      // The pdf.js worker is added as a file.
       if (Object.keys(bundle).some((f) => f.includes("pdf.worker"))) names.add("pdfjs-dist");
       const list = [...names].sort().map((name) => {
         const pkg = JSON.parse(readFileSync(join(import.meta.dirname, "node_modules", name, "package.json"), "utf8"));

@@ -12,9 +12,9 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// cmdFlatten wandelt ein ausgefülltes Formular in ein statisches PDF im
-// gewählten Profil. Die Eingaben werden wie bei extract-data gelesen und
-// geprüft, ungültige Daten werden nicht abgeflacht.
+// cmdFlatten converts a filled-in form into a static PDF in the chosen
+// profile. The inputs are read and checked as in extract-data, invalid data
+// is not flattened.
 func cmdFlatten(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("flatten", flag.ContinueOnError)
 	fs.SetOutput(stderr)

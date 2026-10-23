@@ -1,11 +1,12 @@
-// Package fosuite führt die FO-Testsuiten aus: ausgewählte Testfälle von
-// Apache FOP 2.11 (test/layoutengine/standard-testcases) und die W3C XSL Test
-// Suite. Erwartet wird, was FOP setzt: Seitenzahl, Zeilentexte, Grundlinien
-// und Zeilenanfänge. Die Erwartungen werden einmal mit FOP erzeugt und liegen
-// als kleine Textdateien im Repository, der Lauf selbst braucht kein Docker.
+// Package fosuite runs the FO test suites: selected test cases from
+// Apache FOP 2.11 (test/layoutengine/standard-testcases) and the W3C XSL Test
+// Suite. The expectation is what FOP typesets: page count, line texts,
+// baselines and line starts. The expectations are generated once with FOP and
+// are stored as small text files in the repository, the run itself needs no
+// Docker.
 //
-// Fälle außerhalb des Teilumfangs stehen mit Begründung in
-// testdata/suites/disabled.txt, bekannte Abweichungen mit Begründung in
+// Cases outside the supported subset are listed with a reason in
+// testdata/suites/disabled.txt, known deviations with a reason in
 // testdata/suites/deviating.txt.
 package fosuite
 
@@ -18,31 +19,32 @@ import (
 	"strings"
 )
 
-// Suiten.
+// Suites.
 const (
 	SuiteFOP = "fop"
 	SuiteW3C = "w3c"
 )
 
-// Case ist ein Testfall.
+// Case is a test case.
 type Case struct {
 	Suite, Name string
-	// File ist die FO-Datei.
+	// File is the FO file.
 	File     string
 	Category string
 }
 
-// ID ist "suite/name", so stehen Fälle in disabled.txt und deviating.txt.
+// ID is "suite/name", the form in which cases appear in disabled.txt and
+// deviating.txt.
 func (c Case) ID() string { return c.Suite + "/" + c.Name }
 
-// DataDir ist testdata/suites.
+// DataDir is testdata/suites.
 func DataDir(root string) string { return filepath.Join(root, "testdata", "suites") }
 
-// W3CDir ist das Verzeichnis der heruntergeladenen W3C-Suite. Ihre Dateien
-// stehen unter keiner genannten Lizenz und liegen daher nicht im Repository.
+// W3CDir is the directory of the downloaded W3C suite. Its files are not
+// under any stated license and are therefore not stored in the repository.
 func W3CDir(root string) string { return filepath.Join(root, "out", "suites", "w3c") }
 
-// caseDir liefert das Verzeichnis mit den FO-Dateien einer Suite.
+// caseDir returns the directory with the FO files of a suite.
 func caseDir(root, suite string) string {
 	if suite == SuiteW3C {
 		return filepath.Join(W3CDir(root), "fo")
@@ -50,12 +52,12 @@ func caseDir(root, suite string) string {
 	return filepath.Join(DataDir(root), suite, "cases")
 }
 
-// ExpectFile liefert den Pfad der Erwartung eines Falls.
+// ExpectFile returns the path of the expectation for a case.
 func ExpectFile(root string, c Case) string {
 	return filepath.Join(DataDir(root), c.Suite, "expect", c.Name+".txt")
 }
 
-// Cases liefert alle vorhandenen Fälle, sortiert nach ID.
+// Cases returns all existing cases, sorted by ID.
 func Cases(root string) ([]Case, error) {
 	var out []Case
 	for _, s := range []string{SuiteFOP, SuiteW3C} {
@@ -72,8 +74,8 @@ func Cases(root string) ([]Case, error) {
 	return out, nil
 }
 
-// ReadList liest eine Liste "suite/name: Begründung". Leerzeilen und Zeilen
-// mit # am Anfang werden übersprungen. Ein Fall ohne Begründung ist ein Fehler.
+// ReadList reads a list "suite/name: reason". Empty lines and lines starting
+// with # are skipped. A case without a reason is an error.
 func ReadList(path string) (map[string]string, error) {
 	f, err := os.Open(path)
 	if os.IsNotExist(err) {
@@ -101,7 +103,7 @@ func ReadList(path string) (map[string]string, error) {
 	return out, sc.Err()
 }
 
-// WriteList schreibt eine Liste sortiert mit Kopfkommentar.
+// WriteList writes a list in sorted order with a header comment.
 func WriteList(path, header string, m map[string]string) error {
 	ids := make([]string, 0, len(m))
 	for id := range m {
@@ -119,11 +121,11 @@ func WriteList(path, header string, m map[string]string) error {
 	return os.WriteFile(path, []byte(b.String()), 0o644)
 }
 
-// Kategorien in der Reihenfolge des Berichts.
+// Categories in the order of the report.
 var Categories = []string{"Seitenfolgen", "Tabellen", "Listen", "Keeps", "Marker", "Verweise",
 	"Zeilenumbruch", "Silbentrennung", "Leader und Links", "Sonstiges"}
 
-// Category ordnet einen Fall nach seinem Namen einer Kategorie zu.
+// Category assigns a case to a category based on its name.
 func Category(suite, name string) string {
 	n := strings.ToLower(name)
 	has := func(subs ...string) bool {

@@ -1,6 +1,6 @@
 <script lang="ts">
-  // Ansicht PDF: das erzeugte PDF im Profil der Vorlage mit pdf.js, so wie es ausgeliefert
-  // wird. pdf.js und sein Worker liegen im Bündel, nichts kommt aus dem Netz.
+  // PDF view: the generated PDF in the profile of the template with pdf.js, as it is
+  // delivered. pdf.js and its worker are in the bundle, nothing comes from the network.
   import { getDocument, GlobalWorkerOptions, type PDFDocumentLoadingTask, type PDFDocumentProxy } from "pdfjs-dist";
   import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
   import { profileShort, t } from "../lib/i18n";
@@ -10,7 +10,7 @@
 
   const unavailable = (e: unknown) => message(e).includes("nicht verfügbar");
 
-  // Speichern über den Dialog des Systems, im Browser über die Pfadabfrage.
+  // Save via the system dialog, in the browser via the path prompt.
   async function savePDF() {
     try {
       const path = await RenderAPI.ExportPDFDialog();
@@ -30,7 +30,7 @@
     }
   }
 
-  // Öffnen mit dem PDF-Programm des Systems, im Browser in einem neuen Tab.
+  // Open with the PDF program of the system, in the browser in a new tab.
   async function showPDF() {
     try {
       await RenderAPI.OpenPDF();
@@ -47,7 +47,7 @@
   let status = $state<"loading" | "ok" | "error">("loading");
   let error = $state("");
   let pages = $state(0);
-  // Das Profil der Vorlage bestimmt, welche Normen das PDF erfüllt.
+  // The profile of the template determines which standards the PDF meets.
   const profile = $derived(profileShort(node(tpl.snapshot?.root ?? "")?.attrs.profile || "pdfa-3b"));
   let width = $state(800);
   let seq = 0;
@@ -77,8 +77,8 @@
     }
   }
 
-  // draw zeichnet alle Seiten in Breite des Bereichs, scharf für die
-  // Pixeldichte des Bildschirms.
+  // draw draws all pages at the width of the area, sharp for the
+  // pixel density of the screen.
   async function draw() {
     if (!doc || !host) return;
     const canvases: HTMLCanvasElement[] = [];
@@ -100,7 +100,7 @@
     host.replaceChildren(...canvases);
   }
 
-  // Neu laden nach Änderungen, kurz entprellt.
+  // Reload after changes, briefly debounced.
   let timer: ReturnType<typeof setTimeout> | undefined;
   $effect(() => {
     const rev = project.rev;

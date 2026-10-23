@@ -24,7 +24,7 @@ const enumXSD = `<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="art" type="Waehrung"/>
 </xs:schema>`
 
-// TestEnum prüft, dass Aufzählungen an Elementen und Attributen ankommen.
+// TestEnum checks that enumerations arrive at elements and attributes.
 func TestEnum(t *testing.T) {
 	m, err := FromXSD("a.xsd", map[string][]byte{"a.xsd": []byte(enumXSD)})
 	if err != nil {

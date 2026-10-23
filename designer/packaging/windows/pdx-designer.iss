@@ -1,7 +1,7 @@
-; Setup-Programm von pdx Designer für Windows (Inno Setup 6).
-; Installation pro Benutzer ohne Administratorrechte nach
-; %LOCALAPPDATA%\Programs\pdx, Startmenüeintrag für den Benutzer,
-; Deinstallation über Einstellungen, Apps.
+; Setup program of pdx Designer for Windows (Inno Setup 6).
+; Per-user installation without administrator rights into
+; %LOCALAPPDATA%\Programs\pdx, start menu entry for the user,
+; uninstallation via Settings, Apps.
 ;
 ;   ISCC -DVersion=0.3.0 -DTag=v0.3.0 pdx-designer.iss
 
@@ -65,8 +65,8 @@ Name: "{userprograms}\pdx Designer"; Filename: "{app}\pdx-designer.exe"; Working
 Filename: "{app}\pdx-designer.exe"; Description: "{cm:LaunchProgram,pdx Designer}"; Flags: nowait postinstall skipifsilent
 
 [Code]
-// Der Designer braucht die WebView2-Laufzeit (in Windows 11 enthalten).
-// Fehlt sie, weist das Setup darauf hin, installiert aber trotzdem.
+// The designer needs the WebView2 runtime (included in Windows 11).
+// If it is missing, the setup points this out but installs anyway.
 const
   WebView2Key = 'SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}';
   WebView2UserKey = 'Software\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}';

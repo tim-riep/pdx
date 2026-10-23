@@ -5,15 +5,15 @@ import { openPath, selectInTree } from "./helpers";
 
 const formular = resolve(dirname(fileURLToPath(import.meta.url)), "../../../testdata/templates/formular");
 
-// Formulare im Designer: ausfüllbare Vorschau, Tab-Reihenfolge, Einfügen
-// aus der Palette mit Eigenschaften im Inspektor.
+// Forms in the designer: fillable preview, tab order, inserting
+// from the palette with properties in the inspector.
 test("Formular: Vorschau, Tab-Reihenfolge, Palette", async ({ page }) => {
   await page.goto("/");
   await openPath(page, formular);
   await expect(page.getByTestId("doc-title")).toHaveText("formular");
   await page.getByRole("tab", { name: "Vorschau" }).click();
 
-  // Ausfüllbare Felder über den Widgets, ohne Signaturfeld.
+  // Fillable fields above the widgets, without the signature field.
   const fill = page.getByTestId("fill");
   await expect(fill.locator("[data-field]")).toHaveCount(11);
   const name = fill.locator('input[data-field="name"]');
@@ -24,14 +24,14 @@ test("Formular: Vorschau, Tab-Reihenfolge, Palette", async ({ page }) => {
   await expect(fill.getByRole("radio", { name: "Anrede Frau" })).not.toBeChecked();
   await expect(fill.locator('select[data-field="land"]')).toHaveValue("DE");
 
-  // Tab-Reihenfolge nach Strukturbaum: Anrede zuerst, Unterschrift zuletzt.
+  // Tab order by structure tree: salutation first, signature last.
   await page.getByRole("tab", { name: "Barrierefreiheit" }).click();
   await page.getByTestId("access-tabs").check();
   await expect(page.locator('.order.tab[data-ref="anrede"]').first()).toHaveAttribute("data-tab", "1");
   await expect(page.locator('.order.tab[data-ref="unterschrift"]')).toHaveAttribute("data-tab", "9");
 
-  // Textfeld aus der Palette einfügen: Inspektor mit Formularfeld und
-  // Bezeichnung unter Barrierefreiheit.
+  // Insert a text field from the palette: inspector with form field and
+  // label under accessibility.
   await page.getByRole("tab", { name: "Entwurf" }).click();
   await selectInTree(page, ["inhalt", "unterschrift"]);
   await page.getByTestId("palette").locator('[data-kind="textField"]').click();

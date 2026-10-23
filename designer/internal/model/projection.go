@@ -11,15 +11,15 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Item ist ein Kind in der Projektion: ein Element (Ref) oder bei gemischtem
-// Inhalt ein Text.
+// Item is a child in the projection: an element (Ref) or, with mixed
+// content, a text.
 type Item struct {
 	Ref  string `json:"ref,omitempty"`
 	Text string `json:"text,omitempty"`
 }
 
-// ViewNode ist ein Element der Vorlage, wie die Oberfläche es sieht. Die
-// Oberfläche ändert es nie selbst, sie schickt Befehle.
+// ViewNode is an element of the template as the UI sees it. The
+// UI never changes it itself, it sends commands.
 type ViewNode struct {
 	Ref      string            `json:"ref"`
 	Name     string            `json:"name"`
@@ -29,15 +29,15 @@ type ViewNode struct {
 	Children []Item            `json:"children"`
 }
 
-// Snapshot ist die vollständige Projektion einer Revision.
+// Snapshot is the complete projection of a revision.
 type Snapshot struct {
 	Rev   uint64              `json:"rev"`
 	Root  string              `json:"root"`
 	Nodes map[string]ViewNode `json:"nodes"`
 }
 
-// Ref liefert die Kennung eines Elements: seine ID oder, ohne ID, den Pfad
-// über den nächsten Vorfahren mit ID, etwa "~seiten/2".
+// Ref returns the ID of an element: its ID or, without ID, the path
+// via the nearest ancestor with ID, for example "~seiten/2".
 func Ref(n *template.Node) string {
 	if id := n.ID(); id != "" {
 		return id
@@ -48,7 +48,7 @@ func Ref(n *template.Node) string {
 	return "~" + strings.TrimPrefix(Ref(n.Parent), "~") + "/" + strconv.Itoa(n.Index())
 }
 
-// Resolve findet ein Element über seine Kennung.
+// Resolve finds an element by its ID.
 func Resolve(t *template.Template, ref string) (*template.Node, error) {
 	if !strings.HasPrefix(ref, "~") {
 		if n := t.ByID(ref); n != nil {
@@ -73,7 +73,7 @@ func Resolve(t *template.Template, ref string) (*template.Node, error) {
 	return n, nil
 }
 
-// Project baut die Projektion einer Vorlage.
+// Project builds the projection of a template.
 func Project(t *template.Template, rev uint64, cat Catalog) Snapshot {
 	s := Snapshot{Rev: rev, Root: Ref(t.Root), Nodes: map[string]ViewNode{}}
 	var walk func(n *template.Node)
@@ -90,7 +90,7 @@ func Project(t *template.Template, rev uint64, cat Catalog) Snapshot {
 	return s
 }
 
-// View liefert die Projektion eines einzelnen Elements, etwa für Patches.
+// View returns the projection of a single element, for example for patches.
 func View(n *template.Node, cat Catalog) ViewNode { return view(n, cat) }
 
 func view(n *template.Node, cat Catalog) ViewNode {
@@ -116,7 +116,7 @@ func view(n *template.Node, cat Catalog) ViewNode {
 	return vn
 }
 
-// Patch sind die Änderungen der Projektion von einer Revision zur nächsten.
+// Patch is the changes of the projection from one revision to the next.
 type Patch struct {
 	From    uint64     `json:"from"`
 	Rev     uint64     `json:"rev"`
@@ -125,7 +125,7 @@ type Patch struct {
 	Removed []string   `json:"removed"`
 }
 
-// Diff vergleicht zwei Projektionen.
+// Diff compares two projections.
 func Diff(old, cur Snapshot) Patch {
 	p := Patch{From: old.Rev, Rev: cur.Rev, Root: cur.Root, Set: []ViewNode{}, Removed: []string{}}
 	for ref, n := range cur.Nodes {

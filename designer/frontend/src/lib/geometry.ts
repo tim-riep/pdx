@@ -1,5 +1,5 @@
-// Längen und Einrasten für Verschieben und Größe ändern. Alle Rechtecke in
-// Punkt auf der Seite, Vorlagenwerte in Millimetern.
+// Lengths and snapping for moving and resizing. All rectangles in
+// points on the page, template values in millimeters.
 
 import type { Rect } from "./canvas/model";
 
@@ -7,7 +7,7 @@ export const PT_PER_MM = 72 / 25.4;
 
 const units: Record<string, number> = { mm: 1, cm: 10, in: 25.4, pt: 1 / PT_PER_MM, pc: 12 / PT_PER_MM, px: 0.75 / PT_PER_MM };
 
-// toMM liest eine Länge wie "20mm" oder "12pt" in Millimetern.
+// toMM reads a length like "20mm" or "12pt" in millimeters.
 export function toMM(v: string | undefined): number | null {
   if (!v) return null;
   const m = /^(-?[0-9]+(?:\.[0-9]+)?)(mm|cm|in|pt|pc|px)?$/.exec(v.trim());
@@ -15,7 +15,7 @@ export function toMM(v: string | undefined): number | null {
   return parseFloat(m[1]) * (units[m[2] ?? "pt"] ?? 1);
 }
 
-// fmtMM schreibt Millimeter mit höchstens einer Nachkommastelle.
+// fmtMM writes millimeters with at most one decimal place.
 export function fmtMM(v: number): string {
   const r = Math.round(v * 10) / 10;
   return `${Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1)}mm`;
@@ -32,13 +32,13 @@ export interface Snap {
   guides: Guide[];
 }
 
-// edges liefert Anfang, Mitte und Ende eines Rechtecks je Achse.
+// edges returns start, center and end of a rectangle per axis.
 function edges(r: Rect): { x: number[]; y: number[] } {
   return { x: [r[0], r[0] + r[2] / 2, r[0] + r[2]], y: [r[1], r[1] + r[3] / 2, r[1] + r[3]] };
 }
 
-// snap verschiebt ein Rechteck auf die nächste Hilfslinie in der Nähe:
-// Kanten und Mitten der Nachbarn und des Elternelements.
+// snap moves a rectangle to the nearest guide line nearby:
+// edges and centers of the neighbors and of the parent element.
 export function snap(r: Rect, others: Rect[], threshold: number): Snap {
   const me = edges(r);
   let best = { x: { d: threshold + 1, at: 0, shift: 0 }, y: { d: threshold + 1, at: 0, shift: 0 } };
@@ -66,8 +66,8 @@ export function snap(r: Rect, others: Rect[], threshold: number): Snap {
   return { dx, dy, guides };
 }
 
-// gaps liefert die Abstände zu den nächsten Nachbarn links, rechts, oben und
-// unten, soweit sie sich in der anderen Achse überlappen.
+// gaps returns the distances to the nearest neighbors left, right, top and
+// bottom, as far as they overlap in the other axis.
 export function gaps(r: Rect, others: Rect[]): { from: [number, number]; to: [number, number]; mm: number }[] {
   const out: { from: [number, number]; to: [number, number]; mm: number }[] = [];
   const [x, y, w, h] = r;

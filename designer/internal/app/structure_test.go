@@ -39,7 +39,7 @@ func TestInsertChildFromScratch(t *testing.T) {
 		t.Errorf("einmalige Kinder doppelt angeboten: %v", keys)
 	}
 
-	// In beliebiger Reihenfolge einfügen, das XSD bestimmt die Stelle.
+	// Insert in any order, the XSD determines the position.
 	for _, k := range []string{"attachments", "texts", "formats", "namespaces", "styles"} {
 		if _, err := ts.InsertChild(ChildInsert{Parent: root, Key: k, Index: -1}); err != nil {
 			t.Fatalf("%s: %v", k, err)
@@ -64,7 +64,7 @@ func TestInsertChildFromScratch(t *testing.T) {
 		t.Fatalf("Anhang %v", a.Attrs)
 	}
 
-	// Seitenvorlage mit Kopf.
+	// Page master with header.
 	pm := tpl.Root.First("pageSet").First("pageMaster")
 	res, err := ts.InsertChild(ChildInsert{Parent: pm.ID(), Key: "pageMaster/header", Index: -1})
 	if err != nil {
@@ -77,7 +77,7 @@ func TestInsertChildFromScratch(t *testing.T) {
 	if slices.Contains(childKeys(ins), "pageMaster/header") {
 		t.Fatal("zweiter Kopf angeboten")
 	}
-	// Bilder nur über die Bausteinleiste.
+	// Images only via the building block bar.
 	if _, err := ts.InsertChild(ChildInsert{Parent: tpl.Root.First("body").ID(), Key: "image", Index: -1}); err == nil {
 		t.Fatal("Bild ohne Datei eingefügt")
 	}
@@ -98,14 +98,14 @@ func TestDuplicateAndMove(t *testing.T) {
 	if cp == nil || cp.Index() != tpl.ByID("rechnungsdaten").Index()+1 {
 		t.Fatalf("Kopie %v", res.Select)
 	}
-	// Alle IDs der Kopie sind neu.
+	// All IDs of the copy are new.
 	for _, ch := range cp.Elements("") {
 		if strings.HasPrefix(ch.ID(), "rechnungsnummer") && !strings.Contains(ch.ID(), "kopie") {
 			t.Fatalf("ID übernommen: %s", ch.ID())
 		}
 	}
 
-	// Stile umsortieren: st-klein nach oben, dann wieder nach unten.
+	// Reorder styles: st-klein to the top, then back down again.
 	styles := func() string {
 		var ids []string
 		for _, s := range tpl.Root.First("styles").Elements("style") {
@@ -128,7 +128,7 @@ func TestDuplicateAndMove(t *testing.T) {
 	if _, err := ts.Move("st-basis", -1); err == nil {
 		t.Fatal("über den Anfang hinaus verschoben")
 	}
-	// Ungültige Reihenfolge lehnt das XSD ab: body vor pageSet.
+	// The XSD rejects an invalid order: body before pageSet.
 	if _, err := ts.Move("inhalt", -1); err == nil {
 		t.Fatal("body vor pageSet angenommen")
 	}

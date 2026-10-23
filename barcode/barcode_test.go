@@ -16,9 +16,9 @@ func TestGiroPayload(t *testing.T) {
 		t.Errorf("Nutzlast:\n%q\nerwartet\n%q", p, want)
 	}
 	bad := []Giro{
-		{Name: "X", IBAN: "DE00120300000000202051"},                // Prüfziffer falsch
-		{Name: "", IBAN: "DE02120300000000202051"},                 // Name fehlt
-		{Name: "X", IBAN: "DE02120300000000202051", Amount: "1,5"}, // Komma
+		{Name: "X", IBAN: "DE00120300000000202051"},                // wrong check digit
+		{Name: "", IBAN: "DE02120300000000202051"},                 // name missing
+		{Name: "X", IBAN: "DE02120300000000202051", Amount: "1,5"}, // comma
 		{Name: "X", IBAN: "DE02120300000000202051", Reference: "RF18", Text: "x"},
 	}
 	for _, b := range bad {
@@ -33,7 +33,7 @@ func TestGenerate(t *testing.T) {
 	if err != nil || q.Cols != q.Rows || q.Cols < 21 || q.Quiet != 4 {
 		t.Fatalf("QR: %+v %v", q, err)
 	}
-	// Die drei Suchmuster des QR-Codes: Ecken oben links, oben rechts und unten links sind dunkel.
+	// The three finder patterns of the QR code: corners top left, top right and bottom left are dark.
 	if !q.Dark(0, 0) || !q.Dark(q.Cols-1, 0) || !q.Dark(0, q.Rows-1) {
 		t.Error("Suchmuster des QR-Codes fehlen")
 	}

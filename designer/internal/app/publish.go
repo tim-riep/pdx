@@ -17,46 +17,46 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// PublishService veröffentlicht die Vorlage auf einem pdx-server: Vergleich
-// mit der aktiven Version, Hochladen als neue Version, Aktivieren. Der
-// API-Schlüssel bleibt nur im Speicher dieser Sitzung, gespeichert wird nur
-// die Adresse des Servers.
+// PublishService publishes the template on a pdx-server: comparison
+// with the active version, upload as a new version, activation. The
+// API key stays only in the memory of this session, only the address of
+// the server is stored.
 type PublishService struct {
 	c      *Core
 	mu     sync.Mutex
 	client *server.Client
 }
 
-// NewPublishService liefert den Service.
+// NewPublishService returns the service.
 func NewPublishService(c *Core) *PublishService { return &PublishService{c: c} }
 
-// PublishState ist der Stand der Verbindung für die Oberfläche.
+// PublishState is the state of the connection for the UI.
 type PublishState struct {
 	URL       string `json:"url"`
 	Connected bool   `json:"connected"`
-	// ID ist der Vorschlag für die Vorlagen-ID auf dem Server.
+	// ID is the suggestion for the template ID on the server.
 	ID string `json:"id"`
 }
 
-// FileChange ist eine Datei, die sich gegenüber der aktiven Version ändert.
+// FileChange is a file that changes compared to the active version.
 type FileChange struct {
 	Name string `json:"name"`
-	// Kind ist added, removed oder changed.
+	// Kind is added, removed or changed.
 	Kind string `json:"kind"`
 }
 
-// DiffLine ist eine Zeile im Vergleich von template.xml.
+// DiffLine is a line in the comparison of template.xml.
 type DiffLine struct {
-	// Op ist " " (gleich), "+" (neu) oder "-" (entfernt).
+	// Op is " " (equal), "+" (new) or "-" (removed).
 	Op   string `json:"op"`
 	Text string `json:"text"`
 }
 
-// PublishDiff vergleicht die Vorlage mit der aktiven Version auf dem Server.
+// PublishDiff compares the template with the active version on the server.
 type PublishDiff struct {
 	ID string `json:"id"`
-	// Active ist die aktive Version, leer, wenn es die Vorlage noch nicht
-	// gibt oder keine Version aktiv ist.
+	// Active is the active version, empty if the template does not exist
+	// yet or no version is active.
 	Active   string       `json:"active"`
 	Versions int          `json:"versions"`
 	Same     bool         `json:"same"`
@@ -64,7 +64,7 @@ type PublishDiff struct {
 	Template []DiffLine   `json:"template"`
 }
 
-// PublishResult ist das Ergebnis des Hochladens.
+// PublishResult is the result of the upload.
 type PublishResult struct {
 	Version string `json:"version"`
 	Created bool   `json:"created"`
@@ -77,7 +77,7 @@ type publishSettings struct {
 
 func (s *PublishService) settingsPath() string { return filepath.Join(s.c.dataDir, "publish.json") }
 
-// State liefert Adresse, Verbindung und den Vorschlag für die ID.
+// State returns the address, the connection and the suggestion for the ID.
 func (s *PublishService) State() PublishState {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -96,7 +96,7 @@ func (s *PublishService) State() PublishState {
 
 var reNonID = regexp.MustCompile(`[^a-z0-9_-]+`)
 
-// suggestID leitet die ID aus der ID der Vorlage oder dem Dateinamen ab.
+// suggestID derives the ID from the ID of the template or the file name.
 func (s *PublishService) suggestID() string {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -114,8 +114,8 @@ func (s *PublishService) suggestID() string {
 	return id
 }
 
-// Connect prüft Adresse und Schlüssel mit einer Abfrage der Vorlagen. Der
-// Schlüssel bleibt nur im Speicher.
+// Connect checks address and key with a query of the templates. The
+// key stays only in memory.
 func (s *PublishService) Connect(url, key string) (PublishState, error) {
 	c, err := server.NewClient(url, key)
 	if err != nil {
@@ -135,7 +135,7 @@ func (s *PublishService) Connect(url, key string) (PublishState, error) {
 	return s.State(), nil
 }
 
-// Disconnect vergisst den Schlüssel.
+// Disconnect forgets the key.
 func (s *PublishService) Disconnect() PublishState {
 	s.mu.Lock()
 	s.client = nil
@@ -152,7 +152,7 @@ func (s *PublishService) connected() (*server.Client, error) {
 	return s.client, nil
 }
 
-// local liefert das Paket der geöffneten Vorlage als ZIP.
+// local returns the package of the open template as a ZIP.
 func (s *PublishService) local() ([]byte, *pkg.Package, error) {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -167,8 +167,8 @@ func (s *PublishService) local() ([]byte, *pkg.Package, error) {
 	return b, p, err
 }
 
-// Compare vergleicht die geöffnete Vorlage mit der aktiven Version auf dem
-// Server, Datei für Datei und template.xml Zeile für Zeile.
+// Compare compares the open template with the active version on the
+// server, file by file and template.xml line by line.
 func (s *PublishService) Compare(id string) (PublishDiff, error) {
 	c, err := s.connected()
 	if err != nil {
@@ -236,8 +236,8 @@ func (s *PublishService) Compare(id string) (PublishDiff, error) {
 	return d, nil
 }
 
-// packageFiles liefert alle Dateien eines Pakets samt template.xml in der
-// kanonischen Form von pdx fmt, so dass gleiche Vorlagen gleich vergleichen.
+// packageFiles returns all files of a package including template.xml in the
+// canonical form of pdx fmt, so that equal templates compare as equal.
 func packageFiles(p *pkg.Package) map[string][]byte {
 	out := map[string][]byte{"template.xml": template.Write(p.Template)}
 	for n, b := range p.Files {
@@ -246,9 +246,9 @@ func packageFiles(p *pkg.Package) map[string][]byte {
 	return out
 }
 
-// Publish lädt die Vorlage als neue Version hoch, gleicher Inhalt wie eine
-// vorhandene Version legt keine neue an. activate aktiviert sie sofort.
-// Lehnt der Server die Vorlage ab, enthält der Fehler alle Befunde.
+// Publish uploads the template as a new version, content equal to an
+// existing version creates no new one. activate activates it immediately.
+// If the server rejects the template, the error contains all findings.
 func (s *PublishService) Publish(id string, activate bool) (PublishResult, error) {
 	c, err := s.connected()
 	if err != nil {
@@ -274,7 +274,7 @@ func (s *PublishService) Publish(id string, activate bool) (PublishResult, error
 	return PublishResult{Version: v.Version, Created: created, Active: v.Active}, nil
 }
 
-// Activate macht eine Version auf dem Server aktiv.
+// Activate makes a version on the server active.
 func (s *PublishService) Activate(id, version string) error {
 	c, err := s.connected()
 	if err != nil {
@@ -285,8 +285,8 @@ func (s *PublishService) Activate(id, version string) error {
 	return c.Activate(ctx, id, version)
 }
 
-// lineDiff vergleicht zwei Texte zeilenweise (längste gemeinsame
-// Teilfolge). Sehr große Texte liefern nur entfernte und neue Zeilen.
+// lineDiff compares two texts line by line (longest common
+// subsequence). Very large texts return only removed and new lines.
 func lineDiff(a, b string) []DiffLine {
 	if a == b {
 		return nil

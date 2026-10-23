@@ -7,26 +7,26 @@ import (
 	"strings"
 )
 
-// Env stellt Funktionen bereit, die vom Kontext abhängen. Felder dürfen nil
-// sein, dann ist die Funktion an dieser Stelle nicht erlaubt.
+// Env provides functions that depend on the context. Fields may be nil,
+// then the function is not allowed at this point.
 type Env struct {
-	// BodyStart und LabelEnd liefern die Werte der gleichnamigen Funktionen
-	// für Listen (XSL 1.1 5.10.4).
+	// BodyStart and LabelEnd return the values of the functions of the same name
+	// for lists (XSL 1.1 5.10.4).
 	BodyStart func() (Length, error)
 	LabelEnd  func() (Length, error)
 }
 
-// value ist ein Zwischenergebnis: eine Zahl, eine Länge oder eine
-// proportionale Spaltenbreite.
+// value is an intermediate result: a number, a length or a
+// proportional column width.
 type value struct {
 	kind valueKind
-	num  float64 // Zahl, Länge in Millipunkt oder Anteil
-	// prop ist ein proportionaler Anteil zusätzlich zu einer Länge, etwa
-	// bei "2pt + proportional-column-width(1)" (XSL 1.1 5.10.4).
+	num  float64 // number, length in millipoints or share
+	// prop is a proportional share in addition to a length, for example
+	// in "2pt + proportional-column-width(1)" (XSL 1.1 5.10.4).
 	prop float64
 }
 
-// parts zerlegt einen Wert in festen und proportionalen Anteil.
+// parts splits a value into fixed and proportional share.
 func (v value) parts() (fixed, prop float64, ok bool) {
 	switch v.kind {
 	case vProportional:
@@ -47,15 +47,15 @@ const (
 	vProportional
 )
 
-// Proportional ist eine Spaltenbreite in Anteilen aus
+// Proportional is a column width in shares from
 // proportional-column-width().
 type Proportional float64
 
-// EvalLength wertet einen Längenausdruck nach XSL 1.1 5.9 aus: Längen,
-// Prozent, Zahlen, + - * div mod, Klammern und die Funktionen abs, min, max,
-// floor, ceiling, round, body-start, label-end. Ein Ergebnis aus
-// proportional-column-width() liefert einen Fehler, dafür gibt es
-// EvalColumnWidth.
+// EvalLength evaluates a length expression according to XSL 1.1 5.9: lengths,
+// percentages, numbers, + - * div mod, parentheses and the functions abs, min,
+// max, floor, ceiling, round, body-start, label-end. A result from
+// proportional-column-width() returns an error, EvalColumnWidth exists
+// for that.
 func EvalLength(s string, fontSize, percentBase Length, env *Env) (Length, error) {
 	v, err := eval(s, fontSize, percentBase, env)
 	if err != nil {
@@ -73,8 +73,8 @@ func EvalLength(s string, fontSize, percentBase Length, env *Env) (Length, error
 	return 0, fmt.Errorf("proportional-column-width ist nur an fo:table-column erlaubt")
 }
 
-// EvalColumnWidth wertet column-width aus. Das Ergebnis ist entweder eine
-// feste Länge oder ein Anteil (prop > 0).
+// EvalColumnWidth evaluates column-width. The result is either a
+// fixed length or a share (prop > 0).
 func EvalColumnWidth(s string, fontSize, tableWidth Length) (fixed Length, prop float64, err error) {
 	v, err := eval(s, fontSize, tableWidth, nil)
 	if err != nil {
@@ -106,7 +106,7 @@ type tokKind uint8
 
 const (
 	tEOF tokKind = iota
-	tNum         // Zahl mit optionaler Einheit oder Prozent
+	tNum         // number with optional unit or percent
 	tName
 	tOp
 	tLParen

@@ -62,7 +62,7 @@ func TestFlateRoundTrip(t *testing.T) {
 	}
 }
 
-// minimal baut ein PDF mit einer leeren A4-Seite.
+// minimal builds a PDF with one empty A4 page.
 func minimal(p Policy) *Document {
 	d := NewDocument(p)
 	pages := d.Reserve()
@@ -138,13 +138,13 @@ func TestPolicyScan(t *testing.T) {
 			}
 		})
 	}
-	// Ohne Policy sind JavaScript und XFA trotzdem verboten.
+	// Without a policy, JavaScript and XFA are still forbidden.
 	d := minimal(nil)
 	d.Add(D("XFA", Array{}))
 	if _, err := d.Bytes(); err == nil {
 		t.Fatal("XFA ohne Policy nicht verweigert")
 	}
-	// Unkritische Objekte passieren auch denyAll.
+	// Uncritical objects also pass denyAll.
 	d = minimal(denyAll{})
 	d.Add(D("Type", Name("ExtGState"), "ca", Real(1), "SMask", Name("None")))
 	if _, err := d.Bytes(); err != nil {

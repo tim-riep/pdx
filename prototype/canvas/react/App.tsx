@@ -21,7 +21,7 @@ export function App({ doc }: { doc: Doc }) {
   const [drag, setDrag] = useState<Drag>(null);
   const [last, setLast] = useState("");
 
-  // Aktuelle Werte für Ereignisse, ohne die Rückruffunktion neu zu bauen.
+  // Current values for events, without rebuilding the callback.
   const state = useRef({ zoom, hover, sel, drag });
   state.current = { zoom, hover, sel, drag };
   window.__app = { setZoom, zoom: () => state.current.zoom };

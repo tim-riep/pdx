@@ -8,32 +8,32 @@ test("Text mit Feld-Chips bearbeiten: Inspektor, @ und Doppelklick", async ({ pa
   await expect(editor).toContainText("Rechnungsnummer:");
   await expect(editor.locator(".chip")).toHaveText("inv:number");
 
-  // Text ergänzen und übernehmen.
-  // Am Anfang klicken (ein Klick auf einen Chip wählt ihn ganz), dann ans Ende.
+  // Add text and apply.
+  // Click at the start (a click on a chip selects all of it), then go to the end.
   await editor.click({ position: { x: 4, y: 4 } });
   await page.keyboard.press("End");
   await page.keyboard.type(" vom ");
-  // Feld mit @ einfügen.
+  // Insert a field with @.
   await page.keyboard.type("@issue");
   const menu = page.getByTestId("content-menu");
   await expect(menu).toContainText("inv:issueDate");
   await page.keyboard.press("Enter");
   await expect(editor.locator(".chip")).toHaveCount(2);
-  await page.keyboard.press("Enter"); // übernimmt
+  await page.keyboard.press("Enter"); // applies
   await expect(page.getByRole("button", { name: "Rückgängig", exact: true })).toBeEnabled();
-  // Nach dem Übernehmen baut der Editor aus dem Modell neu auf: das neue
-  // Feld hat eine ID.
+  // After applying, the editor rebuilds from the model: the new
+  // field has an ID.
   await expect(editor.locator('.chip[data-ref="rechnungsnummer-issueDate"]')).toHaveText("inv:issueDate");
   await expect(editor).toContainText("vom");
 
-  // Rückgängig nimmt beides zurück.
+  // Undo reverts both.
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(editor.locator(".chip")).toHaveCount(1);
   await expect(editor).not.toContainText("vom");
 
-  // Doppelklick im Canvas öffnet den Editor am Text, Escape verwirft. Ziel
-  // ist die Mitte des Auswahlrahmens, nicht eine aus dem Zoom berechnete
-  // Stelle, der Zoom kann sich auf langsamen Rechnern noch ändern.
+  // A double click in the canvas opens the editor at the text, Escape discards. The target
+  // is the center of the selection frame, not a point computed from the zoom.
+  // The zoom can still change on slow machines.
   const frame = page.locator('[data-page="1"] [data-sel="rechnungsnummer"]');
   await expect(frame).toBeVisible();
   const box = (await frame.boundingBox())!;
@@ -48,9 +48,9 @@ test("Text mit Feld-Chips bearbeiten: Inspektor, @ und Doppelklick", async ({ pa
   await expect(editor).not.toContainText("XYZ");
 });
 
-// Langsames Backend (wie auf CI-Rechnern): Während die Felder nach dem @
-// laden, geht das Tippen weiter. Das Menü zeigt den Stand der letzten
-// Eingabe, nicht den einer früheren Abfrage.
+// Slow backend (as on CI machines): typing continues while the fields
+// load after the @. The menu shows the state of the last
+// input, not that of an earlier query.
 test("@-Menü bei langsamem Backend", async ({ page }) => {
   await openMuster(page);
   await selectInTree(page, ["seiten", "erste", "erste-kopf", "rechnungsdaten", "rechnungsnummer"]);
@@ -68,8 +68,8 @@ test("@-Menü bei langsamem Backend", async ({ page }) => {
   await page.keyboard.press("Escape");
 });
 
-// Chromium unter Linux und Windows setzt den Cursor mit Ende in das Feld
-// am Zeilenende. Der Editor holt ihn heraus, die Eingabe kommt an.
+// Chromium on Linux and Windows puts the cursor into the field with End
+// at the end of the line. The editor moves it out, the input arrives.
 test("Cursor im Feld landet dahinter", async ({ page }) => {
   await openMuster(page);
   await selectInTree(page, ["seiten", "erste", "erste-kopf", "rechnungsdaten", "rechnungsnummer"]);

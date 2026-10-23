@@ -2,19 +2,19 @@ package dataschema
 
 import "github.com/tim-riep/pdx/template/pkg"
 
-// Facets sind die Angaben aus dem Daten-XSD, die der Compiler für
-// Formularfelder braucht, je Vorlagen-ID.
+// Facets are the details from the data XSD that the compiler needs for
+// form fields, per template ID.
 type Facets struct {
-	// Enums sind die Werte der Enumeration, für Auswahlfelder ohne
-	// option-Elemente.
+	// Enums are the values of the enumeration, for choice fields without
+	// option elements.
 	Enums map[string][]string
-	// MaxLengths sind die Höchstlängen, für Textfelder ohne maxLength.
+	// MaxLengths are the maximum lengths, for text fields without maxLength.
 	MaxLengths map[string]int
 }
 
-// PackageFacets liefert die Facetten der gebundenen Elemente eines
-// Vorlagenpakets. Ohne XSD oder bei Fehlern im XSD ist das Ergebnis leer,
-// pdx check meldet das.
+// PackageFacets returns the facets of the bound elements of a template
+// package. Without an XSD or with errors in the XSD the result is empty,
+// pdx check reports that.
 func PackageFacets(p *pkg.Package) Facets {
 	out := Facets{Enums: map[string][]string{}, MaxLengths: map[string]int{}}
 	main, files := p.Schemas()
@@ -36,5 +36,5 @@ func PackageFacets(p *pkg.Package) Facets {
 	return out
 }
 
-// PackageEnums liefert nur die Enumerationen, siehe PackageFacets.
+// PackageEnums returns only the enumerations, see PackageFacets.
 func PackageEnums(p *pkg.Package) map[string][]string { return PackageFacets(p).Enums }

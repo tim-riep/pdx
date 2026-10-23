@@ -11,11 +11,11 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// Tabellen und Listen teilen sich das Zeilenmodell: Eine Zeile besteht aus
-// Zellen nebeneinander, deren Inhalt jeweils in einer eigenen Galley gesetzt
-// wird. In der Galley des Flusses steht eine Zeile als Folge von Scheiben.
-// Zwischen zwei Scheiben darf umbrochen werden, an ihren Grenzen hat jede
-// Zelle eine erlaubte Umbruchstelle oder keinen Inhalt mehr.
+// Tables and lists share the row model: a row consists of
+// cells side by side whose content is each laid out in its own galley.
+// In the galley of the flow a row stands as a sequence of slices.
+// A break is allowed between two slices, at their boundaries each
+// cell has an allowed break point or no more content.
 
 type section uint8
 
@@ -25,7 +25,7 @@ const (
 	secFooter
 )
 
-// tableCtx hält die Daten einer Tabelle für Wiederholung und Seitenumbruch.
+// tableCtx holds the data of a table for repetition and page breaking.
 type tableCtx struct {
 	node       *tree.Node
 	header     []*rowLayout
@@ -36,94 +36,94 @@ type tableCtx struct {
 	omitFooter bool
 	firstBody  *rowLayout
 	lastBody   *rowLayout
-	// dynamic ist gesetzt, wenn Kopf oder Fuß fo:retrieve-table-marker
-	// enthalten. Sie werden dann je Seite neu gesetzt.
+	// dynamic is set if header or footer contain fo:retrieve-table-marker.
+	// They are then laid out again per page.
 	dynamic bool
 	frags   []*tableFrag
-	// representative ist gesetzt, solange wiederholte Köpfe gemessen werden.
-	// sample überspringt dann leere Marker.
+	// representative is set while repeated headers are being measured.
+	// sample then skips empty markers.
 	representative bool
 }
 
-// continuesAfter meldet, ob nach dieser Scheibe noch Zeilen des Rumpfs folgen.
+// continuesAfter reports whether more body rows follow after this slice.
 func (t *tableCtx) continuesAfter(r *rowLayout, slice int) bool {
 	return !(r == t.lastBody && slice == len(r.slices)-2)
 }
 
-// rowLayout ist eine gesetzte Zeile einer Tabelle oder ein Listenpunkt.
+// rowLayout is a laid out row of a table or a list item.
 type rowLayout struct {
 	node   *tree.Node
-	tbl    *tableCtx // nil bei Listen
+	tbl    *tableCtx // nil for lists
 	sec    section
-	cells  []*cellLayout // Zellen, die in dieser Zeile beginnen
+	cells  []*cellLayout // cells that start in this row
 	h      areatree.Length
-	sepV   areatree.Length // halbe border-separation über und unter den Zellen
+	sepV   areatree.Length // half border-separation above and below the cells
 	bg     *areatree.Color
-	x, w   areatree.Length   // Zeilenrechteck relativ zum Referenzbereich
-	slices []areatree.Length // Grenzen der Scheiben, beginnend bei 0, endend bei h
-	last   bool              // letzte Zeile ihres Abschnitts
-	keep   int               // Penalty zwischen den Scheiben
-	// forced sind erzwungene Umbrüche aus dem Zellinhalt an Scheibengrenzen
-	// (Index der Grenze), leadBrk und trailBrk Umbrüche vor und nach der
-	// Zeile (break-before am Anfang, break-after am Ende einer Zelle).
+	x, w   areatree.Length   // row rectangle relative to the reference area
+	slices []areatree.Length // slice boundaries, starting at 0, ending at h
+	last   bool              // last row of its section
+	keep   int               // penalty between the slices
+	// forced are forced breaks from the cell content at slice boundaries
+	// (index of the boundary), leadBrk and trailBrk breaks before and after the
+	// row (break-before at the start, break-after at the end of a cell).
 	forced              map[int]string
 	leadBrk, trailBrk   string
 	leadKeep, trailKeep int
-	// sliceKeep sind Keeps an Scheibengrenzen nach dem Inhaltsende einer
-	// Zelle mit keep-with-next.
+	// sliceKeep holds keeps at slice boundaries after the content end of a
+	// cell with keep-with-next.
 	sliceKeep map[int]int
-	// base ist die Nummer der ersten Scheibe, wenn die Zeile nach einem
-	// Breitenwechsel ab einer späteren Scheibe neu gesetzt wurde.
+	// base is the number of the first slice if the row was laid out again
+	// from a later slice after a width change.
 	base int
-	// skip ist je Scheibe der Abstand an ihrem Anfang, der nach einem
-	// Umbruch entfällt. Zwischen zwei Scheiben steht er als Glue.
+	// skip is, per slice, the space at its start that is dropped after a
+	// break. Between two slices it stands as glue.
 	skip map[int]areatree.Length
-	// skipBreakBefore ist gesetzt, wenn break-before der ersten Rumpfzeile
-	// schon vor der Tabelle wirkt.
+	// skipBreakBefore is set if break-before of the first body row
+	// already takes effect before the table.
 	skipBreakBefore bool
-	// skipBreakAfter ist gesetzt, wenn break-after der letzten Rumpfzeile
-	// erst nach der Tabelle wirkt.
+	// skipBreakAfter is set if break-after of the last body row
+	// only takes effect after the table.
 	skipBreakAfter bool
 	markers        markerSet
 	collapse       bool
 }
 
-// cellLayout ist eine gesetzte Zelle.
+// cellLayout is a laid out cell.
 type cellLayout struct {
 	node     *tree.Node
 	p        *props.Computed
 	col      int
 	span     int
 	rowSpan  int
-	x, w     areatree.Length // Zellrechteck (separate: Rahmenbox, collapse: Raster)
-	boxH     areatree.Length // Höhe des Zellrechtecks über alle überspannten Zeilen
+	x, w     areatree.Length // cell rectangle (separate: border box, collapse: grid)
+	boxH     areatree.Length // height of the cell rectangle over all spanned rows
 	border   [4]areatree.Border
-	inset    [4]areatree.Length // Rahmen (ganz oder halb) plus Padding
+	inset    [4]areatree.Length // border (full or half) plus padding
 	items    []item
 	contentH areatree.Length
-	// minH ist die Mindesthöhe des Inhaltsrechtecks aus height oder
-	// block-progression-dimension der Zelle.
+	// minH is the minimum height of the content rectangle from height or
+	// block-progression-dimension of the cell.
 	minH   areatree.Length
 	bounds []bound
 	align  string
-	// leadBrk und trailBrk sind break-before am Anfang und break-after am
-	// Ende des Inhalts, leadKeep und trailKeep keep-with-previous und
+	// leadBrk and trailBrk are break-before at the start and break-after at the
+	// end of the content, leadKeep and trailKeep keep-with-previous and
 	// keep-with-next.
 	leadBrk, trailBrk   string
 	leadKeep, trailKeep int
 }
 
-// bound ist eine erlaubte Umbruchstelle im Inhalt einer Zelle.
+// bound is an allowed break point in the content of a cell.
 type bound struct {
-	off   areatree.Length // Abstand vom Inhaltsanfang
-	index int             // Index der Penalty in items
-	brk   string          // bei erzwungenen Umbrüchen page, odd-page oder even-page
-	// skip ist der Abstand nach der Umbruchstelle, der am Seitenanfang entfällt.
+	off   areatree.Length // offset from the content start
+	index int             // index of the penalty in items
+	brk   string          // page, odd-page or even-page for forced breaks
+	// skip is the space after the break point that is dropped at the page start.
 	skip areatree.Length
 }
 
-// measure berechnet die Inhaltshöhe und die erlaubten Umbruchstellen einer
-// Galley so, wie der Placer sie setzen würde.
+// measure computes the content height and the allowed break points of a
+// galley the way the placer would lay them out.
 func measure(items []item) (areatree.Length, []bound) {
 	var y areatree.Length
 	started := false
@@ -159,7 +159,7 @@ func measure(items []item) (areatree.Length, []bound) {
 	return y, bs
 }
 
-// cellRange liefert die Einträge einer Zelle für den Inhaltsbereich [a, b).
+// cellRange returns the entries of a cell for the content range [a, b).
 func (c *cellLayout) cellRange(a, b areatree.Length) []item {
 	start, end := 0, len(c.items)
 	if a > 0 {
@@ -187,7 +187,7 @@ func (c *cellLayout) cellRange(a, b areatree.Length) []item {
 	return c.items[start:end]
 }
 
-// cellBreaks liefert die Umbruchstellen einer Zelle in Zeilenkoordinaten.
+// cellBreaks returns the break points of a cell in row coordinates.
 func (c *cellLayout) breakable(off areatree.Length, top areatree.Length) bool {
 	rel := off - top
 	if rel <= 0 || rel >= c.contentH {
@@ -201,14 +201,14 @@ func (c *cellLayout) breakable(off areatree.Length, top areatree.Length) bool {
 	return false
 }
 
-// layoutCell setzt den Inhalt einer Zelle in einer eigenen Galley. Die Zelle
-// ist ein Referenzbereich, Einzüge beginnen darin bei 0.
+// layoutCell lays out the content of a cell in its own galley. The cell
+// is a reference area, indents start at 0 inside it.
 func (g *galley) layoutCell(c *cellLayout, content *tree.Node, tbl *tableCtx) error {
 	return g.layoutCellAt(c, content, tbl, nil)
 }
 
-// layoutCellAt setzt den Inhalt einer Zelle ab der Stelle rp, ohne rp von
-// Anfang an.
+// layoutCellAt lays out the content of a cell from position rp, without rp
+// from the beginning.
 func (g *galley) layoutCellAt(c *cellLayout, content *tree.Node, tbl *tableCtx, rp *resumePoint) error {
 	w := max(c.w-c.inset[areatree.Left]-c.inset[areatree.Right], 0)
 	inside := *c.p
@@ -223,19 +223,19 @@ func (g *galley) layoutCellAt(c *cellLayout, content *tree.Node, tbl *tableCtx, 
 	}
 	c.items = sg.items
 	c.contentH, c.bounds = measure(sg.items)
-	// Umbrüche am Anfang und Ende des Zellinhalts gelten vor und nach der
-	// Zeile (XSL 1.1 7.20.1, 7.20.2).
+	// Breaks at the start and end of the cell content apply before and after the
+	// row (XSL 1.1 7.20.1, 7.20.2).
 	c.leadBrk, c.trailBrk = "", sg.brk
 	if len(sg.items) > 0 && sg.items[0].kind == itPenalty {
 		c.leadBrk = sg.items[0].brk
 	}
-	// Ebenso Keeps am Anfang und Ende des Zellinhalts (XSL 1.1 4.8).
+	// Likewise keeps at the start and end of the cell content (XSL 1.1 4.8).
 	c.leadKeep, c.trailKeep = sg.leadKeep, sg.keepNext
 	return nil
 }
 
-// repeatRows misst Kopfzeilen mit Tabellenmarkern für die Wiederholung neu.
-// Die Zeilen werden nicht niedriger als beim ersten Setzen.
+// repeatRows re-measures header rows with table markers for repetition.
+// The rows do not get lower than at the first layout.
 func (g *galley) repeatRows(tc *tableCtx, rows []*rowLayout, fs areatree.Length) ([]*rowLayout, error) {
 	tc.representative = true
 	defer func() { tc.representative = false }()
@@ -267,7 +267,7 @@ func (g *galley) repeatRows(tc *tableCtx, rows []*rowLayout, fs areatree.Length)
 	return out, nil
 }
 
-// finishRow berechnet Höhe und Scheiben einer Zeile.
+// finishRow computes height and slices of a row.
 func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 	h := minH
 	for _, c := range r.cells {
@@ -279,7 +279,7 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 	r.h = r.sepV + h + r.sepV
 	r.slices = []areatree.Length{0}
 	if !spanned && r.keep < penaltyInf {
-		// Kandidaten sind alle Umbruchstellen aller Zellen.
+		// Candidates are all break points of all cells.
 		var cands []areatree.Length
 		for _, c := range r.cells {
 			top := r.sepV + c.inset[areatree.Top]
@@ -345,8 +345,8 @@ func finishRow(r *rowLayout, minH areatree.Length, spanned bool) {
 	}
 }
 
-// rowResume liefert je Zelle die Stelle, an der ihr Inhalt in Scheibe k
-// beginnt.
+// rowResume returns, per cell, the position at which its content starts in
+// slice k.
 func rowResume(r *rowLayout, k int) []resumePoint {
 	out := make([]resumePoint, len(r.cells))
 	for i, c := range r.cells {
@@ -365,8 +365,8 @@ func rowResume(r *rowLayout, k int) []resumePoint {
 	return out
 }
 
-// rowSkip liefert den Abstand, der bei einem Umbruch an off in allen Zellen
-// mit weiterem Inhalt entfällt.
+// rowSkip returns the space that is dropped at a break at off in all cells
+// with further content.
 func rowSkip(r *rowLayout, off areatree.Length) areatree.Length {
 	skip, found := areatree.Length(0), false
 	for _, c := range r.cells {
@@ -395,7 +395,7 @@ func sortLengths(v []areatree.Length) {
 	}
 }
 
-// emitRow hängt die Scheiben einer Zeile an die Galley.
+// emitRow appends the slices of a row to the galley.
 func (g *galley) emitRow(r *rowLayout, before int) error {
 	if r.node.IsFO("table-row") {
 		g.keepPrev = max(g.keepPrev, keepValue(r.node, "keep-with-previous"))
@@ -410,8 +410,8 @@ func (g *galley) emitRow(r *rowLayout, before int) error {
 		}()
 	}
 	if g.resume != nil && g.major+1 == g.skip.major {
-		// Neuaufbau nach Breitenwechsel mitten in dieser Zeile: Die Zellen
-		// werden ab der Stelle der neuen Seite mit der neuen Breite gesetzt.
+		// Rebuild after width change in the middle of this row: the cells
+		// are laid out from the position of the new page with the new width.
 		for i, c := range r.cells {
 			if i < len(g.resume) && c.rowSpan == 1 {
 				if err := g.layoutCellAt(c, c.node, r.tbl, &g.resume[i]); err != nil {
@@ -456,7 +456,7 @@ func (g *galley) emitRow(r *rowLayout, before int) error {
 	return nil
 }
 
-// keepValue übersetzt einen keep-Wert in eine Penalty.
+// keepValue translates a keep value into a penalty.
 func keepValue(n *tree.Node, prop string) int {
 	v, ok := n.Attr(prop)
 	if !ok {
@@ -466,8 +466,8 @@ func keepValue(n *tree.Node, prop string) int {
 		v, ok = n.Attr(prop + ".within-column")
 	}
 	if !ok {
-		// Kurzformen aus CSS2: page-break-inside, page-break-before und
-		// page-break-after mit avoid (XSL 1.1 7.31.16 bis 7.31.18).
+		// CSS2 shorthands: page-break-inside, page-break-before and
+		// page-break-after with avoid (XSL 1.1 7.31.16 to 7.31.18).
 		short := map[string]string{"keep-together": "page-break-inside",
 			"keep-with-previous": "page-break-before", "keep-with-next": "page-break-after"}[prop]
 		if sv, _ := n.Attr(short); sv == "avoid" {
@@ -486,7 +486,7 @@ func keepValue(n *tree.Node, prop string) int {
 	return 0
 }
 
-// table erzeugt die Galley-Einträge einer fo:table.
+// table generates the galley entries of an fo:table.
 func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	p, err := props.Compute(parent, n, g.percentBase(parent))
 	if err != nil {
@@ -495,8 +495,8 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	collapse := attrOr(n, "border-collapse", "collapse") != "separate"
 	tableBorder := p.Border
 	if collapse {
-		// Im Modell collapse gehören die Tabellenkanten zu den Zellrahmen,
-		// Padding gilt für die Tabelle nicht (XSL 1.1 7.26.2).
+		// In the collapse model the table edges belong to the cell borders,
+		// padding does not apply to the table (XSL 1.1 7.26.2).
 		p.Border = [4]areatree.Border{}
 		p.Padding = [4]areatree.Length{}
 	}
@@ -517,15 +517,15 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		omitHeader: attrOr(n, "table-omit-header-at-break", "false") == "true",
 		omitFooter: attrOr(n, "table-omit-footer-at-break", "false") == "true"}
 
-	// Abschnitte und Zeilen sammeln.
+	// Collect sections and rows.
 	type rowSrc struct {
-		node  *tree.Node // fo:table-row oder Abschnitt bei Zellen ohne Zeile
+		node  *tree.Node // fo:table-row or section for cells without a row
 		cells []*tree.Node
 		sec   section
 		props *props.Computed
-		secBg *areatree.Color // Hintergrund des Abschnitts
-		// secProps und secNode beschreiben den Abschnitt (table-header,
-		// table-body, table-footer) für das Rahmenmodell collapse.
+		secBg *areatree.Color // background of the section
+		// secProps and secNode describe the section (table-header,
+		// table-body, table-footer) for the collapse border model.
 		secProps *props.Computed
 		secNode  *tree.Node
 	}
@@ -573,7 +573,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				continue
 			}
 			if r.IsFO("table-cell") {
-				// Zellen direkt im Abschnitt: starts-row und ends-row teilen Zeilen.
+				// Cells directly in the section: starts-row and ends-row split rows.
 				if attrOr(r, "starts-row", "false") == "true" && len(loose) > 0 {
 					rows = append(rows, rowSrc{node: ch, cells: loose, sec: sec, props: sp, secBg: sp.Background, secProps: sp, secNode: ch})
 					loose = nil
@@ -590,15 +590,15 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		}
 	}
 
-	// Zeilen in Anzeigereihenfolge: Kopf, Rumpf, Fuß. Im Quelltext steht der
-	// Fuß vor dem Rumpf, für Nachbarschaften (etwa Rahmen im Modell collapse)
-	// zählt die Anzeige.
+	// Rows in display order: header, body, footer. In the source the
+	// footer comes before the body, for adjacency (such as borders in the
+	// collapse model) the display order counts.
 	order := map[section]int{secHeader: 0, secBody: 1, secFooter: 2}
 	sort.SliceStable(rows, func(i, j int) bool { return order[rows[i].sec] < order[rows[j].sec] })
 
-	// Spaltenbreiten.
-	// Spaltenzahl aus den fo:table-column, auch mit column-number (XSL 1.1
-	// 7.28.8: Anfangswert ist die Nummer der vorigen Spalte plus 1).
+	// Column widths.
+	// Number of columns from the fo:table-column elements, also with column-number
+	// (XSL 1.1 7.28.8: the initial value is the number of the previous column plus 1).
 	ncols, next := 0, 1
 	for _, c := range columns {
 		k := next
@@ -636,8 +636,8 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	if ncols == 0 {
 		return tree.Errorf(n, "fo:table ohne Spalten und Zellen")
 	}
-	// Spaltenbreiten sind Rasterbreiten. Im Modell separate erhält jede Zelle
-	// auf jeder Seite die halbe border-separation (XSL 1.1 6.7.10).
+	// Column widths are grid widths. In the separate model each cell gets
+	// half the border-separation on each side (XSL 1.1 6.7.10).
 	avail := tw
 	widths := make([]areatree.Length, ncols)
 	fracs := make([]float64, ncols)
@@ -663,7 +663,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 			ci++
 		}
 	}
-	// Eigenschaften der Spalten, etwa Rahmen für das Modell collapse.
+	// Properties of the columns, such as borders for the collapse model.
 	colProps := make([]*props.Computed, ncols)
 	cj := 0
 	for _, c := range columns {
@@ -681,11 +681,11 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 			cj++
 		}
 	}
-	// Spalten ohne column-width übernehmen wie im festen Tabellenlayout von
-	// CSS2 (17.5.2.1, XSL 1.1 7.28.16) die Breite einer Zelle der ersten
-	// Zeile, sonst erhalten sie einen Anteil. XSL 1.1 7.28.9 verlangt
-	// column-width für jede Spalte, pdx ist hier nachsichtig.
-	// Zellen der ersten Zeile der Tabelle, Kopf vor Rumpf.
+	// Columns without column-width take, as in the fixed table layout of
+	// CSS2 (17.5.2.1, XSL 1.1 7.28.16), the width of a cell of the first
+	// row, otherwise they get a share. XSL 1.1 7.28.9 requires
+	// column-width for every column, pdx is lenient here.
+	// Cells of the first row of the table, header before body.
 	var first []*tree.Node
 	for _, want := range []section{secHeader, secBody} {
 		for _, r := range rows {
@@ -742,7 +742,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		colX[i+1] = colX[i] + widths[i]
 	}
 
-	// Raster belegen und Zellen anlegen.
+	// Fill the grid and create cells.
 	type gridCell struct {
 		c   *cellLayout
 		row int
@@ -759,7 +759,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 			rl.markers = collectMarkers(rs.node)
 		}
 		if !rs.node.IsFO("table-row") || rl.bg == nil {
-			// Hintergrund des Abschnitts liegt unter seinen Zeilen.
+			// The background of the section lies below its rows.
 			rl.bg = rs.secBg
 		}
 		col := 0
@@ -802,7 +802,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		layouts[ri] = rl
 	}
 
-	// Rahmen und Einzüge der Zellen.
+	// Borders and indents of the cells.
 	for ri, rl := range layouts {
 		for _, c := range rl.cells {
 			if !collapse {
@@ -819,8 +819,8 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				}
 				return grid[r][k].c
 			}
-			// Kandidaten einer Kante nach XSL 1.1 6.7.10 mit der Priorität aus
-			// den Anfangswerten von border-*-precedence (7.28.1).
+			// Candidates of an edge per XSL 1.1 6.7.10 with the precedence from
+			// the initial values of border-*-precedence (7.28.1).
 			var cands []cand
 			add := func(b areatree.Border, prec int) { cands = append(cands, cand{b, prec}) }
 			secPrec := map[section]int{secBody: precBody, secHeader: precHeader, secFooter: precFooter}
@@ -829,7 +829,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 					add(colProps[k].Border[side], precColumn)
 				}
 			}
-			// Oben.
+			// Top.
 			cands = cands[:0]
 			add(c.p.Border[areatree.Top], precCell)
 			add(rows[ri].props.Border[areatree.Top], precRow)
@@ -854,7 +854,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				}
 			}
 			c.border[areatree.Top] = winnerPrec(cands)
-			// Unten.
+			// Bottom.
 			cands = cands[:0]
 			add(c.p.Border[areatree.Bottom], precCell)
 			add(rows[lastRow].props.Border[areatree.Bottom], precRow)
@@ -879,9 +879,9 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				}
 			}
 			c.border[areatree.Bottom] = winnerPrec(cands)
-			// Links und rechts.
-			// Seitlich je überspannter Zeile auflösen, die breiteste Kante
-			// bestimmt den Einzug der Zelle.
+			// Left and right.
+			// Resolve the sides per spanned row, the widest edge
+			// determines the indent of the cell.
 			for _, side := range []int{areatree.Left, areatree.Right} {
 				other, k, otherSide := c.col-1, c.col, areatree.Right
 				outer := c.col == 0
@@ -909,9 +909,9 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 				}
 				c.border[side] = best
 			}
-			// Oben und unten bestimmt bei überspannten Spalten die breiteste
-			// Kante der einzelnen Spalten den Einzug, damit der Inhalt in
-			// keinem Rahmen liegt.
+			// At top and bottom, for spanned columns the widest edge of the
+			// individual columns determines the indent, so that the content lies in
+			// no border.
 			seg := func(side int) areatree.Length {
 				var best areatree.Length
 				nb, nbSide, outer := ri-1, areatree.Bottom, ri == 0
@@ -955,7 +955,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		}
 	}
 
-	// Inhalte setzen, Zeilenhöhen und Überspannungen.
+	// Lay out content, row heights and spans.
 	spannedUntil := -1
 	for ri, rl := range layouts {
 		for _, c := range rl.cells {
@@ -996,7 +996,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		}
 	}
 
-	// Abschnitte ordnen: Kopf, Rumpf, Fuß.
+	// Order sections: header, body, footer.
 	var header, body, footer []*rowLayout
 	for _, rl := range layouts {
 		switch rl.sec {
@@ -1019,11 +1019,11 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 	if len(body) > 0 {
 		tc.firstBody, tc.lastBody = body[0], body[len(body)-1]
 	}
-	// Die Seite, auf der die Tabelle beginnt, zeigt im Kopf die Marker der
-	// ersten Rumpfzeile, gemessen wurde daher mit dem ersten Marker der
-	// Klasse. Wiederholte Köpfe auf Folgeseiten reservieren die Höhe des
-	// ersten nicht leeren Markers, so bleibt ein Übertrag, der auf der ersten
-	// Seite leer ist, auf den Folgeseiten nicht ohne Platz.
+	// The page on which the table starts shows in the header the markers of the
+	// first body row, so measuring used the first marker of the
+	// class. Repeated headers on following pages reserve the height of the
+	// first non-empty marker, so a carry-over that is empty on the first
+	// page does not lack space on the following pages.
 	if tc.dynamic && len(header) > 0 {
 		rep, err := g.repeatRows(tc, header, p.FontSize)
 		if err != nil {
@@ -1038,15 +1038,15 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		tc.footerH += r.h
 	}
 
-	// Tabelle als Block mit Kanten in die Galley.
+	// Table as a block with edges into the galley.
 	ctx := &blockCtx{node: n, p: p}
 	ctx.x = x0 - p.Padding[areatree.Left]
 	ctx.w = tw + p.Padding[areatree.Left] + p.Padding[areatree.Right]
 	g.push(ctx)
 	g.spaceBefore(p)
-	// Ein erzwungener Umbruch am Anfang der ersten Rumpfzeile gilt vor der
-	// Tabelle, sonst bliebe der Kopf allein auf der Seite.
-	// Steht schon ein Umbruch vor der Tabelle an, fallen beide zusammen.
+	// A forced break at the start of the first body row applies before the
+	// table, otherwise the header would stay alone on the page.
+	// If a break before the table is already pending, both coincide.
 	if len(body) > 0 {
 		if body[0].leadBrk != "" {
 			if g.brk == "" {
@@ -1066,7 +1066,7 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		g.box(item{h: h, path: g.path(), edge: edgeTop, ord: g.next()}, g.breakBefore(edgeTop))
 	}
 	keepRows := keepValue(n, "keep-together")
-	glueNext := false // Zeilen eines Überspannungsbereichs bleiben zusammen
+	glueNext := false // rows of a spanning range stay together
 	emit := func(rs []*rowLayout, sec section) error {
 		for i, r := range rs {
 			before := keepRows
@@ -1084,8 +1084,8 @@ func (g *galley) table(n *tree.Node, parent *props.Computed) error {
 		}
 		return nil
 	}
-	// Ein erzwungener Umbruch am Ende der letzten Rumpfzeile wirkt nach der
-	// Tabelle, sonst stünde der Fuß allein auf der nächsten Seite.
+	// A forced break at the end of the last body row takes effect after the
+	// table, otherwise the footer would stand alone on the next page.
 	var after string
 	if len(body) > 0 {
 		last := body[len(body)-1]
@@ -1126,7 +1126,7 @@ func hasSpanStart(r *rowLayout) bool {
 	return false
 }
 
-// spansInto meldet, ob eine Zelle einer früheren Zeile über r hinausreicht.
+// spansInto reports whether a cell of an earlier row extends beyond r.
 func spansInto(all []*rowLayout, r *rowLayout) bool {
 	for i, x := range all {
 		if x == r {
@@ -1158,8 +1158,8 @@ func spanAttr(c *tree.Node, name string) int {
 	return n
 }
 
-// rowHeight liest height oder block-progression-dimension(.minimum) einer
-// fo:table-row als Mindesthöhe.
+// rowHeight reads height or block-progression-dimension(.minimum) of an
+// fo:table-row as the minimum height.
 func rowHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 	if !n.IsFO("table-row") {
 		return 0, nil
@@ -1167,7 +1167,7 @@ func rowHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 	return minHeight(n, fs)
 }
 
-// minHeight liest die Mindesthöhe aus height oder block-progression-dimension
+// minHeight reads the minimum height from height or block-progression-dimension
 // (XSL 1.1 7.15.3, 7.15.6).
 func minHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 	for _, name := range []string{"height", "block-progression-dimension", "block-progression-dimension.optimum", "block-progression-dimension.minimum"} {
@@ -1182,7 +1182,7 @@ func minHeight(n *tree.Node, fs areatree.Length) (areatree.Length, error) {
 	return 0, nil
 }
 
-// separation liest border-separation (XSL 1.1 7.28.5) und border-spacing.
+// separation reads border-separation (XSL 1.1 7.28.5) and border-spacing.
 func separation(n *tree.Node, fs areatree.Length) (areatree.Length, areatree.Length, error) {
 	parse := func(v string) (areatree.Length, error) {
 		l, err := props.EvalLength(v, fs, -1, nil)
@@ -1193,8 +1193,8 @@ func separation(n *tree.Node, fs areatree.Length) (areatree.Length, areatree.Len
 	}
 	var h, v areatree.Length
 	var err error
-	// border-spacing ist die Kurzform aus CSS2 (XSL 1.1 7.31.9), die
-	// ausführlichen Eigenschaften haben Vorrang.
+	// border-spacing is the CSS2 shorthand (XSL 1.1 7.31.9), the
+	// longhand properties take precedence.
 	s, ok := n.Attr("border-separation")
 	if !ok {
 		s, ok = n.Attr("border-spacing")
@@ -1228,9 +1228,9 @@ var stylePriority = map[areatree.BorderStyle]int{
 	areatree.Double: 5, areatree.Solid: 4, areatree.Dashed: 3, areatree.Dotted: 2, areatree.None: 0,
 }
 
-// winner wählt nach XSL 1.1 6.7.10 (Modell collapse) die stärkere Kante: die
-// breitere, bei gleicher Breite die mit höherem Stilrang, sonst die erste.
-// Prioritäten nach den Anfangswerten von border-*-precedence (XSL 1.1 7.28.1).
+// winner chooses the stronger edge per XSL 1.1 6.7.10 (collapse model): the
+// wider one, at equal width the one with higher style rank, else the first.
+// Precedences per the initial values of border-*-precedence (XSL 1.1 7.28.1).
 const (
 	precFooter = iota
 	precHeader
@@ -1241,14 +1241,14 @@ const (
 	precTable
 )
 
-// cand ist ein Rahmen mit seiner Priorität.
+// cand is a border with its precedence.
 type cand struct {
 	b    areatree.Border
 	prec int
 }
 
-// winnerPrec löst eine Kante im Modell collapse auf: der breitere Rahmen,
-// dann der stärkere Stil, dann die höhere Priorität (XSL 1.1 6.7.10, CSS2
+// winnerPrec resolves an edge in the collapse model: the wider border,
+// then the stronger style, then the higher precedence (XSL 1.1 6.7.10, CSS2
 // 17.6.2.1).
 func winnerPrec(cands []cand) areatree.Border {
 	var best cand
@@ -1284,16 +1284,16 @@ func winner(cands []areatree.Border) areatree.Border {
 	return best
 }
 
-// list erzeugt die Galley-Einträge eines fo:list-block. Jeder Listenpunkt ist
-// eine Zeile mit den Zellen Label und Body, ihre Lage ergibt sich aus den
-// Einzügen, typischerweise über label-end() und body-start().
+// list generates the galley entries of an fo:list-block. Each list item is
+// a row with the cells label and body, their position results from the
+// indents, typically via label-end() and body-start().
 func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 	p, err := props.Compute(parent, n, g.percentBase(parent))
 	if err != nil {
 		return err
 	}
-	// Prozentangaben beziehen sich auf die Breite des nächsten umgebenden
-	// Blockbereichs (XSL 1.1 7.30.11 und 7.30.12).
+	// Percentages refer to the width of the nearest enclosing
+	// block area (XSL 1.1 7.30.11 and 7.30.12).
 	pdbs, err := listLength(n, "provisional-distance-between-starts", "24pt", p.FontSize, g.refW)
 	if err != nil {
 		return err
@@ -1330,7 +1330,7 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 		ictx.w = g.contentW(ip) + ip.Padding[areatree.Left] + ip.Padding[areatree.Right]
 		g.push(ictx)
 		g.spaceBefore(ip)
-		// Rahmen und Padding des Listenpunkts oben und unten wie bei fo:block.
+		// Border and padding of the list item at top and bottom as for fo:block.
 		itemEdges := hasBox(ip)
 		if itemEdges {
 			h := ip.BorderWidth(areatree.Top) + ip.Padding[areatree.Top]
@@ -1375,8 +1375,8 @@ func (g *galley) list(n *tree.Node, parent *props.Computed) error {
 	return nil
 }
 
-// listLength liest eine geerbte Listeneigenschaft vom Element oder seinen
-// Vorfahren.
+// listLength reads an inherited list property from the element or its
+// ancestors.
 func listLength(n *tree.Node, name, def string, fs, base areatree.Length) (areatree.Length, error) {
 	v := def
 	for a := n; a != nil; a = a.Parent {
@@ -1392,9 +1392,9 @@ func listLength(n *tree.Node, name, def string, fs, base areatree.Length) (areat
 	return l, nil
 }
 
-// relayout setzt eine Zeile von Kopf oder Fuß für eine Seite neu, damit
-// fo:retrieve-table-marker die Marker dieser Seite einsetzen. Die Höhe der
-// Zeile bleibt wie beim Seitenumbruch reserviert.
+// relayout lays out a header or footer row again for a page so that
+// fo:retrieve-table-marker inserts the markers of this page. The height of
+// the row stays reserved as at page breaking.
 func (r *rowLayout) relayout(e *engine, page *areatree.Page) (*rowLayout, error) {
 	nr := *r
 	nr.cells = make([]*cellLayout, len(r.cells))

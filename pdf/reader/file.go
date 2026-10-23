@@ -10,31 +10,31 @@ import (
 	"strconv"
 )
 
-// File ist eine geöffnete PDF-Datei.
+// File is an opened PDF file.
 type File struct {
 	data    []byte
 	Trailer Dict
-	// offs sind die Positionen der Objekte, inStm die Objekte in
-	// Objektstreams (Stream-Nummer und Index).
+	// offs are the positions of the objects, inStm the objects in
+	// object streams (stream number and index).
 	offs  map[int]int
 	inStm map[int][2]int
 	cache map[int]Object
-	// busy sind die Objekte, die gerade gelesen werden, um zyklische
-	// Verweise (etwa eine Length, die auf sich selbst zeigt) zu erkennen.
+	// busy are the objects currently being read, to detect cyclic
+	// references (for example a Length that points to itself).
 	busy map[int]bool
-	// startxref ist der Offset des neuesten Xref-Abschnitts, newestStm
-	// meldet, dass er ein Xref-Stream ist.
+	// startxref is the offset of the newest xref section, newestStm
+	// reports that it is an xref stream.
 	startxref int
 	newestStm bool
 }
 
-// MaxDecoded begrenzt die entpackte Größe eines Streams, damit
-// komprimierte Bomben weder Speicher noch Zeit aufbrauchen.
+// MaxDecoded limits the decoded size of a stream so that
+// compression bombs exhaust neither memory nor time.
 var MaxDecoded int64 = 256 << 20
 
 var reStartXref = regexp.MustCompile(`startxref\s+(\d+)`)
 
-// Open liest die Xref-Daten einer PDF-Datei.
+// Open reads the xref data of a PDF file.
 func Open(data []byte) (*File, error) {
 	if !bytes.HasPrefix(data, []byte("%PDF-")) {
 		return nil, fmt.Errorf("keine PDF-Datei")
@@ -69,8 +69,8 @@ func Open(data []byte) (*File, error) {
 	return f, nil
 }
 
-// xref liest einen Xref-Abschnitt. Ältere Einträge überschreiben neuere
-// nicht.
+// xref reads an xref section. Older entries do not overwrite newer
+// ones.
 func (f *File) xref(off int) (Dict, error) {
 	if off >= len(f.data) {
 		return nil, fmt.Errorf("Xref hinter dem Dateiende")
@@ -83,7 +83,7 @@ func (f *File) xref(off int) (Dict, error) {
 	if t == Operator("xref") {
 		return f.xrefTable(l)
 	}
-	// Xref-Stream: "n g obj << … >> stream".
+	// Xref stream: "n g obj << … >> stream".
 	l.pos = off
 	o, err := f.indirect(l)
 	if err != nil {
@@ -111,7 +111,7 @@ func (f *File) xrefTable(l *lexer) (Dict, error) {
 			if !ok {
 				return nil, fmt.Errorf("Trailer ist kein Dictionary")
 			}
-			// Hybriddateien verweisen zusätzlich auf einen Xref-Stream.
+			// Hybrid files additionally refer to an xref stream.
 			if xs, ok := d["XRefStm"].(int64); ok {
 				if _, err := f.xref(int(xs)); err != nil {
 					return nil, err
@@ -157,8 +157,8 @@ func (f *File) xrefStream(s *Stream) error {
 	if len(w) != 3 {
 		return fmt.Errorf("Xref-Stream ohne gültiges /W")
 	}
-	// Jede Breite 0 bis 8 Bytes, eine Zeile mindestens ein Byte, sonst
-	// liefe die Schleife über Size ohne Daten zu verbrauchen.
+	// Each width 0 to 8 bytes, a row at least one byte, otherwise
+	// the loop would run over Size without consuming data.
 	var ws [3]int
 	for i := range ws {
 		v, _ := w[i].(int64)
@@ -214,7 +214,7 @@ func (f *File) xrefStream(s *Stream) error {
 	return nil
 }
 
-// indirect liest "n g obj … endobj" ab der aktuellen Position.
+// indirect reads "n g obj … endobj" from the current position.
 func (f *File) indirect(l *lexer) (Object, error) {
 	for i := 0; i < 3; i++ {
 		if _, err := l.token(); err != nil {
@@ -235,7 +235,7 @@ func (f *File) indirect(l *lexer) (Object, error) {
 		l.pos = save
 		return d, nil
 	}
-	// Nach "stream" folgt CRLF oder LF.
+	// "stream" is followed by CRLF or LF.
 	if l.pos < len(l.b) && l.b[l.pos] == '\r' {
 		l.pos++
 	}
@@ -255,7 +255,7 @@ func (f *File) indirect(l *lexer) (Object, error) {
 		}
 	}
 	if n < 0 || start+n > len(l.b) {
-		// Länge unbrauchbar, bis endstream suchen.
+		// Length unusable, search up to endstream.
 		e := bytes.Index(l.b[start:], []byte("endstream"))
 		if e < 0 {
 			return nil, errEOF
@@ -265,22 +265,22 @@ func (f *File) indirect(l *lexer) (Object, error) {
 	return &Stream{Dict: d, Raw: l.b[start : start+n]}, nil
 }
 
-// Data liefert die Bytes der Datei.
+// Data returns the bytes of the file.
 func (f *File) Data() []byte { return f.data }
 
-// StartXref liefert den Offset des neuesten Xref-Abschnitts.
+// StartXref returns the offset of the newest xref section.
 func (f *File) StartXref() int { return f.startxref }
 
-// XRefStream meldet, dass der neueste Xref-Abschnitt ein Xref-Stream ist.
+// XRefStream reports that the newest xref section is an xref stream.
 func (f *File) XRefStream() bool { return f.newestStm }
 
-// Size liefert die Größe aus dem Trailer: höchste Objektnummer plus eins.
+// Size returns the size from the trailer: highest object number plus one.
 func (f *File) Size() int {
 	n, _ := f.Trailer["Size"].(int64)
 	return int(n)
 }
 
-// Get liefert das Objekt mit der Nummer des Verweises.
+// Get returns the object with the number of the reference.
 func (f *File) Get(r Ref) (Object, error) {
 	if o, ok := f.cache[r.Num]; ok {
 		return o, nil
@@ -297,7 +297,7 @@ func (f *File) Get(r Ref) (Object, error) {
 	} else if at, ok := f.inStm[r.Num]; ok {
 		o, err = f.fromObjStm(at[0], at[1])
 	} else {
-		return nil, nil // fehlende Objekte gelten als null
+		return nil, nil // missing objects count as null
 	}
 	if err != nil {
 		return nil, fmt.Errorf("Objekt %d: %w", r.Num, err)
@@ -338,7 +338,7 @@ func (f *File) fromObjStm(num, idx int) (Object, error) {
 	return l.object(true)
 }
 
-// Resolve löst Verweise auf, andere Objekte bleiben unverändert.
+// Resolve resolves references, other objects stay unchanged.
 func (f *File) Resolve(o Object) Object {
 	for i := 0; i < 32; i++ {
 		r, ok := o.(Ref)
@@ -350,7 +350,7 @@ func (f *File) Resolve(o Object) Object {
 	return nil
 }
 
-// Dict liefert ein aufgelöstes Dictionary oder das eines Streams.
+// Dict returns a resolved dictionary or that of a stream.
 func (f *File) Dict(o Object) Dict {
 	switch v := f.Resolve(o).(type) {
 	case Dict:
@@ -361,22 +361,22 @@ func (f *File) Dict(o Object) Dict {
 	return nil
 }
 
-// Array liefert ein aufgelöstes Array.
+// Array returns a resolved array.
 func (f *File) Array(o Object) Array {
 	a, _ := f.Resolve(o).(Array)
 	return a
 }
 
-// Int liefert eine aufgelöste Ganzzahl.
+// Int returns a resolved integer.
 func (f *File) Int(o Object) (int, bool) {
 	v, ok := f.Resolve(o).(int64)
 	return int(v), ok
 }
 
-// Root liefert den Katalog.
+// Root returns the catalog.
 func (f *File) Root() Dict { return f.Dict(f.Trailer["Root"]) }
 
-// Pages liefert die Seiten in Dokumentreihenfolge mit ihren Verweisen.
+// Pages returns the pages in document order with their references.
 func (f *File) Pages() ([]Dict, []Ref) {
 	var ds []Dict
 	var rs []Ref
@@ -403,8 +403,8 @@ func (f *File) Pages() ([]Dict, []Ref) {
 	return ds, rs
 }
 
-// Decode liefert die entpackten Bytes eines Streams. Unterstützt werden
-// FlateDecode mit PNG-Prädiktor und ungefilterte Streams.
+// Decode returns the decoded bytes of a stream. Supported are
+// FlateDecode with PNG predictor and unfiltered streams.
 func (f *File) Decode(s *Stream) ([]byte, error) {
 	var filters Array
 	switch v := f.Resolve(s.Dict["Filter"]).(type) {
@@ -449,7 +449,7 @@ func (f *File) Decode(s *Stream) ([]byte, error) {
 	return data, nil
 }
 
-// unpredict hebt den PNG-Prädiktor auf (ISO 32000-1 7.4.4.4).
+// unpredict reverses the PNG predictor (ISO 32000-1 7.4.4.4).
 func unpredict(b []byte, p Dict) ([]byte, error) {
 	pred, _ := p["Predictor"].(int64)
 	if pred < 10 {

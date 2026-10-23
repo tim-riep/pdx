@@ -12,8 +12,8 @@ test("Über zeigt die Version und führt zu den Lizenzen", async ({ page }) => {
   await expect(page.getByTestId("licenses")).toHaveCount(0);
 });
 
-// Der Knopf Lizenzen zeigt die eigene Lizenz und jeden Fremdbestandteil mit
-// Lizenz und vollem Text, die Suche filtert die Liste.
+// The Licenses button shows the own license and every third-party part with
+// license and full text, the search filters the list.
 test("Lizenzen: eigene Lizenz und alle Fremdbestandteile", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("licenses-open").click();

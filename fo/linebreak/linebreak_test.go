@@ -7,7 +7,7 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// words baut Boxen der angegebenen Breiten mit Glue der Breite 1 dazwischen.
+// words builds boxes of the given widths with glue of width 1 in between.
 func words(ws ...areatree.Length) []Item {
 	var it []Item
 	for i, w := range ws {
@@ -77,10 +77,10 @@ func TestForcedBreakAndRatio(t *testing.T) {
 	}
 }
 
-// cost berechnet die Kosten einer Umbruchfolge wie Knuth-Plass: je Zeile
-// (1 + 100·|r|³)², bei der letzten Zeile mit Füllung in Zeilenbreite, plus
-// 50 je Wechsel zwischen nicht benachbarten Fitness-Klassen. ok ist false,
-// wenn eine Zeile außerhalb von -1 ≤ r ≤ tol liegt.
+// cost computes the cost of a break sequence like Knuth-Plass: per line
+// (1 + 100·|r|³)², for the last line with fill to the line width, plus
+// 50 per change between non-adjacent fitness classes. ok is false
+// if a line lies outside -1 ≤ r ≤ tol.
 func cost(items []Item, breaks []int, avail areatree.Length, tol float64) (float64, bool) {
 	var sum float64
 	start := 0
@@ -121,8 +121,8 @@ func cost(items []Item, breaks []int, avail areatree.Length, tol float64) (float
 }
 
 func TestKnuthPlassIsOptimal(t *testing.T) {
-	// Erschöpfende Suche über alle Umbruchfolgen kleiner Absätze im
-	// Blocksatz. Knuth-Plass muss die minimalen Kosten finden.
+	// Exhaustive search over all break sequences of small justified
+	// paragraphs. Knuth-Plass must find the minimal cost.
 	seed := uint32(11)
 	next := func() uint32 { seed = seed*1664525 + 1013904223; return seed >> 8 }
 	const avail = 10000
@@ -171,7 +171,7 @@ func TestKnuthPlassIsOptimal(t *testing.T) {
 func TestKnuthPlassForcedAndOverfull(t *testing.T) {
 	items := words(20, 20)
 	items = append(items, Item{Kind: Penalty, Penalty: ForcedBreak})
-	items = append(items, words(500)...) // überlange Box
+	items = append(items, words(500)...) // overlong box
 	bs, err := KnuthPlass{}.Break(items, fixed(100))
 	if err != nil {
 		t.Fatal(err)
@@ -186,7 +186,7 @@ func TestKnuthPlassForcedAndOverfull(t *testing.T) {
 }
 
 func TestKnuthPlassRagged(t *testing.T) {
-	// Flattersatz nach FOP: Glue(0,+R) Penalty Glue(w,-R).
+	// Ragged text as in FOP: Glue(0,+R) Penalty Glue(w,-R).
 	var items []Item
 	for i, w := range []areatree.Length{40, 40, 40, 40} {
 		if i > 0 {

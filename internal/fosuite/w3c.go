@@ -19,17 +19,17 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// Archive der W3C XSL Test Suite (XSL 1.0, 28. August 2001). Eine eigene
-// Suite für XSL 1.1 hat das W3C nicht veröffentlicht. Die Archive nennen
-// keine Lizenz, sie werden daher nur heruntergeladen und nicht verteilt.
+// Archives of the W3C XSL Test Suite (XSL 1.0, 28 August 2001). The W3C has
+// not published a separate suite for XSL 1.1. The archives state no license,
+// so they are only downloaded and not redistributed.
 var w3cArchives = []struct{ URL, SHA256 string }{
 	{"https://www.w3.org/Style/XSL/XSL-TS-NIST.zip", "2b34592c37fde21a7b848e549b6b4041e6fb758706e74835be369dd6ab27afb6"},
 	{"https://www.w3.org/Style/XSL/XSL-TS-contrib.zip", "83660625533c299b691e8afaa8c68188b27e0e76e4e116635bbda4547f47c36b"},
 }
 
-// PrepareW3C lädt die W3C-Suite (falls nötig), prüft die Prüfsummen und legt
-// die Fälle als FO unter out/suites/w3c/fo ab. Fälle außerhalb des
-// Teilumfangs kommen mit Begründung in disabled.
+// PrepareW3C downloads the W3C suite (if needed), verifies the checksums and
+// stores the cases as FO under out/suites/w3c/fo. Cases outside the supported
+// subset go to disabled with a reason.
 func PrepareW3C(root string, disabled map[string]string) (int, error) {
 	base := W3CDir(root)
 	src := filepath.Join(base, "src")
@@ -62,7 +62,7 @@ func PrepareW3C(root string, disabled map[string]string) (int, error) {
 		}
 		cases[name] = fo
 	}
-	// NIST: XML und Stylesheet je Test, verknüpft in testsuite.html.
+	// NIST: XML and stylesheet per test, linked in testsuite.html.
 	nist := filepath.Join(src, "NIST")
 	if err := copyResources(nist, dst); err != nil {
 		errs = append(errs, err)
@@ -75,8 +75,8 @@ func PrepareW3C(root string, disabled map[string]string) (int, error) {
 		fo, err := transformFile(filepath.Join(nist, t.xml), filepath.Join(nist, t.xsl))
 		add("nist-"+t.name, fo, err)
 	}
-	// Beiträge: FO-Dateien aus den testsuite.xml von RenderX und Antenna House
-	// und die FO-Dateien der FOP-Beiträge.
+	// Contributions: FO files from the testsuite.xml of RenderX and Antenna
+	// House and the FO files of the FOP contributions.
 	for _, ct := range []struct{ dir, prefix string }{{"XEP", "xep-"}, {"XSLFormatter", "ah-"}} {
 		dir := filepath.Join(src, "contrib", ct.dir)
 		for _, t := range contribTests(filepath.Join(dir, "testsuite.xml")) {
@@ -137,9 +137,9 @@ func PrepareW3C(root string, disabled map[string]string) (int, error) {
 
 var crRefs = regexp.MustCompile(`<fo:(page-sequence|single-page-master-reference|repeatable-page-master-reference|conditional-page-master-reference)\b[^>]*>`)
 
-// upgradeCR stellt Fälle aus der Candidate Recommendation von XSL 1.0 auf
-// die Empfehlung um: Seitenfolgen und Verweise auf Seitenvorlagen heißen dort
-// master-reference statt master-name. FOP 2.11 lehnt die alte Form ab.
+// upgradeCR converts cases from the XSL 1.0 Candidate Recommendation to the
+// Recommendation: there, page sequences and references to page masters use
+// master-reference instead of master-name. FOP 2.11 rejects the old form.
 func upgradeCR(fo []byte) []byte {
 	return crRefs.ReplaceAllFunc(fo, func(tag []byte) []byte {
 		return bytes.Replace(tag, []byte(" master-name="), []byte(" master-reference="), 1)
@@ -176,8 +176,8 @@ func sha(b []byte) string {
 	return hex.EncodeToString(h[:])
 }
 
-// unzip entpackt ein Archiv. Die Archive enthalten einen Ordner auf oberster
-// Ebene (NIST, contrib), der erhalten bleibt.
+// unzip extracts an archive. The archives contain a top-level folder (NIST,
+// contrib), which is preserved.
 func unzip(file, dst string) error {
 	zr, err := zip.OpenReader(file)
 	if err != nil {
@@ -210,8 +210,8 @@ func unzip(file, dst string) error {
 	return nil
 }
 
-// copyResources kopiert Bilder aus einem Verzeichnis (auch Unterordner) in
-// das Fallverzeichnis, damit relative Pfade der FO-Dateien passen.
+// copyResources copies images from a directory (including subfolders) into
+// the case directory so that relative paths in the FO files resolve.
 func copyResources(dir, dst string) error {
 	return filepath.Walk(dir, func(p string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
@@ -242,7 +242,7 @@ var (
 	nistHref = regexp.MustCompile(`href="([^"#]+\.(xml|xsl))"`)
 )
 
-// nistTests liest Testname, XML und Stylesheet aus testsuite.html.
+// nistTests reads the test name, XML and stylesheet from testsuite.html.
 func nistTests(html []byte) []nistTest {
 	var out []nistTest
 	heads := nistHead.FindAllSubmatchIndex(html, -1)
@@ -271,7 +271,7 @@ func nistTests(html []byte) []nistTest {
 	return out
 }
 
-// contribTests liest die Dateien der Fälle aus einer testsuite.xml.
+// contribTests reads the files of the cases from a testsuite.xml.
 func contribTests(file string) []string {
 	data, err := os.ReadFile(file)
 	if err != nil {

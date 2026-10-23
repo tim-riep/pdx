@@ -18,9 +18,9 @@ import (
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
-// TestAnalyze teilt die abweichenden Fälle anhand der lokalen FOP-Ausgaben
-// (out/suites/ref) in Klassen ein und schreibt out/fo-analyse.txt. Nur zur
-// Analyse: PDX_SUITE_ANALYZE=1.
+// TestAnalyze sorts the deviating cases into classes based on the local FOP
+// outputs (out/suites/ref) and writes out/fo-analyse.txt. For analysis only:
+// PDX_SUITE_ANALYZE=1.
 func TestAnalyze(t *testing.T) {
 	if os.Getenv("PDX_SUITE_ANALYZE") != "1" {
 		t.Skip("PDX_SUITE_ANALYZE=1 setzen")
@@ -56,8 +56,8 @@ func TestAnalyze(t *testing.T) {
 				class += ", andere Zeilenbreiten"
 			}
 		}
-		// Abweichungen nur wegen der Pixelgröße: mit 1 px = 1 pt wie bei FOP
-		// gleich mit der Erwartung.
+		// Deviations only due to the pixel size: with 1 px = 1 pt as in FOP
+		// identical to the expectation.
 		if src, err := os.ReadFile(c.File); err == nil && strings.Contains(string(src), "px") {
 			if e, err := ReadExpect(ExpectFile(root, c)); err == nil {
 				props.SetPixelSize(1)
@@ -88,7 +88,7 @@ func TestAnalyze(t *testing.T) {
 	}
 }
 
-// stream verbindet die Zeilentexte ohne Trennstriche und Leerraum.
+// stream joins the line texts without hyphens and whitespace.
 func stream(ls []fopcompare.ATLine) string {
 	var b strings.Builder
 	for _, l := range ls {
@@ -113,7 +113,7 @@ func classify(o Outcome, fl []fopcompare.ATLine, fpages int) string {
 			fl2 = append(fl2, l)
 		}
 	}
-	// Gleicher Text je Seite: nur die Zeilenumbrüche unterscheiden sich.
+	// Same text per page: only the line breaks differ.
 	pageStream := func(ls []fopcompare.ATLine) map[int]string {
 		m := map[int][]fopcompare.ATLine{}
 		for _, l := range ls {
@@ -146,7 +146,7 @@ func classify(o Outcome, fl []fopcompare.ATLine, fpages int) string {
 	}
 	switch {
 	case sameLines:
-		// Gleiche Zeilen: nur die Lage weicht ab.
+		// Same lines: only the position differs.
 		dy := map[string]int{}
 		for i := range pl {
 			d := math.Round((pl[i].Baseline-fl2[i].Baseline)*100) / 100
@@ -168,8 +168,8 @@ func classify(o Outcome, fl []fopcompare.ATLine, fpages int) string {
 	return "Text anders"
 }
 
-// overflow meldet die erste Zeile von pdx, deren Glyphen über die Zeile
-// hinausragen.
+// overflow reports the first line of pdx whose glyphs extend beyond the
+// line.
 func overflow(c Case) string {
 	res, err := pdx.RenderFile(c.File, pdx.Options{Profile: "pdf-1.7", CreationDate: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)})
 	if err != nil {
@@ -205,8 +205,8 @@ func overflow(c Case) string {
 
 var lineIPD = regexp.MustCompile(`<lineArea ipd="(\d+)"`)
 
-// sameWidths vergleicht die verfügbaren Zeilenbreiten von pdx (Breite der
-// Zeilencontainer) und FOP (ipd der lineArea) als Mengen auf 0,1 pt genau.
+// sameWidths compares the available line widths of pdx (width of the line
+// containers) and FOP (ipd of the lineArea) as sets, accurate to 0.1 pt.
 func sameWidths(c Case, at []byte) bool {
 	fw := map[int]bool{}
 	for _, m := range lineIPD.FindAllSubmatch(at, -1) {

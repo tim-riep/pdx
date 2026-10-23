@@ -10,23 +10,23 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// ChildInsert beschreibt das Einfügen eines beliebigen erlaubten Kindes,
-// etwa aus dem Kontextmenü der Hierarchie.
+// ChildInsert describes the insertion of any allowed child,
+// for example from the context menu of the hierarchy.
 type ChildInsert struct {
 	Parent string `json:"parent"`
-	// Key ist der Schlüssel des Elementtyps im Katalog (etwa formats/locale).
+	// Key is the key of the element type in the catalog (for example formats/locale).
 	Key string `json:"key"`
-	// Index ist die Stelle unter den Kindern, -1 wählt die Stelle nach der
-	// Reihenfolge des XSD.
+	// Index is the position among the children, -1 chooses the position by the
+	// order of the XSD.
 	Index int `json:"index"`
 }
 
-// notGeneric sind Elemente, die eigene Wege haben: Bilder brauchen eine
-// Datei aus der Bausteinleiste.
+// notGeneric are elements that have their own ways: images need a
+// file from the building block bar.
 var notGeneric = map[string]bool{"image": true}
 
-// Insertable liefert die Kinder, die sich unter einem Element jetzt noch
-// einfügen lassen, in der Reihenfolge des XSD.
+// Insertable returns the children that can still be inserted under an
+// element now, in the order of the XSD.
 func (s *TemplateService) Insertable(ref string) ([]model.Child, error) {
 	cat, err := model.LoadCatalog()
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *TemplateService) Insertable(ref string) ([]model.Child, error) {
 	return out, nil
 }
 
-// InsertChild fügt ein Element mit gültigen Pflichtangaben ein.
+// InsertChild inserts an element with valid required values.
 func (s *TemplateService) InsertChild(ci ChildInsert) (Result, error) {
 	cat, err := model.LoadCatalog()
 	if err != nil {
@@ -88,13 +88,13 @@ func (s *TemplateService) InsertChild(ci ChildInsert) (Result, error) {
 		if err := d.Apply(fmt.Sprintf("%s einfügen", el.Name), cmd); err != nil {
 			return "", err
 		}
-		// Elemente ohne ID (etwa formats) werden über ihren Pfad gewählt.
+		// Elements without ID (such as formats) are selected via their path.
 		return inserted(d, cmd), nil
 	})
 }
 
-// sequenceIndex liefert die Stelle nach dem letzten Kind, das im XSD vor
-// oder an derselben Stelle steht wie das neue.
+// sequenceIndex returns the position after the last child that comes before
+// or at the same position as the new one in the XSD.
 func sequenceIndex(pt *model.ElementType, parent *template.Node, pos int) int {
 	index := 0
 	for i, c := range parent.Children {
@@ -109,8 +109,8 @@ func sequenceIndex(pt *model.ElementType, parent *template.Node, pos int) int {
 	return index
 }
 
-// requiredDefaults sind Vorgaben für Pflichtattribute, die sich nicht aus
-// dem XSD ergeben, je Elementtyp und Attribut.
+// requiredDefaults are defaults for required attributes that do not follow
+// from the XSD, per element type and attribute.
 var requiredDefaults = map[string]string{
 	"attachments/attachment.name": "daten.xml", "attachments/attachment.source": "data",
 	"attachments/attachment.mimeType": "application/xml",
@@ -120,7 +120,7 @@ var requiredDefaults = map[string]string{
 	"pageMaster/header.height": "20mm", "pageMaster/footer.height": "15mm",
 }
 
-// skeleton baut ein Element mit Pflichtattributen und Pflichtkindern.
+// skeleton builds an element with required attributes and required children.
 func skeleton(cat model.Catalog, b *builder, t *template.Template, key string, parent *template.Node, depth int) *template.Node {
 	et := cat[key]
 	name := key[strings.LastIndex(key, "/")+1:]
@@ -172,7 +172,7 @@ func skeleton(cat model.Catalog, b *builder, t *template.Template, key string, p
 	return el
 }
 
-// Duplicate fügt eine Kopie des Elements mit neuen IDs direkt dahinter ein.
+// Duplicate inserts a copy of the element with new IDs directly after it.
 func (s *TemplateService) Duplicate(ref string) (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		t := d.Pkg.Template
@@ -200,9 +200,9 @@ func (s *TemplateService) Duplicate(ref string) (Result, error) {
 	})
 }
 
-// Move verschiebt ein Element unter seinen Geschwistern um delta Elemente
-// nach vorn (negativ) oder hinten. Das XSD entscheidet, ob die neue
-// Reihenfolge gültig ist.
+// Move moves an element among its siblings by delta elements
+// forward (negative) or backward. The XSD decides whether the new
+// order is valid.
 func (s *TemplateService) Move(ref string, delta int) (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		t := d.Pkg.Template
@@ -219,18 +219,18 @@ func (s *TemplateService) Move(ref string, delta int) (Result, error) {
 		if j < 0 || j >= len(sib) {
 			return "", errors.New("weiter geht es nicht")
 		}
-		// Stelle unter allen Kindern (auch Text) des Ziel-Geschwisters.
+		// Position among all children (including text) of the target sibling.
 		target := sib[j].Index()
 		if delta > 0 {
 			target++
 		}
 		if target > n.Index() {
-			target-- // das Element selbst fällt vorher heraus
+			target-- // the element itself drops out first
 		}
 		cmd := model.Command{Op: "move", Ref: model.Ref(n), Parent: model.Ref(n.Parent), Index: target}
 		if err := d.Apply(map[bool]string{true: "Nach oben", false: "Nach unten"}[delta < 0], cmd); err != nil {
 			return "", err
 		}
-		return model.Ref(n), nil // erst nach dem Verschieben, Pfade ohne ID ändern sich
+		return model.Ref(n), nil // only after moving, paths without ID change
 	})
 }

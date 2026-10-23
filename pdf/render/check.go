@@ -7,8 +7,8 @@ import (
 	"github.com/tim-riep/pdx/pdf/profile"
 )
 
-// CheckError ist ein Befund der Vorprüfung für Tagged PDF mit der
-// Vorlagen-ID des Elements, leer für das ganze Dokument.
+// CheckError is a finding of the pre-check for Tagged PDF with the
+// template ID of the element, empty for the whole document.
 type CheckError struct {
 	ID  string
 	Msg string
@@ -21,7 +21,7 @@ func (e *CheckError) Error() string {
 	return "[" + e.ID + "] " + e.Msg
 }
 
-// CheckErrors sind alle Befunde der Vorprüfung in Dokumentreihenfolge.
+// CheckErrors are all findings of the pre-check in document order.
 type CheckErrors []*CheckError
 
 func (es CheckErrors) Error() string {
@@ -32,22 +32,22 @@ func (es CheckErrors) Error() string {
 	return strings.Join(parts, "\n")
 }
 
-// check prüft vor dem Schreiben, was PDF/A Stufe A und PDF/UA verlangen und
-// nicht aufgefüllt werden darf. Beide verlangen Sprache und
-// Alternativtexte, PDF/UA zusätzlich Titel, Kopfzellen und getaggte
-// Verweise, PDF/UA-1 außerdem lückenlose Überschriften und Verweise mit
-// Text. Alle Befunde kommen auf einmal.
+// check checks before writing what PDF/A level A and PDF/UA require and
+// what must not be filled in automatically. Both require language and
+// alternative texts, PDF/UA additionally title, header cells and tagged
+// links, PDF/UA-1 also headings without gaps and links with
+// text. All findings come at once.
 func (t *tagger) check(c profile.Claim) error {
 	var errs CheckErrors
 	seen := map[string]bool{}
 	page := -1
 	add := func(id, format string, args ...any) {
 		e := &CheckError{ID: id, Msg: fmt.Sprintf(format, args...)}
-		// Ohne Vorlagen-ID hilft die Seite beim Finden.
+		// Without a template ID, the page helps with finding it.
 		if id == "" && page >= 0 {
 			e.Msg += fmt.Sprintf(" (Seite %d)", page+1)
 		}
-		// Ein Element über mehrere Seiten meldet sich nur einmal.
+		// An element across several pages reports only once.
 		if id != "" {
 			if seen[e.Error()] {
 				return
@@ -56,9 +56,9 @@ func (t *tagger) check(c profile.Claim) error {
 		}
 		errs = append(errs, e)
 	}
-	// clause nennt die Fundstellen im beanspruchten Standard: ua1 und ua2
-	// für PDF/UA-1 und PDF/UA-2, pdfa für PDF/A Stufe A. Leer heißt, der
-	// beanspruchte Standard verlangt es nicht.
+	// clause names the references in the claimed standard: ua1 and ua2
+	// for PDF/UA-1 and PDF/UA-2, pdfa for PDF/A level A. Empty means the
+	// claimed standard does not require it.
 	clause := func(ua1, ua2, pdfa string) string {
 		var cs []string
 		switch {
@@ -92,7 +92,7 @@ func (t *tagger) check(c profile.Claim) error {
 				add(se.id, "%s ohne Alternativtext (alt oder altBind), %s", typeLabel[se.typ], cl)
 			}
 		case "H1", "H2", "H3", "H4", "H5", "H6":
-			// Nur PDF/UA-1 verlangt lückenlose Überschriften.
+			// Only PDF/UA-1 requires headings without gaps.
 			cl := clause("7.4.2", "", "")
 			if cl == "" {
 				break

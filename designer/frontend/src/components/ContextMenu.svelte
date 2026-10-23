@@ -4,7 +4,7 @@
   let el: HTMLDivElement | undefined = $state();
   let index = $state(-1);
 
-  // Im Fenster halten.
+  // Keep inside the window.
   const pos = $derived.by(() => {
     const w = el?.offsetWidth ?? 220;
     const h = el?.offsetHeight ?? 300;

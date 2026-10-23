@@ -8,8 +8,8 @@ import (
 	"github.com/tim-riep/pdx/pdf/profile"
 )
 
-// doc baut ein Dokument mit Katalog, einer Seite und den übergebenen
-// Zusatzobjekten unter dem Katalog.
+// doc builds a document with a catalog, one page and the given additional
+// objects below the catalog.
 func actionDoc(t *testing.T, spec string, extra func(d *pdf.Document, cat, page *pdf.Dict)) error {
 	t.Helper()
 	p, err := profile.Lookup(spec)
@@ -27,7 +27,7 @@ func actionDoc(t *testing.T, spec string, extra func(d *pdf.Document, cat, page 
 	return err
 }
 
-// Verbotene Aktionen in PDF/A werden alle auf einmal gemeldet, mit Klausel.
+// Forbidden actions in PDF/A are all reported at once, with clause.
 func TestForbiddenActions(t *testing.T) {
 	bad := func(d *pdf.Document, cat, page *pdf.Dict) {
 		page.Set("AA", pdf.D("O", pdf.D("S", pdf.Name("Launch"))))
@@ -52,8 +52,8 @@ func TestForbiddenActions(t *testing.T) {
 			t.Errorf("%q fehlt in\n%v", want, err)
 		}
 	}
-	// PDF/A-4 erlaubt AA an Seiten mit den Auslösern O und C nicht, an
-	// Widgets dagegen beliebige.
+	// PDF/A-4 does not allow AA on pages with the triggers O and C, but allows
+	// any on widgets.
 	err = actionDoc(t, "pdfa-4", func(d *pdf.Document, cat, page *pdf.Dict) {
 		page.Set("AA", pdf.D("O", pdf.D("S", pdf.Name("URI"), "URI", pdf.String("x"))))
 		page.Set("Annots", pdf.Array{pdf.D("Type", pdf.Name("Annot"), "Subtype", pdf.Name("Widget"), "AA", pdf.D("K", pdf.D("S", pdf.Name("URI"), "URI", pdf.String("x"))))})
@@ -61,7 +61,7 @@ func TestForbiddenActions(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "Auslöser O in AA an Seiten sind verboten, ISO 19005-4 6.6.3") || strings.Contains(err.Error(), "Formularfeldern") {
 		t.Errorf("PDF/A-4: %v", err)
 	}
-	// Erlaubte Aktionen gehen durch, ohne Profil prüft niemand.
+	// Allowed actions pass, without a profile nobody checks.
 	ok := func(d *pdf.Document, cat, page *pdf.Dict) {
 		page.Set("Annots", pdf.Array{pdf.D("Type", pdf.Name("Annot"), "Subtype", pdf.Name("Link"), "A", pdf.D("S", pdf.Name("URI"), "URI", pdf.String("x")))})
 		cat.Set("OpenAction", pdf.D("S", pdf.Name("Named"), "N", pdf.Name("FirstPage")))
@@ -74,7 +74,7 @@ func TestForbiddenActions(t *testing.T) {
 	if err := actionDoc(t, "pdf-1.7", bad); err != nil {
 		t.Errorf("pdf-1.7: %v", err)
 	}
-	// NeedAppearances schreibt pdx in keinem Profil.
+	// pdx writes NeedAppearances in no profile.
 	if err := actionDoc(t, "pdf-1.7", func(d *pdf.Document, cat, page *pdf.Dict) {
 		cat.Set("AcroForm", pdf.D("Fields", pdf.Array{}, "NeedAppearances", pdf.Bool(true)))
 	}); err == nil || !strings.Contains(err.Error(), "NeedAppearances") {

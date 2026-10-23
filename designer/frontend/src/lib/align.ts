@@ -1,12 +1,12 @@
-// Ausrichten und Verteilen positionierter Elemente. Alle Werte in
-// Millimetern relativ zum Elternelement.
+// Aligning and distributing positioned elements. All values in
+// millimeters relative to the parent element.
 
 export type Box = { ref: string; x: number; y: number; w: number; h: number };
 export type AlignKind = "left" | "hcenter" | "right" | "top" | "vcenter" | "bottom";
 export type Move = { ref: string; x?: number; y?: number };
 
-// align richtet ein Element am Elternelement aus, mehrere an ihrem
-// gemeinsamen Rahmen.
+// align aligns one element to the parent element, several to their
+// common bounding box.
 export function align(boxes: Box[], kind: AlignKind, parent: { w: number; h: number }): Move[] {
   if (!boxes.length) return [];
   const frame =
@@ -34,8 +34,8 @@ export function align(boxes: Box[], kind: AlignKind, parent: { w: number; h: num
   return out;
 }
 
-// distribute verteilt drei oder mehr Elemente mit gleichen Abständen
-// zwischen dem ersten und dem letzten.
+// distribute spreads three or more elements with equal spacing
+// between the first and the last.
 export function distribute(boxes: Box[], axis: "x" | "y"): Move[] {
   if (boxes.length < 3) return [];
   const pos = (b: Box) => (axis === "x" ? b.x : b.y);

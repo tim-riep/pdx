@@ -2,9 +2,9 @@ import { expect, test } from "@playwright/test";
 import { openMuster, selectInTree } from "./helpers";
 
 async function selectAddress(page: import("@playwright/test").Page) {
-  // Rand des Adressfensters, außerhalb des inneren Teilformulars. Der Zoom
-  // kann sich nach dem Öffnen noch ändern (Breite einpassen), daher Zoom
-  // lesen und klicken, bis die Auswahl steht.
+  // Edge of the address window, outside the inner subform. The zoom
+  // can still change after opening (fit width), so read the zoom
+  // and click until the selection is set.
   let zoom = 1;
   await expect(async () => {
     zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
@@ -26,7 +26,7 @@ test("Eigenschaft ändern, rückgängig machen und wiederholen", async ({ page }
   await x.fill("40mm");
   await x.press("Enter");
   await expect(page.getByTestId("doc-title")).toContainText("geändert");
-  // Der Canvas zeigt das Ergebnis der Engine: 20 mm weiter rechts.
+  // The canvas shows the result of the engine: 20 mm further right.
   await expect.poll(left).toBeGreaterThan(before + 50 * zoom);
 
   await page.keyboard.press("ControlOrMeta+z");

@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// Muster aus dem XSD des Vorlagenformats (Length, Lengths, Color), jeweils
-// auch mit Verweis auf ein Token wie $primaer.
+// Patterns from the XSD of the template format (Length, Lengths, Color), each
+// also with a reference to a token such as $primaer.
 const tokenRef = `\$[A-Za-z_][A-Za-z0-9_.\-]*`
 
 var (
@@ -21,8 +21,8 @@ var (
 	numberRe  = regexp.MustCompile(`^[0-9]+$`)
 )
 
-// checkValue prüft einen Wert gegen die Art der Eigenschaft und liefert eine
-// verständliche Meldung. Die XSD-Prüfung danach bleibt die verbindliche.
+// checkValue checks a value against the kind of the property and returns an
+// understandable message. The XSD check afterwards remains the binding one.
 func checkValue(p Property, v string) error {
 	if v == "" {
 		if p.Required {

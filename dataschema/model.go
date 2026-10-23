@@ -1,9 +1,9 @@
-// Package dataschema prüft die Bindungen einer Vorlage statisch gegen das
-// Datenschema: Pfad vorhanden, Typ passend zum Format, Kardinalität passend
-// zum Element. Befunde tragen die ID des Vorlagenelements.
+// Package dataschema checks the bindings of a template statically against
+// the data schema: path present, type matching the format, cardinality
+// matching the element. Findings carry the ID of the template element.
 //
-// Das Datenschema ist hinter der Schnittstelle Model verborgen. FromXSD baut
-// es aus XSD-Dateien mit dem Schema-Komponentenmodell von go-xslt.
+// The data schema is hidden behind the interface Model. FromXSD builds it
+// from XSD files with the schema component model of go-xslt.
 package dataschema
 
 import (
@@ -15,41 +15,41 @@ import (
 	"github.com/tim-riep/go-xslt/xsd"
 )
 
-// Unbounded ist Max für maxOccurs="unbounded".
+// Unbounded is Max for maxOccurs="unbounded".
 const Unbounded = -1
 
-// Decl ist ein Element oder Attribut im Datenschema.
+// Decl is an element or attribute in the data schema.
 type Decl struct {
 	Name xml.Name
 	Attr bool
-	// Type ist der lokale Name des eingebauten Basistyps, etwa decimal, date
-	// oder string. Leer, wenn das Element keinen einfachen Inhalt hat oder
-	// der Typ nicht eindeutig ist (Union).
+	// Type is the local name of the built-in base type, such as decimal, date
+	// or string. Empty if the element has no simple content or the type is
+	// not unique (union).
 	Type string
-	// Simple ist gesetzt, wenn das Element Text enthält (einfacher oder
-	// gemischter Inhalt). Attribute sind immer einfach.
+	// Simple is set if the element contains text (simple or mixed content).
+	// Attributes are always simple.
 	Simple bool
-	// Min und Max sind die Kardinalität relativ zum Elternelement.
+	// Min and Max are the cardinality relative to the parent element.
 	Min, Max int
-	// Enum sind die erlaubten Werte eines einfachen Typs mit Aufzählung.
+	// Enum are the allowed values of a simple type with an enumeration.
 	Enum []string
-	// MaxLength ist die wirksame Facette maxLength (oder length), 0 ohne.
+	// MaxLength is the effective facet maxLength (or length), 0 if absent.
 	MaxLength int
 
 	impl any
 }
 
-// Model beschreibt die Struktur der Daten.
+// Model describes the structure of the data.
 type Model interface {
-	// Roots liefert die globalen Elemente.
+	// Roots returns the global elements.
 	Roots() []*Decl
-	// Children liefert Kindelemente und Attribute eines Elements. open meldet
-	// Wildcards (xs:any), dort ist der Inhalt nicht bekannt.
+	// Children returns child elements and attributes of an element. open
+	// reports wildcards (xs:any), where the content is not known.
 	Children(d *Decl) (kids []*Decl, open bool)
 }
 
-// FromXSD kompiliert das Datenschema. main ist der Pfad des Haupt-XSD in
-// files, die übrigen XSD-Dateien stehen für xs:import und xs:include bereit.
+// FromXSD compiles the data schema. main is the path of the main XSD in
+// files, the other XSD files are available for xs:import and xs:include.
 func FromXSD(main string, files map[string][]byte) (Model, error) {
 	src, ok := files[main]
 	if !ok {
@@ -100,7 +100,7 @@ func (m *xsdModel) decl(el *xsd.Element, lo, hi int) *Decl {
 	return d
 }
 
-// typeInfo bestimmt Basistyp und ob Text erlaubt ist.
+// typeInfo determines the base type and whether text is allowed.
 func typeInfo(t xsd.TypeDefinition) (string, bool) {
 	switch t := t.(type) {
 	case *xsd.SimpleType:
@@ -119,7 +119,7 @@ func typeInfo(t xsd.TypeDefinition) (string, bool) {
 	return "", false
 }
 
-// simpleOf liefert den einfachen Typ des Inhalts, nil ohne einfachen Inhalt.
+// simpleOf returns the simple type of the content, nil without simple content.
 func simpleOf(t xsd.TypeDefinition) *xsd.SimpleType {
 	switch t := t.(type) {
 	case *xsd.SimpleType:
@@ -132,7 +132,7 @@ func simpleOf(t xsd.TypeDefinition) *xsd.SimpleType {
 	return nil
 }
 
-// enumOf liefert die Aufzählung des einfachen Inhalts, falls vorhanden.
+// enumOf returns the enumeration of the simple content, if present.
 func enumOf(t xsd.TypeDefinition) []string {
 	if st := simpleOf(t); st != nil {
 		return st.Enumeration()
@@ -140,8 +140,8 @@ func enumOf(t xsd.TypeDefinition) []string {
 	return nil
 }
 
-// maxLengthOf liefert die wirksame Höchstlänge eines einfachen Typs aus den
-// Facetten maxLength oder length (XSD 1.1 Teil 2 4.3.1, 4.3.3), 0 ohne.
+// maxLengthOf returns the effective maximum length of a simple type from the
+// facets maxLength or length (XSD 1.1 Part 2 4.3.1, 4.3.3), 0 if absent.
 func maxLengthOf(st *xsd.SimpleType) int {
 	if st == nil {
 		return 0
@@ -180,7 +180,7 @@ func (m *xsdModel) Children(d *Decl) ([]*Decl, bool) {
 	open := false
 	add := func(e *xsd.Element, lo, hi int) {
 		if old, ok := index[e.Name()]; ok {
-			// Gleicher Name an mehreren Stellen des Inhaltsmodells.
+			// Same name at several places in the content model.
 			old.Min += lo
 			old.Max = addMax(old.Max, hi)
 			return
@@ -199,7 +199,7 @@ func (m *xsdModel) Children(d *Decl) ([]*Decl, bool) {
 			}
 			for _, sub := range m.s.SubstitutionMembers(t.Name()) {
 				if !sub.Abstract() {
-					// Mitglieder einer Ersetzungsgruppe sind wahlweise.
+					// Members of a substitution group are optional.
 					add(sub, 0, hi)
 				}
 			}

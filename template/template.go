@@ -1,11 +1,11 @@
-// Package template liest, prüft und schreibt das Vorlagenformat 1 von pdx
-// (template.xml). Das Format beschreibt schema/template-v1.xsd, geprüft wird
-// mit dem XSD-Validator von go-xslt.
+// Package template reads, validates and writes the pdx template format 1
+// (template.xml). The format is described by schema/template-v1.xsd and is
+// validated with the XSD validator of go-xslt.
 //
-// Die Vorlage wird als geordneter Knotenbaum gehalten, damit der Designer sie
-// verlustfrei bearbeiten und Write sie kanonisch zurückschreiben kann: feste
-// Einrückung, id als erstes Attribut, die übrigen alphabetisch, gemischter
-// Inhalt unverändert. So bleiben Git-Diffs lesbar.
+// The template is held as an ordered node tree so that the designer can edit
+// it losslessly and Write can write it back canonically: fixed indentation,
+// id as the first attribute, the others in alphabetical order, mixed content
+// unchanged. This keeps Git diffs readable.
 package template
 
 import (
@@ -22,50 +22,50 @@ import (
 	"github.com/tim-riep/go-xslt/engine"
 )
 
-// NS ist der Namespace des Vorlagenformats 1.
+// NS is the namespace of template format 1.
 const NS = "https://github.com/tim-riep/pdx/ns/template/1"
 
-// LegacyNS ist der Namespace des Formats 0 bis pdx 0.1.0. Format 1 ist
-// inhaltlich gleich, der Parser liest alte Vorlagen und hebt sie auf
-// Format 1 (Namespace und version), pdx fmt schreibt sie neu.
+// LegacyNS is the namespace of format 0 up to pdx 0.1.0. Format 1 has the
+// same content, the parser reads old templates and lifts them to format 1
+// (namespace and version), pdx fmt rewrites them.
 const LegacyNS = "https://pdx.example/ns/template/0"
 
-// Version ist der Wert von template/@version im Format 1.
+// Version is the value of template/@version in format 1.
 const Version = "1"
 
-// Schema ist das XSD des Vorlagenformats 1.
+// Schema is the XSD of template format 1.
 //
 //go:embed schema/template-v1.xsd
 var Schema string
 
-// Kind unterscheidet Elemente und Text.
+// Kind distinguishes elements and text.
 type Kind uint8
 
 const (
-	// Element ist ein Elementknoten.
+	// Element is an element node.
 	Element Kind = iota
-	// Text ist ein Textknoten (nur in gemischtem Inhalt).
+	// Text is a text node (only in mixed content).
 	Text
 )
 
-// Attr ist ein Attribut.
+// Attr is an attribute.
 type Attr struct {
 	Name, Value string
 }
 
-// Node ist ein Knoten der Vorlage.
+// Node is a node of the template.
 type Node struct {
 	Kind     Kind
-	Name     string // lokaler Name, der Namespace ist immer NS
+	Name     string // local name, the namespace is always NS
 	Attrs    []Attr
 	Children []*Node
 	Parent   *Node
-	Data     string // Inhalt eines Textknotens
+	Data     string // content of a text node
 	Line     int
 	Col      int
 }
 
-// Attr liefert ein Attribut.
+// Attr returns an attribute.
 func (n *Node) Attr(name string) (string, bool) {
 	for _, a := range n.Attrs {
 		if a.Name == name {
@@ -75,7 +75,7 @@ func (n *Node) Attr(name string) (string, bool) {
 	return "", false
 }
 
-// Get liefert ein Attribut oder def.
+// Get returns an attribute or def.
 func (n *Node) Get(name, def string) string {
 	if v, ok := n.Attr(name); ok {
 		return v
@@ -83,7 +83,7 @@ func (n *Node) Get(name, def string) string {
 	return def
 }
 
-// SetAttr setzt oder ersetzt ein Attribut.
+// SetAttr sets or replaces an attribute.
 func (n *Node) SetAttr(name, value string) {
 	for i := range n.Attrs {
 		if n.Attrs[i].Name == name {
@@ -94,7 +94,7 @@ func (n *Node) SetAttr(name, value string) {
 	n.Attrs = append(n.Attrs, Attr{name, value})
 }
 
-// RemoveAttr entfernt ein Attribut und liefert seinen bisherigen Wert.
+// RemoveAttr removes an attribute and returns its previous value.
 func (n *Node) RemoveAttr(name string) (string, bool) {
 	for i, a := range n.Attrs {
 		if a.Name == name {
@@ -105,16 +105,16 @@ func (n *Node) RemoveAttr(name string) (string, bool) {
 	return "", false
 }
 
-// NewElement legt ein Element ohne Eltern an.
+// NewElement creates an element without a parent.
 func NewElement(name string, attrs ...Attr) *Node {
 	return &Node{Kind: Element, Name: name, Attrs: attrs}
 }
 
-// NewText legt einen Textknoten an.
+// NewText creates a text node.
 func NewText(data string) *Node { return &Node{Kind: Text, Data: data} }
 
-// InsertChild fügt c an Position i unter n ein. Ein i außerhalb der Kinder
-// hängt c an. c darf keinen Elternknoten haben.
+// InsertChild inserts c at position i under n. An i outside the children
+// appends c. c must not have a parent node.
 func (n *Node) InsertChild(i int, c *Node) {
 	if i < 0 || i > len(n.Children) {
 		i = len(n.Children)
@@ -123,8 +123,8 @@ func (n *Node) InsertChild(i int, c *Node) {
 	c.Parent = n
 }
 
-// RemoveChild löst c von n und liefert seine bisherige Position, -1 wenn c
-// kein Kind von n ist.
+// RemoveChild detaches c from n and returns its previous position, -1 if c
+// is not a child of n.
 func (n *Node) RemoveChild(c *Node) int {
 	i := slices.Index(n.Children, c)
 	if i < 0 {
@@ -135,7 +135,7 @@ func (n *Node) RemoveChild(c *Node) int {
 	return i
 }
 
-// Index liefert die Position unter dem Elternknoten, -1 ohne Eltern.
+// Index returns the position under the parent node, -1 without a parent.
 func (n *Node) Index() int {
 	if n.Parent == nil {
 		return -1
@@ -143,7 +143,7 @@ func (n *Node) Index() int {
 	return slices.Index(n.Parent.Children, n)
 }
 
-// Clone kopiert den Knoten mit allen Nachfahren, ohne Elternknoten.
+// Clone copies the node with all descendants, without the parent node.
 func (n *Node) Clone() *Node {
 	c := &Node{Kind: n.Kind, Name: n.Name, Attrs: slices.Clone(n.Attrs), Data: n.Data, Line: n.Line, Col: n.Col}
 	for _, ch := range n.Children {
@@ -154,10 +154,10 @@ func (n *Node) Clone() *Node {
 	return c
 }
 
-// ID liefert die ID des Elements.
+// ID returns the ID of the element.
 func (n *Node) ID() string { return n.Get("id", "") }
 
-// Elements liefert die Elementkinder, auf Wunsch nur mit einem Namen.
+// Elements returns the element children, optionally only those with a name.
 func (n *Node) Elements(name string) []*Node {
 	var out []*Node
 	for _, c := range n.Children {
@@ -168,7 +168,7 @@ func (n *Node) Elements(name string) []*Node {
 	return out
 }
 
-// First liefert das erste Elementkind mit dem Namen oder nil.
+// First returns the first element child with the name, or nil.
 func (n *Node) First(name string) *Node {
 	for _, c := range n.Children {
 		if c.Kind == Element && c.Name == name {
@@ -178,7 +178,7 @@ func (n *Node) First(name string) *Node {
 	return nil
 }
 
-// NearestID liefert die ID des Elements oder des nächsten Vorfahren mit ID.
+// NearestID returns the ID of the element or of the nearest ancestor with an ID.
 func (n *Node) NearestID() string {
 	for x := n; x != nil; x = x.Parent {
 		if id := x.ID(); id != "" {
@@ -188,21 +188,21 @@ func (n *Node) NearestID() string {
 	return ""
 }
 
-// Template ist eine geladene Vorlage.
+// Template is a loaded template.
 type Template struct {
 	Root *Node
 	ids  map[string]*Node
 }
 
-// ByID liefert das Element mit einer ID.
+// ByID returns the element with an ID.
 func (t *Template) ByID(id string) *Node { return t.ids[id] }
 
-// Reindex baut den Index der IDs neu auf. Nötig nach Änderungen am
-// Knotenbaum, bevor ByID oder Validate genutzt werden.
+// Reindex rebuilds the index of IDs. Required after changes to the node
+// tree, before ByID or Validate are used.
 func (t *Template) Reindex() { t.index() }
 
-// Error ist ein Fehler in einer Vorlage mit Vorlagenelement-ID, wenn
-// zuordenbar, und Position.
+// Error is an error in a template with the template element ID, if it can
+// be assigned, and the position.
 type Error struct {
 	ID        string
 	Line, Col int
@@ -221,7 +221,7 @@ func (e *Error) Error() string {
 	return b.String()
 }
 
-// Errors sammelt mehrere Fehler.
+// Errors collects several errors.
 type Errors []*Error
 
 func (es Errors) Error() string {
@@ -232,10 +232,10 @@ func (es Errors) Error() string {
 	return strings.Join(parts, "\n")
 }
 
-// mixed sind Elemente mit gemischtem Inhalt, deren Text erhalten bleibt.
+// mixed are elements with mixed content whose text is preserved.
 var mixed = map[string]bool{"text": true, "span": true, "string": true}
 
-// Parse liest eine Vorlage und prüft sie gegen das XSD.
+// Parse reads a template and validates it against the XSD.
 func Parse(data []byte) (*Template, error) {
 	t, err := parseTree(data)
 	if err != nil {
@@ -247,11 +247,12 @@ func Parse(data []byte) (*Template, error) {
 	return t, nil
 }
 
-// ParseTree liest eine wohlgeformte Vorlage ohne Prüfung gegen das XSD, etwa
-// einen Zwischenstand im Designer. Validate holt die Prüfung nach.
+// ParseTree reads a well-formed template without validation against the
+// XSD, such as an intermediate state in the designer. Validate performs the
+// validation later.
 func ParseTree(data []byte) (*Template, error) { return parseTree(data) }
 
-// parseTree liest den Knotenbaum ohne Schemaprüfung.
+// parseTree reads the node tree without schema validation.
 func parseTree(data []byte) (*Template, error) {
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	dec.Strict = true
@@ -330,8 +331,8 @@ func parseTree(data []byte) (*Template, error) {
 	if root.Name != "template" {
 		return nil, &Error{Line: root.Line, Col: root.Col, Msg: "Wurzelelement muss template sein"}
 	}
-	// Format 0 (bis pdx 0.1.0) ist inhaltlich gleich, nur Namespace und
-	// version ändern sich.
+	// Format 0 (up to pdx 0.1.0) has the same content, only the namespace
+	// and version change.
 	if legacy && root.Get("version", "") == "0" {
 		root.SetAttr("version", Version)
 	}
@@ -359,8 +360,8 @@ func (t *Template) index() {
 	walk(t.Root)
 }
 
-// nodeAt liefert das Element, das an einer Position im Quelltext beginnt oder
-// sie zuletzt vorher begonnen hat.
+// nodeAt returns the element that starts at a position in the source or is
+// the last one to start before it.
 func (t *Template) nodeAt(line, col int) *Node {
 	var best *Node
 	var walk func(n *Node)
@@ -379,9 +380,9 @@ func (t *Template) nodeAt(line, col int) *Node {
 	return best
 }
 
-// Validate prüft die Vorlage gegen das XSD. Die Vorlage wird dafür kanonisch
-// geschrieben, Fehlerpositionen beziehen sich auf diese Fassung und werden
-// dem Element mit ID zugeordnet.
+// Validate validates the template against the XSD. For this the template is
+// written canonically, error positions refer to this version and are
+// assigned to the element with an ID.
 func (t *Template) Validate() error {
 	canon := Write(t)
 	res := engine.Validate(engine.ValidateRequest{Schemas: []string{Schema}, Instance: string(canon)})
@@ -412,7 +413,7 @@ func (t *Template) Validate() error {
 	return errs
 }
 
-// Write schreibt die Vorlage kanonisch.
+// Write writes the template canonically.
 func Write(t *Template) []byte {
 	var b bytes.Buffer
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")

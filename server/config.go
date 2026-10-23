@@ -1,6 +1,6 @@
-// Package server ist der Render-Dienst von pdx über HTTP. Er ist
-// zustandslos bis auf die Vorlagenablage, hält keine Nutzdaten über eine
-// Anfrage hinaus und schreibt keine Nutzdaten in Logs oder Metriken.
+// Package server is the render service of pdx over HTTP. It is stateless
+// except for the template store, keeps no payload data beyond a request
+// and writes no payload data to logs or metrics.
 package server
 
 import (
@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-// Rechte eines API-Schlüssels.
+// Permissions of an API key.
 const (
 	RightRender    = "render"
 	RightTemplates = "templates"
@@ -26,17 +26,17 @@ const (
 
 var allRights = []string{RightRender, RightTemplates, RightVerify, RightSign}
 
-// APIKey ist ein Schlüssel in der Konfiguration. Gespeichert ist nur der
-// SHA-256-Hash, nie der Schlüssel selbst.
+// APIKey is a key in the configuration. Only the SHA-256 hash is stored,
+// never the key itself.
 type APIKey struct {
-	// Name erscheint in Logs statt des Schlüssels.
+	// Name appears in logs instead of the key.
 	Name   string   `json:"name"`
 	SHA256 string   `json:"sha256"`
 	Rights []string `json:"rights"`
 	hash   []byte
 }
 
-// Duration liest Zeitangaben wie "30s" aus JSON.
+// Duration reads durations such as "30s" from JSON.
 type Duration struct{ time.Duration }
 
 func (d *Duration) UnmarshalJSON(b []byte) error {
@@ -54,46 +54,46 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 
 func (d Duration) MarshalJSON() ([]byte, error) { return json.Marshal(d.String()) }
 
-// Config ist die Konfiguration des Dienstes.
+// Config is the configuration of the service.
 type Config struct {
-	// Addr ist die Adresse, Vorgabe :8080.
+	// Addr is the address, default :8080.
 	Addr string `json:"addr"`
-	// Keys sind die API-Schlüssel. Ohne Schlüssel lehnt der Dienst jede
-	// Anfrage außer Health und Readiness ab.
+	// Keys are the API keys. Without keys the service rejects every request
+	// except Health and Readiness.
 	Keys []APIKey `json:"keys"`
-	// MaxBody begrenzt den Rumpf einer Anfrage in Bytes, Vorgabe 10 MiB.
+	// MaxBody limits the body of a request in bytes, default 10 MiB.
 	MaxBody int64 `json:"maxBody"`
-	// MaxTemplate begrenzt ein hochgeladenes Vorlagenpaket, Vorgabe 50 MiB.
+	// MaxTemplate limits an uploaded template package, default 50 MiB.
 	MaxTemplate int64 `json:"maxTemplate"`
-	// MaxPDF begrenzt ein PDF für verify und sign, Vorgabe 50 MiB.
+	// MaxPDF limits a PDF for verify and sign, default 50 MiB.
 	MaxPDF int64 `json:"maxPDF"`
-	// MaxBatch begrenzt das ZIP eines Stapels, Vorgabe 100 MiB, und
-	// MaxBatchEntries die Zahl der Datensätze darin, Vorgabe 1000.
+	// MaxBatch limits the ZIP of a batch, default 100 MiB, and
+	// MaxBatchEntries the number of records in it, default 1000.
 	MaxBatch        int64 `json:"maxBatch"`
 	MaxBatchEntries int   `json:"maxBatchEntries"`
-	// BatchTimeout begrenzt die Laufzeit eines Stapels, Vorgabe 10m.
+	// BatchTimeout limits the run time of a batch, default 10m.
 	BatchTimeout Duration `json:"batchTimeout"`
-	// VeraPDF schaltet /v1/verify ein: "docker", "local" oder ein Pfad
-	// zur veraPDF-CLI. Leer bedeutet aus.
+	// VeraPDF enables /v1/verify: "docker", "local" or a path to the
+	// veraPDF CLI. Empty means off.
 	VeraPDF string `json:"verapdf"`
-	// Signer schaltet /v1/sign ein: pkcs12:datei.p12 (Passwort aus
-	// PDX_SIGN_PASSWORD) oder remote:https://dienst (Token aus
-	// PDX_SIGN_TOKEN). Leer bedeutet aus.
+	// Signer enables /v1/sign: pkcs12:datei.p12 (password from
+	// PDX_SIGN_PASSWORD) or remote:https://dienst (token from
+	// PDX_SIGN_TOKEN). Empty means off.
 	Signer string `json:"signer"`
-	// TSA ist der Zeitstempeldienst für /v1/sign ab B-T.
+	// TSA is the time stamp service for /v1/sign from B-T upwards.
 	TSA string `json:"tsa"`
-	// MaxConcurrent begrenzt gleichzeitige Rendervorgänge, Vorgabe 8.
+	// MaxConcurrent limits concurrent render operations, default 8.
 	MaxConcurrent int `json:"maxConcurrent"`
-	// Timeout begrenzt die Laufzeit einer Anfrage, Vorgabe 30s.
+	// Timeout limits the run time of a request, default 30s.
 	Timeout Duration `json:"timeout"`
-	// QueueWait ist die längste Wartezeit auf einen freien Platz, danach
-	// antwortet der Dienst mit 503, Vorgabe 5s.
+	// QueueWait is the longest wait for a free slot, after which the
+	// service responds with 503, default 5s.
 	QueueWait Duration `json:"queueWait"`
-	// TemplateDir ist das Verzeichnis der Vorlagenablage.
+	// TemplateDir is the directory of the template store.
 	TemplateDir string `json:"templateDir"`
 }
 
-// LoadConfig liest die Konfiguration aus einer JSON-Datei.
+// LoadConfig reads the configuration from a JSON file.
 func LoadConfig(path string) (*Config, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -108,7 +108,7 @@ func LoadConfig(path string) (*Config, error) {
 	return &c, c.Check()
 }
 
-// Check setzt Vorgaben und prüft die Konfiguration, alle Befunde auf einmal.
+// Check sets defaults and validates the configuration, all findings at once.
 func (c *Config) Check() error {
 	if c.Addr == "" {
 		c.Addr = ":8080"
@@ -150,7 +150,7 @@ func (c *Config) Check() error {
 			errs = append(errs, fmt.Errorf("Schlüssel %q: sha256 ist kein SHA-256-Hash in Hex", k.Name))
 		}
 		k.hash = h
-		// Gleicher Hash hieße gleicher Schlüssel mit unklaren Rechten.
+		// The same hash would mean the same key with unclear permissions.
 		if other, dup := hashes[strings.ToLower(k.SHA256)]; dup && len(h) == sha256.Size {
 			errs = append(errs, fmt.Errorf("Schlüssel %q und %q haben denselben Hash", other, k.Name))
 		}
@@ -174,14 +174,14 @@ func (c *Config) Check() error {
 	return errors.Join(errs...)
 }
 
-// HashKey liefert den Hash eines Schlüssels für die Konfiguration.
+// HashKey returns the hash of a key for the configuration.
 func HashKey(key string) string {
 	h := sha256.Sum256([]byte(key))
 	return hex.EncodeToString(h[:])
 }
 
-// lookup sucht den Schlüssel zum Klartext. Verglichen wird der Hash in
-// konstanter Zeit, über alle Schlüssel.
+// lookup finds the key for the plain text. The hash is compared in
+// constant time, across all keys.
 func (c *Config) lookup(key string) *APIKey {
 	h := sha256.Sum256([]byte(key))
 	var found *APIKey

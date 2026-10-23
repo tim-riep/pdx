@@ -1,6 +1,6 @@
-// Analyse der Barrierefreiheit: Strukturbaum in Lesereihenfolge und
-// Befunde der Vorprüfung. Das Backend rechnet ohne PDF und ohne veraPDF,
-// das Panel fragt nach jeder Änderung neu.
+// Accessibility analysis: structure tree in reading order and
+// findings of the pre-check. The backend computes without PDF and without veraPDF,
+// the panel asks again after every change.
 
 import { EVENT, RenderAPI, message, on, type Access, type ProjectState } from "./api";
 
@@ -13,7 +13,7 @@ export async function refreshAccess() {
   access.loading = true;
   try {
     const a = await RenderAPI.Access();
-    if (mine !== seq) return; // eine neuere Anfrage läuft
+    if (mine !== seq) return; // a newer request is running
     access.data = a;
     access.error = "";
   } catch (e) {
@@ -31,9 +31,9 @@ on<ProjectState>(EVENT.project, (s) => {
   }
 });
 
-// steps liefert die Vorlagen-IDs der Elemente mit eigenem Inhalt (Text
-// oder Abbildung) in Lesereihenfolge, jede einmal. Die Nummer eines Schritts
-// ist seine Stelle plus eins.
+// steps returns the template IDs of the elements with own content (text
+// or figure) in reading order, each once. The number of a step
+// is its position plus one.
 export function steps(a: Access | null): string[] {
   const out: string[] = [];
   const seen = new Set<string>();
@@ -49,8 +49,8 @@ export function steps(a: Access | null): string[] {
   return out;
 }
 
-// tabStops liefert die Vorlagen-IDs der Formularfelder in der Reihenfolge
-// des Strukturbaums. Mit /Tabs /S ist das die Tab-Reihenfolge.
+// tabStops returns the template IDs of the form fields in the order
+// of the structure tree. With /Tabs /S that is the tab order.
 export function tabStops(a: Access | null): string[] {
   const out: string[] = [];
   const walk = (n: Access["tree"]) => {

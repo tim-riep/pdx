@@ -1,8 +1,8 @@
-# EU DSS Demo-Webapp als Prüfinstanz für PAdES, nur für Tests und lokal
-# gebaut (LGPL-2.1, https://github.com/esig/dss-demonstrations). Kontext ist
-# der Quellstand von Tag und Commit aus dssval.go, build.sh holt ihn.
-# Entspricht dem Dockerfile des Projekts, mit Basisimages per Digest und
-# entpacktem WAR, damit die Vertrauensanker beim Start eingebunden werden.
+# EU DSS demo webapp as a validation instance for PAdES, only for tests and
+# built locally (LGPL-2.1, https://github.com/esig/dss-demonstrations). The
+# context is the source at the tag and commit from dssval.go, build.sh
+# fetches it. Matches the project's Dockerfile, with base images by digest
+# and an unpacked WAR so that the trust anchors are mounted at startup.
 FROM docker.io/library/maven:3.9.16-eclipse-temurin-26@sha256:b2c1ad85954592f9928e84327c65201f308ad9b5d8ed7d5b823717c97bf23fbb AS build
 WORKDIR /src
 COPY . .
@@ -14,8 +14,8 @@ COPY --from=build /src/dss-demo-webapp/target/dss-demo-webapp-*.war /tmp/root.wa
 RUN mkdir /usr/local/tomcat/webapps/ROOT && cd /usr/local/tomcat/webapps/ROOT \
  && jar xf /tmp/root.war && rm /tmp/root.war \
  && mkdir WEB-INF/classes/pdx
-# Ohne EU-Vertrauenslisten (offline), Vertrauensanker aus pdx/trust.p12,
-# das der Runner je Testlauf einbindet.
+# Without EU trusted lists (offline), trust anchors from pdx/trust.p12,
+# which the runner mounts for each test run.
 RUN printf '%s\n' \
   'cron.tl.loader.enable = false' \
   'tl.loader.ades.enabled = false' \

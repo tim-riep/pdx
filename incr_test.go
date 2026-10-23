@@ -11,9 +11,9 @@ import (
 	"github.com/tim-riep/pdx/pdf/reader"
 )
 
-// TestIncrementalUpdate hängt an die Musterrechnung ein Update an, das den
-// Katalog ändert. Die alten Bytes bleiben, der Reader sieht die neue
-// Fassung, veraPDF besteht weiter.
+// TestIncrementalUpdate appends an update to the sample invoice that changes
+// the catalog. The old bytes remain, the reader sees the new version,
+// veraPDF still passes.
 func TestIncrementalUpdate(t *testing.T) {
 	p, data := loadMuster(t)
 	for _, prof := range []string{"pdfa-3b", "pdfa-4f"} {
@@ -39,7 +39,7 @@ func TestIncrementalUpdate(t *testing.T) {
 			if !bytes.HasPrefix(out.Data, res.PDF) || !bytes.HasSuffix(out.Data, []byte("%%EOF\n")) {
 				t.Fatal("Ausgangsdatei verändert oder Ende falsch")
 			}
-			// Jeder neue Xref-Eintrag zeigt auf sein Objekt.
+			// Every new xref entry points to its object.
 			for n, off := range out.Offsets {
 				if !bytes.HasPrefix(out.Data[off:], []byte(strconv.Itoa(n)+" 0 obj\n")) {
 					t.Errorf("Offset von Objekt %d falsch", n)

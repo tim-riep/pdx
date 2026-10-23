@@ -73,8 +73,8 @@ func TestFlavour(t *testing.T) {
 	}
 }
 
-// TestRunnerLive läuft nur mit PDX_CONFORMANCE=1, weil er Docker oder eine
-// lokale veraPDF-CLI braucht.
+// TestRunnerLive runs only with PDX_CONFORMANCE=1, because it needs Docker
+// or a local veraPDF CLI.
 func TestRunnerLive(t *testing.T) {
 	if os.Getenv("PDX_CONFORMANCE") != "1" {
 		t.Skip("PDX_CONFORMANCE=1 setzen, um veraPDF aufzurufen")
@@ -105,7 +105,7 @@ func TestFlavours(t *testing.T) {
 	}
 }
 
-// fakeCLI legt ein Skript an, das wie veraPDF eine Version meldet.
+// fakeCLI creates a script that reports a version like veraPDF.
 func fakeCLI(t *testing.T, dir, name, version string) string {
 	t.Helper()
 	if err := os.MkdirAll(dir, 0o755); err != nil {
@@ -118,9 +118,9 @@ func fakeCLI(t *testing.T, dir, name, version string) string {
 	return p
 }
 
-// Ohne PATH findet Detect veraPDF in den üblichen Ordnern, überspringt eine
-// falsche Version, nutzt sonst Docker außerhalb des PATH. Ein ausdrücklicher
-// Pfad geht allem vor.
+// Without PATH, Detect finds veraPDF in the usual folders, skips a
+// wrong version, otherwise uses Docker outside the PATH. An explicit
+// path takes precedence over everything.
 func TestDetectSearchDirs(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("Skripte mit Shebang")

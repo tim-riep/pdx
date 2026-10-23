@@ -37,7 +37,7 @@ func TestDirAndZipRoundTrip(t *testing.T) {
 	if !bytes.Equal(a, c) {
 		t.Fatal("ZIP nach erneutem Laden verschieden")
 	}
-	// Erster Eintrag ist template.xml, danach sortiert.
+	// The first entry is template.xml, sorted after that.
 	zr, _ := zip.NewReader(bytes.NewReader(a), int64(len(a)))
 	if zr.File[0].Name != "template.xml" || zr.File[1].Name > zr.File[2].Name {
 		t.Errorf("Reihenfolge: %s, %s, %s", zr.File[0].Name, zr.File[1].Name, zr.File[2].Name)
@@ -81,7 +81,7 @@ func TestRejects(t *testing.T) {
 			t.Errorf("erwartet %q, erhalten %v", want, err)
 		}
 	}
-	// Verweis auf eine fehlende Datei trägt die ID des Elements.
+	// A reference to a missing file carries the ID of the element.
 	tpl := strings.Replace(minimal, `<body id="b"/>`, `<body id="b"><image id="logo" src="assets/logo.png"/></body>`, 1)
 	_, err := Read(zipOf(map[string]string{"template.xml": tpl}))
 	var errs template.Errors

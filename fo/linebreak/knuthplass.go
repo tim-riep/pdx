@@ -6,43 +6,43 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// KnuthPlass bricht einen Absatz nach dem Verfahren von Knuth und Plass
-// (1981) um: Unter allen zulässigen Umbruchfolgen wird die mit den
-// geringsten Gesamtkosten (Demerits) gewählt.
+// KnuthPlass breaks a paragraph using the algorithm of Knuth and Plass
+// (1981): among all feasible break sequences the one with the
+// lowest total cost (demerits) is chosen.
 //
-// Die Parameter folgen Apache FOP 2.11, damit beide Engines vergleichbar
-// umbrechen: Demerits (1 + 100·|r|³ + p)², 50 für aufeinanderfolgende
-// Trennungen und für Zeilen inkompatibler Fitness-Klassen, Schwellen für das
-// Anpassungsverhältnis r von 1, 5 und 20. Die letzte Zeile eines Absatzes
-// und jede Zeile vor einem erzwungenen Umbruch darf um die volle Zeilenbreite
-// gedehnt werden. Findet auch die letzte Schwelle keine Lösung, entstehen
-// überlange Zeilen statt eines Fehlers. Greedy bleibt als Rückfall erhalten.
+// The parameters follow Apache FOP 2.11 so that both engines break
+// comparably: demerits (1 + 100·|r|³ + p)², 50 for consecutive
+// hyphenations and for lines of incompatible fitness classes, thresholds for
+// the adjustment ratio r of 1, 5 and 20. The last line of a paragraph
+// and each line before a forced break may be stretched by the full line
+// width. If even the last threshold finds no solution, overlong lines
+// result instead of an error. Greedy remains as a fallback.
 //
-// Flattersatz bildet der Aufrufer wie FOP über die Item-Folge ab: an jedem
-// Wortzwischenraum Glue(0, +R), Penalty(0), Glue(w, −R).
+// Like FOP, the caller models ragged text via the item sequence: at each
+// word space Glue(0, +R), Penalty(0), Glue(w, −R).
 type KnuthPlass struct {
-	// Tolerances sind die Schwellen für r. Leer bedeutet 1, 5, 20.
+	// Tolerances are the thresholds for r. Empty means 1, 5, 20.
 	Tolerances []float64
-	// FitnessDemerit kostet ein Wechsel zwischen nicht benachbarten
-	// Fitness-Klassen. 0 bedeutet 50.
+	// FitnessDemerit is the cost of a change between non-adjacent
+	// fitness classes. 0 means 50.
 	FitnessDemerit float64
-	// FlaggedDemerit kostet die zweite geflaggte Penalty in Folge. 0
-	// bedeutet 50.
+	// FlaggedDemerit is the cost of the second flagged penalty in a row. 0
+	// means 50.
 	FlaggedDemerit float64
 }
 
 type kpNode struct {
-	pos      int // Index des Umbruchs, -1 für den Absatzanfang
-	line     int // Zahl der Zeilen bis hier
+	pos      int // index of the break, -1 for the paragraph start
+	line     int // number of lines up to here
 	fit      int
-	w, y, z  float64 // Summen ab dem Zeilenanfang nach diesem Umbruch
+	w, y, z  float64 // sums from the line start after this break
 	demerits float64
 	ratio    float64
 	prev     *kpNode
 	flagged  bool
 }
 
-// Break wählt die Umbruchstellen.
+// Break chooses the break points.
 func (k KnuthPlass) Break(items []Item, width LineWidth) ([]Break, error) {
 	if len(items) == 0 {
 		return nil, nil
@@ -51,7 +51,7 @@ func (k KnuthPlass) Break(items []Item, width LineWidth) ([]Break, error) {
 	if len(tols) == 0 {
 		tols = []float64{1, 5, 20}
 	}
-	// Wie FOP zuerst ohne Trennstellen (geflaggte Penalties), dann mit.
+	// Like FOP, first without hyphenation points (flagged penalties), then with.
 	flagged := false
 	for _, it := range items {
 		if it.Kind == Penalty && it.Flagged {
@@ -82,7 +82,7 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 		flagDem = 50
 	}
 	n := len(items)
-	// Präfixsummen über Boxen und Glue.
+	// Prefix sums over boxes and glue.
 	W := make([]float64, n+1)
 	Y := make([]float64, n+1)
 	Z := make([]float64, n+1)
@@ -94,8 +94,8 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 			Z[i+1] += float64(it.Shrink)
 		}
 	}
-	// after liefert den Beginn der Zeile nach einem Umbruch bei pos: Glue
-	// und Penalties danach entfallen bis zur ersten Box.
+	// after returns the start of the line after a break at pos: glue
+	// and penalties after it are dropped up to the first box.
 	after := func(pos int) int {
 		j := pos + 1
 		for j < n && items[j].Kind != Box {
@@ -145,12 +145,12 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 			ratio float64
 		}
 		var best [4]*cand
-		var deact *kpNode // spätester entfernter Knoten für den Notfall
+		var deact *kpNode // latest removed node for the emergency case
 		var deactD float64
 		keep := active[:0]
 		for _, a := range active {
 			if !forced && after(a.pos) >= i {
-				// Ohne Box dazwischen wäre die Zeile leer.
+				// Without a box in between the line would be empty.
 				keep = append(keep, a)
 				continue
 			}
@@ -159,7 +159,7 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 			st := Y[i] - a.y
 			sh := Z[i] - a.z
 			if forced {
-				st += avail // Füllung der letzten Zeile wie bei FOP
+				st += avail // fill of the last line as in FOP
 			}
 			var r float64
 			switch {
@@ -181,8 +181,8 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 				keep = append(keep, a)
 			}
 			if r < -1 {
-				// Für den Notfall zählt der späteste entfernte Knoten: Die
-				// überlange Zeile enthält dann nur, was allein nicht passt.
+				// For the emergency case the latest removed node counts: the
+				// overlong line then contains only what does not fit on its own.
 				if deact == nil || a.pos > deact.pos || a.pos == deact.pos && a.demerits < deactD {
 					deact, deactD = a, a.demerits
 				}
@@ -242,7 +242,7 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 			if !force || deact == nil {
 				return nil, false
 			}
-			// Notfall: überlange Zeile an dieser Stelle.
+			// Emergency: overlong line at this point.
 			nd := &kpNode{pos: i, line: deact.line + 1, fit: 0, demerits: deact.demerits + 1e9, ratio: -1,
 				prev: deact, flagged: flagged, w: W[s], y: Y[s], z: Z[s]}
 			active = append(active, nd)
@@ -271,8 +271,8 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 	for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
 		out[i], out[j] = out[j], out[i]
 	}
-	// Die letzte Zeile und Zeilen vor erzwungenen Umbrüchen werden nicht
-	// gedehnt, das Verhältnis gilt nur für die Kostenrechnung.
+	// The last line and lines before forced breaks are not
+	// stretched, the ratio only applies to the cost calculation.
 	for i := range out {
 		idx := out[i].Index
 		if (idx == n || items[idx].Kind == Penalty && items[idx].Penalty <= ForcedBreak) && out[i].Ratio > 0 {
@@ -282,7 +282,7 @@ func (k KnuthPlass) run(items []Item, width LineWidth, tol float64, force, allow
 	return out, true
 }
 
-// fitness ordnet r den Klassen eng, normal, locker und sehr locker zu.
+// fitness maps r to the classes tight, normal, loose and very loose.
 func fitness(r float64) int {
 	switch {
 	case r < -0.5:
@@ -302,6 +302,6 @@ func abs(v int) int {
 	return v
 }
 
-// RaggedStretch ist die Dehnbarkeit, die eine Zeile im Flattersatz an ihrer
-// Umbruchstelle erhält (3 × 3336 Millipunkt wie bei Apache FOP).
+// RaggedStretch is the stretchability a line in ragged text gets at its
+// break point (3 × 3336 millipoints as in Apache FOP).
 const RaggedStretch areatree.Length = 3 * 3336

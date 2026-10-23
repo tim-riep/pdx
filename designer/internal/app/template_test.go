@@ -7,7 +7,7 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/model"
 )
 
-// applyPatch wendet einen Patch auf eine Projektion an, wie die Oberfläche.
+// applyPatch applies a patch to a projection, like the UI does.
 func applyPatch(s model.Snapshot, p model.Patch) model.Snapshot {
 	out := model.Snapshot{Rev: p.Rev, Root: p.Root, Nodes: maps.Clone(s.Nodes)}
 	for _, r := range p.Removed {

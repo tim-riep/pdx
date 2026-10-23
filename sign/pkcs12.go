@@ -9,9 +9,9 @@ import (
 	"software.sslmate.com/src/go-pkcs12"
 )
 
-// LoadPKCS12 liest Schlüssel und Zertifikatskette aus einer PKCS#12-Datei.
-// Der Schlüssel bleibt im Speicher. Das Passwort kommt vom Aufrufer, die CLI
-// liest es aus einer Umgebungsvariable oder fragt es ab, nie als Argument.
+// LoadPKCS12 reads the key and certificate chain from a PKCS#12 file.
+// The key stays in memory. The password comes from the caller, the CLI
+// reads it from an environment variable or prompts for it, never as an argument.
 func LoadPKCS12(data []byte, password string) (*KeySigner, error) {
 	key, cert, chain, err := pkcs12.DecodeChain(data, password)
 	if err != nil {
@@ -21,12 +21,12 @@ func LoadPKCS12(data []byte, password string) (*KeySigner, error) {
 	if !ok {
 		return nil, fmt.Errorf("Schlüssel in der PKCS#12-Datei kann nicht signieren (%T)", key)
 	}
-	// Die Wurzel gehört nicht in die Signatur, Zwischenzertifikate schon.
+	// The root does not belong in the signature, intermediate certificates do.
 	all := append([]*x509.Certificate{cert}, nonRoot(chain)...)
 	return NewKeySigner(s, all...)
 }
 
-// nonRoot entfernt selbst signierte Zertifikate (Wurzeln).
+// nonRoot removes self-signed certificates (roots).
 func nonRoot(certs []*x509.Certificate) []*x509.Certificate {
 	var out []*x509.Certificate
 	for _, c := range certs {

@@ -19,7 +19,7 @@
     if (e.dataTransfer) e.dataTransfer.effectAllowed = "copy";
   }
 
-  // Wurzel und ihre Kinder sind anfangs aufgeklappt.
+  // The root and its children are expanded initially.
   $effect(() => {
     for (const r of roots()) open[r.path] ??= true;
   });

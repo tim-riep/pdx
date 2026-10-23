@@ -97,7 +97,7 @@ func TestCompare(t *testing.T) {
 	if d := Compare(c, Outcome{Err: errors.New("kaputt")}, e, 1); len(d) != 1 || !strings.Contains(string(d[0]), "kaputt") {
 		t.Errorf("Fehler nicht gemeldet: %v", d)
 	}
-	// W3C-Erwartungen enthalten nur Hashwerte.
+	// W3C expectations contain only hash values.
 	w := Case{Suite: SuiteW3C, Name: "y"}
 	he := &Expect{Pages: 1, Lines: []Line{{Page: 1, Y: 20, Text: HashText("a b")}}}
 	if d := Compare(w, Outcome{Pages: 1, Lines: []fopcompare.ATLine{{Page: 1, Text: "a b", Baseline: 20}}}, he, 1); len(d) != 0 {

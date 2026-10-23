@@ -5,8 +5,8 @@ import (
 	"github.com/tim-riep/pdx/font"
 )
 
-// placer setzt Galley-Einträge in einen Referenzbereich einer Seite. Er wird
-// für Seiten des Flusses, statische Inhalte und absolute Container genutzt.
+// placer places galley entries into a reference area of a page. It is
+// used for pages of the flow, static content and absolute containers.
 type placer struct {
 	e       *engine
 	page    *areatree.Page
@@ -16,26 +16,26 @@ type placer struct {
 	started bool
 	open    []*openFrag
 	curRow  *rowFrag
-	// seen ordnet Bereichen mit Markern ihr Ereignis auf dieser Seite zu.
+	// seen maps areas with markers to their event on this page.
 	seen map[any]*mkEvent
-	// deferred sind Kopfzeilen mit Tabellenmarkern, die erst nach den
-	// Rumpfzeilen der Seite gezeichnet werden.
+	// deferred are header rows with table markers that are only drawn after
+	// the body rows of the page.
 	deferred []deferredRow
 }
 
-// deferredRow ist eine später zu zeichnende Zeile.
+// deferredRow is a row to be drawn later.
 type deferredRow struct {
 	r      *rowLayout
 	y      areatree.Length
 	parent *areatree.Container
-	repeat bool // wiederholter Kopf auf einer Folgeseite
+	repeat bool // repeated header on a following page
 }
 
-// openFrag ist das Fragment eines Blocks auf der aktuellen Seite.
+// openFrag is the fragment of a block on the current page.
 type openFrag struct {
 	ctx *blockCtx
 	c   *areatree.Container
-	end areatree.Length // Unterkante des bisher letzten Inhalts
+	end areatree.Length // bottom edge of the last content so far
 }
 
 func newPlacer(e *engine, page *areatree.Page, ref areatree.Rect, root *areatree.Container) *placer {
@@ -49,9 +49,9 @@ func (pl *placer) parent() *areatree.Container {
 	return pl.root
 }
 
-// place setzt die Einträge und schließt am Ende alle offenen Fragmente.
-// Beginnt die Seite mitten im Rumpf einer Tabelle, wird der Kopf wiederholt,
-// endet sie dort, der Fuß.
+// place places the entries and closes all open fragments at the end.
+// If the page starts in the middle of a table body, the header is repeated,
+// if it ends there, the footer.
 func (pl *placer) place(items []item) error {
 	if first := firstBox(items); first != nil && first.row != nil {
 		if t := first.row.tbl; t != nil && first.row.sec == secBody && !t.omitHeader && len(t.header) > 0 &&
@@ -67,7 +67,7 @@ func (pl *placer) place(items []item) error {
 		switch it.kind {
 		case itPenalty:
 		case itGlue:
-			// Am Seitenanfang bleibt nur der erhaltene Anteil (XSL 1.1 4.3.1).
+			// At the start of a page only the retained part remains (XSL 1.1 4.3.1).
 			if pl.started {
 				pl.y += it.h
 			} else {
@@ -90,7 +90,7 @@ func (pl *placer) place(items []item) error {
 			}
 		}
 	}
-	// Köpfe mit Tabellenmarkern kennen jetzt die Rumpfzeilen der Seite.
+	// Headers with table markers now know the body rows of the page.
 	for _, d := range pl.deferred {
 		nr, err := d.r.relayout(pl.e, pl.page)
 		if err != nil {
@@ -145,7 +145,7 @@ func (pl *placer) box(it item) error {
 		}
 	}
 	if it.line != nil {
-		// Ziele in einer Zeile zeigen auf den Block der Zeile.
+		// Targets in a line point to the block of the line.
 		src := ""
 		if n := len(it.path); n > 0 {
 			src = it.path[n-1].node.Label()
@@ -187,8 +187,8 @@ func (pl *placer) box(it item) error {
 		}
 		pl.y += it.h
 	default:
-		// Schlichte Box, etwa der Rest eines fo:block-container mit fester
-		// Höhe.
+		// Plain box, such as the rest of an fo:block-container with fixed
+		// height.
 		pl.y += it.h
 	}
 	pl.started = true
@@ -198,9 +198,9 @@ func (pl *placer) box(it item) error {
 	return nil
 }
 
-// sync schließt Fragmente, die nicht mehr im Pfad liegen, und öffnet die
-// fehlenden. Ein Fragment ist das erste seines Blocks, wenn es mit der
-// Oberkante des Blocks beginnt.
+// sync closes fragments that are no longer in the path and opens the
+// missing ones. A fragment is the first of its block if it starts with the
+// top edge of the block.
 func (pl *placer) sync(path []*blockCtx, edge edgeKind) {
 	k := 0
 	for k < len(pl.open) && k < len(path) && pl.open[k].ctx == path[k] {
@@ -232,8 +232,8 @@ func (pl *placer) sync(path []*blockCtx, edge edgeKind) {
 	}
 }
 
-// closeTop schließt das innerste Fragment an einem Umbruch oder Pfadwechsel.
-// Ohne die Unterkante des Blocks entfällt der untere Rahmen.
+// closeTop closes the innermost fragment at a break or path change.
+// Without the bottom edge of the block the bottom border is dropped.
 func (pl *placer) closeTop() {
 	f := pl.open[len(pl.open)-1]
 	f.c.H = max(f.end-f.c.Y, 0)
@@ -247,8 +247,8 @@ func (pl *placer) closeAll() {
 	}
 }
 
-// line kopiert die Bereiche einer Zeile an ihre Lage auf der Seite und löst
-// Seitenzahlen auf.
+// line copies the areas of a line to their position on the page and resolves
+// page numbers.
 func (pl *placer) line(l *lineBox) error {
 	c := &areatree.Container{Kind: areatree.KindLine, Rect: areatree.Rect{X: pl.ref.X + l.x, Y: pl.y, W: l.w, H: l.h}}
 	for _, a := range l.areas {
@@ -273,11 +273,11 @@ func (pl *placer) line(l *lineBox) error {
 	return nil
 }
 
-// absolute setzt einen absolut positionierten fo:block-container. "absolute"
-// bezieht sich auf den Referenzbereich, "fixed" auf die Seite. left und top
-// bezeichnen nach XSL 1.1 7.6.4 (aus CSS2 9.3.2) die Randkante, width und
-// height das Inhaltsrechteck. Apache FOP setzt left und top an die
-// Inhaltskante, das ist eine bewusste Abweichung (testdata/suites/DEVIATIONS.md).
+// absolute places an absolutely positioned fo:block-container. "absolute"
+// refers to the reference area, "fixed" to the page. Per XSL 1.1 7.6.4 (from
+// CSS2 9.3.2) left and top denote the margin edge, width and
+// height the content rectangle. Apache FOP places left and top at the
+// content edge, this is a deliberate deviation (testdata/suites/DEVIATIONS.md).
 func (pl *placer) absolute(a *absAnchor) error {
 	p := a.p
 	ref := pl.ref
@@ -295,7 +295,7 @@ func (pl *placer) absolute(a *absAnchor) error {
 	bt := p.BorderWidth(areatree.Top)
 	padL, padR := p.Padding[areatree.Left], p.Padding[areatree.Right]
 	padT, padB := p.Padding[areatree.Top], p.Padding[areatree.Bottom]
-	// left, right und top messen bis zur Randkante (CSS2 10.3.7).
+	// left, right and top measure to the margin edge (CSS2 10.3.7).
 	ml, mr, mt := p.Margin[areatree.Left], p.Margin[areatree.Right], p.Margin[areatree.Top]
 	var contentW areatree.Length
 	switch {
@@ -323,9 +323,9 @@ func (pl *placer) absolute(a *absAnchor) error {
 	cont.W = contentW + padL + padR
 	pl.page.Areas = append(pl.page.Areas, cont)
 
-	// Der Container ist ein neuer Referenzbereich. Die Kinder erben seine
-	// berechneten Einzüge (start-indent und end-indent sind vererbt) und
-	// messen sie ab seinem Inhaltsrechteck.
+	// The container is a new reference area. The children inherit its
+	// computed indents (start-indent and end-indent are inherited) and
+	// measure them from its content rectangle.
 	g := newGalley(pl.e, contentW, pl.page.Number)
 	g.page = a.page
 	if err := g.blocks(a.node, p); err != nil {

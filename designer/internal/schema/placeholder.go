@@ -7,34 +7,34 @@ import (
 	"strings"
 )
 
-// Placeholder erzeugt Daten für die Entwurfsansicht: Texte zeigen den Namen
-// des Feldes, Zahlen und Daten einen passenden Beispielwert, wiederholte
-// Knoten erscheinen dreimal, optionale einmal.
+// Placeholder generates data for the design view: texts show the name
+// of the field, numbers and dates a matching sample value, repeated
+// nodes appear three times, optional ones once.
 func (s *Schema) Placeholder() []byte {
 	return s.Generate(Gen{Repeat: placeholderRepeat, Optional: true})
 }
 
-// placeholderRepeat ist die Zahl der Einträge wiederholter Knoten.
+// placeholderRepeat is the number of entries of repeated nodes.
 const placeholderRepeat = 3
 
-// Gen steuert das Erzeugen von Daten, etwa für Randfälle.
+// Gen controls the generation of data, for example for edge cases.
 type Gen struct {
-	// Repeat ist die Zahl der Einträge wiederholter Knoten, höchstens so
-	// viele, wie das Schema erlaubt. 0 nimmt die kleinste erlaubte Zahl.
+	// Repeat is the number of entries of repeated nodes, at most as
+	// many as the schema allows. 0 takes the smallest allowed number.
 	Repeat int
-	// Optional nimmt optionale Knoten auf, sonst entfallen sie.
+	// Optional includes optional nodes, otherwise they are left out.
 	Optional bool
-	// LongText macht Texte lang, um Umbrüche und Überläufe zu prüfen.
+	// LongText makes texts long to test line breaks and overflows.
 	LongText bool
 }
 
-// Generate erzeugt einen Datensatz nach dem Schema.
+// Generate creates a data set according to the schema.
 func (s *Schema) Generate(g Gen) []byte {
 	var b bytes.Buffer
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
 	for i, r := range s.Roots {
 		if i > 0 {
-			break // ein Dokument hat eine Wurzel
+			break // a document has one root
 		}
 		s.write(&b, r, true, 0, g)
 	}
@@ -96,11 +96,11 @@ func (s *Schema) write(b *bytes.Buffer, n *Node, root bool, depth int, g Gen) {
 	}
 }
 
-// longText ist ein langer Text mit langen Wörtern für Randfälle.
+// longText is a long text with long words for edge cases.
 const longText = "Donaudampfschifffahrtsgesellschaftskapitänsmütze und Rechnungsposition mit ausführlicher Leistungsbeschreibung über mehrere Zeilen, damit Umbrüche, Silbentrennung und Überläufe sichtbar werden"
 
-// value liefert den Wert eines Knotens, lange Texte nur bei Texten ohne
-// festes Format.
+// value returns the value of a node, long texts only for texts without
+// a fixed format.
 func value(n *Node, g Gen) string {
 	v := sampleValue(n)
 	if g.LongText && len(n.Enum) == 0 && (n.Type == "string" || n.Type == "normalizedString" || n.Type == "token") {
@@ -111,7 +111,7 @@ func value(n *Node, g Gen) string {
 	return v
 }
 
-// sampleValue liefert einen Beispielwert passend zum Typ.
+// sampleValue returns a sample value matching the type.
 func sampleValue(n *Node) string {
 	if len(n.Enum) > 0 {
 		return n.Enum[0]
@@ -121,8 +121,8 @@ func sampleValue(n *Node) string {
 		local = local[i+1:]
 	}
 	local = strings.TrimPrefix(local, "@")
-	// Bekannte Namen erhalten gültige Werte, etwa für Barcodes, die eine
-	// prüfbare IBAN brauchen.
+	// Known names get valid values, for example for barcodes that need a
+	// verifiable IBAN.
 	if v, ok := knownValues[strings.ToLower(local)]; ok && (n.Type == "string" || n.Type == "token" || n.Type == "normalizedString") {
 		return v
 	}
@@ -154,7 +154,7 @@ func sampleValue(n *Node) string {
 	return local
 }
 
-// knownValues sind Beispielwerte für häufige Feldnamen mit festem Format.
+// knownValues are sample values for common field names with a fixed format.
 var knownValues = map[string]string{
 	"iban":     "DE02120300000000202051",
 	"bic":      "BYLADEM1001",

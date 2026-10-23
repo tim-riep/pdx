@@ -1,5 +1,5 @@
-// Zugang zu den Go-Services. Die Oberfläche hält kein eigenes Modell, sie
-// ruft Methoden auf und hört auf Ereignisse.
+// Access to the Go services. The UI keeps no model of its own, it
+// calls methods and listens to events.
 
 import { Events } from "@wailsio/runtime";
 
@@ -40,7 +40,7 @@ export type {
   DiffLine,
 } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 
-// Namen der Ereignisse, wie in internal/app/app.go.
+// Names of the events, as in internal/app/app.go.
 export const EVENT = {
   project: "project:changed",
   render: "render:pages",
@@ -50,12 +50,12 @@ export const EVENT = {
   closeRequest: "app:close-request",
 } as const;
 
-// on meldet sich für ein Ereignis an und liefert die Abmeldung.
+// on subscribes to an event and returns the unsubscribe function.
 export function on<T>(name: string, cb: (data: T) => void): () => void {
   return Events.On(name as never, (e: { data: unknown }) => cb(e.data as T));
 }
 
-// message liefert den Text eines Fehlers aus einem Aufruf.
+// message returns the text of an error from a call.
 export function message(err: unknown): string {
   if (err instanceof Error) return err.message;
   if (typeof err === "object" && err && "message" in err) return String((err as { message: unknown }).message);

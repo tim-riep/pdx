@@ -12,15 +12,15 @@ import (
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
-// Outcome ist das Ergebnis von pdx für einen Fall.
+// Outcome is the result of pdx for a case.
 type Outcome struct {
 	Pages int
 	Lines []fopcompare.ATLine
 	Err   error
 }
 
-// Render setzt einen Fall mit pdx. Abstürze und Zeitüberschreitungen werden
-// zu Fehlern.
+// Render typesets a case with pdx. Crashes and timeouts are turned into
+// errors.
 func Render(c Case, timeout time.Duration) Outcome {
 	done := make(chan Outcome, 1)
 	go func() {
@@ -48,12 +48,11 @@ func Render(c Case, timeout time.Duration) Outcome {
 	}
 }
 
-// Diff ist eine Abweichung von der Erwartung.
+// Diff is a deviation from the expectation.
 type Diff string
 
-// Compare vergleicht das Ergebnis von pdx mit der Erwartung. Zeilen werden je
-// Seite über Text und Vorkommen zugeordnet, die Lage muss innerhalb von tol
-// Punkt liegen.
+// Compare compares the result of pdx with the expectation. Lines are matched
+// per page by text and occurrence, the position must be within tol points.
 func Compare(c Case, o Outcome, e *Expect, tol float64) []Diff {
 	if o.Err != nil {
 		return []Diff{Diff("Fehler in pdx: " + o.Err.Error())}
@@ -81,9 +80,9 @@ func Compare(c Case, o Outcome, e *Expect, tol float64) []Diff {
 		}
 		return text
 	}
-	// Gleiche Texte auf einer Seite werden nach Lage zugeordnet, oben vor
-	// unten und links vor rechts. Die Reihenfolge der Zeilen im Area Tree ist
-	// Sache der Implementierung (etwa bei Tabellenzellen).
+	// Identical texts on a page are matched by position, top before bottom
+	// and left before right. The order of the lines in the area tree is up to
+	// the implementation (for example with table cells).
 	byPos := func(a, b float64, ax, bx float64) bool {
 		if math.Abs(a-b) > 0.5 {
 			return a < b

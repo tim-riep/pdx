@@ -11,7 +11,7 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// templates liefert die Vorlagen aus testdata/templates.
+// templates returns the templates from testdata/templates.
 func templates(t *testing.T) []string {
 	t.Helper()
 	dirs, err := filepath.Glob("../../../testdata/templates/*")
@@ -21,8 +21,8 @@ func templates(t *testing.T) []string {
 	return dirs
 }
 
-// TestRoundTrip öffnet jede Vorlage, speichert sie als ZIP und als
-// Verzeichnis und liest sie zurück. Inhalt und Bytes bleiben gleich.
+// TestRoundTrip opens every template, saves it as a ZIP and as a
+// directory and reads it back. Content and bytes stay the same.
 func TestRoundTrip(t *testing.T) {
 	for _, dir := range templates(t) {
 		t.Run(filepath.Base(dir), func(t *testing.T) {
@@ -47,7 +47,7 @@ func TestRoundTrip(t *testing.T) {
 					t.Errorf("%s: Dateien verändert", target)
 				}
 			}
-			// Zweimal speichern ergibt dieselben ZIP-Bytes (stabile Diffs).
+			// Saving twice yields the same ZIP bytes (stable diffs).
 			a, _ := os.ReadFile(filepath.Join(tmp, "a.zip"))
 			if err := d.SaveAs(filepath.Join(tmp, "b.zip")); err != nil {
 				t.Fatal(err)
@@ -56,7 +56,7 @@ func TestRoundTrip(t *testing.T) {
 			if !bytes.Equal(a, b) {
 				t.Error("zwei Speichervorgänge ergeben verschiedene ZIP-Dateien")
 			}
-			// Das Verzeichnis enthält template.xml in kanonischer Form.
+			// The directory contains template.xml in canonical form.
 			src, _ := os.ReadFile(filepath.Join(tmp, "a", "template.xml"))
 			if !bytes.Equal(src, want) {
 				t.Error("template.xml im Verzeichnis nicht kanonisch")

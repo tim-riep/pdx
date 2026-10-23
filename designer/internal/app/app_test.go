@@ -14,9 +14,9 @@ func TestInfo(t *testing.T) {
 	}
 }
 
-// Der Dialog Lizenzen bekommt die Apache License und jeden Fremdbestandteil
-// des Designers mit erkannter Lizenz und vollem Text, auch die
-// eingebetteten Schriften und die npm-Pakete.
+// The Licenses dialog receives the Apache License and every third-party
+// component of the designer with a detected license and full text, including
+// the embedded fonts and the npm packages.
 func TestLicenses(t *testing.T) {
 	l := (&AppService{}).Licenses()
 	if !strings.Contains(l.License, "Apache License") || !strings.Contains(l.Notice, "Tim Riep") {

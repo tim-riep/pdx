@@ -1,11 +1,11 @@
-// Package layout setzt einen FO-Baum in einen Area Tree um: Seitenvorlagen,
-// Regionen, Fluss mit Seitenumbruch, statische Inhalte, Blöcke mit Rahmen und
-// Hintergrund, Zeilenumbruch, absolute Positionierung und Bilder.
+// Package layout converts an FO tree into an area tree: page masters,
+// regions, flow with page breaks, static content, blocks with borders and
+// background, line breaking, absolute positioning and images.
 //
-// Die Engine arbeitet mit einem Cursor je Referenzbereich. Blöcke werden
-// geöffnet, ihre Zeilen auf die aktuelle Seite gesetzt und bei einem
-// Seitenumbruch in Fragmente geteilt. Abstände (space-before, space-after)
-// werden zusammengefasst und am Seitenanfang verworfen.
+// The engine works with one cursor per reference area. Blocks are
+// opened, their lines placed on the current page and split into fragments
+// at a page break. Spaces (space-before, space-after)
+// are merged and discarded at the start of a page.
 package layout
 
 import (
@@ -20,22 +20,22 @@ import (
 	"strings"
 )
 
-// Options steuert das Layout.
+// Options controls the layout.
 type Options struct {
-	// Fonts löst Schriftfamilien auf. nil bedeutet font.NewRegistry().
+	// Fonts resolves font families. nil means font.NewRegistry().
 	Fonts *font.Registry
-	// Resolver lädt Bilder und Anhänge. nil verweigert jeden Zugriff.
+	// Resolver loads images and attachments. nil denies every access.
 	Resolver Resolver
-	// Breaker bricht Absätze um. nil bedeutet linebreak.KnuthPlass.
+	// Breaker breaks paragraphs into lines. nil means linebreak.KnuthPlass.
 	Breaker linebreak.Breaker
-	// Context bricht das Layout ab, geprüft je Durchlauf und je Seite. nil
-	// bedeutet ohne Abbruch.
+	// Context cancels the layout, checked per pass and per page. nil
+	// means no cancellation.
 	Context context.Context
 }
 
 type engine struct {
-	// rowNums nummeriert Tabellenzeilen und Listenpunkte für Tagged PDF,
-	// begun merkt sich Blöcke, von denen schon ein Fragment gesetzt ist.
+	// rowNums numbers table rows and list items for Tagged PDF,
+	// begun remembers blocks of which a fragment has already been placed.
 	rowNums map[*rowLayout]int
 	begun   map[*blockCtx]bool
 
@@ -47,42 +47,42 @@ type engine struct {
 	imgIDs     map[string]areatree.ImageID
 	pageNo     int
 
-	// prev enthält die Texte seitenabhängiger Inhalte aus dem vorigen
-	// Durchlauf, next die dieses Durchlaufs. unstable ist gesetzt, wenn sich
-	// eine reservierte Breite als falsch erwiesen hat.
+	// prev holds the texts of page-dependent content from the previous
+	// pass, next those of this pass. unstable is set if a reserved
+	// width has turned out to be wrong.
 	prev, next map[*tree.Node]string
 	unstable   bool
 
-	// ids ordnet jeder ID die erste und letzte Seite zu (formatiert).
+	// ids maps each ID to its first and last page (formatted).
 	ids map[string]*idPages
-	// cited merkt sich die in diesem Durchlauf ausgegebenen Verweise.
+	// cited remembers the citations output in this pass.
 	cited map[*tree.Node]citation
-	// prevIDs sind die Seiten der IDs aus dem vorigen Durchlauf.
+	// prevIDs are the pages of the IDs from the previous pass.
 	prevIDs map[string]*idPages
-	// format ist das Seitenzahlformat der aktuellen Seitenfolge.
+	// format is the page number format of the current page sequence.
 	format string
-	// links sind interne Verweise und Lesezeichen zur Prüfung am Ende.
+	// links are internal links and bookmarks for checking at the end.
 	links []linkCheck
 
-	// marks sind die Marker-Ereignisse je Seite, markOrder in Seitenfolge.
+	// marks are the marker events per page, markOrder in page order.
 	marks     map[*areatree.Page]*pageMarks
 	markOrder []*pageMarks
 	curSeq    *tree.Node
 }
 
-// idPages sind die erste und letzte Seite einer ID.
+// idPages are the first and last page of an ID.
 type idPages struct {
 	first, last string
 }
 
-// citation ist ein ausgegebener Seitenverweis.
+// citation is an output page citation.
 type citation struct {
 	ref  string
 	last bool
 	text string
 }
 
-// recordID vermerkt, dass ein Bereich mit der ID auf einer Seite liegt.
+// recordID records that an area with the ID lies on a page.
 func (e *engine) recordID(id string, page string) {
 	if p, ok := e.ids[id]; ok {
 		p.last = page
@@ -91,7 +91,7 @@ func (e *engine) recordID(id string, page string) {
 	e.ids[id] = &idPages{first: page, last: page}
 }
 
-// recordDest vermerkt die erste Lage einer ID als Sprungziel.
+// recordDest records the first position of an ID as a jump target.
 func (e *engine) recordDest(id string, page *areatree.Page, at areatree.Point, src string) {
 	if e.doc.Dests == nil {
 		e.doc.Dests = map[string]areatree.Dest{}
@@ -107,14 +107,14 @@ func (e *engine) recordDest(id string, page *areatree.Page, at areatree.Point, s
 	}
 }
 
-// links sind die internen Verweise eines Durchlaufs, geprüft am Ende.
+// links are the internal links of a pass, checked at the end.
 type linkCheck struct {
 	node *tree.Node
 	id   string
 }
 
-// checkLinks prüft, dass interne Verweise und Lesezeichen auf vorhandene IDs
-// zeigen.
+// checkLinks checks that internal links and bookmarks point to existing
+// IDs.
 func (e *engine) checkLinks() error {
 	for _, l := range e.links {
 		if _, ok := e.doc.Dests[l.id]; !ok {
@@ -124,8 +124,8 @@ func (e *engine) checkLinks() error {
 	return nil
 }
 
-// citationText liefert den Text eines Verweises aus dem vorigen Durchlauf.
-// Fehlt er, wird geschätzt und ein weiterer Durchlauf ist nötig.
+// citationText returns the text of a citation from the previous pass.
+// If it is missing, it is estimated and another pass is needed.
 func (e *engine) citationText(n *tree.Node, ref string, last bool) string {
 	text := "1"
 	if p, ok := e.prevIDs[ref]; ok {
@@ -138,7 +138,7 @@ func (e *engine) citationText(n *tree.Node, ref string, last bool) string {
 	return text
 }
 
-// checkCitations prüft nach einem Durchlauf alle Verweise.
+// checkCitations checks all citations after a pass.
 func (e *engine) checkCitations() error {
 	for n, c := range e.cited {
 		p, ok := e.ids[c.ref]
@@ -156,10 +156,10 @@ func (e *engine) checkCitations() error {
 	return nil
 }
 
-// maxPasses begrenzt die Durchläufe für seitenabhängige Inhalte.
+// maxPasses limits the passes for page-dependent content.
 const maxPasses = 4
 
-// estimate vermerkt den tatsächlichen Text eines seitenabhängigen Inhalts.
+// estimate records the actual text of page-dependent content.
 func (e *engine) estimate(n *tree.Node, text string, widthChanged bool) {
 	e.next[n] = text
 	if widthChanged {
@@ -167,7 +167,7 @@ func (e *engine) estimate(n *tree.Node, text string, widthChanged bool) {
 	}
 }
 
-// guess liefert den Text aus dem vorigen Durchlauf oder eine Schätzung.
+// guess returns the text from the previous pass or an estimate.
 func (e *engine) guess(n *tree.Node) string {
 	if t, ok := e.prev[n]; ok {
 		return t
@@ -175,7 +175,7 @@ func (e *engine) guess(n *tree.Node) string {
 	return "1"
 }
 
-// Layout setzt das Dokument.
+// Layout lays out the document.
 func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 	if opts.Fonts == nil {
 		opts.Fonts = font.NewRegistry()
@@ -231,7 +231,7 @@ func Layout(root *tree.Node, opts Options) (*areatree.Document, error) {
 	}
 }
 
-// checkIDs prüft, dass jede ID nur einmal vorkommt.
+// checkIDs checks that each ID occurs only once.
 func checkIDs(root *tree.Node) error {
 	seen := map[string]*tree.Node{}
 	var walk func(n *tree.Node) error
@@ -294,14 +294,14 @@ func (e *engine) run(root *tree.Node) error {
 	return nil
 }
 
-// master ist eine einfache Seitenvorlage.
+// master is a simple page master.
 type master struct {
 	node          *tree.Node
 	width, height areatree.Length
 	body          areatree.Rect
 	bodyName      string
 	bodyNode      *tree.Node
-	regions       []*region // region-before und region-after
+	regions       []*region // region-before and region-after
 }
 
 type region struct {
@@ -374,8 +374,8 @@ func (e *engine) readMasters(lms *tree.Node) error {
 		if mm.bodyNode == nil {
 			return tree.Errorf(m, "fo:region-body fehlt")
 		}
-		// Eine Region der Größe 0 ist zulässig, Inhalt passt dort nicht und
-		// läuft auf die nächste Seite. Negative Größen sind ein Fehler.
+		// A region of size 0 is allowed, content does not fit there and
+		// flows to the next page. Negative sizes are an error.
 		if mm.body.W < 0 || mm.body.H < 0 {
 			return tree.Errorf(mm.bodyNode, "fo:region-body hat eine negative Größe, Ränder zu groß")
 		}
@@ -391,7 +391,7 @@ func attrOr(n *tree.Node, name, def string) string {
 	return def
 }
 
-// fontID registriert eine Schrift im Dokument.
+// fontID registers a font in the document.
 func (e *engine) fontID(f *font.Face) areatree.FontID {
 	if id, ok := e.fontIDs[f]; ok {
 		return id
@@ -402,7 +402,7 @@ func (e *engine) fontID(f *font.Face) areatree.FontID {
 	return id
 }
 
-// imageID lädt ein Bild über den Resolver und registriert es einmal.
+// imageID loads an image via the resolver and registers it once.
 func (e *engine) imageID(n *tree.Node, src string) (areatree.ImageID, *image.Image, error) {
 	data, err := e.opts.Resolver.Read(src)
 	if err != nil {
@@ -429,7 +429,7 @@ func (e *engine) face(n *tree.Node, p *props.Computed) (*font.Face, error) {
 	return f, nil
 }
 
-// bookmarks liest fo:bookmark-tree (XSL 1.1 6.11).
+// bookmarks reads fo:bookmark-tree (XSL 1.1 6.11).
 func (e *engine) bookmarks(n *tree.Node) ([]areatree.Bookmark, error) {
 	var out []areatree.Bookmark
 	for _, c := range n.Children {

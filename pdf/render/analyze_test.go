@@ -7,7 +7,7 @@ import (
 	"github.com/tim-riep/pdx/pdf/profile"
 )
 
-// Analyze liefert den Baum mit Vorlagen-IDs und die Befunde, ohne PDF.
+// Analyze returns the tree with template IDs and the findings, without PDF.
 func TestAnalyze(t *testing.T) {
 	doc := &areatree.Document{
 		Meta: areatree.Metadata{Title: "T", Lang: "de"},
@@ -32,7 +32,7 @@ func TestAnalyze(t *testing.T) {
 	if len(errs) != 1 || errs[0].ID != "logo" {
 		t.Errorf("Befunde %v", errs)
 	}
-	// Ohne Anspruch auf Barrierefreiheit keine Befunde.
+	// Without an accessibility claim, no findings.
 	if _, errs := Analyze(doc, profile.Claim{Version: "1.7", PDFA: 3, Level: "B"}); len(errs) != 0 {
 		t.Errorf("Befunde ohne Anspruch: %v", errs)
 	}

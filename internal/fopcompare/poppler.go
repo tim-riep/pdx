@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-// Rasterize rastert alle Seiten in Graustufen.
+// Rasterize rasterizes all pages in grayscale.
 func Rasterize(ctx context.Context, pdf []byte, dpi int) ([]*image.Gray, error) {
 	dir, err := poppler(ctx, pdf, "pdftoppm", "-r", strconv.Itoa(dpi), "-gray", "-png", "in.pdf", "seite")
 	if dir != "" {
@@ -49,7 +49,7 @@ func pageNum(f string) int {
 	return n
 }
 
-// Line ist eine Textzeile mit Lage in Punkt (Ursprung oben links).
+// Line is a text line with its position in points (origin top left).
 type Line struct {
 	Page       int
 	Text       string
@@ -75,7 +75,7 @@ type bboxDoc struct {
 	} `xml:"body>doc>page"`
 }
 
-// Lines extrahiert die Textzeilen mit pdftotext -bbox-layout.
+// Lines extracts the text lines with pdftotext -bbox-layout.
 func Lines(ctx context.Context, pdf []byte) ([]Line, int, error) {
 	dir, err := poppler(ctx, pdf, "pdftotext", "-bbox-layout", "-enc", "UTF-8", "in.pdf", "out.html")
 	if dir != "" {
@@ -91,7 +91,7 @@ func Lines(ctx context.Context, pdf []byte) ([]Line, int, error) {
 	return ParseBBox(data)
 }
 
-// ParseBBox liest die Ausgabe von pdftotext -bbox-layout.
+// ParseBBox reads the output of pdftotext -bbox-layout.
 func ParseBBox(data []byte) ([]Line, int, error) {
 	var doc bboxDoc
 	dec := xml.NewDecoder(strings.NewReader(string(data)))
@@ -105,9 +105,9 @@ func ParseBBox(data []byte) ([]Line, int, error) {
 		for _, f := range p.Flows {
 			for _, b := range f.Blocks {
 				for _, l := range b.Lines {
-					// Poppler übergeht beim xMin der Zeile Wörter, die genau bei
-					// x = 0 beginnen. Der Anfang ist daher das kleinste xMin der
-					// Wörter.
+					// For the xMin of the line, Poppler skips words that start
+					// exactly at x = 0. The start is therefore the smallest xMin
+					// of the words.
 					x := l.XMin
 					words := make([]string, len(l.Words))
 					for i, w := range l.Words {

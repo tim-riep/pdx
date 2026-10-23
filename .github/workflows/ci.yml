@@ -1,6 +1,6 @@
-# Engine und Designer bauen und testen. Der Designer wird auf allen drei
-# Systemen nativ gebaut und kurz gestartet (Smoke-Test). Die Ende-zu-Ende-Tests
-# laufen gegen den Server-Build in Chromium und WebKit.
+# Build and test the engine and the designer. The designer is built natively
+# on all three systems and started briefly (smoke test). The end-to-end tests
+# run against the server build in Chromium and WebKit.
 name: CI
 
 on:
@@ -21,8 +21,8 @@ jobs:
       - run: go vet ./...
       - run: CGO_ENABLED=0 go test ./...
 
-  # Das Frontend muss mit Node 22 und 24 bauen und bestehen (engines in
-  # designer/frontend/package.json). Die Designer-Jobs nutzen Node 24.
+  # The frontend must build and pass with Node 22 and 24 (engines in
+  # designer/frontend/package.json). The designer jobs use Node 24.
   frontend:
     strategy:
       fail-fast: false
@@ -61,25 +61,25 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
-      - name: Linux-Pakete für GTK4 und WebKitGTK 6.0
+      - name: Linux packages for GTK4 and WebKitGTK 6.0
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev libwebkitgtk-6.0-dev xvfb
       - run: npm ci --ignore-scripts
         working-directory: designer/frontend
-      - name: Bindungen aktuell
+      - name: Bindings up to date
         run: |
           make bindings
           git diff --exit-code frontend/bindings
       - run: make check
-      - name: Drittanbieterhinweise aktuell
+      - name: Third-party notices up to date
         if: runner.os == 'Linux'
         run: make notices-check
       - run: make test
-      - name: Natives Binary und Smoke-Test
+      - name: Native binary and smoke test
         run: |
           make build
           ./smoke.sh
-      - name: Paket und Installation nach der Konvention pro Benutzer
+      - name: Package and per-user installation
         run: |
           make package
           packaging/test-install.sh
@@ -88,7 +88,7 @@ jobs:
         shell: pwsh
         run: |
           if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup --version=6.4.3 -y --no-progress }
-      - name: Setup-Programm bauen und testen
+      - name: Build and test the installer
         run: |
           if [ "$RUNNER_OS" = "Windows" ]; then
             make installer ISCC="C:/Program Files (x86)/Inno Setup 6/ISCC.exe"
@@ -96,11 +96,11 @@ jobs:
             make installer
           fi
           packaging/test-installer.sh
-      - name: Playwright-Browser
+      - name: Playwright browsers
         run: npx playwright install --with-deps chromium webkit
         working-directory: designer/frontend
       - run: make e2e
-      - name: Berichte der Ende-zu-Ende-Tests bei Fehlern
+      - name: End-to-end test reports on failure
         if: failure()
         uses: actions/upload-artifact@v7
         with:

@@ -1,13 +1,12 @@
-// Command pdx-server ist der Render-Dienst von pdx über HTTP.
+// Command pdx-server is the rendering service of pdx over HTTP.
 //
 //	pdx-server -config pdx-server.json
 //	pdx-server hash-key < schluessel.txt
 //	pdx-server licenses
 //
-// Die Konfiguration ist JSON (siehe server.Config), API-Schlüssel stehen
-// darin nur als SHA-256-Hash. hash-key liest den Schlüssel von der
-// Standardeingabe, damit er nicht in der Prozessliste oder Shell-Historie
-// landet.
+// The configuration is JSON (see server.Config), API keys appear in it
+// only as SHA-256 hashes. hash-key reads the key from standard input so
+// that it does not end up in the process list or the shell history.
 package main
 
 import (
@@ -31,9 +30,9 @@ import (
 	"github.com/tim-riep/pdx/verapdf"
 )
 
-// configure schaltet veraPDF und Signieren nach der Konfiguration ein.
-// Passwort und Token kommen nur aus der Umgebung, nie aus Datei oder
-// Argument, und werden nach dem Laden aus der Umgebung entfernt.
+// configure enables veraPDF and signing according to the configuration.
+// Password and token come only from the environment, never from a file or
+// an argument, and are removed from the environment after loading.
 func configure(s *server.Server, cfg *server.Config) error {
 	switch v := cfg.VeraPDF; v {
 	case "":
@@ -152,7 +151,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 1
 	case <-ctx.Done():
 	}
-	// Laufende Anfragen dürfen zu Ende laufen.
+	// Running requests may run to completion.
 	sctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout.Duration+5*time.Second)
 	defer cancel()
 	if err := hs.Shutdown(sctx); err != nil && !errors.Is(err, http.ErrServerClosed) {

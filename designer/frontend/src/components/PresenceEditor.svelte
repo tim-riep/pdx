@@ -9,7 +9,7 @@
   type Mode = "always" | "exists" | "filled" | "custom";
   const value = $derived(n.attrs.presence ?? "");
 
-  // Die häufigen Fälle erkennt die Auswahl am Ausdruck wieder.
+  // The select recognizes the common cases from the expression.
   const parsed = $derived.by((): { mode: Mode; field: string } => {
     if (!value) return { mode: "always", field: "" };
     let m = /^exists\(([^()]+)\)$/.exec(value);
@@ -19,7 +19,7 @@
     return { mode: "custom", field: "" };
   });
 
-  // Gewählt, aber noch ohne Ausdruck: eigener Ausdruck vor dem Tippen.
+  // Selected, but still without an expression: custom expression before typing.
   let pending: Mode | null = $state(null);
   const mode = $derived(pending ?? parsed.mode);
 
@@ -31,7 +31,7 @@
       .then((f) => (fields = f))
       .catch(() => (fields = []));
   });
-  // Optionale Knoten zuerst, sie sind der übliche Grund für eine Bedingung.
+  // Optional nodes first, they are the usual reason for a condition.
   const sorted = $derived([...fields].sort((a, b) => Number(b.optional) - Number(a.optional)));
 
   function expr(m: Mode, field: string): string {
@@ -58,7 +58,7 @@
   }
 
   $effect(() => {
-    // Nach einer Änderung im Modell gilt wieder der Ausdruck.
+    // After a change in the model the expression applies again.
     void value;
     pending = null;
   });

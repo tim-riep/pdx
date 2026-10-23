@@ -41,7 +41,7 @@ func TestRoundTrip(t *testing.T) {
 	if got != want {
 		t.Errorf("\n%s\nerwartet\n%s", got, want)
 	}
-	// Standard-Namespace bleibt ohne Präfix.
+	// The default namespace stays without a prefix.
 	doc, _ = Parse([]byte(`<antrag xmlns="` + ns + `"><name>x</name></antrag>`))
 	if got := string(doc.Bytes(nil)); !strings.Contains(got, `<antrag xmlns="`+ns+`"><name>x</name></antrag>`) {
 		t.Errorf("Standard-Namespace: %s", got)

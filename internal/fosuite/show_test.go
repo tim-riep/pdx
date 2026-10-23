@@ -11,8 +11,8 @@ import (
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
-// TestShow stellt für einen Fall die Zeilen von pdx und die Erwartung
-// gegenüber: PDX_SUITE_SHOW=fop/table_basic.
+// TestShow shows the lines of pdx and the expectation side by side for a
+// case: PDX_SUITE_SHOW=fop/table_basic.
 func TestShow(t *testing.T) {
 	id := os.Getenv("PDX_SUITE_SHOW")
 	if id == "" {

@@ -3,7 +3,7 @@
     <title>pdx Designer @VERSION@</title>
     <welcome file="welcome.html" mime-type="text/html"/>
     <license file="LICENSE.txt" mime-type="text/plain"/>
-    <!-- Nur für den angemeldeten Benutzer, ohne Administratorrechte. -->
+    <!-- Only for the logged-in user, without administrator rights. -->
     <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"/>
     <options customize="never" require-scripts="false" hostArchitectures="arm64"/>
     <os-version min="11.0"/>

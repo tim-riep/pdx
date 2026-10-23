@@ -16,10 +16,10 @@
   let height = $state(800);
   let width = $state(800);
 
-  // Bitmaps je Seite und Vergrößerung, damit Scrollen nur kopiert.
+  // Bitmaps per page and magnification, so scrolling only copies.
   const bitmaps = new Map<string, HTMLCanvasElement>();
 
-  // Breite einpassen, solange nicht von Hand gezoomt wurde.
+  // Fit the width as long as nobody has zoomed by hand.
   $effect(() => {
     if (fit && render.pages.length) {
       const w = Math.max(...render.pages.map((p) => p.w));
@@ -36,7 +36,7 @@
     });
   });
 
-  // Die Seite, die den oberen Teil des Bereichs füllt.
+  // The page that fills the upper part of the area.
   const currentPage = $derived.by(() => {
     let cur = 0;
     for (let i = 0; i < tops.length; i++) if (tops[i] <= scrollTop + height / 3) cur = i;
@@ -50,9 +50,9 @@
 
   let viewport: HTMLElement | undefined = $state();
 
-  // Ausgewähltes Element sichtbar machen, etwa nach Klick in der Hierarchie.
-  // Nur einmal je Bitte: sonst springt die Ansicht bei jedem Setzen und jeder
-  // späteren Auswahl.
+  // Make the selected element visible, for example after a click in the hierarchy.
+  // Only once per request: otherwise the view jumps on every layout run and every
+  // later selection.
   let revealed = 0;
   $effect(() => {
     const req = selection.reveal;

@@ -7,7 +7,7 @@
 
   let { n }: { n: ViewNode } = $props();
 
-  // Tabelle, Zelle und Abschnitt zur Auswahl.
+  // Table, cell and section for the selection.
   const ctx = $derived.by(() => {
     let table: ViewNode | undefined, cell: ViewNode | undefined, section: ViewNode | undefined;
     for (let x: ViewNode | undefined = n; x; x = node(x.parent)) {

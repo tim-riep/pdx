@@ -12,9 +12,9 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// cmdExtract liest die Werte eines ausgefüllten Formulars in die Daten
-// zurück und prüft sie gegen das Daten-XSD der Vorlage. Sind die Daten
-// ungültig, schreibt es sie trotzdem, meldet alle Fehler und endet mit 1.
+// cmdExtract reads the values of a filled-in form back into the data and
+// checks them against the data XSD of the template. If the data is invalid,
+// it writes it anyway, reports all errors and exits with 1.
 func cmdExtract(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("extract-data", flag.ContinueOnError)
 	fs.SetOutput(stderr)

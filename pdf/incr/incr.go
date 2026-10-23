@@ -1,8 +1,8 @@
-// Package incr ändert fertige PDF-Dateien per inkrementellem Update
-// (ISO 32000-1 7.5.6): Die ursprünglichen Bytes bleiben unverändert, neue
-// und geänderte Objekte folgen samt eigener Xref und einem Trailer mit Prev.
-// So bleibt eine bestehende Signatur gültig und PDF/A-Konformität erhalten,
-// wenn die Änderung selbst konform ist. Signieren baut darauf auf.
+// Package incr changes finished PDF files by incremental update
+// (ISO 32000-1 7.5.6): The original bytes stay unchanged, new
+// and changed objects follow with their own xref and a trailer with Prev.
+// This keeps an existing signature valid and preserves PDF/A conformance
+// if the change itself is conforming. Signing builds on this.
 package incr
 
 import (
@@ -17,7 +17,7 @@ import (
 	"github.com/tim-riep/pdx/pdf/reader"
 )
 
-// Update sammelt die Änderungen an einer Datei.
+// Update collects the changes to a file.
 type Update struct {
 	base []byte
 	f    *reader.File
@@ -25,7 +25,7 @@ type Update struct {
 	next int
 }
 
-// Open liest eine Datei für ein Update.
+// Open reads a file for an update.
 func Open(base []byte) (*Update, error) {
 	f, err := reader.Open(base)
 	if err != nil {
@@ -40,23 +40,23 @@ func Open(base []byte) (*Update, error) {
 	return &Update{base: base, f: f, objs: map[int]pdf.Object{}, next: f.Size()}, nil
 }
 
-// File liefert die gelesene Ausgangsdatei.
+// File returns the source file that was read.
 func (u *Update) File() *reader.File { return u.f }
 
-// Root liefert den Verweis auf den Katalog.
+// Root returns the reference to the catalog.
 func (u *Update) Root() pdf.Ref {
 	r := u.f.Trailer["Root"].(reader.Ref)
 	return pdf.Ref{Num: r.Num}
 }
 
-// Add legt ein neues Objekt an.
+// Add creates a new object.
 func (u *Update) Add(o pdf.Object) pdf.Ref {
 	r := u.Reserve()
 	u.objs[r.Num] = o
 	return r
 }
 
-// Reserve vergibt eine neue Objektnummer, deren Inhalt mit Set folgt.
+// Reserve assigns a new object number whose content follows with Set.
 func (u *Update) Reserve() pdf.Ref {
 	r := pdf.Ref{Num: u.next}
 	u.next++
@@ -64,11 +64,11 @@ func (u *Update) Reserve() pdf.Ref {
 	return r
 }
 
-// Set ersetzt ein vorhandenes Objekt oder füllt ein reserviertes.
+// Set replaces an existing object or fills a reserved one.
 func (u *Update) Set(r pdf.Ref, o pdf.Object) { u.objs[r.Num] = o }
 
-// Object liefert ein vorhandenes Objekt als Writer-Objekt, etwa um den
-// Katalog zu ändern und mit Set zu ersetzen.
+// Object returns an existing object as a writer object, for example to
+// change the catalog and replace it with Set.
 func (u *Update) Object(r pdf.Ref) (pdf.Object, error) {
 	o, err := u.f.Get(reader.Ref{Num: r.Num})
 	if err != nil {
@@ -77,7 +77,7 @@ func (u *Update) Object(r pdf.Ref) (pdf.Object, error) {
 	return Convert(o)
 }
 
-// Dict liefert ein vorhandenes Dictionary als Writer-Objekt.
+// Dict returns an existing dictionary as a writer object.
 func (u *Update) Dict(r pdf.Ref) (*pdf.Dict, error) {
 	o, err := u.Object(r)
 	if err != nil {
@@ -90,9 +90,9 @@ func (u *Update) Dict(r pdf.Ref) (*pdf.Dict, error) {
 	return d, nil
 }
 
-// Convert wandelt ein Objekt des Readers in ein Writer-Objekt. Streams
-// behalten ihre kodierten Bytes und Filter. Verweise mit Generation über 0
-// lassen sich nicht ausdrücken und sind ein Fehler.
+// Convert turns an object of the reader into a writer object. Streams
+// keep their encoded bytes and filters. References with a generation above 0
+// cannot be expressed and are an error.
 func Convert(o reader.Object) (pdf.Object, error) {
 	switch v := o.(type) {
 	case nil:
@@ -151,16 +151,16 @@ func convertDict(v reader.Dict) (*pdf.Dict, error) {
 	return d, nil
 }
 
-// Result ist eine geschriebene Datei mit den Offsets der neuen Objekte.
+// Result is a written file with the offsets of the new objects.
 type Result struct {
 	Data    []byte
 	Offsets map[int]int
 }
 
-// Bytes schreibt die Ausgangsdatei mit dem angehängten Update. Die Xref folgt
-// der Art der Ausgangsdatei (Tabelle oder Stream). Die Datei-ID behält den
-// ersten Teil und bekommt als zweiten den MD5 der angehängten Bytes. Nach
-// %%EOF folgt nur ein Zeilenwechsel (ISO 19005-2 6.1.3).
+// Bytes writes the source file with the appended update. The xref follows
+// the kind of the source file (table or stream). The file ID keeps the
+// first part and gets the MD5 of the appended bytes as the second. After
+// %%EOF only a line break follows (ISO 19005-2 6.1.3).
 func (u *Update) Bytes() (*Result, error) {
 	nums := make([]int, 0, len(u.objs))
 	for n, o := range u.objs {
@@ -204,7 +204,7 @@ func (u *Update) Bytes() (*Result, error) {
 	}
 	xref := b.Len()
 	if u.f.XRefStream() {
-		// Der Xref-Stream bekommt die nächste Nummer und steht in sich selbst.
+		// The xref stream gets the next number and is listed in itself.
 		self := size
 		size++
 		res.Offsets[self] = xref

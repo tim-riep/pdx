@@ -1,6 +1,6 @@
 <script lang="ts">
-  // Manuelle Prüfpunkte nach Matterhorn 1.1. Der Stand der Haken gilt je
-  // Vorlage und bleibt auf diesem Rechner gespeichert.
+  // Manual checkpoints according to Matterhorn 1.1. The state of the checks applies per
+  // template and stays stored on this machine.
   import { checks } from "../lib/matterhorn";
   import { t } from "../lib/i18n";
   import { project } from "../lib/project.svelte";
@@ -22,7 +22,7 @@
     try {
       localStorage.setItem(key, JSON.stringify(done));
     } catch {
-      // ohne Speicher gilt der Stand nur bis zum Schließen
+      // without storage the state applies only until closing
     }
   }
 

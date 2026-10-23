@@ -45,8 +45,8 @@
   let rightTab = $state("inspector");
   let bottomTab = $state("problems");
 
-  // Die Analyse der Barrierefreiheit läuft nach jeder Änderung neu, solange
-  // ihr Panel offen oder die Lesereihenfolge eingeblendet ist.
+  // The accessibility analysis runs again after every change, as long as
+  // its panel is open or the reading order is shown.
   $effect(() => {
     const rev = project.rev;
     if (!project.open || (bottomTab !== "access" && !access.showOrder && !access.showTabs)) return;
@@ -74,7 +74,7 @@
   const mac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
   const mod = mac ? "⌘" : "Strg+";
 
-  // Einträge der Befehlspalette. Elemente mit Auswahl nur, wenn es eine gibt.
+  // Entries of the command palette. Elements with selection only if there is one.
   function paletteItems(): PaletteItem[] {
     const g = (k: string) => t(`palette.group.${k}`);
     const items: PaletteItem[] = [
@@ -124,7 +124,7 @@
           run: () => SampleAPI.Generate(k).then(() => (leftTab = "samples")).catch((e) => (ui.error = String(e?.message ?? e))),
         })),
       );
-      // Alle Elemente mit ID: Gehe zu.
+      // All elements with ID: go to.
       for (const n of Object.values(tpl.snapshot?.nodes ?? {})) {
         if (!n || n.ref.startsWith("~")) continue;
         items.push({ id: `goto-${n.ref}`, label: label(n.type, n.name), hint: n.ref, group: g("goto"), run: () => { select(n.ref, null, true); leftTab = "hierarchy"; } });
@@ -136,12 +136,12 @@
     return items;
   }
 
-  // nudge verschiebt ein positioniertes Element um dx, dy Millimeter.
+  // nudge moves a positioned element by dx, dy millimeters.
   function nudge(dx: number, dy: number) {
     const n = node(selection.ref);
     if (!n || !isPositioned(n)) return false;
     const x = toMM(n.attrs.x ?? "0mm"), y = toMM(n.attrs.y ?? "0mm");
-    if (x === null || y === null) return false; // etwa ein Token
+    if (x === null || y === null) return false; // for example a token
     const cmds = [];
     if (dx) cmds.push({ op: "setAttr", ref: n.ref, name: "x", value: fmtLen(Math.max(0, x + dx)) });
     if (dy) cmds.push({ op: "setAttr", ref: n.ref, name: "y", value: fmtLen(Math.max(0, y + dy)) });
@@ -149,7 +149,7 @@
     return true;
   }
 
-  // In Eingabefeldern gelten deren eigene Tasten (Text rückgängig, Löschen).
+  // In input fields their own keys apply (text undo, delete).
   const editing = (e: KeyboardEvent) =>
     e.target instanceof HTMLElement && (e.target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName));
 
@@ -163,8 +163,8 @@
       return;
     }
     if (palette.open) return;
-    // Pfeile verschieben positionierte Elemente um 1 mm (oder 1 pt), mit
-    // Umschalt um 10.
+    // Arrows move positioned elements by 1 mm (or 1 pt), with
+    // Shift by 10.
     const arrows: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
     if (arrows[e.key] && !e.altKey && !e.metaKey && !e.ctrlKey && !editing(e) && selection.ref && render.view === "design") {
       const step = stepLen(e.shiftKey ? 10 : 1);
@@ -185,7 +185,7 @@
       remove(selection.ref);
       return;
     }
-    // Alt mit Pfeil verschiebt unter den Geschwistern.
+    // Alt with arrow moves among the siblings.
     if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown") && !editing(e) && selection.ref) {
       e.preventDefault();
       moveBy(selection.ref, e.key === "ArrowUp" ? -1 : 1);

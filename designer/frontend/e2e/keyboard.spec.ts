@@ -9,22 +9,22 @@ test("Hierarchie mit der Tastatur bedienen", async ({ page }) => {
 
   await page.keyboard.press("ArrowDown");
   await expect(code).toHaveText("positionen");
-  await page.keyboard.press("ArrowRight"); // aufklappen
+  await page.keyboard.press("ArrowRight"); // expand
   await expect(page.getByTestId("hierarchy").locator('[data-row="positionen"]')).toHaveAttribute("aria-expanded", "true");
-  await page.keyboard.press("ArrowRight"); // erstes Kind
+  await page.keyboard.press("ArrowRight"); // first child
   await expect(code).toHaveText("sp-pos");
-  await page.keyboard.press("ArrowLeft"); // zum Elternelement
+  await page.keyboard.press("ArrowLeft"); // to the parent element
   await expect(code).toHaveText("positionen");
-  await page.keyboard.press("ArrowLeft"); // zuklappen
+  await page.keyboard.press("ArrowLeft"); // collapse
   await expect(page.getByTestId("hierarchy").locator('[data-row="positionen"]')).toHaveAttribute("aria-expanded", "false");
   await page.keyboard.press("ArrowUp");
   await expect(code).toHaveText("titel");
 
-  // Kontextmenü per Tastatur.
+  // Context menu by keyboard.
   await page.keyboard.press("Shift+F10");
   await expect(page.getByTestId("context-menu")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("context-menu")).toHaveCount(0);
-  // Nichts wurde verändert.
+  // Nothing was changed.
   await expect(page.getByRole("button", { name: "Rückgängig", exact: true })).toBeDisabled();
 });

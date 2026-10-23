@@ -13,8 +13,8 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// ExtractError meldet, dass die ausgelesenen Daten nicht dem Daten-XSD
-// entsprechen. Data enthält sie trotzdem, damit man sie prüfen kann.
+// ExtractError reports that the extracted data does not conform to the data
+// XSD. Data still contains it so that it can be inspected.
 type ExtractError struct {
 	Data []byte
 	Err  error
@@ -23,14 +23,14 @@ type ExtractError struct {
 func (e *ExtractError) Error() string { return e.Err.Error() }
 func (e *ExtractError) Unwrap() error { return e.Err }
 
-// ExtractData liest die Werte eines ausgefüllten Formulars und schreibt sie
-// in die Daten. Grundlage sind base, sonst die im PDF eingebetteten Daten
-// (Anhang mit source="data"), sonst ein leeres Wurzelelement. Jedes Feld
-// findet seinen Datenknoten über TM: den Pfad des Kontextknotens (fn:path)
-// und die Vorlagen-ID, deren Bindung von dort zum Wert führt. Fehlende
-// Elemente werden in der Reihenfolge des Daten-XSD angelegt. Danach werden
-// die Daten gegen das XSD geprüft, alle Fehler auf einmal. Da Formulare kein
-// JavaScript enthalten, ist das die eigentliche Prüfung der Eingaben.
+// ExtractData reads the values of a filled-in form and writes them into the
+// data. The basis is base, otherwise the data embedded in the PDF
+// (attachment with source="data"), otherwise an empty root element. Each
+// field finds its data node via TM: the path of the context node (fn:path)
+// and the template ID whose binding leads from there to the value. Missing
+// elements are created in the order of the data XSD. Afterwards the data is
+// validated against the XSD, reporting all errors at once. Since forms
+// contain no JavaScript, this is the actual validation of the input.
 func (t *Template) ExtractData(pdf, base []byte) ([]byte, error) {
 	f, err := reader.Open(pdf)
 	if err != nil {
@@ -55,7 +55,7 @@ func (t *Template) ExtractData(pdf, base []byte) ([]byte, error) {
 		if fl.TM == "" || fl.Type == "Sig" {
 			continue
 		}
-		// TM ist Kontextpfad|Vorlagen-ID, die ID enthält kein |.
+		// TM is contextpath|templateID, the ID contains no |.
 		i := strings.LastIndexByte(fl.TM, '|')
 		if i < 0 {
 			errs = append(errs, &template.Error{Msg: fmt.Sprintf("Feld %s: TM %q ist unbekannt aufgebaut", fl.Name, fl.TM)})
@@ -78,8 +78,8 @@ func (t *Template) ExtractData(pdf, base []byte) ([]byte, error) {
 	return out, nil
 }
 
-// embeddedData sucht die Daten, die die Vorlage als Anhang einbettet, oder
-// liefert ein leeres Wurzelelement nach template/@dataRoot.
+// embeddedData looks for the data that the template embeds as an attachment,
+// or returns an empty root element according to template/@dataRoot.
 func (t *Template) embeddedData(f *reader.File) ([]byte, error) {
 	files, err := f.EmbeddedFiles()
 	if err != nil {
@@ -114,7 +114,7 @@ func (t *Template) embeddedData(f *reader.File) ([]byte, error) {
 	return []byte(b.String()), nil
 }
 
-// namespaces liefert die Präfixe der Vorlage.
+// namespaces returns the prefixes of the template.
 func (t *Template) namespaces() map[string]string {
 	ns := map[string]string{}
 	if nss := t.Package.Template.Root.First("namespaces"); nss != nil {
@@ -125,11 +125,11 @@ func (t *Template) namespaces() map[string]string {
 	return ns
 }
 
-// extractor schreibt Werte in ein Datendokument.
+// extractor writes values into a data document.
 type extractor struct {
 	doc      *dataxml.Document
 	ns       map[string]string
-	prefixes map[string]string // Namespace zu Präfix der Vorlage
+	prefixes map[string]string // namespace to template prefix
 	nodes    map[string]*template.Node
 	model    dataschema.Model
 	decls    map[*dataxml.Node]*dataschema.Decl
@@ -163,7 +163,7 @@ func (t *Template) newExtractor(base []byte) (*extractor, error) {
 	return ex, nil
 }
 
-// set schreibt den Wert eines Felds.
+// set writes the value of a field.
 func (ex *extractor) set(ctx, id string, fl reader.Field) error {
 	n := ex.nodes[id]
 	if n == nil {
@@ -180,14 +180,14 @@ func (ex *extractor) set(ctx, id string, fl reader.Field) error {
 		}
 	case "radioGroup":
 		if fl.Value == "Off" {
-			return nil // keine Auswahl, die Daten bleiben wie sie sind
+			return nil // no selection, the data stays as it is
 		}
 		v = fl.Value
 	default:
 		return fmt.Errorf("%s ist kein Formularfeld", n.Name)
 	}
-	// Ein leeres Feld legt keine fehlenden Knoten an, ein leeres Element
-	// wäre bei optionalen typisierten Knoten ungültig.
+	// An empty field does not create missing nodes, an empty element
+	// would be invalid for optional typed nodes.
 	if v == "" && !ex.exists(ctx, n.Get("bind", "")) {
 		return nil
 	}
@@ -228,7 +228,8 @@ func (ex *extractor) set(ctx, id string, fl reader.Field) error {
 	return nil
 }
 
-// exists meldet, ob der Datenknoten zu Kontextpfad und Bindung schon da ist.
+// exists reports whether the data node for context path and binding already
+// exists.
 func (ex *extractor) exists(ctx, bind string) bool {
 	steps, err := parsePath(ctx)
 	if err != nil || len(steps) == 0 || ex.doc.Root.Name != steps[0].name {
@@ -273,7 +274,7 @@ func (ex *extractor) exists(ctx, bind string) bool {
 	return true
 }
 
-// qname löst einen Schritt mit Präfix der Vorlage auf.
+// qname resolves a step with a template prefix.
 func (ex *extractor) qname(s string, attr bool) (xml.Name, error) {
 	if strings.ContainsAny(s, "[]()*") {
 		return xml.Name{}, fmt.Errorf("Schritt %q ist kein einfacher Name", s)
@@ -289,8 +290,8 @@ func (ex *extractor) qname(s string, attr bool) (xml.Name, error) {
 	return xml.Name{Space: uri, Local: local}, nil
 }
 
-// context findet das Element zum Pfad aus fn:path, etwa
-// /Q{uri}antrag[1]/Q{uri}person[2], und legt fehlende Elemente an.
+// context finds the element for the path from fn:path, for example
+// /Q{uri}antrag[1]/Q{uri}person[2], and creates missing elements.
 func (ex *extractor) context(path string) (*dataxml.Node, error) {
 	steps, err := parsePath(path)
 	if err != nil {
@@ -315,7 +316,7 @@ type pathStep struct {
 	pos  int
 }
 
-// parsePath zerlegt einen Pfad aus fn:path (XPath 3.1 Abschnitt 14.6.2).
+// parsePath splits a path from fn:path (XPath 3.1 section 14.6.2).
 func parsePath(p string) ([]pathStep, error) {
 	var out []pathStep
 	bad := fmt.Errorf("Kontextpfad %q ist kein Pfad aus fn:path", p)
@@ -349,8 +350,8 @@ func parsePath(p string) ([]pathStep, error) {
 	return out, nil
 }
 
-// child liefert das pos-te Kindelement mit dem Namen und legt fehlende in der
-// Reihenfolge des Daten-XSD an.
+// child returns the pos-th child element with the name and creates missing
+// ones in the order of the data XSD.
 func (ex *extractor) child(parent *dataxml.Node, name xml.Name, pos int) *dataxml.Node {
 	kids := parent.Elements(name)
 	for len(kids) < pos {
@@ -361,9 +362,9 @@ func (ex *extractor) child(parent *dataxml.Node, name xml.Name, pos int) *dataxm
 	return kids[pos-1]
 }
 
-// insertAt bestimmt die Stelle unter den Kindelementen, an der ein neues
-// Element nach dem Inhaltsmodell steht: hinter den letzten Geschwistern
-// gleichen oder früheren Namens. Ohne Modell ans Ende.
+// insertAt determines the position among the child elements where a new
+// element belongs according to the content model: after the last siblings
+// with the same or an earlier name. Without a model, at the end.
 func (ex *extractor) insertAt(parent *dataxml.Node, name xml.Name) int {
 	order := ex.order(parent)
 	rank, ok := order[name]
@@ -380,8 +381,8 @@ func (ex *extractor) insertAt(parent *dataxml.Node, name xml.Name) int {
 	return at
 }
 
-// order liefert die Reihenfolge der Kindelemente eines Datenelements laut
-// Daten-XSD.
+// order returns the order of the child elements of a data element according
+// to the data XSD.
 func (ex *extractor) order(n *dataxml.Node) map[xml.Name]int {
 	d := ex.decl(n)
 	out := map[xml.Name]int{}
@@ -397,7 +398,7 @@ func (ex *extractor) order(n *dataxml.Node) map[xml.Name]int {
 	return out
 }
 
-// decl ordnet einem Datenelement seine Deklaration zu.
+// decl assigns a data element its declaration.
 func (ex *extractor) decl(n *dataxml.Node) *dataschema.Decl {
 	if ex.model == nil {
 		return nil
@@ -424,17 +425,17 @@ func (ex *extractor) decl(n *dataxml.Node) *dataschema.Decl {
 	return d
 }
 
-// IsExtractError meldet, ob err ungültige, aber ausgelesene Daten meldet.
+// IsExtractError reports whether err reports invalid but extracted data.
 func IsExtractError(err error) (*ExtractError, bool) {
 	var e *ExtractError
 	ok := errors.As(err, &e)
 	return e, ok
 }
 
-// Flatten wandelt ein ausgefülltes Formular in ein statisches PDF: Es liest
-// die Eingaben wie ExtractData und rendert die Vorlage damit erneut, die
-// Felder als fester Inhalt. Profil und Optionen kommen aus opts, ohne
-// Profil gilt das der Vorlage. Ungültige Daten werden nicht abgeflacht.
+// Flatten converts a filled-in form into a static PDF: it reads the input
+// like ExtractData and renders the template again with it, with the fields
+// as fixed content. Profile and options come from opts, without a profile
+// the template's profile applies. Invalid data is not flattened.
 func (t *Template) Flatten(pdf, base []byte, opts TemplateOptions) (*Result, error) {
 	data, err := t.ExtractData(pdf, base)
 	if err != nil {

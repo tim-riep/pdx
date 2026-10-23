@@ -26,7 +26,7 @@ func TestParseSample(t *testing.T) {
 	if f == nil || f.Get("bind", "") != "inv:number" {
 		t.Errorf("Feld: %+v", f)
 	}
-	// Gemischter Inhalt bleibt erhalten.
+	// Mixed content is preserved.
 	txt := tpl.ByID("absenderzeile")
 	if len(txt.Children) != 3 || txt.Children[1].Kind != Text || txt.Children[1].Data != " · " {
 		t.Errorf("gemischter Inhalt: %d Kinder", len(txt.Children))
@@ -48,7 +48,7 @@ func TestCanonicalRoundTrip(t *testing.T) {
 	if !bytes.Equal(once, twice) {
 		t.Fatal("kanonische Form ist nicht stabil")
 	}
-	// Die Musterrechnung liegt bereits kanonisch vor.
+	// The sample invoice is already in canonical form.
 	if !bytes.Equal(once, data) {
 		t.Error("template.xml der Musterrechnung ist nicht kanonisch formatiert")
 	}
@@ -91,7 +91,7 @@ func FuzzTemplateParse(f *testing.F) {
 		if err != nil {
 			return
 		}
-		// Gültige Vorlagen müssen sich stabil kanonisch schreiben lassen.
+		// Valid templates must be writable canonically in a stable way.
 		once := Write(tpl)
 		tpl2, err := Parse(once)
 		if err != nil {
@@ -103,8 +103,8 @@ func FuzzTemplateParse(f *testing.F) {
 	})
 }
 
-// Vorlagen im Format 0 (bis pdx 0.1.0) werden gelesen und auf Format 1
-// gehoben: neuer Namespace beim Schreiben, version 1, Schema gültig.
+// Templates in format 0 (up to pdx 0.1.0) are read and lifted to format 1:
+// new namespace when writing, version 1, valid against the schema.
 func TestLegacyFormat0(t *testing.T) {
 	cur, err := os.ReadFile(sample)
 	if err != nil {

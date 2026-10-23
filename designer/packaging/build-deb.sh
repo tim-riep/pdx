@@ -27,7 +27,7 @@ for png in "$pkg"/icons/*.png; do
   install -d "$root/usr/share/icons/hicolor/${n}x${n}/apps"
   install -m 0644 "$png" "$root/usr/share/icons/hicolor/${n}x${n}/apps/pdx-designer.png"
 done
-# Debian erwartet Lizenz und Hinweise in copyright.
+# Debian expects the license and notices in copyright.
 {
   echo "pdx Designer, https://github.com/tim-riep/pdx"
   echo

@@ -5,8 +5,8 @@ import { openPath, selectInTree } from "./helpers";
 
 const cii = resolve(dirname(fileURLToPath(import.meta.url)), "../../../testdata/templates/cii-rechnung");
 
-// E-Rechnung: der Inspektor zeigt die aus den Daten erkannte Stufe und
-// warnt, wenn das Ausgabeprofil nicht PDF/A-3 ist.
+// E-invoice: the inspector shows the level detected from the data and
+// warns when the output profile is not PDF/A-3.
 test("E-Rechnung: Stufe aus den Daten und Profilwarnung", async ({ page }) => {
   await page.goto("/");
   await openPath(page, cii);
@@ -19,7 +19,7 @@ test("E-Rechnung: Stufe aus den Daten und Profilwarnung", async ({ page }) => {
   await expect(info).toContainText("Alternative (nach Stufe)");
   await expect(info.getByTestId("einvoice-profile")).toHaveCount(0);
 
-  // Profil auf PDF/A-4f stellen: Warnung.
+  // Set the profile to PDF/A-4f: warning.
   await selectInTree(page, ["cii-rechnung"]);
   await page.getByTestId("profile-select").selectOption("pdfa-4f,pdfua-2");
   await selectInTree(page, ["erechnung"]);

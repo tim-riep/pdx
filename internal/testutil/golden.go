@@ -1,5 +1,5 @@
-// Package testutil enthält Helfer für Golden-File-Tests und eine einfache
-// Strukturprüfung erzeugter PDF-Dateien.
+// Package testutil contains helpers for golden file tests and a simple
+// structure check of generated PDF files.
 package testutil
 
 import (
@@ -9,13 +9,13 @@ import (
 	"testing"
 )
 
-// Update meldet, ob Golden Files neu geschrieben werden sollen. Gesetzt wird
-// das über die Umgebungsvariable UPDATE_GOLDEN=1 (siehe make golden), weil ein
-// Flag nicht von allen Testbinaries verstanden würde.
+// Update reports whether golden files should be rewritten. It is set through
+// the environment variable UPDATE_GOLDEN=1 (see make golden), because a flag
+// would not be understood by all test binaries.
 func Update() bool { return os.Getenv("UPDATE_GOLDEN") == "1" }
 
-// Golden vergleicht got mit der Datei path. Mit UPDATE_GOLDEN=1 wird die Datei
-// stattdessen geschrieben.
+// Golden compares got with the file path. With UPDATE_GOLDEN=1 the file is
+// written instead.
 func Golden(t testing.TB, path string, got []byte) {
 	t.Helper()
 	if Update() {

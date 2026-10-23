@@ -1,214 +1,213 @@
-# Bewusste Abweichungen von Apache FOP
+# Deliberate deviations from Apache FOP
 
-Maßstab ist die XSL-1.1-Spezifikation des W3C, nicht Apache FOP. pdx folgt der XSL-1.1-Spezifikation. Weicht Apache FOP davon ab oder lässt
-die Spezifikation einen Spielraum, den beide Engines verschieden nutzen,
-steht der Fall hier mit Begründung. Der FOP-Vergleich wertet diese Fälle
-nicht als Fehler.
+The reference is the W3C XSL 1.1 specification, not Apache FOP. pdx follows the XSL 1.1 specification. Where Apache FOP deviates from it, or where
+the specification leaves room that the two engines use differently,
+the case is listed here with a reason. The FOP comparison does not count these
+cases as errors.
 
-## left und top bei absoluter Positionierung
+## left and top with absolute positioning
 
-XSL 1.1 Abschnitt 7.6.4 bis 7.6.7 übernimmt `top`, `right`, `bottom` und
-`left` aus CSS2 9.3.2. Dort heißt es zu `left`: „specifies how far a box's
+XSL 1.1 sections 7.6.4 to 7.6.7 take `top`, `right`, `bottom` and
+`left` from CSS2 9.3.2. There, `left` is described as: "specifies how far a box's
 left margin edge is offset to the right of the left edge of the box's
-containing block“. Gemeint ist die Randkante (margin edge). Ohne Margin ist
-das die Außenkante des Rahmens.
+containing block". This means the margin edge. Without a margin, this is
+the outer edge of the border.
 
-FOP 2.11 setzt bei `fo:block-container` mit `absolute-position` waagerecht
-die Inhaltskante auf `left`, der Rahmen ragt links darüber hinaus
-(`space-start` negativ). Senkrecht nutzt FOP die Randkante. pdx nutzt für
-beide Richtungen die Randkante. Betroffen: Zeilen in absolut positionierten
-Containern mit Rahmen oder Padding liegen waagerecht um Rahmen plus Padding
-verschoben (Korpus: adressblock).
+For `fo:block-container` with `absolute-position`, FOP 2.11 places the
+content edge at `left` horizontally, and the border extends beyond it on the left
+(negative `space-start`). Vertically, FOP uses the margin edge. pdx uses the
+margin edge in both directions. Effect: lines in absolutely positioned
+containers with a border or padding are shifted horizontally by border plus padding
+(corpus: adressblock).
 
-`width` und `height` beziehen sich bei beiden Engines auf das
-Inhaltsrechteck (XSL 1.1 7.15.14, `inline-progression-dimension`). Ohne
-`width` ergibt sich die Breite nach CSS2 10.3.7 aus `left`, `right`, Rändern,
-Rahmen und Padding. Ränder verschieben die Box bei pdx in beiden Richtungen,
-FOP lässt margin-top senkrecht weg (Fall
+In both engines, `width` and `height` refer to the
+content rectangle (XSL 1.1 7.15.14, `inline-progression-dimension`). Without
+`width`, the width follows from `left`, `right`, margins,
+borders and padding according to CSS2 10.3.7. In pdx, margins shift the box in both directions.
+FOP drops margin-top vertically (case
 block-container_absolute-position_border_padding).
 
-## Ligaturen
+## Ligatures
 
-pdx wendet beim Shaping die OpenType-Standardfeatures an, darunter `liga`
-(fi, fl, ffi). FOP 2.11 nutzt für lateinische Schrift keine Ligaturen. XSL
-1.1 regelt Ligaturen nicht, die Glyphenwahl ist Sache der Implementierung
-(4.7.2 „glyph-areas“). Ligaturen verkürzen Wörter leicht, eine Zeile kann
-dadurch in Grenzfällen anders umbrechen. Abschalten lässt sich das in pdx
-über die Shaping-Optionen.
+During shaping, pdx applies the standard OpenType features, including `liga`
+(fi, fl, ffi). FOP 2.11 uses no ligatures for Latin script. XSL
+1.1 does not regulate ligatures. Glyph selection is up to the implementation
+(4.7.2 "glyph-areas"). Ligatures shorten words slightly, so in borderline cases a line can
+break differently. This can be switched off in pdx
+through the shaping options.
 
-## Verteilung des Weißraums im Blocksatz
+## Distribution of white space in justified text
 
-Beide Engines dehnen U+0020 und U+00A0, wie XSL 1.1 7.17.7
-(`treat-as-word-space`) es vorsieht. Wie der Weißraum auf die
-Zwischenräume verteilt wird, lässt die Spezifikation offen: „Word spacing
-algorithms are user agent-dependent“ (7.17.8 aus CSS2). pdx verteilt
-proportional zur Dehnbarkeit jedes Zwischenraums. Bei Zeilen mit sehr viel
-Weißraum (etwa `text-align-last="justify"` mit wenigen Wörtern) liegen
-Wörter daher an anderen Stellen, Zeileninhalte und Grundlinien stimmen
-überein. Für Spalten ist eine Tabelle das richtige Mittel.
+Both engines stretch U+0020 and U+00A0, as XSL 1.1 7.17.7
+(`treat-as-word-space`) specifies. How the white space is distributed among the
+gaps is left open by the specification: "Word spacing
+algorithms are user agent-dependent" (7.17.8 from CSS2). pdx distributes it
+in proportion to the stretchability of each gap. In lines with a lot of
+white space (for example `text-align-last="justify"` with few words), words
+are therefore placed at different positions, while line contents and baselines
+match. For columns, a table is the right tool.
 
-## Tabellen im Modell collapse
+## Tables in the collapse model
 
-`border-collapse="collapse"` ist der Anfangswert (XSL 1.1 7.28.3). pdx löst
-jede Zellkante zwischen Zelle, Nachbarzelle, Zeile, Abschnitt, Spalte und
-Tabelle auf, wo sie angrenzen (6.7.10): `hidden` unterdrückt die Kante, sonst
-gewinnt der breitere Rahmen, dann der stärkere Stil, dann die Priorität nach
-den Anfangswerten von `border-*-precedence` (7.28.1). Überspannt eine Zelle
-mehrere Zeilen, bestimmt die breiteste Seitenkante ihren Einzug. Das Modell
-`collapse-with-precedence` mit eigenen Prioritäten wird wie `collapse`
-behandelt.
+`border-collapse="collapse"` is the initial value (XSL 1.1 7.28.3). pdx resolves
+every cell edge between cell, neighboring cell, row, section, column and
+table where they adjoin (6.7.10): `hidden` suppresses the edge, otherwise
+the wider border wins, then the stronger style, then the precedence according to
+the initial values of `border-*-precedence` (7.28.1). If a cell spans
+several rows, the widest side edge determines its indent. The
+`collapse-with-precedence` model with its own precedences is treated like `collapse`.
 
-## fo:retrieve-table-marker im Tabellenkopf
+## fo:retrieve-table-marker in the table header
 
-XSL 1.1 6.13.7 und 7.25.6 erlauben `fo:retrieve-table-marker` in
-`fo:table-header` und `fo:table-footer`. Für `first-starting` gilt der
-erste Bereich mit Marker, der im primären Suchbereich (dem Tabellenfragment
-der Seite) beginnt. pdx setzt den Kopf deshalb erst, nachdem die
-Rumpfzeilen der Seite feststehen, und zeigt im Kopf der Folgeseite den
-Übertrag aus der ersten dort beginnenden Zeile.
+XSL 1.1 6.13.7 and 7.25.6 allow `fo:retrieve-table-marker` in
+`fo:table-header` and `fo:table-footer`. For `first-starting`, the
+first area with a marker that starts in the primary retrieve scope (the table fragment
+on the page) applies. pdx therefore lays out the header only after the
+body rows of the page are fixed, and shows in the header of the following page the
+carry-over from the first row that starts there.
 
-FOP 2.11 setzt Tabellenmarker im Kopf nicht ein, der Kopf bleibt an dieser
-Stelle leer. Im Fuß arbeiten beide Engines gleich. Der Vergleich wertet die
-fehlende Zeile im Kopf bei FOP nicht als Fehler (Korpus: uebertrag).
+FOP 2.11 does not fill table markers in the header, and the header stays empty at this
+position. In the footer, both engines behave the same. The comparison does not count the
+missing line in the FOP header as an error (corpus: uebertrag).
 
-In der Musterrechnung (Vorlage testdata/templates/musterrechnung) bleibt die
-Übertragszeile im Kopf der Folgeseiten bei FOP leer und damit niedriger. Alle
-Zeilen der Seite liegen bei FOP um ihre Höhe (12,35 pt) weiter oben. Der
-Seitenumbruch ist bei beiden Engines gleich.
+In the sample invoice (template testdata/templates/musterrechnung), the
+carry-over row in the header of the following pages stays empty in FOP and is therefore lower. All
+rows on the page are placed higher in FOP by its height (12.35 pt). The
+page break is the same in both engines.
 
-FOP 2.11 bricht außerdem ab, wenn `fo:retrieve-table-marker` direkt in
-`fo:table-cell` steht (NullPointerException im TableCellLayoutManager) oder
-wenn ein Marker, der in einem `fo:block` eingesetzt wird, Blöcke enthält
-(ClassCastException). Der Compiler setzt den Marker deshalb immer in einen
-Block und schreibt in Übertragszeilen nur Inline-Inhalt. Beides ist gültiges
-XSL und ändert das Ergebnis von pdx nicht.
+FOP 2.11 also aborts when `fo:retrieve-table-marker` is placed directly in
+`fo:table-cell` (NullPointerException in TableCellLayoutManager) or
+when a marker that is retrieved into an `fo:block` contains blocks
+(ClassCastException). The compiler therefore always places the marker in a
+block and writes only inline content in carry-over rows. Both are valid
+XSL and do not change the result of pdx.
 
-Marker müssen bei FOP in `fo:table-cell` stehen. XSL erlaubt sie auch
-direkt in `fo:table-row`, pdx unterstützt beides. Marker an `fo:inline`
-setzt pdx noch nicht um.
+In FOP, markers must be placed in `fo:table-cell`. XSL also allows them
+directly in `fo:table-row`, and pdx supports both. Markers on `fo:inline`
+are not yet implemented in pdx.
 
-## Silbentrennung
+## Hyphenation
 
-pdx bringt Trennmuster für Deutsch (de-1996) und amerikanisches Englisch
-(en-us) aus hyph-utf8 mit. FOP 2.11 liefert aus Lizenzgründen keine Muster
-mit (das Projekt OFFO wird getrennt verteilt), ohne sie trennt FOP nicht.
-Fälle mit `hyphenate="true"` werden deshalb nicht mit FOP verglichen
-(Korpus: silbentrennung). Wie FOP versucht pdx zuerst einen Umbruch ohne
-Trennstellen und gibt Trennstellen den Strafwert 50.
+pdx ships hyphenation patterns for German (de-1996) and American English
+(en-us) from hyph-utf8. For license reasons, FOP 2.11 ships no patterns
+(the OFFO project is distributed separately), and without them FOP does not hyphenate.
+Cases with `hyphenate="true"` are therefore not compared with FOP
+(corpus: silbentrennung). Like FOP, pdx first tries a line break without
+hyphenation points and gives hyphenation points a penalty of 50.
 
-## Lesezeichen mit external-destination
+## Bookmarks with external-destination
 
-XSL 1.1 6.11.2 erlaubt an `fo:bookmark` neben `internal-destination` auch
-`external-destination`. pdx schreibt dafür einen Gliederungseintrag mit
-URI-Aktion. FOP 2.11 bricht dabei mit „DestinationData must contain a ID
-reference“ ab. Der Korpusfall verweise nutzt deshalb nur interne Ziele,
-externe Lesezeichen prüft ein eigener Test (pdf/render).
+XSL 1.1 6.11.2 allows `external-destination` on `fo:bookmark` in addition to
+`internal-destination`. For it, pdx writes an outline entry with a
+URI action. FOP 2.11 aborts with "DestinationData must contain a ID
+reference". The corpus case verweise therefore uses only internal destinations.
+External bookmarks are checked by a separate test (pdf/render).
 
 ## Barcodes in fo:instream-foreign-object
 
-pdx setzt `pdx:barcode` in `fo:instream-foreign-object`, dem Ort, den XSL
-1.1 6.6.6 für Inhalte fremder Namespaces vorsieht. FOP 2.11 kennt das
-Element nicht: Das PDF entsteht ohne den Barcode, FOP meldet „The intrinsic
-dimensions of an instream-foreign-object could not be determined“ (SEVERE),
-der Export des Area Tree (`-at`) bricht ab. Der Fall barcodes wird nicht mit
-FOP verglichen. Stattdessen dekodiert ein Test die gerasterten Barcodes mit
-zbar (QR-Code und Code 128) und prüft ihren Inhalt.
+pdx places `pdx:barcode` in `fo:instream-foreign-object`, the place that XSL
+1.1 6.6.6 provides for content from foreign namespaces. FOP 2.11 does not know the
+element: the PDF is created without the barcode, FOP reports "The intrinsic
+dimensions of an instream-foreign-object could not be determined" (SEVERE),
+and the area tree export (`-at`) aborts. The barcodes case is not compared with
+FOP. Instead, a test decodes the rasterized barcodes with
+zbar (QR code and Code 128) and checks their content.
 
-## Attribute fremder Namespaces (pdx:id)
+## Attributes from foreign namespaces (pdx:id)
 
-XSL 1.1 1.1.2 erlaubt Attribute aus anderen Namespaces an allen
-Formatierungsobjekten, eine Implementierung darf sie ignorieren. Der
-Compiler schreibt an jedes erzeugte FO-Element `pdx:id` mit der ID des
-Vorlagenelements, damit Designer und Fehlermeldungen Bereiche ihrem
-Ursprung zuordnen können.
+XSL 1.1 1.1.2 allows attributes from other namespaces on all
+formatting objects, and an implementation may ignore them. The
+compiler writes `pdx:id` with the ID of the template element on every generated FO element,
+so that the designer and error messages can map areas to their
+origin.
 
-FOP 2.11 lehnt Attribute aus Namespaces ohne eigenes Element Mapping in der
-Standardeinstellung als ungültige Eigenschaft ab und bricht ab („Invalid
-property encountered on fo:root: pdx:id“). Mit gelockerter Prüfung (`fop -r`
-oder `<strict-validation>false</strict-validation>` in der Konfiguration)
-gibt FOP nur Warnungen aus und setzt das Dokument. Eine Konfiguration, die
-nur einen Namespace ignoriert, bietet FOP nicht an, nur die Java-API
-(`FopFactoryBuilder.ignoreNamespace`). Der FOP-Vergleich der Musterrechnung
-läuft deshalb mit `-r`.
+In its default setting, FOP 2.11 rejects attributes from namespaces without its own element mapping
+as invalid properties and aborts ("Invalid
+property encountered on fo:root: pdx:id"). With relaxed validation (`fop -r`
+or `<strict-validation>false</strict-validation>` in the configuration),
+FOP only prints warnings and lays out the document. FOP offers no configuration that
+ignores only one namespace, only the Java API does
+(`FopFactoryBuilder.ignoreNamespace`). The FOP comparison of the sample invoice
+therefore runs with `-r`.
 
-## Ungültige Eigenschaftswerte
+## Invalid property values
 
-XSL 1.1 legt für ungültige Werte keine Ersatzregel fest. Nach 5.9.6 ist eine
-Länge ohne Einheit eine Zahl mit der Potenz null, verlangt die Eigenschaft
-eine Länge (Potenz eins), heißt es: „If any other power is specified, the
-value is an error.“ Die zulässigen Einheiten stehen in 5.9.13 (cm, mm, in,
-pt, pc, px, em). pdx meldet solche Fehler mit Position und bricht ab, statt
-still einen Ersatzwert zu nehmen. FOP setzt dagegen fort, etwa mit dem
-Anfangswert oder mit Millipunkt für Zahlen ohne Einheit. Betroffen sind
-Testfälle mit Werten wie `space-after="100"`, `height="8400mpt"`,
-`font-style="obscure"`, `color="invalidvalue"` oder `padding="auto"`.
+XSL 1.1 defines no fallback rule for invalid values. According to 5.9.6, a
+length without a unit is a number with power zero. If the property requires
+a length (power one), the specification says: "If any other power is specified, the
+value is an error." The permitted units are listed in 5.9.13 (cm, mm, in,
+pt, pc, px, em). pdx reports such errors with their position and aborts instead of
+silently using a fallback value. FOP, in contrast, continues, for example with the
+initial value or with millipoints for numbers without a unit. This affects
+test cases with values such as `space-after="100"`, `height="8400mpt"`,
+`font-style="obscure"`, `color="invalidvalue"` or `padding="auto"`.
 
-Attribute aus fremden Namespaces muss ein Prozessor dagegen ohne Fehler
-ignorieren (XSL 1.1 1.2: „must ignore such attributes without giving an
-error if it does not recognize the namespace URI“). pdx tut das, FOP 2.11
-verletzt diese Regel ohne `-r` (siehe Attribute fremder Namespaces).
+Attributes from foreign namespaces, on the other hand, must be ignored by a processor without an error
+(XSL 1.1 1.2: "must ignore such attributes without giving an
+error if it does not recognize the namespace URI"). pdx does this. FOP 2.11
+violates this rule without `-r` (see Attributes from foreign namespaces).
 
-## Fehlende Zeichen
+## Missing characters
 
-Hat keine Schrift eine Glyphe für ein Zeichen, empfiehlt XSL 1.1 7.9.3 ein
-sichtbares Ersatzzeichen: „the User Agent should provide a visual indication
+If no font has a glyph for a character, XSL 1.1 7.9.3 recommends a
+visible replacement: "the User Agent should provide a visual indication
 that a character is not being displayed (for example, using the 'missing
-character' glyph)“. PDF/A verbietet Verweise auf die .notdef-Glyphe
-(ISO 19005-2 6.2.11.8). pdx meldet fehlende Zeichen deshalb als Fehler mit
-Position, statt eine nicht konforme Datei zu erzeugen. Betroffen sind
-Testfälle mit U+0085, U+007F und U+3000, für die die eingebauten
-Liberation-Schriften keine Glyphe haben. U+3000 ist nach 7.17.7 kein
-Wortzwischenraum, sondern ein gewöhnliches Zeichen.
+character' glyph)". PDF/A forbids references to the .notdef glyph
+(ISO 19005-2 6.2.11.8). pdx therefore reports missing characters as errors with their
+position instead of producing a non-conforming file. This affects
+test cases with U+0085, U+007F and U+3000, for which the built-in
+Liberation fonts have no glyph. According to 7.17.7, U+3000 is not a
+word space but an ordinary character.
 
 ## body-start()
 
-XSL 1.1 7.30.12 definiert: „body-start() = the value of the start-indent +
+XSL 1.1 7.30.12 defines: "body-start() = the value of the start-indent +
 start-intrusion-adjustment + the value of the provisional-distance-between-starts
-of the closest ancestor fo:list-block“. Wie bei label-end(), wo eine Klammer
-die Werte zusammenfasst, liest pdx alle Werte am nächsten fo:list-block. FOP
-nimmt den start-indent des Listenpunkts. Unterschiede gibt es nur, wenn ein
-Listenpunkt eigene Ränder, Rahmen oder Padding hat.
+of the closest ancestor fo:list-block". As with label-end(), where parentheses
+group the values, pdx reads all values from the closest fo:list-block. FOP
+takes the start-indent of the list item. Differences only occur when a
+list item has its own margins, borders or padding.
 
-## Padding bei Tabellen und Zellen
+## Padding on tables and cells
 
-Nach XSL 1.1 5.3.2 ist start-indent die Summe aus Rand, Rahmen und Padding,
-das Inhaltsrechteck beginnt bei start-indent (4.2.2). pdx setzt den Inhalt
-einer Tabelle oder Zelle deshalb um Rahmen plus Padding ein. FOP rechnet das
-Padding zusätzlich ein, wenn margin angegeben ist, und setzt den Inhalt um das
-doppelte Padding ein (Fälle table_padding_percentages und
+According to XSL 1.1 5.3.2, start-indent is the sum of margin, border and padding,
+and the content rectangle starts at start-indent (4.2.2). pdx therefore indents the content
+of a table or cell by border plus padding. FOP adds the
+padding again when a margin is specified, and indents the content by
+twice the padding (cases table_padding_percentages and
 table-cell_padding_percentages).
 
-## Einheit px, thin, medium und thick
+## Unit px, thin, medium and thick
 
-Für px verlangt XSL 1.1 5.9.13.1 eine geräteabhängige Größe nach der
-„arc-span rule“ aus CSS2, also dem Referenzpixel. pdx nimmt wie CSS 2.1 1/96
-Zoll (0,75 pt), FOP 1/72 Zoll. Die Breiten thin, medium und thick sind nach
-7.8.24 Sache des Formatierers (pdx: 0,5 pt, 1 pt, 2 pt).
+For px, XSL 1.1 5.9.13.1 requires a device-dependent size according to the
+"arc-span rule" from CSS2, that is, the reference pixel. Like CSS 2.1, pdx uses 1/96
+inch (0.75 pt). FOP uses 1/72 inch. According to
+7.8.24, the widths thin, medium and thick are up to the formatter (pdx: 0.5 pt, 1 pt, 2 pt).
 
-## Leerzeichen an Inline-Grenzen
+## Spaces at inline boundaries
 
-XSL 1.1 7.16.12 fasst die Wirkung von white-space-collapse so zusammen:
-Nach der Verfeinerung wird jede verbleibende Folge aus zwei oder mehr
-Leerzeichen durch ein einzelnes ersetzt. Eine Grenze von fo:inline unterbricht
-die Folge nicht. pdx behält das erste Leerzeichen. FOP behält vor und nach
-der Grenze je eines, wenn das fo:inline einen Rahmen hat, und bricht dadurch
-anders um (Fälle nist-cbpbp-border-color-inline3 und
+XSL 1.1 7.16.12 summarizes the effect of white-space-collapse as follows:
+after refinement, every remaining sequence of two or more
+spaces is replaced by a single one. A boundary of fo:inline does not interrupt
+the sequence. pdx keeps the first space. FOP keeps one before and one after
+the boundary when the fo:inline has a border, and therefore breaks lines
+differently (cases nist-cbpbp-border-color-inline3 and
 nist-cbpbp-border-width-inline1).
 
-## Wahl im Bereich eines Abstands
+## Choice within the range of a space
 
-Nach XSL 1.1 4.3 begrenzen die aufgelösten Werte minimum und maximum einen
-Abstand nur. Welchen Wert im Bereich der Formatierer nimmt, lässt die
-Spezifikation offen, das optimum ist der bevorzugte Wert. pdx nimmt das
-optimum und staucht nur, wenn ein fo:block-container mit fester Höhe sonst
-überliefe. FOP staucht Abstände auch, um Seiten zu füllen (Fälle fopc-hyphen,
-fopc-leader, fopc-pagelevel2 und fopc-pagelevel3). Ist nur .optimum
-angegeben, bleibt .minimum beim Anfangswert 0pt (7.11.5).
+According to XSL 1.1 4.3, the resolved minimum and maximum values only limit a
+space. Which value within the range the formatter uses is left open by the
+specification. The optimum is the preferred value. pdx uses the
+optimum and only compresses when a fo:block-container with a fixed height would otherwise
+overflow. FOP also compresses spaces to fill pages (cases fopc-hyphen,
+fopc-leader, fopc-pagelevel2 and fopc-pagelevel3). If only .optimum is
+specified, .minimum stays at its initial value 0pt (7.11.5).
 
 ## page-position="rest"
 
-XSL 1.1 7.27.14: „This master is eligible for selection if this is not the
-first page nor the last page in the page-sequence.“ Eine Vorlage mit rest
-gilt also nicht für die letzte Seite. Passt keine Alternative, nimmt pdx die
-zuletzt genutzte Vorlage. FOP wendet rest auch auf die letzte Seite an (Fall
+XSL 1.1 7.27.14: "This master is eligible for selection if this is not the
+first page nor the last page in the page-sequence." A page master with rest
+therefore does not apply to the last page. If no alternative matches, pdx uses the
+most recently used page master. FOP also applies rest to the last page (case
 list-item-with-ipd-change).

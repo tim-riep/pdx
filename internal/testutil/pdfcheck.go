@@ -13,9 +13,9 @@ var (
 	reEntry     = regexp.MustCompile(`^(\d{10}) (\d{5}) ([nf])\r\n$`)
 )
 
-// CheckStructure prüft Kopf, Xref-Tabelle und Trailer einer PDF-Datei. Jeder
-// Xref-Eintrag muss auf "N 0 obj" zeigen. Die Funktion liefert die Anzahl der
-// indirekten Objekte.
+// CheckStructure checks the header, xref table and trailer of a PDF file.
+// Every xref entry must point to "N 0 obj". The function returns the number of
+// indirect objects.
 func CheckStructure(pdf []byte) (int, error) {
 	if !bytes.HasPrefix(pdf, []byte("%PDF-1.7\n%")) && !bytes.HasPrefix(pdf, []byte("%PDF-2.0\n%")) {
 		return 0, fmt.Errorf("Kopf fehlt")

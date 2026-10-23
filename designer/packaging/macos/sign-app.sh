@@ -11,7 +11,7 @@ if [ -z "${MACOS_SIGN_IDENTITY:-}" ]; then
   echo "sign-app: MACOS_SIGN_IDENTITY nicht gesetzt, App bleibt unsigniert"
   exit 0
 fi
-# Innen nach außen: erst das Binary, dann das Bündel.
+# Inside out: first the binary, then the bundle.
 codesign_path "$app/Contents/MacOS/pdx-designer"
 codesign_path "$app"
 codesign --verify --strict --verbose=2 "$app"

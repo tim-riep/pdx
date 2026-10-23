@@ -13,9 +13,9 @@ import (
 
 const ciiDir = "testdata/templates/cii-rechnung"
 
-// TestEInvoice rendert die CII-Vorlage mit Daten der Stufen EN 16931 und
-// XRECHNUNG. Das XML liegt unter dem Dateinamen der Stufe bei, das XMP
-// trägt das Schema fx, veraPDF prüft PDF/A-3a und PDF/UA-1.
+// TestEInvoice renders the CII template with data of the EN 16931 and
+// XRECHNUNG levels. The XML is attached under the file name of the level,
+// the XMP carries the fx schema, veraPDF checks PDF/A-3a and PDF/UA-1.
 func TestEInvoice(t *testing.T) {
 	p, err := pkg.ReadDir(ciiDir)
 	if err != nil {
@@ -45,18 +45,18 @@ func TestEInvoice(t *testing.T) {
 	}
 
 	data, _ := p.File("samples/en16931.xml")
-	// Factur-X und ZUGFeRD beschreiben nur PDF/A-3.
+	// Factur-X and ZUGFeRD only describe PDF/A-3.
 	_, err = RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-4f,pdfua-2"}})
 	var e *template.Error
 	if !errors.As(err, &e) || e.ID != "erechnung" {
 		t.Errorf("PDF/A-4f nicht abgelehnt: %v", err)
 	}
-	// UBL-Daten werden mit Vorlagen-ID abgelehnt.
+	// UBL data with a template ID is rejected.
 	_, err = RenderTemplate(p, []byte(`<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"/>`), TemplateOptions{Options: Options{CreationDate: templateDate}})
 	if !errors.As(err, &e) || e.ID != "erechnung" {
 		t.Errorf("UBL nicht abgelehnt: %v", err)
 	}
-	// Die Layout-Vorschau braucht keine E-Rechnung und nimmt Platzhalter.
+	// The layout preview needs no e-invoice and takes placeholders.
 	tpl, err := CompileTemplate(p, "")
 	if err != nil {
 		t.Fatal(err)

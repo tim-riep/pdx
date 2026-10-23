@@ -1,7 +1,7 @@
-// Rendert die App-Icons und das Social-Media-Bild aus icon.svg und
-// banner.html mit dem Chromium von Playwright (aus designer/frontend).
-// Aufruf im Ordner designer: node packaging/icon/render.mjs
-// Danach baut iconutil das .icns (macOS) und mkico.go das .ico.
+// Renders the app icons and the social media image from icon.svg and
+// banner.html with the Chromium of Playwright (from designer/frontend).
+// Run in the designer folder: node packaging/icon/render.mjs
+// Afterwards iconutil builds the .icns (macOS) and mkico.go the .ico.
 import { chromium } from "../../frontend/node_modules/playwright/index.mjs";
 import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -16,8 +16,8 @@ mkdirSync(join(here, "png"), { recursive: true });
 const browser = await chromium.launch();
 const page = await browser.newPage({ deviceScaleFactor: 1 });
 for (const size of sizes) {
-  // Bis 32 Pixel die vereinfachte Fassung. Bis 48 Pixel ohne den Rand des
-  // macOS-Rasters, damit das Motiv die Fläche nutzt.
+  // Up to 32 pixels the simplified version. Up to 48 pixels without the margin
+  // of the macOS grid, so that the motif uses the area.
   const small = size <= 32 ? ' class="small"' : "";
   const view = size <= 48 ? 'viewBox="80 80 864 880"' : 'viewBox="0 0 1024 1024"';
   const html = `<!doctype html><html><body style="margin:0;background:transparent">${svg
@@ -29,7 +29,7 @@ for (const size of sizes) {
   await page.locator("svg").screenshot({ path: join(here, "png", `${size}.png`), omitBackground: true });
 }
 
-// macOS: Iconset im Raster mit Rand für alle Größen, daraus das .icns.
+// macOS: iconset in the grid with margin for all sizes, from it the .icns.
 const iconset = join(here, "pdx-designer.iconset");
 rmSync(iconset, { recursive: true, force: true });
 mkdirSync(iconset);
@@ -49,11 +49,11 @@ if (process.platform === "darwin") {
 }
 rmSync(iconset, { recursive: true, force: true });
 
-// Windows: .ico aus den PNG-Dateien.
+// Windows: .ico from the PNG files.
 execFileSync("go", ["run", join(here, "mkico.go"), join(here, "pdx-designer.ico"),
   ...[16, 24, 32, 48, 64, 128, 256].map((n) => join(here, "png", `${n}.png`))], { stdio: "inherit" });
 
-// Social-Media-Bild für GitHub (1280 x 640).
+// Social media image for GitHub (1280 x 640).
 await page.setViewportSize({ width: 1280, height: 640 });
 await page.goto(pathToFileURL(join(here, "banner.html")).href);
 await page.evaluate(() => document.fonts.ready);

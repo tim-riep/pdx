@@ -1,10 +1,10 @@
-// Package icc erzeugt das sRGB-Farbprofil für das Output Intent.
+// Package icc generates the sRGB color profile for the output intent.
 //
-// Das Profil wird aus den Parametern der Norm IEC 61966-2-1 berechnet
-// (Primärfarben nach Bradford auf D50 adaptiert, Tonwertkurve als Tabelle mit
-// 1024 Stützstellen) und ist ein ICC-Profil der Version 2.1 der Klasse
-// Monitor. Es ist eigenes Werk dieses Projekts, eine Fremdlizenz ist nicht
-// nötig. Die Erzeugung ist deterministisch.
+// The profile is computed from the parameters of the standard IEC 61966-2-1
+// (primaries adapted to D50 with Bradford, tone curve as a table with
+// 1024 entries) and is an ICC profile of version 2.1 of the class
+// monitor. It is original work of this project, no third-party license is
+// needed. The generation is deterministic.
 package icc
 
 import (
@@ -14,8 +14,8 @@ import (
 	"sync"
 )
 
-// SRGBDescription ist die Profilbeschreibung und zugleich die
-// OutputConditionIdentifier im Output Intent.
+// SRGBDescription is the profile description and also the
+// OutputConditionIdentifier in the output intent.
 const SRGBDescription = "sRGB IEC61966-2.1"
 
 var (
@@ -23,7 +23,7 @@ var (
 	srgb []byte
 )
 
-// SRGB liefert das sRGB-Profil. Die Bytes dürfen nicht verändert werden.
+// SRGB returns the sRGB profile. The bytes must not be modified.
 func SRGB() []byte {
 	once.Do(func() { srgb = buildSRGB() })
 	return srgb
@@ -48,7 +48,7 @@ func buildSRGB() []byte {
 		{"bTRC", trc},
 	}
 
-	// Tag-Daten anordnen. Gleiche Daten (die drei Kurven) werden geteilt.
+	// Arrange tag data. Identical data (the three curves) is shared.
 	tableLen := 4 + 12*len(tags)
 	offset := 128 + tableLen
 	var data bytes.Buffer
@@ -75,23 +75,23 @@ func buildSRGB() []byte {
 
 	var b bytes.Buffer
 	be := func(v any) { binary.Write(&b, binary.BigEndian, v) }
-	// Kopf (128 Bytes) nach ICC.1:2001-04.
+	// Header (128 bytes) according to ICC.1:2001-04.
 	be(uint32(size))
-	b.WriteString("\x00\x00\x00\x00") // bevorzugtes CMM
+	b.WriteString("\x00\x00\x00\x00") // preferred CMM
 	be(uint32(0x02100000))            // Version 2.1
 	b.WriteString("mntr")
 	b.WriteString("RGB ")
 	b.WriteString("XYZ ")
-	be([6]uint16{2026, 1, 1, 0, 0, 0}) // Erstellungsdatum, fest für Reproduzierbarkeit
+	be([6]uint16{2026, 1, 1, 0, 0, 0}) // creation date, fixed for reproducibility
 	b.WriteString("acsp")
-	b.WriteString("\x00\x00\x00\x00") // Plattform
+	b.WriteString("\x00\x00\x00\x00") // platform
 	be(uint32(0))                     // Flags
-	b.WriteString("\x00\x00\x00\x00") // Gerätehersteller
-	be(uint32(0))                     // Gerätemodell
-	be(uint64(0))                     // Geräteattribute
-	be(uint32(0))                     // Rendering Intent perzeptiv
+	b.WriteString("\x00\x00\x00\x00") // device manufacturer
+	be(uint32(0))                     // device model
+	be(uint64(0))                     // device attributes
+	be(uint32(0))                     // rendering intent perceptual
 	b.Write(xyzNum(0.9642, 1.0, 0.8249))
-	b.WriteString("\x00\x00\x00\x00") // Ersteller
+	b.WriteString("\x00\x00\x00\x00") // creator
 	b.Write(make([]byte, 128-b.Len()))
 
 	be(uint32(len(tags)))
@@ -122,23 +122,23 @@ func text(s string) []byte {
 	return append(append([]byte("text\x00\x00\x00\x00"), s...), 0)
 }
 
-// textDescription baut einen textDescriptionType mit ASCII-Teil und leeren
-// Unicode- und ScriptCode-Teilen.
+// textDescription builds a textDescriptionType with an ASCII part and empty
+// Unicode and ScriptCode parts.
 func textDescription(s string) []byte {
 	var b bytes.Buffer
 	b.WriteString("desc\x00\x00\x00\x00")
 	binary.Write(&b, binary.BigEndian, uint32(len(s)+1))
 	b.WriteString(s)
 	b.WriteByte(0)
-	binary.Write(&b, binary.BigEndian, uint32(0)) // Unicode-Sprachcode
-	binary.Write(&b, binary.BigEndian, uint32(0)) // Unicode-Länge
-	binary.Write(&b, binary.BigEndian, uint16(0)) // ScriptCode-Code
-	b.WriteByte(0)                                // ScriptCode-Länge
-	b.Write(make([]byte, 67))                     // ScriptCode-Daten
+	binary.Write(&b, binary.BigEndian, uint32(0)) // Unicode language code
+	binary.Write(&b, binary.BigEndian, uint32(0)) // Unicode length
+	binary.Write(&b, binary.BigEndian, uint16(0)) // ScriptCode code
+	b.WriteByte(0)                                // ScriptCode length
+	b.Write(make([]byte, 67))                     // ScriptCode data
 	return b.Bytes()
 }
 
-// curve liefert die sRGB-Tonwertkurve als curveType mit 1024 Stützstellen.
+// curve returns the sRGB tone curve as a curveType with 1024 entries.
 func curve() []byte {
 	const n = 1024
 	var b bytes.Buffer

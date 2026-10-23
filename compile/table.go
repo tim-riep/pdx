@@ -5,22 +5,22 @@ import (
 	"strings"
 )
 
-// tableCtx hält den Zustand einer Tabelle während der Übersetzung.
+// tableCtx holds the state of a table during translation.
 type tableCtx struct {
 	n *node
-	// Variablennamen ohne $: Datenknoten, Kontext der Tabelle, Gruppen.
+	// Variable names without $: data nodes, context of the table, groups.
 	rows, ctx, groups, group string
-	// sums sind die verschiedenen of-Ausdrücke. Ihr Index bildet die Namen
-	// der laufenden Summen.
+	// sums are the distinct of expressions. Their index forms the names
+	// of the running sums.
 	sums []string
-	// carries und subtotals tragen je Datenzeile einen Marker.
+	// carries and subtotals carry one marker per data row.
 	carries, subtotals []*node
-	// labels sind die übrigen Zellen von Kopfzeilen mit carryOver. Ihr Inhalt
-	// kommt ebenfalls über Marker, damit die Übertragszeile auf der ersten
-	// Seite leer bleibt.
+	// labels are the remaining cells of header rows with carryOver. Their
+	// content also comes through markers, so that the carry-over row stays
+	// empty on the first page.
 	labels []*node
-	// inGroup ist gesetzt, solange Gruppenkopf oder Gruppenfuß übersetzt
-	// werden. total summiert dann über die Gruppe.
+	// inGroup is set while the group header or group footer is being
+	// translated. total then sums over the group.
 	inGroup bool
 }
 
@@ -101,8 +101,8 @@ func (c *compiler) tableElem(n *node) {
 	c.w.end()
 }
 
-// collectSums sammelt Summenelemente, prüft ihre Lage und bestimmt die
-// Zellen, deren Inhalt über Marker kommt.
+// collectSums collects sum elements, checks their position and determines
+// the cells whose content comes through markers.
 func (c *compiler) collectSums(n *node) {
 	tc := c.table
 	var walk func(x *node, section string)
@@ -110,7 +110,7 @@ func (c *compiler) collectSums(n *node) {
 		for _, ch := range x.Elements("") {
 			switch ch.Name {
 			case "table":
-				continue // eigene Tabelle mit eigenen Summen
+				continue // separate table with its own sums
 			case "carryOver":
 				if section != "header" {
 					c.errorf(ch, "carryOver ist nur im Tabellenkopf erlaubt")
@@ -158,8 +158,8 @@ func hasDescendant(n *node, name string) bool {
 	return false
 }
 
-// groupIterate gruppiert die Datenknoten und führt die laufenden Summen über
-// die Gruppen fort.
+// groupIterate groups the data nodes and continues the running sums across
+// the groups.
 func (c *compiler) groupIterate(g, rows *node) {
 	tc := c.table
 	gi := c.w.enter(g.ID())
@@ -198,8 +198,8 @@ func (c *compiler) groupIterate(g, rows *node) {
 	c.w.leave(gi)
 }
 
-// groupSection schreibt Kopf- oder Fußzeilen einer Gruppe im Kontext ihres
-// ersten Datenknotens.
+// groupSection writes header or footer rows of a group in the context of
+// its first data node.
 func (c *compiler) groupSection(s *node) {
 	i := c.w.enter(s.ID())
 	c.w.start("xsl:for-each", "select", "$"+c.table.group+"[1]")
@@ -210,7 +210,7 @@ func (c *compiler) groupSection(s *node) {
 	c.w.leave(i)
 }
 
-// rowsIterate schreibt die Datenzeilen mit laufenden Summen und Markern.
+// rowsIterate writes the data rows with running sums and markers.
 func (c *compiler) rowsIterate(rows *node, sel, index string, init []string) {
 	tc := c.table
 	c.w.start("xsl:iterate", "select", sel)
@@ -241,8 +241,8 @@ func (c *compiler) rowsIterate(rows *node, sel, index string, init []string) {
 	c.w.end()
 }
 
-// carryMarkers schreibt die Marker für Übertragszeilen. Die erste Datenzeile
-// trägt leere Marker, auf der ersten Seite gibt es keinen Übertrag.
+// carryMarkers writes the markers for carry-over rows. The first data row
+// carries empty markers, there is no carry-over on the first page.
 func (c *compiler) carryMarkers() {
 	tc := c.table
 	first := "$" + tc.indexVar() + " gt 1"
@@ -279,7 +279,7 @@ func (c *compiler) subtotalMarkers() {
 	}
 }
 
-// sumValue formatiert eine Summe mit dem Muster des Summenelements.
+// sumValue formats a sum with the pattern of the sum element.
 func (c *compiler) sumValue(s *node, arg string) string {
 	if f, ok := s.Attr("format"); ok {
 		if p := c.pattern(s, f); p != nil {
@@ -293,13 +293,13 @@ func (c *compiler) sumValue(s *node, arg string) string {
 	return "string(" + arg + ")"
 }
 
-// row schreibt eine Tabellenzeile. markers schreibt Marker in die erste Zelle.
+// row writes a table row. markers writes markers into the first cell.
 func (c *compiler) row(r *node, markers func()) {
 	ri := c.w.enter(r.ID())
 	c.presence(r, func() {
 		attrs := append([]string{"pdx:id", r.ID()}, c.blockAttrs(r)...)
-		// Übertrag und Zwischensumme sind Folgen des Seitenumbruchs, keine
-		// Rechnungsdaten. Ihre Zeilen sind Artefakte, die Summe bleibt Inhalt.
+		// Carry-over and subtotal are consequences of the page break, not
+		// invoice data. Their rows are artifacts, the sum remains content.
 		if sumRow(r) && r.Get("artifact", "") == "" {
 			attrs = append(attrs, "pdx:artifact", "true")
 		}
@@ -313,7 +313,7 @@ func (c *compiler) row(r *node, markers func()) {
 	c.w.leave(ri)
 }
 
-// sumRow meldet eine Zeile mit Übertrag oder Zwischensumme.
+// sumRow reports a row with carry-over or subtotal.
 func sumRow(r *node) bool {
 	for _, cell := range r.Elements("cell") {
 		if cell.First("carryOver") != nil || cell.First("subtotal") != nil {
@@ -346,9 +346,9 @@ func (c *compiler) cell(cell *node, first bool, markers func()) {
 		markers()
 	}
 	if c.isLabel(cell) {
-		// Der Block um fo:retrieve-table-marker ist nötig, weil Apache FOP
-		// 2.11 den Marker als direktes Kind der Zelle mit einer
-		// NullPointerException abbricht.
+		// The block around fo:retrieve-table-marker is needed because Apache
+		// FOP 2.11 aborts with a NullPointerException when the marker is a
+		// direct child of the cell.
 		c.w.start("fo:block", "pdx:id", cell.ID())
 		c.w.empty("fo:retrieve-table-marker", "pdx:id", cell.ID(), "retrieve-class-name", cell.ID(),
 			"retrieve-position-within-table", "first-starting", "retrieve-boundary-within-table", "table-fragment")
@@ -359,9 +359,9 @@ func (c *compiler) cell(cell *node, first bool, markers func()) {
 	c.w.end()
 }
 
-// labelContent schreibt den Inhalt einer Zelle in einer Übertragszeile als
-// Inline-Inhalt. Er wird in einen Block der Kopfzeile eingesetzt, FOP
-// verlangt dort Inline-Inhalt. Erlaubt sind daher nur text und field.
+// labelContent writes the content of a cell in a carry-over row as inline
+// content. It is inserted into a block of the header row, FOP requires
+// inline content there. Therefore only text and field are allowed.
 func (c *compiler) labelContent(cell *node) {
 	for _, k := range cell.Elements("") {
 		i := c.w.enter(k.ID())
@@ -392,8 +392,8 @@ func (c *compiler) isLabel(cell *node) bool {
 	return false
 }
 
-// cellContent schreibt den Inhalt einer Zelle. Eine leere Zelle bekommt
-// einen leeren Block, FO verlangt mindestens einen.
+// cellContent writes the content of a cell. An empty cell gets an empty
+// block, FO requires at least one.
 func (c *compiler) cellContent(cell *node) {
 	kids := cell.Elements("")
 	if len(kids) == 0 {

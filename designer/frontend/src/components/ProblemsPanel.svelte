@@ -6,8 +6,8 @@
   import { entries, problems, type Entry } from "../lib/problems.svelte";
   import { sd, type Task } from "../lib/schemadiff.svelte";
 
-  // Eine Aufgabe ist offen, solange eines ihrer Elemente einen Befund hat
-  // (oder bei Beispieldaten eine Datei). Abhaken geht auch von Hand.
+  // A task is open as long as one of its elements has a finding
+  // (or a file for sample data). Checking it off by hand also works.
   function open(task: Task): boolean {
     if (sd.done[task.id]) return false;
     const ps = problems.report?.problems ?? [];
@@ -18,7 +18,7 @@
   const list = $derived(entries());
   const errors = $derived(list.filter((e) => e.level === "Fehler").length);
 
-  // Klick führt zum Element: Auswahl, Hierarchie und Canvas folgen.
+  // A click leads to the element: selection, hierarchy and canvas follow.
   function go(e: Entry) {
     if (!e.ref) return;
     if (!node(e.ref)) {

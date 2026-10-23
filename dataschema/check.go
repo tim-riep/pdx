@@ -10,17 +10,17 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Level ist die Schwere eines Befunds.
+// Level is the severity of a finding.
 type Level string
 
 const (
-	// Error macht die Vorlage unbrauchbar für das Datenschema.
+	// Error makes the template unusable for the data schema.
 	Error Level = "Fehler"
-	// Warning ist ein Hinweis, die Vorlage bleibt nutzbar.
+	// Warning is a notice, the template remains usable.
 	Warning Level = "Hinweis"
 )
 
-// Finding ist ein Befund der Bindungsprüfung.
+// Finding is a finding of the binding check.
 type Finding struct {
 	Level     Level
 	ID        string
@@ -32,7 +32,7 @@ func (f Finding) String() string {
 	return (&template.Error{ID: f.ID, Line: f.Line, Col: f.Col, Msg: string(f.Level) + ": " + f.Msg}).Error()
 }
 
-// HasErrors meldet, ob unter den Befunden Fehler sind.
+// HasErrors reports whether the findings include errors.
 func HasErrors(fs []Finding) bool {
 	for _, f := range fs {
 		if f.Level == Error {
@@ -42,7 +42,7 @@ func HasErrors(fs []Finding) bool {
 	return false
 }
 
-// numeric sind die eingebauten Typen, die format-number verarbeitet.
+// numeric are the built-in types that format-number processes.
 var numeric = map[string]bool{
 	"decimal": true, "integer": true, "nonPositiveInteger": true, "negativeInteger": true,
 	"long": true, "int": true, "short": true, "byte": true, "nonNegativeInteger": true,
@@ -50,28 +50,28 @@ var numeric = map[string]bool{
 	"positiveInteger": true, "float": true, "double": true,
 }
 
-// ctx ist der Kontext einer Bindung: der Pfad der Elemente von der Wurzel
-// bis zum Kontextknoten. Ein leerer Pfad steht für den Dokumentknoten.
+// ctx is the context of a binding: the path of the elements from the root
+// to the context node. An empty path stands for the document node.
 type ctx []*Decl
 
 type checker struct {
 	m       Model
 	t       *template.Template
 	ns      map[string]string
-	formats map[string]string // Mustername zu Art
+	formats map[string]string // pattern name to kind
 	out     []Finding
 	kids    map[*Decl][]*Decl
 	open    map[*Decl]bool
-	// bound ordnet Vorlagen-IDs die Deklaration ihres Datenknotens zu.
+	// bound maps template IDs to the declaration of their data node.
 	bound map[string]*Decl
 }
 
-// Check prüft alle Bindungen der Vorlage gegen das Modell.
+// Check checks all bindings of the template against the model.
 func Check(t *template.Template, m Model) []Finding { return run(t, m).out }
 
-// Bindings liefert je Vorlagen-ID die Deklaration des gebundenen
-// Datenknotens, soweit sie sich statisch auflösen lässt. Der Compiler nimmt
-// daraus etwa die Enumeration für Auswahllisten.
+// Bindings returns, per template ID, the declaration of the bound data
+// node, as far as it can be resolved statically. The compiler takes, for
+// example, the enumeration for choice lists from it.
 func Bindings(t *template.Template, m Model) map[string]*Decl { return run(t, m).bound }
 
 func run(t *template.Template, m Model) *checker {
@@ -131,8 +131,8 @@ func (c *checker) dataRoot() (ctx, bool) {
 	return nil, false
 }
 
-// qname löst einen Namen mit Präfix auf. Ohne Präfix gilt in XPath kein
-// Namespace.
+// qname resolves a prefixed name. Without a prefix, no namespace applies
+// in XPath.
 func (c *checker) qname(s string, attr bool) (xml.Name, bool) {
 	if i := strings.IndexByte(s, ':'); i >= 0 {
 		uri, ok := c.ns[s[:i]]
@@ -150,14 +150,14 @@ func (c *checker) children(d *Decl) ([]*Decl, bool) {
 	return k, open
 }
 
-// walk prüft die Bindungen unterhalb eines Vorlagenelements im Kontext cur.
+// walk checks the bindings below a template element in the context cur.
 func (c *checker) walk(n *template.Node, cur ctx) {
 	for _, ch := range n.Elements("") {
 		c.elem(ch, cur)
 	}
 }
 
-// elem prüft ein Vorlagenelement und seine Kinder im Kontext cur.
+// elem checks a template element and its children in the context cur.
 func (c *checker) elem(n *template.Node, cur ctx) {
 	switch n.Name {
 	case "subform":
@@ -182,8 +182,8 @@ func (c *checker) elem(n *template.Node, cur ctx) {
 	}
 }
 
-// formField prüft ein Formularfeld: die Bindung muss einen Wert liefern und
-// sich zurückschreiben lassen, Auswahlfelder brauchen Optionen.
+// formField checks a form field: the binding must yield a value and be
+// writable back, choice fields need options.
 func (c *checker) formField(n *template.Node, cur ctx) {
 	expr := n.Get("bind", "")
 	if _, _, ok := splitPath(strings.TrimSpace(expr)); !ok {
@@ -260,8 +260,8 @@ func (c *checker) table(n *template.Node, cur ctx) {
 	}
 }
 
-// section prüft Zeilen einer Tabelle. Summen beziehen sich immer auf die
-// Datenknoten der Tabelle (item).
+// section checks rows of a table. Sums always refer to the data nodes of
+// the table (item).
 func (c *checker) section(s *template.Node, cur, item ctx) {
 	var walk func(n *template.Node)
 	walk = func(n *template.Node) {
@@ -297,7 +297,7 @@ func (c *checker) sum(n *template.Node, item ctx) {
 	}
 }
 
-// value prüft eine Bindung, die einen einzelnen Wert liefern muss.
+// value checks a binding that must yield a single value.
 func (c *checker) value(n *template.Node, attr string, cur ctx, format string) {
 	expr := n.Get(attr, "")
 	r, ok := c.resolve(n, expr, cur)
@@ -337,15 +337,15 @@ func (c *checker) value(n *template.Node, attr string, cur ctx, format string) {
 	}
 }
 
-// result ist das Ergebnis eines aufgelösten Pfades.
+// result is the result of a resolved path.
 type result struct {
 	path     ctx
 	decl     *Decl
 	min, max int
 }
 
-// resolve wertet einen Pfad statisch aus. Ausdrücke, die kein einfacher Pfad
-// sind, werden nicht geprüft (ok ist dann false ohne Befund).
+// resolve evaluates a path statically. Expressions that are not a simple
+// path are not checked (ok is then false without a finding).
 func (c *checker) resolve(n *template.Node, expr string, cur ctx) (result, bool) {
 	if cur == nil {
 		return result{}, false
@@ -385,7 +385,7 @@ func (c *checker) resolve(n *template.Node, expr string, cur ctx) (result, bool)
 			}
 			var next *Decl
 			if len(path) == 0 {
-				// Schritt vom Dokumentknoten: nur das Wurzelelement.
+				// Step from the document node: only the root element.
 				for _, r := range c.m.Roots() {
 					if r.Name == name && !st.attr() {
 						next = r
@@ -435,8 +435,8 @@ func (c *checker) resolve(n *template.Node, expr string, cur ctx) (result, bool)
 	return result{path: path, decl: last, min: lo, max: hi}, true
 }
 
-// display schreibt einen Namen mit dem Präfix der Vorlage, bei mehreren
-// Präfixen für denselben Namespace mit dem alphabetisch ersten.
+// display writes a name with the prefix of the template, with several
+// prefixes for the same namespace with the alphabetically first one.
 func display(n xml.Name, ns map[string]string) string {
 	best := ""
 	for p, uri := range ns {

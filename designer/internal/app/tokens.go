@@ -10,11 +10,11 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// TokenOp ist eine Änderung an den Design-Tokens.
+// TokenOp is a change to the design tokens.
 //
-//	add     Kind color, length oder font, ID als Vorschlag (leer: nach Art)
-//	rename  ID, NewID  Verweise in der Vorlage ziehen mit
-//	remove  ID         nur ohne Verweise
+//	add     Kind color, length or font, ID as suggestion (empty: by kind)
+//	rename  ID, NewID  references in the template follow along
+//	remove  ID         only without references
 type TokenOp struct {
 	Op    string `json:"op"`
 	Kind  string `json:"kind"`
@@ -22,7 +22,7 @@ type TokenOp struct {
 	NewID string `json:"newId"`
 }
 
-// Vorgaben neuer Tokens je Art.
+// Defaults of new tokens per kind.
 var tokenDefaults = map[string][]template.Attr{
 	"color":  {{Name: "value", Value: "#336699"}},
 	"length": {{Name: "value", Value: "4mm"}},
@@ -31,7 +31,7 @@ var tokenDefaults = map[string][]template.Attr{
 
 var tokenBase = map[string]string{"color": "farbe", "length": "abstand", "font": "schrift"}
 
-// Tokens ändert die Design-Tokens als ein Schritt.
+// Tokens changes the design tokens as one step.
 func (s *TemplateService) Tokens(op TokenOp) (Result, error) {
 	cat, err := model.LoadCatalog()
 	if err != nil {
@@ -55,7 +55,7 @@ func (s *TemplateService) Tokens(op TokenOp) (Result, error) {
 			el := template.NewElement(op.Kind, append([]template.Attr{{Name: "id", Value: id}}, defs...)...)
 			var cmd model.Command
 			if tokens == nil {
-				// tokens steht nach namespaces und styles.
+				// tokens comes after namespaces and styles.
 				wrap := template.NewElement("tokens")
 				wrap.InsertChild(-1, el)
 				cmd = model.Command{Op: "insert", Parent: model.Ref(t.Root), Index: tokensIndex(t.Root), XML: fragment(wrap)}
@@ -95,7 +95,7 @@ func (s *TemplateService) Tokens(op TokenOp) (Result, error) {
 			}
 			target := n
 			if len(tokens.Elements("")) == 1 {
-				target = tokens // ein leeres tokens ist ungültig
+				target = tokens // an empty tokens is invalid
 			}
 			return "", d.Apply("Token entfernen", model.Command{Op: "remove", Ref: model.Ref(target)})
 		}
@@ -103,7 +103,7 @@ func (s *TemplateService) Tokens(op TokenOp) (Result, error) {
 	})
 }
 
-// TokenUsage zählt je Token die Verweise in der Vorlage.
+// TokenUsage counts the references in the template per token.
 func (s *TemplateService) TokenUsage() (map[string]int, error) {
 	cat, err := model.LoadCatalog()
 	if err != nil {
@@ -123,14 +123,14 @@ var (
 	tokenKinds = map[string]bool{"color": true, "length": true, "font": true}
 )
 
-// refPattern findet Verweise auf genau ein Token, nicht auf längere Namen
-// mit demselben Anfang.
+// refPattern finds references to exactly one token, not to longer names
+// with the same beginning.
 func refPattern(id string) *regexp.Regexp {
 	return regexp.MustCompile(`(^|[^A-Za-z0-9_.\-])\$` + regexp.QuoteMeta(id) + `($|[^A-Za-z0-9_.\-])`)
 }
 
-// replaceRef ersetzt alle Verweise. Benachbarte Verweise wie "$m $m"
-// überlappen im Muster, darum bis nichts mehr passt.
+// replaceRef replaces all references. Adjacent references such as "$m $m"
+// overlap in the pattern, so it repeats until nothing matches.
 func replaceRef(re *regexp.Regexp, v, id string) string {
 	for {
 		next := re.ReplaceAllString(v, "${1}$$"+id+"${2}")
@@ -149,7 +149,7 @@ func tokenNode(t *template.Template, id string) *template.Node {
 	return n
 }
 
-// tokensIndex liefert die Stelle für ein neues tokens: nach namespaces und
+// tokensIndex returns the position for a new tokens: after namespaces and
 // styles.
 func tokensIndex(root *template.Node) int {
 	idx := 0
@@ -161,9 +161,9 @@ func tokensIndex(root *template.Node) int {
 	return idx
 }
 
-// eachTokenAttr ruft f für jedes Attribut, das Verweise auf Tokens enthalten
-// kann: alle außer XPath, Kennungen und Texten wie Mustern. So stören
-// Variablen in XPath-Ausdrücken nicht.
+// eachTokenAttr calls f for every attribute that can contain references to
+// tokens: all except XPath, IDs and texts such as patterns. This way
+// variables in XPath expressions do not interfere.
 func eachTokenAttr(t *template.Template, cat model.Catalog, f func(*template.Node, template.Attr)) {
 	var walk func(n *template.Node)
 	walk = func(n *template.Node) {
@@ -184,7 +184,7 @@ func eachTokenAttr(t *template.Template, cat model.Catalog, f func(*template.Nod
 			case "color", "length", "lengths", "font":
 				f(n, a)
 			case "text":
-				// Rahmen, Schriftfamilie und Zeilenhöhe sind freie Texte.
+				// Border, font family and line height are free texts.
 				if strings.HasPrefix(a.Name, "border") || a.Name == "fontFamily" || a.Name == "lineHeight" {
 					f(n, a)
 				}
@@ -207,8 +207,8 @@ func tokenUsage(t *template.Template, cat model.Catalog) map[string]int {
 	return out
 }
 
-// AddStyle legt einen Stil an, auf Wunsch mit einem Elternstil, und legt
-// styles an, wenn es fehlt.
+// AddStyle creates a style, optionally with a parent style, and creates
+// styles if it is missing.
 func (s *TemplateService) AddStyle(parent string) (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		t := d.Pkg.Template

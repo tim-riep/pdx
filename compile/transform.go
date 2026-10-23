@@ -7,9 +7,9 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// check kompiliert das Stylesheet. Fehler, etwa ungültige XPath-Ausdrücke in
-// Bindungen, werden so schon beim Kompilieren mit Vorlagen-ID gemeldet. Das
-// kompilierte Stylesheet dient allen folgenden Transformationen.
+// check compiles the stylesheet. Errors, such as invalid XPath expressions in
+// bindings, are thus reported with the template ID already at compile time.
+// The compiled stylesheet serves all subsequent transformations.
 func (r *Result) check() error {
 	sheet, diags := engine.Compile(engine.Request{Stylesheet: string(r.XSLT)})
 	var errs template.Errors
@@ -28,9 +28,10 @@ func (r *Result) check() error {
 	return nil
 }
 
-// Transform wendet das Stylesheet auf die Daten an und liefert XSL-FO.
-// Laufzeitfehler tragen die ID des Vorlagenelements, aus dem die Stelle im
-// Stylesheet stammt. Transform darf nebenläufig aufgerufen werden.
+// Transform applies the stylesheet to the data and returns XSL-FO.
+// Runtime errors carry the ID of the template element from which the
+// location in the stylesheet originates. Transform may be called
+// concurrently.
 func (r *Result) Transform(data []byte) ([]byte, error) {
 	res := r.sheet.Transform(engine.TransformRequest{Source: string(data)})
 	var errs template.Errors
@@ -39,7 +40,7 @@ func (r *Result) Transform(data []byte) ([]byte, error) {
 			continue
 		}
 		if d.Phase == "parse" {
-			// Das Stylesheet ist geprüft, Lesefehler betreffen die Daten.
+			// The stylesheet is validated, read errors concern the data.
 			errs = append(errs, &template.Error{Msg: fmt.Sprintf("Daten %d:%d: %s", d.Line, d.Col, d.Message)})
 			continue
 		}

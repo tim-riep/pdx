@@ -1,5 +1,5 @@
-// Projektion der Vorlage als Lesecache. Sie wird nie im Frontend geändert,
-// sondern nach jeder Revision aus dem Backend geholt.
+// Projection of the template as a read cache. It is never changed in the frontend,
+// but fetched from the backend after every revision.
 
 import {
   EVENT,
@@ -50,8 +50,8 @@ on<ProjectState>(EVENT.project, (s) => {
   }
 });
 
-// Patches halten den Lesecache aktuell. Passt die Revision nicht, wird der
-// ganze Stand neu geholt.
+// Patches keep the read cache current. If the revision does not match, the
+// whole state is fetched again.
 on<Patch>(EVENT.template, (p) => {
   const s = tpl.snapshot;
   if (!s || p.from !== s.rev) {
@@ -64,8 +64,8 @@ on<Patch>(EVENT.template, (p) => {
   tpl.snapshot = { rev: p.rev, root: p.root, nodes };
 });
 
-// apply schickt einen Befehl an das Backend. Fehler erscheinen in der
-// Statusleiste, die Vorlage bleibt dann unverändert.
+// apply sends a command to the backend. Errors appear in the
+// status bar, the template then stays unchanged.
 export async function apply(label: string, cmd: Partial<Command> & { op: string }): Promise<boolean> {
   try {
     const res = await TemplateAPI.Apply(label, cmd as Command);
@@ -106,19 +106,19 @@ export function typeOf(n: ViewNode | undefined): ElementType | undefined {
   return n ? tpl.catalog[n.type] : undefined;
 }
 
-// path liefert die Vorfahren eines Elements von der Wurzel bis zu ihm.
+// path returns the ancestors of an element from the root down to it.
 export function path(ref: string): string[] {
   const out: string[] = [];
   for (let n = node(ref); n; n = node(n.parent)) out.unshift(n.ref);
   return out;
 }
 
-// Beim Laden der Oberfläche kann schon eine Vorlage offen sein.
+// A template can already be open when the UI loads.
 TemplateAPI.Snapshot()
   .then((s) => (tpl.snapshot = s))
   .catch(() => (tpl.snapshot = null));
 
-// isPositioned meldet ein Element, dessen Eltern ihre Kinder positionieren.
+// isPositioned reports an element whose parent positions its children.
 export function isPositioned(n: ViewNode | undefined): boolean {
   const p = node(n?.parent);
   if (!p) return false;

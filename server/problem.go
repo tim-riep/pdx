@@ -9,7 +9,7 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Finding ist ein einzelner Befund, mit Vorlagen-ID, wenn bekannt.
+// Finding is a single finding, with template ID if known.
 type Finding struct {
 	ID      string `json:"id,omitempty"`
 	Line    int    `json:"line,omitempty"`
@@ -17,7 +17,7 @@ type Finding struct {
 	Message string `json:"message"`
 }
 
-// Problem ist eine Fehlerantwort nach RFC 9457 mit allen Befunden.
+// Problem is an error response according to RFC 9457 with all findings.
 type Problem struct {
 	Type     string    `json:"type"`
 	Title    string    `json:"title"`
@@ -26,7 +26,7 @@ type Problem struct {
 	Findings []Finding `json:"findings,omitempty"`
 }
 
-// Typen der Probleme, als URI unter dem Dienst dokumentiert.
+// Types of the problems, documented as URIs under the service.
 const (
 	typeBase = "https://github.com/tim-riep/pdx/problems/"
 )
@@ -43,7 +43,7 @@ func writeProblem(w http.ResponseWriter, p Problem) {
 	json.NewEncoder(w).Encode(p)
 }
 
-// findings zerlegt Fehler von Vorlage und Rendern in Befunde.
+// findings splits errors from template and rendering into findings.
 func findings(err error) []Finding {
 	var te template.Errors
 	if errors.As(err, &te) {

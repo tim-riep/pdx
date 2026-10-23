@@ -17,9 +17,9 @@ func cells(row *template.Node) int {
 	return n
 }
 
-// TestTableOps baut den Tabellenaufbau der Musterrechnung nach: Tabelle aus
-// dem Datenknoten, Übertrag in einer zweiten Kopfzeile über vier Spalten,
-// Fuß mit Zwischensumme, und setzt das Ergebnis.
+// TestTableOps rebuilds the table layout of the sample invoice: table from
+// the data node, carry-over in a second header row across four columns,
+// footer with subtotal, and typesets the result.
 func TestTableOps(t *testing.T) {
 	c := NewCore(nil, nil, t.TempDir())
 	if _, err := NewProjectService(c).Open(muster); err != nil {
@@ -87,7 +87,7 @@ func TestTableOps(t *testing.T) {
 		t.Error("zweiter Fuß ohne Fehler")
 	}
 
-	// Das Ergebnis lässt sich setzen.
+	// The result can be typeset.
 	p, err := pkg.New(c.doc.Pkg.Template, c.doc.Pkg.Files)
 	if err != nil {
 		t.Fatal(err)

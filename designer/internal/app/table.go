@@ -11,14 +11,14 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// TableOp ist eine Änderung an der Struktur einer Tabelle.
+// TableOp is a change to the structure of a table.
 //
-//	addColumn     Ref (Tabelle oder Zelle), Index  Spalte einfügen, -1 hängt an
-//	removeColumn  Ref (Tabelle oder Zelle), Index  Spalte entfernen
-//	addRow        Ref (Abschnitt oder Zeile), Index  Zeile einfügen
-//	addSection    Ref (Tabelle), Kind header oder footer
-//	span          Ref (Zelle), Count  Zelle über Count Spalten
-//	sum           Ref (Zelle), Kind subtotal, carryOver oder total
+//	addColumn     Ref (table or cell), Index  insert column, -1 appends
+//	removeColumn  Ref (table or cell), Index  remove column
+//	addRow        Ref (section or row), Index  insert row
+//	addSection    Ref (table), Kind header or footer
+//	span          Ref (cell), Count  cell spans Count columns
+//	sum           Ref (cell), Kind subtotal, carryOver or total
 type TableOp struct {
 	Op    string `json:"op"`
 	Ref   string `json:"ref"`
@@ -27,7 +27,7 @@ type TableOp struct {
 	Count int    `json:"count"`
 }
 
-// Table ändert die Struktur einer Tabelle als ein Schritt.
+// Table changes the structure of a table as one step.
 func (s *TemplateService) Table(op TableOp) (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		t := d.Pkg.Template
@@ -49,7 +49,7 @@ func (s *TemplateService) Table(op TableOp) (Result, error) {
 	})
 }
 
-// tableOf liefert die Tabelle zu einem Element in ihr.
+// tableOf returns the table for an element inside it.
 func tableOf(n *template.Node) *template.Node {
 	for x := n; x != nil; x = x.Parent {
 		if x.Name == "table" {
@@ -59,7 +59,7 @@ func tableOf(n *template.Node) *template.Node {
 	return nil
 }
 
-// rowsOf liefert alle Zeilen einer Tabelle in Kopf, Gruppe, Rumpf und Fuß.
+// rowsOf returns all rows of a table in header, group, body and footer.
 func rowsOf(tbl *template.Node) []*template.Node {
 	var out []*template.Node
 	var walk func(n *template.Node)
@@ -85,8 +85,8 @@ func colspan(c *template.Node) int {
 	return n
 }
 
-// cellAt liefert die Zelle einer Zeile, die die Spalte col (ab 0) abdeckt,
-// und ihre erste Spalte.
+// cellAt returns the cell of a row that covers column col (from 0),
+// and its first column.
 func cellAt(row *template.Node, col int) (*template.Node, int) {
 	pos := 0
 	for _, c := range row.Elements("cell") {
@@ -99,7 +99,7 @@ func cellAt(row *template.Node, col int) (*template.Node, int) {
 	return nil, pos
 }
 
-// columnOf liefert die erste Spalte einer Zelle.
+// columnOf returns the first column of a cell.
 func columnOf(cell *template.Node) int {
 	pos := 0
 	for _, c := range cell.Parent.Elements("cell") {
@@ -135,7 +135,7 @@ func tableCommand(b *builder, n *template.Node, op TableOp) (model.Command, stri
 			col = len(cols)
 		}
 		id := b.id(tbl.ID() + "-sp")
-		// Spaltenelemente stehen am Anfang der Tabelle.
+		// Column elements are at the start of the table.
 		cmds = append(cmds, model.Command{Op: "insert", Parent: model.Ref(tbl), Index: col,
 			XML: fragment(template.NewElement("column", template.Attr{Name: "id", Value: id}, template.Attr{Name: "width", Value: "1*"}))})
 		for _, row := range rowsOf(tbl) {
@@ -144,7 +144,7 @@ func tableCommand(b *builder, n *template.Node, op TableOp) (model.Command, stri
 			case c == nil:
 				cmds = append(cmds, model.Command{Op: "insert", Parent: model.Ref(row), Index: -1, XML: fragment(b.cell(row.ID() + "-z"))})
 			case start < col:
-				// Mitten in einer überspannenden Zelle: Sie wird breiter.
+				// In the middle of a spanning cell: it becomes wider.
 				cmds = append(cmds, model.Command{Op: "setAttr", Ref: model.Ref(c), Name: "colspan", Value: strconv.Itoa(colspan(c) + 1)})
 			default:
 				cmds = append(cmds, model.Command{Op: "insert", Parent: model.Ref(row), Index: c.Index(), XML: fragment(b.cell(row.ID() + "-z"))})
@@ -206,7 +206,7 @@ func tableCommand(b *builder, n *template.Node, op TableOp) (model.Command, stri
 			row.InsertChild(-1, b.cell(row.ID()+"-z"))
 		}
 		sec.InsertChild(-1, row)
-		// Kopf nach den Spalten, Fuß ans Ende.
+		// Header after the columns, footer at the end.
 		index := -1
 		if op.Kind == "header" {
 			index = len(cols)
@@ -224,7 +224,7 @@ func tableCommand(b *builder, n *template.Node, op TableOp) (model.Command, stri
 		have := colspan(n)
 		row := n.Parent
 		if want > have {
-			// Folgende Zellen gehen in der verbundenen auf.
+			// Following cells merge into the joined one.
 			need := want - have
 			for i := n.Index() + 1; i < len(row.Children) && need > 0; i++ {
 				c := row.Children[i]
@@ -273,8 +273,8 @@ func tableCommand(b *builder, n *template.Node, op TableOp) (model.Command, stri
 	return model.Command{}, "", "", fmt.Errorf("Tabellenbefehl %q unbekannt", op.Op)
 }
 
-// sumSource liefert Bindung und Format des Feldes in der Spalte col der
-// wiederholten Zeilen, wenn es eine Zahl ist.
+// sumSource returns the binding and format of the field in column col of the
+// repeated rows, if it is a number.
 func sumSource(tbl *template.Node, col int, numeric func(*template.Node) bool) (string, string) {
 	rows := tbl.First("rows")
 	if rows == nil {
@@ -290,8 +290,8 @@ func sumSource(tbl *template.Node, col int, numeric func(*template.Node) bool) (
 	return "", ""
 }
 
-// numericCheck prüft, ob ein Feld an eine Zahl gebunden ist: über das
-// Daten-XSD, ohne XSD über ein Zahlenformat.
+// numericCheck checks whether a field is bound to a number: via the
+// data XSD, without XSD via a number format.
 func numericCheck(t *template.Template, sc *schema.Schema) func(*template.Node) bool {
 	numberFormats := map[string]bool{}
 	if f := t.Root.First("formats"); f != nil {
@@ -319,7 +319,7 @@ func numericCheck(t *template.Template, sc *schema.Schema) func(*template.Node) 
 	}
 }
 
-// joinPath verbindet einen Kontext mit einer relativen Bindung.
+// joinPath joins a context with a relative binding.
 func joinPath(ctx, rel string) string {
 	if rel == "." || rel == "" {
 		return ctx

@@ -43,7 +43,7 @@ func TestDetectLevels(t *testing.T) {
 			t.Errorf("%s: XMP %+v", id, x)
 		}
 	}
-	// Die Vorlage darf die Beziehung überschreiben.
+	// The template may override the relationship.
 	info, _ := Detect(cii("urn:factur-x.eu:1p0:minimum"))
 	if a := info.Attachment(nil, areatree.Source); a.Relationship != areatree.Source {
 		t.Errorf("Beziehung nicht überschrieben: %s", a.Relationship)

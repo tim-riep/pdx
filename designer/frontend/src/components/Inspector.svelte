@@ -17,8 +17,8 @@
   const n = $derived(node(selection.ref));
   const type = $derived(typeOf(n));
 
-  // commit schickt die Änderung als Befehl. Scheitert er, zeigt das Feld
-  // wieder den Wert aus dem Modell.
+  // commit sends the change as a command. If it fails, the field shows
+  // the value from the model again.
   async function commit(p: Property, el: HTMLInputElement | HTMLSelectElement, value: string) {
     if (!n || (n.attrs[p.name] ?? "") === value) return;
     const ok = await apply(t("cmd.setAttr", { prop: propLabel(p.name) }), { op: "setAttr", ref: n.ref, name: p.name, value });
@@ -125,7 +125,7 @@
   {:else}
     <p class="muted">{t("inspector.none")}</p>
   {/if}
-  <!-- Vorschläge für Verweise auf Tokens -->
+  <!-- Suggestions for references to tokens -->
   <datalist id="tok-color">{#each tokenList.filter((x) => x.kind === "color") as tok (tok.ref)}<option value={"$" + tok.id}>{tok.attrs.value}</option>{/each}</datalist>
   <datalist id="tok-length">{#each tokenList.filter((x) => x.kind === "length") as tok (tok.ref)}<option value={"$" + tok.id}>{tok.attrs.value}</option>{/each}</datalist>
 </div>

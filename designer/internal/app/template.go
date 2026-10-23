@@ -6,13 +6,13 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/model"
 )
 
-// TemplateService liefert die Projektion der Vorlage und wendet Befehle an.
+// TemplateService returns the projection of the template and applies commands.
 type TemplateService struct{ c *Core }
 
-// NewTemplateService liefert die Sicht auf den gemeinsamen Zustand.
+// NewTemplateService returns the view on the shared state.
 func NewTemplateService(c *Core) *TemplateService { return &TemplateService{c} }
 
-// Snapshot liefert die vollständige Projektion der aktuellen Revision.
+// Snapshot returns the complete projection of the current revision.
 func (s *TemplateService) Snapshot() (model.Snapshot, error) {
 	cat, err := model.LoadCatalog()
 	if err != nil {
@@ -27,16 +27,16 @@ func (s *TemplateService) Snapshot() (model.Snapshot, error) {
 	return s.c.view, nil
 }
 
-// Result ist die Antwort auf einen Befehl. Select schlägt das Element vor,
-// das die Oberfläche danach auswählt, etwa ein eingefügtes.
+// Result is the response to a command. Select suggests the element
+// that the UI selects afterwards, for example an inserted one.
 type Result struct {
 	Rev     uint64        `json:"rev"`
 	Select  string        `json:"select"`
 	History model.History `json:"history"`
 }
 
-// Apply wendet einen Befehl an. label erscheint in der Historie, etwa
-// „Breite ändern“. Ungültige Befehle ändern nichts und liefern den Fehler.
+// Apply applies a command. label appears in the history, for example
+// "Breite ändern". Invalid commands change nothing and return the error.
 func (s *TemplateService) Apply(label string, cmd model.Command) (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		if err := d.Apply(label, cmd); err != nil {
@@ -46,7 +46,7 @@ func (s *TemplateService) Apply(label string, cmd model.Command) (Result, error)
 	})
 }
 
-// Undo nimmt den letzten Schritt zurück.
+// Undo takes back the last step.
 func (s *TemplateService) Undo() (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		_, err := d.Undo()
@@ -54,7 +54,7 @@ func (s *TemplateService) Undo() (Result, error) {
 	})
 }
 
-// Redo wiederholt den zuletzt zurückgenommenen Schritt.
+// Redo repeats the most recently undone step.
 func (s *TemplateService) Redo() (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		_, err := d.Redo()
@@ -62,7 +62,7 @@ func (s *TemplateService) Redo() (Result, error) {
 	})
 }
 
-// History liefert die Beschriftungen für Undo und Redo.
+// History returns the labels for Undo and Redo.
 func (s *TemplateService) History() model.History {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -72,7 +72,7 @@ func (s *TemplateService) History() model.History {
 	return s.c.doc.History()
 }
 
-// change führt eine Änderung aus und meldet den Patch der Projektion.
+// change performs a change and reports the patch of the projection.
 func (s *TemplateService) change(f func(*model.Document) (string, error)) (Result, error) {
 	cat, err := model.LoadCatalog()
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *TemplateService) change(f func(*model.Document) (string, error)) (Resul
 	return Result{Rev: d.Rev(), Select: sel, History: d.History()}, nil
 }
 
-// inserted liefert die Kennung des ersten eingefügten Elements.
+// inserted returns the ID of the first inserted element.
 func inserted(d *model.Document, cmd model.Command) string {
 	switch cmd.Op {
 	case "insert":
@@ -122,13 +122,13 @@ func inserted(d *model.Document, cmd model.Command) string {
 	return ""
 }
 
-// Catalog liefert die Elementtypen mit ihren Eigenschaften für den Inspektor.
+// Catalog returns the element types with their properties for the inspector.
 func (s *TemplateService) Catalog() (model.Catalog, error) { return model.LoadCatalog() }
 
-// Drop fügt für einen gezogenen Datenknoten das passende gebundene Element
-// ein: Datum als Datumsfeld mit Format, Dezimalzahl als Betragsfeld,
-// wiederholter Knoten als Tabelle mit Spalten aus den Kindknoten, optionaler
-// Knoten mit Präsenzbedingung.
+// Drop inserts the matching bound element for a dragged data node:
+// date as a date field with format, decimal number as an amount field,
+// repeated node as a table with columns from the child nodes, optional
+// node with a presence condition.
 func (s *TemplateService) Drop(drop Drop) (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		sc, err := s.c.schemaLocked()

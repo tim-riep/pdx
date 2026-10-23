@@ -15,24 +15,24 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// Usage sammelt die in einem Dokument genutzten Glyphen einer Schrift und den
-// Text, für den sie stehen.
+// Usage collects the glyphs of a font used in a document and the text
+// they stand for.
 type Usage struct {
 	Face *Face
 	text map[uint16]string
 }
 
-// NewUsage legt eine leere Nutzung an.
+// NewUsage creates an empty usage.
 func NewUsage(f *Face) *Usage { return &Usage{Face: f, text: map[uint16]string{}} }
 
-// Add vermerkt eine Glyphe. Der erste nicht leere Text gewinnt.
+// Add records a glyph. The first non-empty text wins.
 func (u *Usage) Add(gid uint16, text string) {
 	if old, ok := u.text[gid]; !ok || (old == "" && text != "") {
 		u.text[gid] = text
 	}
 }
 
-// GIDs liefert die genutzten Glyphen sortiert.
+// GIDs returns the used glyphs sorted.
 func (u *Usage) GIDs() []uint16 {
 	gs := make([]uint16, 0, len(u.text))
 	for g := range u.text {
@@ -42,21 +42,21 @@ func (u *Usage) GIDs() []uint16 {
 	return gs
 }
 
-// Embedded ist eine in ein PDF eingebettete Schrift.
+// Embedded is a font embedded in a PDF.
 type Embedded struct {
-	// Ref verweist auf das Type0-Font-Dictionary.
+	// Ref refers to the Type0 font dictionary.
 	Ref pdf.Ref
-	// BaseFont ist der Name mit Teilmengen-Präfix, etwa "ABCDEF+LiberationSans".
+	// BaseFont is the name with subset prefix, such as "ABCDEF+LiberationSans".
 	BaseFont string
-	// CID bildet Original-Glyphen auf CIDs (gleich neuen Glyphen) ab.
+	// CID maps original glyphs to CIDs (equal to the new glyphs).
 	CID map[uint16]uint16
-	// Width ist die Breite je Original-Glyphe in Tausendstel Geviert, wie sie
-	// im /W-Array steht.
+	// Width is the width per original glyph in thousandths of an em, as it
+	// appears in the /W array.
 	Width map[uint16]float64
 }
 
-// Embed bildet die Teilmenge, schreibt Schriftprogramm, Deskriptor, CIDFont,
-// ToUnicode und Type0-Dictionary und liefert die Abbildung für die Ausgabe.
+// Embed builds the subset, writes font program, descriptor, CIDFont,
+// ToUnicode and Type0 dictionary and returns the mapping for the output.
 func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 	f := u.Face
 	if !f.Embeddable() {
@@ -78,7 +78,7 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 		return nil, fmt.Errorf("Teilmenge von %s: %w", f.PostScript, err)
 	}
 	if f.CFF {
-		// Eingebettet wird nur die CFF-Tabelle als FontFile3 /CIDFontType0C.
+		// Only the CFF table is embedded, as FontFile3 /CIDFontType0C.
 		check, err := ot.ParseFont(program, 0)
 		if err != nil || !check.HasTable(ot.TagCFF) {
 			return nil, fmt.Errorf("Teilmenge von %s: CFF-Tabelle konnte nicht gebildet werden", f.PostScript)
@@ -108,7 +108,7 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 
 	e.BaseFont = subsetTag(f, gids) + "+" + f.PostScript
 
-	// Schriftprogramm.
+	// font program.
 	var fileKey pdf.Name
 	var file *pdf.Stream
 	if f.CFF {
@@ -120,7 +120,7 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 	}
 	fileRef := d.Add(file)
 
-	flags := 4 // symbolisch, für CIDFonts üblich
+	flags := 4 // symbolic, usual for CIDFonts
 	if f.FixedPitch {
 		flags |= 1
 	}
@@ -144,7 +144,7 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 	}
 	descRef := d.Add(desc)
 
-	// /W-Array: zusammenhängende CIDs in einer Gruppe.
+	// /W array: consecutive CIDs in one group.
 	var w pdf.Array
 	for i := 0; i < len(entries); {
 		j := i + 1
@@ -177,10 +177,10 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 	}
 	cidRef := d.Add(cidFont)
 
-	// Jede Glyphe braucht eine Unicode-Zuordnung (für PDF/A U und A Pflicht,
-	// ISO 19005-3 6.2.11.7.2). Folgeglyphen eines Clusters tragen beim
-	// Shaping keinen Text, sie bekommen das Zeichen, das die Schrift selbst
-	// ihnen in der cmap zuordnet. Fehlt auch das, entscheidet das Profil.
+	// Every glyph needs a Unicode mapping (mandatory for PDF/A U and A,
+	// ISO 19005-3 6.2.11.7.2). Subsequent glyphs of a cluster carry no text
+	// after shaping, they get the character that the font itself assigns
+	// to them in the cmap. If that is missing too, the profile decides.
 	var cm []cmapEntry
 	var unmapped []string
 	var reverse map[ot.GlyphID]rune
@@ -220,8 +220,8 @@ func Embed(d *pdf.Document, u *Usage) (*Embedded, error) {
 	return e, nil
 }
 
-// scale1000 rechnet Schrifteinheiten in Tausendstel Geviert um, gerundet auf
-// drei Nachkommastellen, damit /W und Content Stream dieselben Werte nutzen.
+// scale1000 converts font units to thousandths of an em, rounded to
+// three decimal places, so that /W and the content stream use the same values.
 func (f *Face) scale1000(v float64) float64 {
 	return math.Round(v*1000/f.upem*1000) / 1000
 }
@@ -234,14 +234,14 @@ func (f *Face) r(v int) pdf.Object {
 	return pdf.Real(s)
 }
 
-// stemV schätzt die Stammstärke aus der Strichstärke. Der Wert ist für PDF
-// Pflicht, wird aber von Betrachtern kaum genutzt.
+// stemV estimates the stem width from the weight. The value is mandatory
+// for PDF but hardly used by viewers.
 func stemV(weight int) int {
 	return 50 + weight*weight/4000
 }
 
-// subsetTag bildet das sechsbuchstabige Präfix aus dem Hash von Schrift und
-// Glyphenmenge. Gleiche Eingaben ergeben gleiche Präfixe.
+// subsetTag builds the six-letter prefix from the hash of font and
+// glyph set. Equal inputs yield equal prefixes.
 func subsetTag(f *Face, gids []uint16) string {
 	h := sha256.New()
 	h.Write([]byte(f.key))
@@ -261,7 +261,7 @@ type cmapEntry struct {
 	text string
 }
 
-// toUnicode schreibt eine ToUnicode-CMap nach Adobe Technical Note 5411.
+// toUnicode writes a ToUnicode CMap according to Adobe Technical Note 5411.
 func toUnicode(entries []cmapEntry) []byte {
 	var b bytes.Buffer
 	b.WriteString("/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n" +

@@ -1,9 +1,9 @@
 #!/bin/sh
-# Baut das Image von pdx-server reproduzierbar für linux/amd64 und
-# linux/arm64 als OCI-Archiv. Mit --check zweimal ohne Cache und Vergleich
-# der Digests.
+# Builds the pdx-server image reproducibly for linux/amd64 and
+# linux/arm64 as an OCI archive. With --check, builds twice without cache
+# and compares the digests.
 #
-#   deploy/build.sh [--check] [ziel.tar]
+#   deploy/build.sh [--check] [target.tar]
 set -eu
 cd "$(dirname "$0")/.."
 CHECK=0

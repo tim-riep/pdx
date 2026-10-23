@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-// Die Angaben für Tagged PDF gelangen als FO-Attribute an alle Elemente,
-// der Alternativtext auch aus den Daten.
+// The Tagged PDF information reaches all elements as FO attributes,
+// the alternate text also from the data.
 func TestSemanticAttributes(t *testing.T) {
 	tpl := mini(t, "", `<text id="h" role="H2" lang="en-GB">Total</text>`+
 		`<barcode id="qr" type="qr" value="x" altBind="concat('Betrag ', n)"/>`+
@@ -36,20 +36,20 @@ func TestSemanticAttributes(t *testing.T) {
 		`pdx:id="f1" pdx:alt="Zahl"`,
 		`pdx:id="k1" pdx:scope="Column"`,
 		`pdx:id="z1" pdx:scope="Row"`,
-		`pdx:id="hu" pdx:artifact="true"`, // Übertrag
-		`pdx:id="fr" pdx:artifact="true"`, // Zwischensumme
+		`pdx:id="hu" pdx:artifact="true"`, // carry-over
+		`pdx:id="fr" pdx:artifact="true"`, // subtotal
 	} {
 		if !strings.Contains(s, want) {
 			t.Errorf("%s fehlt im FO", want)
 		}
 	}
-	// Die Gesamtsumme bleibt Inhalt.
+	// The grand total remains content.
 	if i := strings.Index(s, `pdx:id="ftot"`); i < 0 || strings.Contains(s[i:i+80], "pdx:artifact") {
 		t.Errorf("Summenzeile als Artefakt markiert")
 	}
 }
 
-// Die Dokumentsprache folgt der gewählten Sprache.
+// The document language follows the selected language.
 func TestDocumentLanguage(t *testing.T) {
 	res, err := Compile(mini(t, "", `<text id="x">a</text>`), Options{Lang: "en"})
 	if err != nil {

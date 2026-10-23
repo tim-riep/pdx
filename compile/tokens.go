@@ -7,21 +7,21 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Arten von Tokens und von Attributen, die Tokens aufnehmen.
+// Kinds of tokens and of attributes that accept tokens.
 const (
 	kindColor  = "color"
 	kindLength = "length"
 	kindFont   = "font"
-	kindBorder = "border" // Rahmen: Längen und Farben gemischt
-	kindFamily = "family" // Schriftfamilie: Familie eines Schrift-Tokens
+	kindBorder = "border" // border: lengths and colors mixed
+	kindFamily = "family" // font family: family of a font token
 )
 
-// reTokenRef findet Verweise wie $primaer in einem Attributwert.
+// reTokenRef finds references like $primaer in an attribute value.
 var reTokenRef = regexp.MustCompile(`\$[A-Za-z_][A-Za-z0-9_.\-]*`)
 
-// tokenAttrs ordnet Attributnamen die Art der Tokens zu, die sie aufnehmen.
-// Farben und Längen kommen aus den Typen Color, Length und Lengths des
-// Vorlagen-XSD, so bleiben neue Attribute ohne Pflege dabei.
+// tokenAttrs maps attribute names to the kind of tokens they accept.
+// Colors and lengths come from the types Color, Length and Lengths of the
+// template XSD, so new attributes are covered without maintenance.
 var tokenAttrs = func() map[string]string {
 	m := map[string]string{
 		"font": kindFont, "fontFamily": kindFamily, "lineHeight": kindLength,
@@ -39,18 +39,18 @@ var tokenAttrs = func() map[string]string {
 	return m
 }()
 
-// token ist ein aufgelöstes Token.
+// token is a resolved token.
 type token struct {
 	kind  string
-	value string            // Farbe oder Länge
-	font  map[string]string // Stilattribute eines Schrift-Tokens
+	value string            // color or length
+	font  map[string]string // style attributes of a font token
 }
 
-// fontAttrs ordnet Attribute eines Schrift-Tokens Stilattributen zu.
+// fontAttrs maps attributes of a font token to style attributes.
 var fontAttrs = [][2]string{{"family", "fontFamily"}, {"size", "fontSize"}, {"weight", "fontWeight"}, {"style", "fontStyle"}}
 
-// resolveTokens liefert die Vorlage mit aufgelösten Verweisen auf Tokens.
-// Ohne Tokens und Verweise ist es dieselbe Vorlage, sonst eine Kopie.
+// resolveTokens returns the template with resolved references to tokens.
+// Without tokens and references it is the same template, otherwise a copy.
 func resolveTokens(t *template.Template) (*template.Template, template.Errors) {
 	if t.Root.First("tokens") == nil && !usesTokens(t.Root) {
 		return t, nil
@@ -84,8 +84,8 @@ func resolveTokens(t *template.Template) (*template.Template, template.Errors) {
 	return out, nil
 }
 
-// usesTokens meldet, ob ein Attribut, das Tokens aufnimmt, einen Verweis
-// enthält.
+// usesTokens reports whether an attribute that accepts tokens contains a
+// reference.
 func usesTokens(n *template.Node) bool {
 	for _, a := range n.Attrs {
 		if _, ok := tokenAttrs[a.Name]; ok && strings.Contains(a.Value, "$") {
@@ -111,9 +111,9 @@ func (r *tokenResolver) errorf(n *template.Node, msg string) {
 	r.errs = append(r.errs, &template.Error{ID: n.NearestID(), Line: n.Line, Col: n.Col, Msg: msg})
 }
 
-// resolve löst ein Token auf, auch Verweise auf andere Tokens. at ist das
-// Element, an dem ein Fehler gemeldet wird. Ein unbekanntes Token oder ein
-// Kreis ergibt nil.
+// resolve resolves a token, including references to other tokens. at is the
+// element at which an error is reported. An unknown token or a cycle
+// yields nil.
 func (r *tokenResolver) resolve(id string, at *template.Node) *token {
 	if t, ok := r.done[id]; ok {
 		return t
@@ -170,8 +170,8 @@ func (r *tokenResolver) resolve(id string, at *template.Node) *token {
 	return t
 }
 
-// apply ersetzt die Verweise in den Attributen eines Elements. font wird zu
-// den Stilattributen des Schrift-Tokens, eigene Attribute bleiben.
+// apply replaces the references in the attributes of an element. font
+// becomes the style attributes of the font token, own attributes remain.
 func (r *tokenResolver) apply(n *template.Node) {
 	var font *token
 	for i := range n.Attrs {

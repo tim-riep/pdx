@@ -55,7 +55,7 @@ func TestRenderTemplate(t *testing.T) {
 	}
 	testutil.Conform(t, "musterrechnung.pdf", res.PDF, DefaultProfile)
 
-	// Gleiche Eingabe ergibt dieselbe Datei.
+	// The same input yields the same file.
 	again, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate}})
 	if err != nil {
 		t.Fatal(err)
@@ -79,7 +79,7 @@ func TestRenderTemplateStrict(t *testing.T) {
 		!strings.Contains(err.Error(), "invoice.xsd") {
 		t.Fatalf("strenge Prüfung meldet %v", err)
 	}
-	// Ohne strenge Prüfung wird gesetzt, die Währung steht nirgends im Layout.
+	// Without strict validation it is typeset, the currency appears nowhere in the layout.
 	if _, err := tpl.Render(bad, TemplateOptions{Options: Options{CreationDate: templateDate}}); err != nil {
 		t.Fatal(err)
 	}
@@ -121,8 +121,8 @@ func BenchmarkRenderInvoice(b *testing.B) {
 	}
 }
 
-// TestTemplateIDsInAreaTree prüft, dass die Bereiche die IDs ihrer
-// Vorlagenelemente tragen, auch Felder innerhalb eines Textes.
+// TestTemplateIDsInAreaTree checks that the areas carry the IDs of their
+// template elements, including fields inside a text.
 func TestTemplateIDsInAreaTree(t *testing.T) {
 	p, data := loadMuster(t)
 	res, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate}})
@@ -130,7 +130,7 @@ func TestTemplateIDsInAreaTree(t *testing.T) {
 		t.Fatal(err)
 	}
 	containers := map[string]bool{}
-	runs := map[string]string{} // ID des Runs zu seinem Text
+	runs := map[string]string{} // run ID to its text
 	paths := map[string]bool{}
 	var walk func(as []areatree.Area)
 	walk = func(as []areatree.Area) {
@@ -171,8 +171,8 @@ func TestTemplateIDsInAreaTree(t *testing.T) {
 	}
 }
 
-// TestTemplateLayout prüft, dass Layout ohne PDF denselben Area Tree liefert
-// wie Render und dass ein abgebrochener Kontext das Setzen beendet.
+// TestTemplateLayout checks that Layout without PDF yields the same area tree
+// as Render and that a cancelled context stops the typesetting.
 func TestTemplateLayout(t *testing.T) {
 	p, data := loadMuster(t)
 	tpl, err := CompileTemplate(p, "")
@@ -199,8 +199,8 @@ func TestTemplateLayout(t *testing.T) {
 	}
 }
 
-// BenchmarkLayoutInvoice misst Transformation und Layout ohne PDF mit
-// gemeinsamer Schriftregistry, wie der Designer es für die Vorschau nutzt.
+// BenchmarkLayoutInvoice measures transformation and layout without PDF with
+// a shared font registry, as the designer uses it for the preview.
 func BenchmarkLayoutInvoice(b *testing.B) {
 	p, data := loadMuster(b)
 	tpl, err := CompileTemplate(p, "")
@@ -215,8 +215,8 @@ func BenchmarkLayoutInvoice(b *testing.B) {
 	}
 }
 
-// TestPackageFonts prüft, dass Schriften unter assets/ eines Pakets ohne
-// weitere Angabe genutzt werden und ihre Bytes am Face hängen.
+// TestPackageFonts checks that fonts under assets/ of a package are used
+// without further configuration and their bytes are attached to the face.
 func TestPackageFonts(t *testing.T) {
 	p, data := loadMuster(t)
 	ttf, err := os.ReadFile("testdata/fonts/source-serif-4/SourceSerif4-Regular.otf")
@@ -230,7 +230,7 @@ func TestPackageFonts(t *testing.T) {
 		t.Fatal(err)
 	}
 	reg := font.NewRegistry()
-	for range 2 { // ein zweiter Lauf auf derselben Registry registriert nicht doppelt
+	for range 2 { // a second run on the same registry does not register twice
 		doc, err := tpl.Layout(data, TemplateOptions{Options: Options{Fonts: reg}})
 		if err != nil {
 			t.Fatal(err)
@@ -247,8 +247,8 @@ func TestPackageFonts(t *testing.T) {
 	}
 }
 
-// TestRenderTrace prüft die Spur der Operatoren: gleiche Ausgabe mit und
-// ohne Spur, Bereiche mit Vorlagen-IDs, IDAt findet den innersten Bereich.
+// TestRenderTrace checks the operator trace: same output with and
+// without trace, areas with template IDs, IDAt finds the innermost area.
 func TestRenderTrace(t *testing.T) {
 	p, data := loadMuster(t)
 	tpl, err := CompileTemplate(p, "")
@@ -295,7 +295,7 @@ func TestRenderTrace(t *testing.T) {
 	}
 }
 
-// Ohne Angabe beim Aufruf gilt das Profil der Vorlage.
+// Without a value in the call the profile of the template applies.
 func TestTemplateProfile(t *testing.T) {
 	p, err := pkg.ReadDir("testdata/templates/musterrechnung")
 	if err != nil {
@@ -322,8 +322,8 @@ func TestTemplateProfile(t *testing.T) {
 	}
 }
 
-// Parallele Läufe mit gemeinsamer Vorlage und Schrift-Registry ergeben
-// dieselben Bytes wie ein einzelner Lauf (Render-Dienst, Shaper-Pool).
+// Parallel runs with a shared template and font registry yield
+// the same bytes as a single run (render service, shaper pool).
 func TestParallelRenderDeterministic(t *testing.T) {
 	p, data := loadMuster(t)
 	tpl, err := CompileTemplate(p, "")

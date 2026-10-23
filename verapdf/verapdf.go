@@ -1,8 +1,8 @@
-// Package verapdf ruft veraPDF auf und wertet den maschinenlesbaren Bericht
-// (Format mrr) aus. veraPDF ist die verbindliche Prüfinstanz für die
-// Konformität der Ausgabe von pdx.
+// Package verapdf invokes veraPDF and evaluates the machine-readable report
+// (mrr format). veraPDF is the authoritative validator for the
+// conformance of the output of pdx.
 //
-// Version und Docker-Image sind ausschließlich hier konfiguriert.
+// Version and Docker image are configured exclusively here.
 package verapdf
 
 import (
@@ -19,20 +19,20 @@ import (
 )
 
 const (
-	// Version ist die verbindliche veraPDF-Version.
+	// Version is the authoritative veraPDF version.
 	Version = "1.30.3"
-	// DockerImage ist das Release-Image der Version, per Digest gepinnt. Auf
-	// ghcr.io gibt es nur Entwicklerstände, das Release liegt auf Docker Hub.
+	// DockerImage is the release image of the version, pinned by digest. On
+	// ghcr.io there are only development builds, the release is on Docker Hub.
 	DockerImage = "docker.io/verapdf/cli:v1.30.3@sha256:d565095c67a083e693aebf7d1a15784007370571053fc1aa5b502665b9a78f9c"
-	// DockerPlatform ist die Plattform des Images (nur amd64 verfügbar).
+	// DockerPlatform is the platform of the image (only amd64 available).
 	DockerPlatform = "linux/amd64"
-	// EnvRunner wählt den Runner: "local", "docker" oder ein Pfad zur
-	// veraPDF-CLI. Ohne Angabe wird eine lokale CLI der richtigen Version
-	// bevorzugt, sonst Docker genutzt.
+	// EnvRunner selects the runner: "local", "docker" or a path to the
+	// veraPDF CLI. If unset, a local CLI of the right version is
+	// preferred, otherwise Docker is used.
 	EnvRunner = "PDX_VERAPDF"
 )
 
-// flavours bildet pdx-Profilnamen auf veraPDF-Flavours ab.
+// flavours maps pdx profile names to veraPDF flavours.
 var flavours = map[string]string{
 	"pdfa-2b": "2b",
 	"pdfa-2u": "2u",
@@ -45,7 +45,7 @@ var flavours = map[string]string{
 	"pdfua-2": "ua2",
 }
 
-// Flavour liefert den veraPDF-Flavour zu einem einzelnen pdx-Profil.
+// Flavour returns the veraPDF flavour for a single pdx profile.
 func Flavour(profile string) (string, error) {
 	f, ok := flavours[profile]
 	if !ok {
@@ -54,10 +54,10 @@ func Flavour(profile string) (string, error) {
 	return f, nil
 }
 
-// Flavours liefert die veraPDF-Flavours zu einer Profilangabe wie
-// "pdfa-3a,pdfua-1", einen je beanspruchtem Standard. veraPDF prüft mit
-// --flavour genau einen Flavour je Lauf (docs.verapdf.org/cli/validation),
-// also braucht eine Kombination mehrere Läufe.
+// Flavours returns the veraPDF flavours for a profile specification such as
+// "pdfa-3a,pdfua-1", one per claimed standard. veraPDF checks exactly one
+// flavour per run with --flavour (docs.verapdf.org/cli/validation), so a
+// combination needs several runs.
 func Flavours(spec string) ([]string, error) {
 	var out []string
 	var errs []error
@@ -78,23 +78,23 @@ func Flavours(spec string) ([]string, error) {
 	return out, errors.Join(errs...)
 }
 
-// Runner prüft eine Datei mit veraPDF.
+// Runner checks a file with veraPDF.
 type Runner interface {
-	// Name beschreibt den Runner für Ausgaben.
+	// Name describes the runner for output.
 	Name() string
-	// Validate prüft die Datei gegen den Flavour und liefert den Bericht.
+	// Validate checks the file against the flavour and returns the report.
 	Validate(ctx context.Context, file, flavour string) (*Report, error)
 }
 
-// Local nutzt eine installierte veraPDF-CLI.
+// Local uses an installed veraPDF CLI.
 type Local struct {
 	Path string
 }
 
-// Name beschreibt den Runner.
+// Name describes the runner.
 func (l Local) Name() string { return "veraPDF lokal (" + l.Path + ")" }
 
-// Validate ruft die lokale CLI auf.
+// Validate invokes the local CLI.
 func (l Local) Validate(ctx context.Context, file, flavour string) (*Report, error) {
 	abs, err := filepath.Abs(file)
 	if err != nil {
@@ -103,18 +103,18 @@ func (l Local) Validate(ctx context.Context, file, flavour string) (*Report, err
 	return run(ctx, exec.CommandContext(ctx, l.Path, "--format", "mrr", "--flavour", flavour, abs))
 }
 
-// Docker nutzt das gepinnte Docker-Image.
+// Docker uses the pinned Docker image.
 type Docker struct {
 	Image, Platform string
-	// Bin ist der Pfad zur Docker-CLI, leer bedeutet docker aus dem PATH.
+	// Bin is the path to the Docker CLI, empty means docker from the PATH.
 	Bin string
 }
 
-// Name beschreibt den Runner.
+// Name describes the runner.
 func (d Docker) Name() string { return "veraPDF in Docker (" + d.Image + ")" }
 
-// Validate startet einen Container, der das Verzeichnis der Datei nur lesend
-// eingebunden bekommt.
+// Validate starts a container that gets the directory of the file mounted
+// read-only.
 func (d Docker) Validate(ctx context.Context, file, flavour string) (*Report, error) {
 	abs, err := filepath.Abs(file)
 	if err != nil {
@@ -132,15 +132,15 @@ func (d Docker) Validate(ctx context.Context, file, flavour string) (*Report, er
 		"-v", filepath.Dir(abs)+":/data:ro",
 		d.Image, "--format", "mrr", "--flavour", flavour, "/data/"+filepath.Base(abs))
 	if d.Bin != "" {
-		// Hilfsprogramme von Docker Desktop (Anmeldedaten) liegen neben der
-		// CLI und müssen im PATH stehen, auch wenn die CLI dort fehlt.
+		// Docker Desktop helper programs (credentials) live next to the CLI
+		// and must be in the PATH, even if the CLI is missing there.
 		cmd.Env = withPath(filepath.Dir(d.Bin))
 	}
 	return run(ctx, cmd)
 }
 
-// run führt veraPDF aus. veraPDF endet bei nicht konformen Dateien mit
-// Exit-Code 1, das ist kein Fehler des Aufrufs. Maßgeblich ist der Bericht.
+// run executes veraPDF. veraPDF exits with exit code 1 for non-conforming
+// files, which is not an error of the call. The report is what counts.
 func run(ctx context.Context, cmd *exec.Cmd) (*Report, error) {
 	var out, errOut bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &errOut
@@ -161,24 +161,24 @@ func run(ctx context.Context, cmd *exec.Cmd) (*Report, error) {
 
 var reVersion = regexp.MustCompile(`veraPDF (\d+\.\d+\.\d+)`)
 
-// Options steuert DetectWith.
+// Options controls DetectWith.
 type Options struct {
-	// Path ist ein ausdrücklich gewählter Pfad zur veraPDF-CLI, etwa aus den
-	// Einstellungen des Designers. Er geht EnvRunner vor.
+	// Path is an explicitly chosen path to the veraPDF CLI, for example from
+	// the designer settings. It takes precedence over EnvRunner.
 	Path string
 }
 
-// Detect wählt einen Runner nach EnvRunner, sonst lokale CLI der richtigen
-// Version, sonst Docker. warn erhält Hinweise, etwa auf eine abweichende
-// lokale Version, und darf nil sein.
+// Detect selects a runner according to EnvRunner, otherwise a local CLI of
+// the right version, otherwise Docker. warn receives hints, for example
+// about a different local version, and may be nil.
 func Detect(ctx context.Context, warn func(string)) (Runner, error) {
 	return DetectWith(ctx, Options{}, warn)
 }
 
-// DetectWith wählt einen Runner: zuerst opts.Path, dann EnvRunner, sonst
-// automatisch. Automatisch sucht es veraPDF und Docker im PATH und in den
-// üblichen Installationsordnern, denn Programme aus Finder, Launchpad oder
-// dem Startmenü sehen den PATH der Shell nicht.
+// DetectWith selects a runner: first opts.Path, then EnvRunner, otherwise
+// automatically. Automatic detection looks for veraPDF and Docker in the
+// PATH and in the usual installation folders, because programs started
+// from Finder, Launchpad or the Start menu do not see the shell's PATH.
 func DetectWith(ctx context.Context, opts Options, warn func(string)) (Runner, error) {
 	if warn == nil {
 		warn = func(string) {}
@@ -218,8 +218,8 @@ func DetectWith(ctx context.Context, opts Options, warn func(string)) (Runner, e
 	}
 }
 
-// explicit nutzt eine ausdrücklich genannte CLI, eine andere Version ergibt
-// nur einen Hinweis.
+// explicit uses an explicitly named CLI, a different version only
+// results in a hint.
 func explicit(ctx context.Context, path, what string, warn func(string)) (Runner, error) {
 	ver, err := localVersion(ctx, path)
 	if err != nil {
@@ -231,8 +231,8 @@ func explicit(ctx context.Context, path, what string, warn func(string)) (Runner
 	return Local{Path: path}, nil
 }
 
-// searchDirs liefert die Ordner, in denen Installationen außerhalb des PATH
-// liegen. In Tests ersetzbar.
+// searchDirs returns the folders where installations outside the PATH
+// reside. Replaceable in tests.
 var searchDirs = func(prog string) []string {
 	home, _ := os.UserHomeDir()
 	if runtime.GOOS == "windows" {
@@ -247,7 +247,7 @@ var searchDirs = func(prog string) []string {
 	}
 	switch prog {
 	case "verapdf":
-		// Der Installer von veraPDF legt die CLI unter ~/verapdf ab.
+		// The veraPDF installer puts the CLI under ~/verapdf.
 		return []string{filepath.Join(home, "verapdf"), "/usr/local/bin", "/opt/homebrew/bin", "/usr/local/verapdf", "/opt/verapdf"}
 	case "docker":
 		return []string{"/usr/local/bin", "/opt/homebrew/bin", filepath.Join(home, ".docker", "bin"), "/Applications/Docker.app/Contents/Resources/bin", "/usr/bin"}
@@ -255,8 +255,8 @@ var searchDirs = func(prog string) []string {
 	return nil
 }
 
-// candidates liefert ausführbare Dateien eines Programms: zuerst aus dem
-// PATH, dann aus searchDirs, ohne Doppelte.
+// candidates returns executables of a program: first from the PATH,
+// then from searchDirs, without duplicates.
 func candidates(prog string) []string {
 	names := []string{prog}
 	if runtime.GOOS == "windows" {
@@ -298,7 +298,7 @@ func findDocker() (string, bool) {
 	return c[0], true
 }
 
-// withPath liefert die Umgebung mit dir vorn im PATH.
+// withPath returns the environment with dir prepended to the PATH.
 func withPath(dir string) []string {
 	env := os.Environ()
 	for i, kv := range env {

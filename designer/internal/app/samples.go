@@ -12,31 +12,31 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/schema"
 )
 
-// SampleDataService verwaltet die Beispieldaten unter samples/: Auswahl für
-// Vorschau, PDF und Konformität, Import und erzeugte Randfälle.
+// SampleDataService manages the sample data under samples/: selection for
+// preview, PDF and conformance, import and generated edge cases.
 type SampleDataService struct{ c *Core }
 
-// NewSampleDataService liefert die Sicht auf den gemeinsamen Zustand.
+// NewSampleDataService returns the view on the shared state.
 func NewSampleDataService(c *Core) *SampleDataService { return &SampleDataService{c} }
 
-// Sample ist ein Datensatz im Paket.
+// Sample is a data set in the package.
 type Sample struct {
 	Path string `json:"path"` // samples/rechnung.xml
 	Name string `json:"name"`
 	Size int    `json:"size"`
-	// Selected markiert den Datensatz der Vorschau.
+	// Selected marks the data set of the preview.
 	Selected bool `json:"selected"`
 }
 
-// Samples sind die Datensätze und die Auswahl.
+// Samples are the data sets and the selection.
 type Samples struct {
 	Items []Sample `json:"items"`
-	// Placeholder meldet, dass die Vorschau Platzhalter zeigt, weil es keine
-	// Beispieldaten gibt.
+	// Placeholder reports that the preview shows placeholders because there
+	// is no sample data.
 	Placeholder bool `json:"placeholder"`
 }
 
-// Randfälle, die sich erzeugen lassen.
+// Edge cases that can be generated.
 var edgeCases = map[string]struct {
 	file string
 	gen  schema.Gen
@@ -46,7 +46,7 @@ var edgeCases = map[string]struct {
 	"lang":    {"samples/rand-lange-texte.xml", schema.Gen{Repeat: 3, Optional: true, LongText: true}},
 }
 
-// List liefert die Datensätze.
+// List returns the data sets.
 func (s *SampleDataService) List() (Samples, error) {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -61,7 +61,7 @@ func (s *SampleDataService) List() (Samples, error) {
 	return out, nil
 }
 
-// Select wählt den Datensatz für Vorschau, PDF und Konformität.
+// Select chooses the data set for preview, PDF and conformance.
 func (s *SampleDataService) Select(p string) error {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -76,7 +76,7 @@ func (s *SampleDataService) Select(p string) error {
 	return nil
 }
 
-// Import übernimmt eine XML-Datei als Beispieldaten und wählt sie.
+// Import adds an XML file as sample data and selects it.
 func (s *SampleDataService) Import(file string) (Result, error) {
 	b, err := os.ReadFile(file)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *SampleDataService) Import(file string) (Result, error) {
 	return s.add(name, b, "Beispieldaten importieren")
 }
 
-// ImportDialog fragt nach der Datei.
+// ImportDialog asks for the file.
 func (s *SampleDataService) ImportDialog() (Result, error) {
 	if s.c.dialogs == nil {
 		return Result{}, ErrNoDialogs
@@ -101,9 +101,9 @@ func (s *SampleDataService) ImportDialog() (Result, error) {
 	return s.Import(p)
 }
 
-// Generate erzeugt einen Randfall aus dem Daten-XSD: minimal (nur
-// Pflichtknoten, Wiederholungen so selten wie erlaubt), maximal (alle
-// optionalen Knoten, 60 Einträge je Wiederholung) oder lang (lange Texte).
+// Generate creates an edge case from the data XSD: minimal (only
+// required nodes, repetitions as rare as allowed), maximal (all
+// optional nodes, 60 entries per repetition) or long (long texts).
 func (s *SampleDataService) Generate(kind string) (Result, error) {
 	ec, ok := edgeCases[kind]
 	if !ok {
@@ -125,7 +125,7 @@ func (s *SampleDataService) Generate(kind string) (Result, error) {
 	return s.add(ec.file, sc.Generate(ec.gen), "Randfall erzeugen")
 }
 
-// Remove entfernt Beispieldaten aus dem Paket.
+// Remove removes sample data from the package.
 func (s *SampleDataService) Remove(p string) (Result, error) {
 	if !strings.HasPrefix(p, "samples/") {
 		return Result{}, fmt.Errorf("%s liegt nicht unter samples/", p)
@@ -147,7 +147,7 @@ func (s *SampleDataService) Remove(p string) (Result, error) {
 	return res, err
 }
 
-// add legt eine Datei als Befehl an (Undo entfernt sie wieder) und wählt sie.
+// add creates a file as a command (Undo removes it again) and selects it.
 func (s *SampleDataService) add(name string, b []byte, label string) (Result, error) {
 	res, err := NewTemplateService(s.c).change(func(d *model.Document) (string, error) {
 		return "", d.Apply(label, model.Command{Op: "setFile", Name: name, Data: b})
@@ -162,7 +162,7 @@ func (s *SampleDataService) add(name string, b []byte, label string) (Result, er
 	return res, nil
 }
 
-// sampleName bildet einen Pfad unter samples/ aus einem Dateinamen.
+// sampleName forms a path under samples/ from a file name.
 func sampleName(base string) string {
 	base = strings.TrimSuffix(base, path.Ext(base))
 	var b strings.Builder

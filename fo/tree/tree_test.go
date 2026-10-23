@@ -96,7 +96,7 @@ func TestInherit(t *testing.T) {
 	if v, _ := inner.Attr("font-family"); v != "Times" {
 		t.Errorf("font-family %q, erwartet Times", v)
 	}
-	// Ränder löst fo/props mit dem berechneten Wert auf.
+	// fo/props resolves margins with the computed value.
 	if v, _ := inner.Attr("margin-left"); v != "inherit" {
 		t.Errorf("margin-left %q, erwartet inherit", v)
 	}
@@ -127,8 +127,8 @@ func TestLatin1(t *testing.T) {
 	}
 }
 
-// FO mit dem Namespace der Erweiterungen bis pdx 0.1.0 wird wie der neue
-// gelesen, für Elemente und Attribute.
+// FO with the extension namespace up to pdx 0.1.0 is read like the new
+// one, for elements and attributes.
 func TestLegacyNamespace(t *testing.T) {
 	old := strings.Replace(minimal, NSPDX, NSPDXLegacy, 1)
 	old = strings.Replace(old, `<fo:block font-size="12pt">`, `<fo:block font-size="12pt" pdx:id="b1">`, 1)

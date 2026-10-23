@@ -8,7 +8,7 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// containers sammelt alle Container eines Dokuments.
+// containers collects all containers of a document.
 func containers(doc *areatree.Document) []*areatree.Container {
 	var out []*areatree.Container
 	for _, p := range doc.Pages {
@@ -22,9 +22,9 @@ func containers(doc *areatree.Document) []*areatree.Container {
 	return out
 }
 
-// Die Angaben für Tagged PDF aus dem FO stehen an den Bereichen: Rolle,
-// Alternativtext, Sprache, Lesereihenfolge, Artefakt, Bezug von Kopfzellen,
-// Zeilen und Wiederholungen. Inline-Elemente stehen in Document.Inline.
+// The Tagged PDF information from the FO is stored on the areas: role,
+// alternate text, language, reading order, artifact, header cell references,
+// rows and repetitions. Inline elements are in Document.Inline.
 func TestLayoutTags(t *testing.T) {
 	var rows strings.Builder
 	for i := 0; i < 70; i++ {
@@ -74,7 +74,7 @@ func TestLayoutTags(t *testing.T) {
 	if tg := byID["pos"].Tag; tg == nil || tg.Order != 2 {
 		t.Errorf("Lesereihenfolge %+v", tg)
 	}
-	// Der Kopf steht auf jeder Seite, nur der erste ist kein Repeat.
+	// The header is on every page, only the first one is not a repeat.
 	if len(heads) < 2 {
 		t.Fatalf("Kopf %d-mal", len(heads))
 	}
@@ -92,8 +92,8 @@ func TestLayoutTags(t *testing.T) {
 	if doc.Inline["lnk"].Role != "Link" {
 		t.Errorf("Verweis %+v", doc.Inline["lnk"])
 	}
-	// Kopf ist statisch, die Anschrift ausdrücklich Inhalt, die innere Zeile
-	// kennt ihren positionierten Vorfahren.
+	// The header is static, the address is explicitly content, the inner line
+	// knows its positioned ancestor.
 	if tg := byID["kopf"].Tag; tg == nil || !tg.Static || tg.Content {
 		t.Errorf("Kopf %+v", tg)
 	}
@@ -103,7 +103,7 @@ func TestLayoutTags(t *testing.T) {
 	if tg := byID["zeile"].Tag; tg == nil || !strings.HasPrefix(tg.Parent, "fo:block-container@") {
 		t.Errorf("Zeile %+v", tg)
 	}
-	// Die Tabelle geht über mehrere Seiten, ihre Fortsetzung ist markiert.
+	// The table spans several pages, its continuation is marked.
 	var tables []*areatree.Container
 	for _, c := range containers(doc) {
 		if c.ID == "tb" && strings.HasPrefix(c.Source, "fo:table@") {
@@ -113,7 +113,7 @@ func TestLayoutTags(t *testing.T) {
 	if len(tables) < 2 || (tables[0].Tag != nil && tables[0].Tag.Continued) || tables[1].Tag == nil || !tables[1].Tag.Continued {
 		t.Errorf("Fortsetzung der Tabelle: %d Fragmente", len(tables))
 	}
-	// Automatische Trennstriche sind markiert.
+	// Automatic hyphens are marked.
 	hyph := 0
 	for _, p := range doc.Pages {
 		areatree.Walk(p.Areas, func(a areatree.Area) bool {

@@ -9,10 +9,10 @@ import (
 	"sync"
 )
 
-// RunFOPBatch setzt viele FO-Dateien mit FOP (fop -r), verteilt auf parallel
-// Container. files sind Pfade unterhalb des Repositorys, die Ergebnisse
-// landen als <name>.pdf und <name>.at.xml in out. Fehlt eines davon, ist FOP
-// an der Datei gescheitert, der Grund steht in <name>.log.
+// RunFOPBatch typesets many FO files with FOP (fop -r), distributed over
+// parallel containers. files are paths below the repository, the results end
+// up as <name>.pdf and <name>.at.xml in out. If one of them is missing, FOP
+// failed on the file, and the reason is in <name>.log.
 func RunFOPBatch(ctx context.Context, files []string, out string, parallel int) error {
 	if err := EnsureImages(ctx); err != nil {
 		return err
@@ -65,8 +65,8 @@ func RunFOPBatch(ctx context.Context, files []string, out string, parallel int) 
 	return nil
 }
 
-// PopplerBatch schreibt zu jeder PDF-Datei in dir die Ausgabe von
-// pdftotext -bbox-layout als <name>.bbox.html.
+// PopplerBatch writes, for every PDF file in dir, the output of
+// pdftotext -bbox-layout as <name>.bbox.html.
 func PopplerBatch(ctx context.Context, dir string) error {
 	if err := EnsureImages(ctx); err != nil {
 		return err

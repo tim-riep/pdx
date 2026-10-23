@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { openMuster } from "./helpers";
 
-// Barrierefreiheit: Analyse ohne veraPDF, Baum in Lesereihenfolge, Klick
-// führt zum Element, ein fehlender Alternativtext erscheint als Befund.
+// Accessibility: analysis without veraPDF, tree in reading order, a click
+// leads to the element, a missing alternative text appears as a finding.
 test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   await openMuster(page, true);
   await page.getByRole("tab", { name: "Barrierefreiheit" }).click();
@@ -18,7 +18,7 @@ test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   await h1.click();
   await expect(page.getByTestId("inspector").locator("header code")).toHaveText("titel");
 
-  // Alternativtext des GiroCodes entfernen: Befund mit Element.
+  // Remove the alternative text of the GiroCode: finding with element.
   await tree.locator('[data-struct="Figure"]').click();
   const inspector = page.getByTestId("inspector");
   await expect(inspector.locator("header code")).toHaveText("girocode");
@@ -32,7 +32,7 @@ test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(panel.getByTestId("access-verdict")).toContainText("Keine Befunde der Vorprüfung", { timeout: 10_000 });
 
-  // Lesereihenfolge auf der Seite: Briefkopf zuerst, Überschrift danach.
+  // Reading order on the page: letterhead first, heading after it.
   await panel.getByTestId("access-order").check();
   const first = page.locator('.order[data-order="1"]');
   await expect(first).toHaveAttribute("data-ref", "briefkopf-firma");
@@ -41,7 +41,7 @@ test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   expect(Number(await titel.getAttribute("data-order"))).toBeGreaterThan(3);
   await page.screenshot({ path: "test-results/lesereihenfolge.png" });
 
-  // Lesereihenfolge ändern: Rechnungsdaten vor das Adressfenster.
+  // Change the reading order: invoice data before the address window.
   const num = async (ref: string) => Number(await page.locator(`.order[data-ref="${ref}"]`).getAttribute("data-order"));
   expect(await num("absenderzeile")).toBeLessThan(await num("rechnungsnummer"));
   await tree.locator('[data-up="rechnungsdaten"]').click();
@@ -49,7 +49,7 @@ test("Barrierefreiheit: Strukturbaum und Vorprüfung", async ({ page }) => {
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect.poll(async () => (await num("absenderzeile")) < (await num("rechnungsnummer")), { timeout: 10_000 }).toBe(true);
 
-  // Manuelle Prüfung: Fortschritt zählt nur zutreffende Punkte.
+  // Manual check: progress counts only applicable items.
   const mh = panel.getByTestId("matterhorn");
   await mh.getByRole("button", { name: /Manuelle Prüfung/ }).click();
   await expect(mh.getByTestId("matterhorn-progress")).toHaveText("0 von 34 geprüft");

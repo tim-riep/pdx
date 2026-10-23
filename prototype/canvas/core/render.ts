@@ -1,5 +1,5 @@
-// Zeichnet eine Seite des Area Tree in einen Canvas. Es wird nichts gesetzt,
-// jede Glyphe steht an der Stelle, die die Engine berechnet hat.
+// Draws a page of the area tree into a canvas. Nothing is laid out,
+// each glyph sits at the position the engine computed.
 
 import type { Doc, Page } from "./model";
 
@@ -19,7 +19,7 @@ export function drawPage(ctx: CanvasRenderingContext2D, doc: Doc, page: Page, sc
           ctx.fillRect(x, y, w, h);
         }
         if (it.b) {
-          // Rahmen liegen innerhalb des Rechtecks: oben, rechts, unten, links.
+          // Borders lie inside the rectangle: top, right, bottom, left.
           const [t, r, b, l] = it.b;
           if (t) { ctx.fillStyle = t[1]; ctx.fillRect(x, y, w, t[0]); }
           if (r) { ctx.fillStyle = r[1]; ctx.fillRect(x + w - r[0], y, r[0], h); }
@@ -60,8 +60,8 @@ export function drawPage(ctx: CanvasRenderingContext2D, doc: Doc, page: Page, sc
   ctx.restore();
 }
 
-// PageCache hält je Seite ein fertig gezeichnetes Bild für die aktuelle
-// Vergrößerung. Beim Scrollen und bei Überlagerungen wird nur kopiert.
+// PageCache keeps one finished image per page for the current
+// magnification. Scrolling and overlays only copy it.
 export class PageCache {
   private bitmaps = new Map<number, { scale: number; canvas: HTMLCanvasElement }>();
   constructor(private doc: Doc) {}

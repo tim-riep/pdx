@@ -1,51 +1,50 @@
 pdx
 Copyright 2026 Tim Riep
 
-Dieses Produkt steht unter der Apache License 2.0 (siehe LICENSE).
+This product is licensed under the Apache License 2.0 (see LICENSE).
 
-Enthaltene Fremdbestandteile:
+Included third-party components:
 
 * Liberation Fonts 2.1.5 (font/fonts/liberation)
   Copyright (c) 2010 Google Corporation, Copyright (c) 2012 Red Hat, Inc.
-  SIL Open Font License 1.1, siehe font/fonts/liberation/LICENSE
+  SIL Open Font License 1.1, see font/fonts/liberation/LICENSE
 
-* Source Serif 4 (nur Testdaten, testdata/fonts/source-serif-4)
+* Source Serif 4 (test data only, testdata/fonts/source-serif-4)
   Copyright 2014 - 2023 Adobe
-  SIL Open Font License 1.1, siehe testdata/fonts/source-serif-4/LICENSE.md
+  SIL Open Font License 1.1, see testdata/fonts/source-serif-4/LICENSE.md
 
-* Trennmuster aus hyph-utf8 (hyph/patterns), unverändert übernommen:
+* Hyphenation patterns from hyph-utf8 (hyph/patterns), included unchanged:
   de-1996: Copyright (c) 2013-2024 Stephan Hennig, Werner Lemberg,
   Günter Milde, Sander van Geloven, Georg Pfeiffer, Gisbert W. Selke,
-  Tobias Wendorf, Keno Wehr, MIT-Lizenz.
-  en-us: Copyright (C) 1990, 2004, 2005 Gerard D.C. Kuiken, Weitergabe mit
-  diesem Hinweis erlaubt. Volltexte in hyph/patterns/README.md.
+  Tobias Wendorf, Keno Wehr, MIT License.
+  en-us: Copyright (C) 1990, 2004, 2005 Gerard D.C. Kuiken, redistribution
+  permitted with this notice. Full texts in hyph/patterns/README.md.
 
-* Das sRGB-ICC-Profil wird zur Laufzeit von icc/ aus den Parametern der
-  Norm IEC 61966-2-1 berechnet und steht unter der Lizenz dieses Projekts.
+* The sRGB ICC profile is computed at runtime by icc/ from the parameters
+  of the IEC 61966-2-1 standard and is covered by the license of this project.
 
-Abhängigkeiten:
+Dependencies:
 
 * github.com/boombuler/barcode (MIT)
 * github.com/boxesandglue/textshape (MIT)
 * github.com/tim-riep/go-xslt (Apache-2.0)
-* golang.org/x/crypto (BSD-3-Clause), nur OCSP
+* golang.org/x/crypto (BSD-3-Clause), OCSP only
 * golang.org/x/text (BSD-3-Clause)
 * software.sslmate.com/src/go-pkcs12 (BSD-3-Clause)
 
-Das Windows-Setup des Designers wird mit Inno Setup erstellt
-(Copyright Jordan Russell und Martijn Laan, Inno Setup License).
+The Windows installer of the designer is built with Inno Setup
+(Copyright Jordan Russell and Martijn Laan, Inno Setup License).
 
-Nur im Repository für Tests, nicht Teil der Programme:
+Only in the repository for tests, not part of the programs:
 
-* Testfälle aus Apache FOP 2.11 (testdata/suites/fop)
+* Test cases from Apache FOP 2.11 (testdata/suites/fop)
   Copyright 1999-2025 The Apache Software Foundation
-  Apache License 2.0, siehe testdata/suites/fop/LICENSE und NOTICE
+  Apache License 2.0, see testdata/suites/fop/LICENSE and NOTICE
 
-* Erwartungswerte zur W3C XSL Test Suite (testdata/suites/w3c/expect),
-  erzeugt mit Apache FOP. Die Suite selbst wird beim Testlauf geladen und
-  nicht weitergegeben (W3C Software and Document License).
+* Expected results for the W3C XSL Test Suite (testdata/suites/w3c/expect),
+  generated with Apache FOP. The suite itself is downloaded during the test
+  run and not redistributed (W3C Software and Document License).
 
-* EU DSS Validator (esig/dss-demonstrations, LGPL-2.1) als lokal gebautes
-  Docker-Image (dssval/build.sh), veraPDF (GPL-3.0 oder MPL-2.0) als
-  Docker-Image. Beide werden nur aufgerufen, nicht gelinkt oder
-  weitergegeben.
+* EU DSS Validator (esig/dss-demonstrations, LGPL-2.1) as a locally built
+  Docker image (dssval/build.sh), veraPDF (GPL-3.0 or MPL-2.0) as a
+  Docker image. Both are only invoked, not linked or redistributed.

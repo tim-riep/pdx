@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-// writer schreibt XML mit fester Einrückung und merkt sich, in welcher Zeile
-// welches Vorlagenelement beginnt. Attribute erscheinen in der Reihenfolge,
-// in der der Compiler sie übergibt, das macht die Ausgabe deterministisch.
+// writer writes XML with fixed indentation and records on which line each
+// template element begins. Attributes appear in the order in which the
+// compiler passes them, which makes the output deterministic.
 type writer struct {
 	b     bytes.Buffer
 	depth int
 	line  int
 	open  []string
-	// srcmap ordnet Zeilenbereiche im XSLT den Vorlagen-IDs zu.
+	// srcmap maps line ranges in the XSLT to template IDs.
 	srcmap []Mapping
 }
 
@@ -23,17 +23,17 @@ func newWriter() *writer {
 	return w
 }
 
-// Leerraum zwischen den Elementen entfernt der XSLT-Prozessor beim Lesen des
-// Stylesheets, Text steht immer in xsl:text. Die Einrückung ist daher ohne
-// Wirkung auf das erzeugte FO.
+// The XSLT processor strips whitespace between the elements when reading the
+// stylesheet, text is always in xsl:text. The indentation therefore has no
+// effect on the generated FO.
 func (w *writer) nl() {
 	w.b.WriteByte('\n')
 	w.line++
 	w.b.WriteString(strings.Repeat("  ", w.depth))
 }
 
-// enter vermerkt, dass ab der nächsten Zeile das Vorlagenelement id beginnt.
-// leave schließt den Bereich mit der aktuellen Zeile ab.
+// enter records that the template element id begins on the next line.
+// leave closes the range with the current line.
 func (w *writer) enter(id string) int {
 	w.srcmap = append(w.srcmap, Mapping{Start: w.line + 1, End: w.line + 1, ID: id})
 	return len(w.srcmap) - 1
@@ -45,8 +45,8 @@ func (w *writer) leave(i int) {
 	}
 }
 
-// comment schreibt einen Kommentar. Doppelte Bindestriche sind in XML
-// Kommentaren verboten und werden getrennt.
+// comment writes a comment. Double hyphens are forbidden in XML comments
+// and are separated.
 func (w *writer) comment(s string) {
 	for strings.Contains(s, "--") {
 		s = strings.ReplaceAll(s, "--", "- -")
@@ -57,7 +57,7 @@ func (w *writer) comment(s string) {
 	w.b.WriteString(" -->")
 }
 
-// start öffnet ein Element. attrs sind Name-Wert-Paare, leere Werte entfallen.
+// start opens an element. attrs are name-value pairs, empty values are omitted.
 func (w *writer) start(name string, attrs ...string) {
 	w.nl()
 	w.b.WriteByte('<')
@@ -68,7 +68,7 @@ func (w *writer) start(name string, attrs ...string) {
 	w.depth++
 }
 
-// empty schreibt ein leeres Element.
+// empty writes an empty element.
 func (w *writer) empty(name string, attrs ...string) {
 	w.nl()
 	w.b.WriteByte('<')
@@ -90,7 +90,7 @@ func (w *writer) attrs(attrs []string) {
 	}
 }
 
-// end schließt das zuletzt geöffnete Element.
+// end closes the most recently opened element.
 func (w *writer) end() {
 	name := w.open[len(w.open)-1]
 	w.open = w.open[:len(w.open)-1]
@@ -101,7 +101,7 @@ func (w *writer) end() {
 	w.b.WriteByte('>')
 }
 
-// text schreibt Textinhalt als xsl:text, damit Leerraum erhalten bleibt.
+// text writes text content as xsl:text so that whitespace is preserved.
 func (w *writer) text(s string) {
 	if s == "" {
 		return
@@ -144,13 +144,13 @@ func (w *writer) bytes() []byte {
 	return append(out, '\n')
 }
 
-// xpathString liefert einen XPath-Stringliteral mit verdoppelten
-// Apostrophen (XPath 2.0 und neuer).
+// xpathString returns an XPath string literal with doubled
+// apostrophes (XPath 2.0 and later).
 func xpathString(s string) string {
 	return "'" + strings.ReplaceAll(s, "'", "''") + "'"
 }
 
-// avtLiteral maskiert geschweifte Klammern für Attributwert-Templates.
+// avtLiteral escapes curly braces for attribute value templates.
 func avtLiteral(s string) string {
 	s = strings.ReplaceAll(s, "{", "{{")
 	return strings.ReplaceAll(s, "}", "}}")

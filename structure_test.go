@@ -13,8 +13,8 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// structure liest den Strukturbaum einer Datei und verlangt, dass Baum,
-// ParentTree und markierter Inhalt zusammenpassen.
+// structure reads the structure tree of a file and requires that tree,
+// ParentTree and marked content match.
 func structure(t *testing.T, pdf []byte) []byte {
 	t.Helper()
 	f, err := reader.Open(pdf)
@@ -36,9 +36,9 @@ func structure(t *testing.T, pdf []byte) []byte {
 	return b.Bytes()
 }
 
-// TestCorpusTagged rendert jeden Fall als Tagged PDF. Der Strukturbaum muss
-// widerspruchsfrei sein und dem Golden File entsprechen. Mit
-// PDX_CONFORMANCE=1 prüft veraPDF, dass PDF/A-3b weiter erfüllt ist.
+// TestCorpusTagged renders every case as Tagged PDF. The structure tree must
+// be consistent and match the golden file. With
+// PDX_CONFORMANCE=1 veraPDF checks that PDF/A-3b is still satisfied.
 func TestCorpusTagged(t *testing.T) {
 	files, err := filepath.Glob("testdata/fo/*.fo")
 	if err != nil {
@@ -81,9 +81,9 @@ func TestTemplateStructure(t *testing.T) {
 	testutil.Conform(t, "musterrechnung-tagged.pdf", res.PDF, DefaultProfile)
 }
 
-// TestTemplateAccessible rendert die Musterrechnung als PDF/A-3a mit
-// PDF/UA-1. Fehlt der Alternativtext des GiroCodes, nennt der Befund die
-// Vorlagen-ID.
+// TestTemplateAccessible renders the sample invoice as PDF/A-3a with
+// PDF/UA-1. If the alternate text of the GiroCode is missing, the finding
+// names the template ID.
 func TestTemplateAccessible(t *testing.T) {
 	p, data := loadMuster(t)
 	opts := TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3a,pdfua-1"}}
@@ -99,7 +99,7 @@ func TestTemplateAccessible(t *testing.T) {
 	}
 	testutil.Conform(t, "musterrechnung-ua.pdf", res.PDF, "pdfa-3a,pdfua-1")
 
-	// Ohne Alternativtext muss der Befund die ID des GiroCodes nennen.
+	// Without alternate text the finding must name the ID of the GiroCode.
 	src := string(template.Write(p.Template))
 	alt := ` altBind="concat('GiroCode zur Überweisung von ', format-number(xs:decimal(inv:totals/inv:gross), '#.##0,00', 'fmt-de'), ' Euro an ', inv:seller/inv:name)"`
 	if !strings.Contains(src, alt) {
@@ -120,12 +120,12 @@ func TestTemplateAccessible(t *testing.T) {
 	}
 }
 
-// accessibleProfiles sind die Kombinationen für barrierefreie Dokumente.
+// accessibleProfiles are the combinations for accessible documents.
 var accessibleProfiles = []string{"pdfa-3a,pdfua-1", "pdfa-4,pdfua-2"}
 
-// TestAccessible rendert die Fälle in testdata/accessible unter PDF/UA-1
-// und PDF/UA-2. Der Strukturbaum muss widerspruchsfrei sein und dem Golden
-// File entsprechen, mit PDX_CONFORMANCE=1 prüft veraPDF jeden Standard.
+// TestAccessible renders the cases in testdata/accessible under PDF/UA-1
+// and PDF/UA-2. The structure tree must be consistent and match the golden
+// file, with PDX_CONFORMANCE=1 veraPDF checks every standard.
 func TestAccessible(t *testing.T) {
 	files, err := filepath.Glob("testdata/accessible/*.fo")
 	if err != nil || len(files) == 0 {
@@ -148,8 +148,8 @@ func TestAccessible(t *testing.T) {
 	}
 }
 
-// TestTemplateUA2 rendert die Musterrechnung als PDF/A-4f mit PDF/UA-2:
-// Strukturelemente im Namespace von PDF 2.0, Anhang mit Beschreibung.
+// TestTemplateUA2 renders the sample invoice as PDF/A-4f with PDF/UA-2:
+// structure elements in the PDF 2.0 namespace, attachment with description.
 func TestTemplateUA2(t *testing.T) {
 	p, data := loadMuster(t)
 	res, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-4f,pdfua-2"}})

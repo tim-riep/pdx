@@ -11,29 +11,29 @@ import (
 	"github.com/tim-riep/go-xslt/engine"
 )
 
-// Result ist das Ergebnis eines Ausdrucks mit Beispieldaten im ersten
-// Vorkommen des Kontexts.
+// Result is the result of an expression with sample data in the first
+// occurrence of the context.
 type Result struct {
-	// Error ist der Fehler beim Übersetzen oder Auswerten, sonst leer.
+	// Error is the error during compiling or evaluating, otherwise empty.
 	Error string `json:"error"`
-	// Count ist die Zahl der Einträge der Ergebnisfolge.
+	// Count is the number of items of the result sequence.
 	Count int `json:"count"`
-	// Kind ist nodes, boolean, number, string oder empty.
+	// Kind is nodes, boolean, number, string or empty.
 	Kind string `json:"kind"`
-	// Values sind die ersten Werte als Text.
+	// Values are the first values as text.
 	Values []string `json:"values"`
-	// Truth ist der Wahrheitswert, wenn er sich bilden lässt (true, false
-	// oder leer).
+	// Truth is the truth value, if it can be formed (true, false
+	// or empty).
 	Truth string `json:"truth"`
-	// NoContext meldet, dass der Kontext in den Daten fehlt.
+	// NoContext reports that the context is missing in the data.
 	NoContext bool `json:"noContext"`
 }
 
-// maxValues begrenzt die gezeigten Werte.
+// maxValues limits the values shown.
 const maxValues = 5
 
-// Eval wertet expr mit den Daten im ersten Knoten des Kontexts aus. ns
-// ordnet Präfixe Namespaces zu.
+// Eval evaluates expr with the data in the first node of the context. ns
+// maps prefixes to namespaces.
 func Eval(expr, ctx string, ns map[string]string, data []byte) Result {
 	var b bytes.Buffer
 	b.WriteString(`<xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema"`)
@@ -51,7 +51,7 @@ func Eval(expr, ctx string, ns map[string]string, data []byte) Result {
 	b.WriteString(` exclude-result-prefixes="#all"><xsl:output method="text"/>`)
 	b.WriteString(`<xsl:template match="/"><xsl:variable name="c" select="(/` + attr(ctx) + `)[1]"/>`)
 	b.WriteString(`<xsl:if test="empty($c)">-&#10;</xsl:if><xsl:for-each select="$c">`)
-	// Der Ausdruck steht allein in einer Zeile, damit Meldungen passen.
+	// The expression stands alone on a line, so that messages match.
 	b.WriteString("\n<xsl:variable name=\"r\" select=\"" + attr(expr) + "\"/>\n")
 	b.WriteString(`<xsl:value-of select="count($r)"/><xsl:text>&#10;</xsl:text>` +
 		`<xsl:value-of select="if (empty($r)) then 'empty' else if ($r instance of node()*) then 'nodes' else if ($r instance of xs:boolean*) then 'boolean' else if ($r instance of xs:numeric*) then 'number' else 'string'"/><xsl:text>&#10;</xsl:text>` +
@@ -82,8 +82,8 @@ func Eval(expr, ctx string, ns map[string]string, data []byte) Result {
 	return r
 }
 
-// message kürzt die Meldung von go-xslt auf den Teil zum Ausdruck und
-// übersetzt die häufigen Fälle.
+// message shortens the message of go-xslt to the part about the expression and
+// translates the common cases.
 func message(d engine.Diagnostic) string {
 	m := strings.TrimSpace(d.Message)
 	m = strings.TrimPrefix(m, "err:")
@@ -122,7 +122,7 @@ var translations = []struct {
 func attr(s string) string {
 	var b bytes.Buffer
 	xml.EscapeText(&b, []byte(s))
-	// EscapeText ersetzt Anführungszeichen, Zeilenumbrüche bleiben als
-	// Zeichenreferenz erhalten.
+	// EscapeText replaces quotation marks, line breaks are kept as
+	// character references.
 	return b.String()
 }

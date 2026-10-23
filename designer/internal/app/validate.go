@@ -17,28 +17,28 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// Problem ist ein Befund der laufenden Prüfung.
+// Problem is a finding of the running check.
 type Problem struct {
-	// Level ist Fehler oder Hinweis.
+	// Level is error or hint.
 	Level string `json:"level"`
-	// Source ist vorlage (Vorlage, Verweise, Übersetzung, Bindungen) oder
-	// beispiel (Beispieldaten gegen das Daten-XSD).
+	// Source is vorlage (template, references, compilation, bindings) or
+	// beispiel (sample data against the data XSD).
 	Source string `json:"source"`
-	// Ref ist das Vorlagenelement, leer bei Befunden ohne Bezug.
+	// Ref is the template element, empty for findings without reference.
 	Ref string `json:"ref"`
-	// File ist bei Beispieldaten die Datei im Paket.
+	// File is the file in the package for sample data.
 	File string `json:"file"`
 	Msg  string `json:"msg"`
 }
 
-// Report sind die Befunde zu einer Revision.
+// Report is the findings for a revision.
 type Report struct {
 	Rev      uint64    `json:"rev"`
 	Problems []Problem `json:"problems"`
 	Millis   int64     `json:"millis"`
 }
 
-// validator hält die laufende Prüfung.
+// validator holds the running check.
 type validator struct {
 	timer  *time.Timer
 	gen    int
@@ -46,17 +46,17 @@ type validator struct {
 	latest Report
 }
 
-// validateDelay ist die Pause nach einer Änderung bis zur Prüfung. Sie ist
-// länger als beim Setzen, die Prüfung liest auch Schema und Beispieldaten.
+// validateDelay is the pause after a change until the check. It is
+// longer than for typesetting, the check also reads schema and sample data.
 const validateDelay = 250 * time.Millisecond
 
-// ValidationService liefert die Befunde der laufenden Prüfung.
+// ValidationService returns the findings of the running check.
 type ValidationService struct{ c *Core }
 
-// NewValidationService liefert die Sicht auf den gemeinsamen Zustand.
+// NewValidationService returns the view on the shared state.
 func NewValidationService(c *Core) *ValidationService { return &ValidationService{c} }
 
-// Problems liefert die zuletzt gemeldeten Befunde.
+// Problems returns the most recently reported findings.
 func (s *ValidationService) Problems() Report {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -67,7 +67,7 @@ func (s *ValidationService) Problems() Report {
 	return r
 }
 
-// validateLocked plant die Prüfung. Aufruf mit gehaltener Sperre.
+// validateLocked schedules the check. Call with the lock held.
 func (c *Core) validateLocked(delay time.Duration) {
 	if c.doc == nil {
 		return
@@ -89,8 +89,8 @@ func (c *Core) validate() {
 	rev := c.doc.Rev()
 	key := validationKey(canon, files)
 	if key == c.v.key {
-		// Inhalt unverändert, etwa nach einem Wechsel der Ansicht: nur die
-		// Revision folgt.
+		// Content unchanged, for example after switching the view: only the
+		// revision follows.
 		if c.v.latest.Rev != rev {
 			c.v.latest.Rev = rev
 			c.emit.Emit(EventProblems, c.v.latest)
@@ -109,7 +109,7 @@ func (c *Core) validate() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.v.gen != gen || c.doc == nil {
-		return // eine neuere Prüfung läuft
+		return // a newer check is running
 	}
 	c.v.key, c.v.latest = key, r
 	c.emit.Emit(EventProblems, r)
@@ -130,7 +130,7 @@ func validationKey(canon []byte, files map[string][]byte) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// runChecks prüft einen Stand mit den Prüfungen von pdx check.
+// runChecks checks a state with the checks of pdx check.
 func runChecks(canon []byte, files map[string][]byte) []Problem {
 	out := []Problem{}
 	t, err := template.Parse(canon)
@@ -145,8 +145,8 @@ func runChecks(canon []byte, files map[string][]byte) []Problem {
 	return append(out, presenceProblems(p)...)
 }
 
-// presenceProblems prüft die Pfade in Präsenzbedingungen gegen das
-// Daten-XSD. Bindungen prüft schon check.Package.
+// presenceProblems checks the paths in presence conditions against the
+// data XSD. check.Package already checks bindings.
 func presenceProblems(p *pkg.Package) []Problem {
 	sc, err := schema.Load(p)
 	if err != nil || sc == nil {
@@ -176,7 +176,7 @@ func problemsOf(fs []dataschema.Finding) []Problem {
 	out := make([]Problem, 0, len(fs))
 	for _, f := range fs {
 		p := Problem{Level: string(f.Level), Source: "vorlage", Ref: f.ID, Msg: f.Msg}
-		// Befunde zu Beispieldaten beginnen mit dem Dateinamen.
+		// Findings for sample data start with the file name.
 		if name, rest, ok := strings.Cut(f.Msg, " "); ok && f.ID == "" && strings.HasPrefix(name, "samples/") {
 			p.Source, p.File, p.Msg = "beispiel", name, rest
 		}

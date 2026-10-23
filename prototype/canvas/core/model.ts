@@ -1,5 +1,5 @@
-// Datenformat des Prototyps, geschrieben von prototype/canvas/export.
-// Alle Maße in Punkt, Ursprung oben links.
+// Data format of the prototype, written by prototype/canvas/export.
+// All sizes in points, origin top left.
 
 export type Rect = [number, number, number, number];
 
@@ -8,7 +8,7 @@ export interface RectItem {
   id?: string;
   r: Rect;
   bg?: string;
-  // Rahmen oben, rechts, unten, links als [Breite, Farbe] oder 0.
+  // Borders top, right, bottom, left as [width, color] or 0.
   b?: ([number, string] | 0)[];
 }
 
@@ -59,7 +59,7 @@ export interface Doc {
   pages: Page[];
 }
 
-// loadDoc lädt den Area Tree und registriert die Schriften als FontFace.
+// loadDoc loads the area tree and registers the fonts as FontFace.
 export async function loadDoc(url = "data/musterrechnung.json"): Promise<Doc> {
   const doc: Doc = await (await fetch(url)).json();
   await Promise.all(
@@ -69,7 +69,7 @@ export async function loadDoc(url = "data/musterrechnung.json"): Promise<Doc> {
       document.fonts.add(face);
     }),
   );
-  // Lasttest: ?x=10 vervielfacht die Seiten.
+  // Load test: ?x=10 multiplies the pages.
   const x = Number(new URLSearchParams(location.search).get("x") ?? "1");
   if (x > 1) {
     const base = doc.pages;

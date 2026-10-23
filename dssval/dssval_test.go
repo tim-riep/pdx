@@ -2,8 +2,8 @@ package dssval
 
 import "testing"
 
-// parseReport liest Signaturen samt eingebetteter Zeitstempel und
-// Dokument-Zeitstempel aus dem einfachen Bericht.
+// parseReport reads signatures including embedded timestamps and
+// document timestamps from the simple report.
 func TestParseReport(t *testing.T) {
 	raw := []byte(`{"SimpleReport":{"signatureOrTimestampOrEvidenceRecord":[
 		{"Signature":{"Id":"S-1","SignatureFormat":"PAdES-BASELINE-LTA","Indication":"TOTAL_PASSED",

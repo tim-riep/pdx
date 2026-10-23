@@ -13,19 +13,19 @@ import (
 	"github.com/tim-riep/pdx/font/fonts"
 )
 
-// Registry ordnet Familiennamen, Strichstärke und Stil einer Schrift zu.
+// Registry maps family names, weight and style to a font.
 //
-// Eine neue Registry kennt die eingebetteten Liberation-Schriften und
-// bildet die PDF-Standardschriften sowie die generischen CSS-Familien darauf
-// ab. Eigene Schriften kommen über Add oder AddFile hinzu und haben Vorrang.
+// A new Registry knows the embedded Liberation fonts and
+// maps the PDF standard fonts and the generic CSS families to them.
+// Custom fonts are added via Add or AddFile and take precedence.
 type Registry struct {
 	mu       sync.Mutex
 	families map[string][]*Face
 	aliases  map[string]string
-	lazy     map[string][]string // Familie zu eingebetteten Dateien, erst bei Bedarf geladen
+	lazy     map[string][]string // family to embedded files, loaded only when needed
 }
 
-// builtinAliases bildet Standardschriften und generische Familien ab.
+// builtinAliases maps standard fonts and generic families.
 var builtinAliases = map[string]string{
 	"helvetica":       "liberation sans",
 	"arial":           "liberation sans",
@@ -39,12 +39,12 @@ var builtinAliases = map[string]string{
 	"monospace":       "liberation mono",
 }
 
-// fallbackFamily ist die Ersatzfamilie, wenn keine Familie der Liste
-// vorhanden ist (XSL 1.1 7.9.3). Die generischen Familien cursive und fantasy
-// haben keine eigene Schrift, die Liste wird dann weiter durchsucht.
+// fallbackFamily is the fallback family if no family of the list
+// is available (XSL 1.1 7.9.3). The generic families cursive and fantasy
+// have no font of their own, the list is then searched further.
 const fallbackFamily = "liberation sans"
 
-// NewRegistry legt eine Registry mit den eingebetteten Schriften an.
+// NewRegistry creates a Registry with the embedded fonts.
 func NewRegistry() *Registry {
 	r := &Registry{
 		families: map[string][]*Face{},
@@ -66,8 +66,8 @@ func NewRegistry() *Registry {
 	return r
 }
 
-// Add registriert eine Schrift unter ihrem Familiennamen und optional weiteren
-// Namen.
+// Add registers a font under its family name and optionally further
+// names.
 func (r *Registry) Add(f *Face, names ...string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -81,7 +81,7 @@ func (r *Registry) Add(f *Face, names ...string) {
 	}
 }
 
-// AddFile lädt eine Schriftdatei und registriert sie.
+// AddFile loads a font file and registers it.
 func (r *Registry) AddFile(file string, names ...string) (*Face, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
@@ -95,8 +95,8 @@ func (r *Registry) AddFile(file string, names ...string) (*Face, error) {
 	return f, nil
 }
 
-// Lookup sucht eine Schrift. family darf eine kommagetrennte Liste wie in
-// CSS sein, die erste gefundene Familie gewinnt. weight ist 100 bis 900.
+// Lookup looks up a font. family may be a comma-separated list as in
+// CSS, the first family found wins. weight is 100 to 900.
 func (r *Registry) Lookup(family string, weight int, italic bool) (*Face, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -112,7 +112,7 @@ func (r *Registry) Lookup(family string, weight int, italic bool) (*Face, error)
 			return pick(faces, weight, italic), nil
 		}
 	}
-	// XSL 1.1 7.9.3: Passt keine Schrift, wird systemabhängig ersetzt.
+	// XSL 1.1 7.9.3: If no font matches, a system-dependent substitution is made.
 	if err := r.loadLazy(fallbackFamily); err != nil {
 		return nil, err
 	}
@@ -143,8 +143,8 @@ func (r *Registry) loadLazy(fam string) error {
 	return nil
 }
 
-// pick wählt den Schnitt mit passendem Stil und nächster Strichstärke. Bei
-// Gleichstand gewinnt die kräftigere Schrift ab 500, sonst die leichtere.
+// pick selects the face with matching style and nearest weight. On a
+// tie the bolder font wins from 500 upward, else the lighter one.
 func pick(faces []*Face, weight int, italic bool) *Face {
 	var best *Face
 	bestScore := 1 << 30

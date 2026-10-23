@@ -1,11 +1,11 @@
-// Messung für beide Prototypen mit denselben Eingaben. Die Messung spricht
-// nur über das DOM mit der Oberfläche:
-//   [data-viewport]       Scrollbereich
-//   [data-page="n"]       Seite n, Inhalt in Punkt mal Zoom
-//   [data-hover]          Rahmen des Elements unter der Maus (Wert: ID)
-//   [data-sel]            Auswahl (Wert: ID)
-//   [data-drag]           Versatz beim Ziehen in Punkt, als "dx,dy"
-// und über window.__app.setZoom(z).
+// Measurement for both prototypes with the same inputs. The measurement talks
+// to the UI only through the DOM:
+//   [data-viewport]       scroll area
+//   [data-page="n"]       page n, content in points times zoom
+//   [data-hover]          frame of the element under the mouse (value: ID)
+//   [data-sel]            selection (value: ID)
+//   [data-drag]           offset while dragging in points, as "dx,dy"
+// and through window.__app.setZoom(z).
 
 import { HitIndex } from "./hit";
 import type { Doc } from "./model";
@@ -24,7 +24,7 @@ export interface FrameStats {
   p50: number;
   p95: number;
   max: number;
-  over33: number; // Frames über 33 ms
+  over33: number; // frames over 33 ms
 }
 
 export interface LatencyStats {
@@ -78,7 +78,7 @@ function pageEl(n: number): HTMLElement {
   return document.querySelector(`[data-page="${n}"]`) as HTMLElement;
 }
 
-// Punkt auf Seite n in Bildschirmkoordinaten.
+// Point on page n in screen coordinates.
 function client(n: number, x: number, y: number): [number, number] {
   const r = pageEl(n).getBoundingClientRect();
   const z = window.__app!.zoom();
@@ -91,8 +91,8 @@ function mouse(type: string, n: number, x: number, y: number): void {
   target.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, clientX: cx, clientY: cy, button: 0, buttons: type === "mouseup" ? 0 : 1 }));
 }
 
-// Wartet auf die DOM-Änderung, die cond erfüllt, und liefert die Zeit seit t0.
-// Das misst die Arbeit von Ereignis und Framework ohne die Taktung der Frames.
+// Waits for the DOM change that satisfies cond and returns the time since t0.
+// This measures the work of event and framework without the frame timing.
 function commit(cond: () => boolean, t0: number): Promise<number> {
   if (cond()) return Promise.resolve(performance.now() - t0);
   return new Promise((res) => {
@@ -107,7 +107,7 @@ function commit(cond: () => boolean, t0: number): Promise<number> {
   });
 }
 
-// Wartet Frame für Frame, bis cond erfüllt ist, und liefert die Zeit seit t0.
+// Waits frame by frame until cond is satisfied and returns the time since t0.
 async function until(cond: () => boolean, t0: number): Promise<number> {
   for (let i = 0; i < 120; i++) {
     const t = await raf();
@@ -130,7 +130,7 @@ export function installBench(framework: string, doc: Doc, firstPaint: number): v
     await raf();
     await raf();
 
-    // Zoom: je Frame eine Stufe zwischen 50 % und 300 %.
+    // Zoom: one step per frame between 50 % and 300 %.
     let ts: number[] = [];
     const steps = Math.round(60 * n);
     for (let i = 0; i <= steps; i++) {
@@ -142,7 +142,7 @@ export function installBench(framework: string, doc: Doc, firstPaint: number): v
     app.setZoom(1);
     await raf();
 
-    // Scrollen über alle Seiten.
+    // Scrolling over all pages.
     ts = [];
     const max = vp.scrollHeight - vp.clientHeight;
     const frames = Math.round(150 * n);
@@ -152,7 +152,7 @@ export function installBench(framework: string, doc: Doc, firstPaint: number): v
     }
     const scroll = frameStats(ts);
 
-    // Hover über die Elemente von Seite 2, ein Ereignis je Frame.
+    // Hover over the elements of page 2, one event per frame.
     const page = doc.pages[1];
     pageEl(page.n).scrollIntoView({ block: "start" });
     await raf();
@@ -177,7 +177,7 @@ export function installBench(framework: string, doc: Doc, firstPaint: number): v
     }
     const hover = { ...frameStats(ts), latency: latencyStats(hoverLat), commit: latencyStats(hoverCommit) };
 
-    // Auswahl per Klick.
+    // Selection by click.
     const selLat: number[] = [], selCommit: number[] = [];
     for (let i = 0; i < Math.round(40 * n); i++) {
       const e = pick(i * 3 + 1);
@@ -193,7 +193,7 @@ export function installBench(framework: string, doc: Doc, firstPaint: number): v
     }
     const select = { ...latencyStats(selLat), commit: latencyStats(selCommit) };
 
-    // Ziehen: Element wählen, dann je Frame ein Mausschritt.
+    // Dragging: select an element, then one mouse step per frame.
     const e = els[Math.floor(els.length / 2)];
     const sx = e.r[0] + e.r[2] / 2, sy = e.r[1] + e.r[3] / 2;
     mouse("mousedown", page.n, sx, sy);
@@ -229,8 +229,8 @@ export function installBench(framework: string, doc: Doc, firstPaint: number): v
     return res;
   };
 
-  // Mit ?bench=1 läuft die Messung von selbst, das Ergebnis steht dann als
-  // Text auf der Seite (für Browser ohne Skriptzugriff, etwa Safari).
+  // With ?bench=1 the measurement runs by itself, the result then appears as
+  // text on the page (for browsers without script access, for example Safari).
   if (new URLSearchParams(location.search).has("bench")) {
     setTimeout(async () => {
       const r = await window.__bench!();
@@ -254,7 +254,7 @@ export function installBench(framework: string, doc: Doc, firstPaint: number): v
     }, 800);
   }
 
-  // Erwartete ID unter einem Punkt, unabhängig von der Oberfläche berechnet.
+  // Expected ID under a point, computed independently of the UI.
   const indexes = new Map<number, HitIndex>();
   function hitId(n: number, x: number, y: number): string | null {
     let idx = indexes.get(n);

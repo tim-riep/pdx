@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "pdx Render-Dienst",
+    "title": "pdx render service",
     "version": "1",
-    "description": "Rendert Vorlagen zu PDF bis PDF/A und PDF/UA, prüft mit veraPDF und signiert nach PAdES. Keine Nutzdaten in Logs oder Metriken, nichts wird über die Anfrage hinaus gespeichert außer Vorlagen.",
+    "description": "Renders templates to PDF up to PDF/A and PDF/UA, checks with veraPDF and signs according to PAdES. No payload data in logs or metrics, nothing is stored beyond the request except templates.",
     "license": {"name": "Apache-2.0", "identifier": "Apache-2.0"}
   },
   "servers": [{"url": "/"}],
@@ -11,39 +11,39 @@
   "paths": {
     "/healthz": {
       "get": {
-        "summary": "Lebenszeichen",
+        "summary": "Liveness",
         "security": [],
-        "responses": {"200": {"description": "Dienst läuft", "content": {"text/plain": {"schema": {"type": "string"}}}}}
+        "responses": {"200": {"description": "Service is running", "content": {"text/plain": {"schema": {"type": "string"}}}}}
       }
     },
     "/readyz": {
       "get": {
-        "summary": "Bereitschaft, Ablage lesbar",
+        "summary": "Readiness, store readable",
         "security": [],
         "responses": {
-          "200": {"description": "bereit", "content": {"text/plain": {"schema": {"type": "string"}}}},
+          "200": {"description": "ready", "content": {"text/plain": {"schema": {"type": "string"}}}},
           "503": {"$ref": "#/components/responses/Problem"}
         }
       }
     },
     "/metrics": {
       "get": {
-        "summary": "Metriken im Textformat von Prometheus",
+        "summary": "Metrics in the Prometheus text format",
         "security": [],
-        "responses": {"200": {"description": "Metriken", "content": {"text/plain": {"schema": {"type": "string"}}}}}
+        "responses": {"200": {"description": "Metrics", "content": {"text/plain": {"schema": {"type": "string"}}}}}
       }
     },
     "/openapi.json": {
       "get": {
-        "summary": "Diese Spezifikation",
+        "summary": "This specification",
         "security": [],
         "responses": {"200": {"description": "OpenAPI 3.1", "content": {"application/json": {"schema": {"type": "object"}}}}}
       }
     },
     "/v1/render/{id}": {
       "post": {
-        "summary": "Datensatz rendern",
-        "description": "Recht render. Daten-XML im Rumpf, PDF als Antwort.",
+        "summary": "Render a record",
+        "description": "Permission render. Data XML in the body, PDF as response.",
         "parameters": [
           {"$ref": "#/components/parameters/id"},
           {"$ref": "#/components/parameters/version"},
@@ -69,8 +69,8 @@
     },
     "/v1/render/{id}/batch": {
       "post": {
-        "summary": "Stapel rendern",
-        "description": "Recht render. ZIP mit XML-Dateien im Rumpf, ZIP mit einem PDF je Datensatz und ergebnis.json als Antwort. Fehler einzelner Datensätze stehen in ergebnis.json.",
+        "summary": "Render a batch",
+        "description": "Permission render. ZIP with XML files in the body, ZIP with one PDF per record and ergebnis.json as response. Errors of individual records are in ergebnis.json.",
         "parameters": [
           {"$ref": "#/components/parameters/id"},
           {"$ref": "#/components/parameters/version"},
@@ -95,10 +95,10 @@
     },
     "/v1/templates": {
       "get": {
-        "summary": "Vorlagen auflisten",
-        "description": "Recht templates.",
+        "summary": "List templates",
+        "description": "Permission templates.",
         "responses": {
-          "200": {"description": "Vorlagen", "content": {"application/json": {"schema": {
+          "200": {"description": "Templates", "content": {"application/json": {"schema": {
             "type": "object", "required": ["templates"],
             "properties": {"templates": {"type": "array", "items": {"$ref": "#/components/schemas/TemplateInfo"}}}}}}},
           "401": {"$ref": "#/components/responses/Problem"},
@@ -108,11 +108,11 @@
     },
     "/v1/templates/{id}": {
       "post": {
-        "summary": "Vorlagenpaket als neue Version ablegen",
-        "description": "Recht templates. Das Paket wird gelesen und kompiliert, eine fehlerhafte Vorlage wird mit allen Befunden abgelehnt. Gleicher Inhalt wie eine vorhandene Version liefert diese mit 200.",
+        "summary": "Store a template package as a new version",
+        "description": "Permission templates. The package is read and compiled, a faulty template is rejected with all findings. The same content as an existing version returns that version with 200.",
         "parameters": [
           {"$ref": "#/components/parameters/id"},
-          {"name": "activate", "in": "query", "schema": {"type": "boolean"}, "description": "Version sofort aktivieren"}
+          {"name": "activate", "in": "query", "schema": {"type": "boolean"}, "description": "Activate the version immediately"}
         ],
         "requestBody": {"required": true, "content": {"application/zip": {"schema": {"type": "string", "format": "binary"}}}},
         "responses": {
@@ -129,11 +129,11 @@
     },
     "/v1/templates/{id}/versions": {
       "get": {
-        "summary": "Versionen einer Vorlage",
-        "description": "Recht templates.",
+        "summary": "Versions of a template",
+        "description": "Permission templates.",
         "parameters": [{"$ref": "#/components/parameters/id"}],
         "responses": {
-          "200": {"description": "Versionen", "content": {"application/json": {"schema": {
+          "200": {"description": "Versions", "content": {"application/json": {"schema": {
             "type": "object", "required": ["id", "versions"],
             "properties": {"id": {"type": "string"}, "versions": {"type": "array", "items": {"$ref": "#/components/schemas/Version"}}}}}}},
           "401": {"$ref": "#/components/responses/Problem"},
@@ -144,8 +144,8 @@
     },
     "/v1/templates/{id}/versions/{version}": {
       "get": {
-        "summary": "Paket einer Version",
-        "description": "Recht templates. Für den Vergleich im Designer.",
+        "summary": "Package of a version",
+        "description": "Permission templates. For the comparison in the designer.",
         "parameters": [{"$ref": "#/components/parameters/id"}, {"name": "version", "in": "path", "required": true, "schema": {"type": "string"}}],
         "responses": {
           "200": {"description": "ZIP", "headers": {"X-Pdx-Template-Version": {"$ref": "#/components/headers/version"}, "ETag": {"schema": {"type": "string"}}},
@@ -158,13 +158,13 @@
     },
     "/v1/templates/{id}/active": {
       "put": {
-        "summary": "Version aktivieren",
-        "description": "Recht templates.",
+        "summary": "Activate a version",
+        "description": "Permission templates.",
         "parameters": [{"$ref": "#/components/parameters/id"}],
         "requestBody": {"required": true, "content": {"application/json": {"schema": {
           "type": "object", "required": ["version"], "properties": {"version": {"type": "string"}}}}}},
         "responses": {
-          "200": {"description": "aktiviert", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TemplateInfo"}}}},
+          "200": {"description": "activated", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TemplateInfo"}}}},
           "400": {"$ref": "#/components/responses/Problem"},
           "401": {"$ref": "#/components/responses/Problem"},
           "403": {"$ref": "#/components/responses/Problem"},
@@ -174,12 +174,12 @@
     },
     "/v1/verify": {
       "post": {
-        "summary": "PDF mit veraPDF prüfen",
-        "description": "Recht verify. 501, wenn veraPDF nicht konfiguriert ist.",
+        "summary": "Check a PDF with veraPDF",
+        "description": "Permission verify. 501 if veraPDF is not configured.",
         "parameters": [{"$ref": "#/components/parameters/profile"}],
         "requestBody": {"required": true, "content": {"application/pdf": {"schema": {"type": "string", "format": "binary"}}}},
         "responses": {
-          "200": {"description": "Ergebnis", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/VerifyResult"}}}},
+          "200": {"description": "Result", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/VerifyResult"}}}},
           "400": {"$ref": "#/components/responses/Problem"},
           "401": {"$ref": "#/components/responses/Problem"},
           "403": {"$ref": "#/components/responses/Problem"},
@@ -192,17 +192,17 @@
     },
     "/v1/sign": {
       "post": {
-        "summary": "PDF nach PAdES signieren",
-        "description": "Recht sign. Signiert per inkrementellem Update mit dem Schlüssel des Dienstes. 501, wenn kein Signer konfiguriert ist.",
+        "summary": "Sign a PDF according to PAdES",
+        "description": "Permission sign. Signs by incremental update with the key of the service. 501 if no signer is configured.",
         "parameters": [
           {"name": "level", "in": "query", "schema": {"type": "string", "enum": ["B-B", "B-T", "B-LT", "B-LTA"]}},
-          {"name": "field", "in": "query", "schema": {"type": "string"}, "description": "vorhandenes Signaturfeld, sonst unsichtbar"},
+          {"name": "field", "in": "query", "schema": {"type": "string"}, "description": "existing signature field, otherwise invisible"},
           {"name": "reason", "in": "query", "schema": {"type": "string"}},
           {"name": "location", "in": "query", "schema": {"type": "string"}}
         ],
         "requestBody": {"required": true, "content": {"application/pdf": {"schema": {"type": "string", "format": "binary"}}}},
         "responses": {
-          "200": {"description": "signiertes PDF", "content": {"application/pdf": {"schema": {"type": "string", "format": "binary"}}}},
+          "200": {"description": "signed PDF", "content": {"application/pdf": {"schema": {"type": "string", "format": "binary"}}}},
           "401": {"$ref": "#/components/responses/Problem"},
           "403": {"$ref": "#/components/responses/Problem"},
           "413": {"$ref": "#/components/responses/Problem"},
@@ -221,17 +221,17 @@
     },
     "parameters": {
       "id": {"name": "id", "in": "path", "required": true, "schema": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"}},
-      "version": {"name": "version", "in": "query", "schema": {"type": "string"}, "description": "Version, ohne Angabe die aktive"},
-      "profile": {"name": "profile", "in": "query", "schema": {"type": "string"}, "description": "Profile mit Komma, etwa pdfa-3a,pdfua-1"},
+      "version": {"name": "version", "in": "query", "schema": {"type": "string"}, "description": "Version, the active one if omitted"},
+      "profile": {"name": "profile", "in": "query", "schema": {"type": "string"}, "description": "Comma-separated profiles, for example pdfa-3a,pdfua-1"},
       "lang": {"name": "lang", "in": "query", "schema": {"type": "string"}},
-      "strict": {"name": "strict", "in": "query", "schema": {"type": "boolean"}, "description": "Daten gegen das Daten-XSD prüfen"},
-      "creationDate": {"name": "creationDate", "in": "query", "schema": {"type": "string", "format": "date-time"}, "description": "Erstellungsdatum, gleiche Eingabe ergibt gleiche Bytes"}
+      "strict": {"name": "strict", "in": "query", "schema": {"type": "boolean"}, "description": "Validate the data against the data XSD"},
+      "creationDate": {"name": "creationDate", "in": "query", "schema": {"type": "string", "format": "date-time"}, "description": "Creation date, the same input yields the same bytes"}
     },
     "headers": {
-      "version": {"schema": {"type": "string"}, "description": "verwendete Version der Vorlage"}
+      "version": {"schema": {"type": "string"}, "description": "version of the template used"}
     },
     "responses": {
-      "Problem": {"description": "Fehler nach RFC 9457", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}},
+      "Problem": {"description": "Error according to RFC 9457", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}},
       "Version": {"description": "Version", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Version"}}}}
     },
     "schemas": {

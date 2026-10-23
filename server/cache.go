@@ -8,16 +8,16 @@ import (
 	"github.com/tim-riep/pdx/font"
 )
 
-// compiled ist eine kompilierte Vorlage mit eigener Schrift-Registry. Die
-// Registry ist je Vorlage, damit Schriften eines Pakets nicht in andere
-// Vorlagen gelangen, und wird über alle Anfragen geteilt.
+// compiled is a compiled template with its own font registry. The
+// registry is per template, so that fonts of one package do not leak into
+// other templates, and it is shared across all requests.
 type compiled struct {
 	tpl   *pdx.Template
 	fonts *font.Registry
 }
 
-// lru hält die zuletzt genutzten kompilierten Vorlagen. Schlüssel ist
-// Vorlage, Version und Sprache, Versionen sind unveränderlich.
+// lru holds the most recently used compiled templates. The key is
+// template, version and language, versions are immutable.
 type lru struct {
 	mu    sync.Mutex
 	cap   int
@@ -66,7 +66,7 @@ func (c *lru) len() int {
 	return c.ll.Len()
 }
 
-// flight führt gleichzeitige Aufrufe mit demselben Schlüssel nur einmal aus.
+// flight executes concurrent calls with the same key only once.
 type flight struct {
 	mu    sync.Mutex
 	calls map[string]*call

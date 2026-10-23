@@ -1,8 +1,8 @@
-// Package testpki baut für Tests eine vollständige PKI im Speicher: Wurzel,
-// Zwischen-CA, Signaturzertifikate (gültig, gesperrt, abgelaufen), ein
-// Zertifikat für den Zeitstempeldienst und einen HTTP-Server mit OCSP, CRLs,
-// Ausstellerzertifikaten und einem Zeitstempeldienst nach RFC 3161. Nichts
-// davon wird gespeichert, echte Schlüssel gibt es im Repo nicht.
+// Package testpki builds a complete in-memory PKI for tests: root,
+// intermediate CA, signing certificates (valid, revoked, expired), a
+// certificate for the timestamp service and an HTTP server with OCSP, CRLs,
+// issuer certificates and a timestamp service according to RFC 3161. None
+// of it is stored, there are no real keys in the repo.
 package testpki
 
 import (
@@ -28,13 +28,13 @@ import (
 	"github.com/tim-riep/pdx/sign"
 )
 
-// Identity ist ein Schlüssel mit Zertifikat.
+// Identity is a key with a certificate.
 type Identity struct {
 	Key  crypto.Signer
 	Cert *x509.Certificate
 }
 
-// PKI ist eine Test-PKI mit laufendem Server.
+// PKI is a test PKI with a running server.
 type PKI struct {
 	Root, Inter              Identity
 	Signer, Revoked, Expired Identity
@@ -46,11 +46,11 @@ type PKI struct {
 	serial int64
 }
 
-// TSAURL ist die Adresse des Zeitstempeldienstes.
+// TSAURL is the address of the timestamp service.
 func (p *PKI) TSAURL() string { return p.base + "/tsa" }
 
-// Client ist ein HTTP-Client, der jede Adresse auf den Server der PKI
-// lenkt, auch die mit dem Rechnernamen aus NewForHost.
+// Client is an HTTP client that routes every address to the server of the
+// PKI, including those with the host name from NewForHost.
 func (p *PKI) Client() *http.Client {
 	addr := p.Server.Listener.Addr().String()
 	return &http.Client{Timeout: 30 * time.Second, Transport: &http.Transport{
@@ -60,12 +60,12 @@ func (p *PKI) Client() *http.Client {
 	}}
 }
 
-// Chain liefert die Kette eines Endzertifikats ohne Wurzel.
+// Chain returns the chain of an end-entity certificate without the root.
 func (p *PKI) Chain(id Identity) []*x509.Certificate {
 	return []*x509.Certificate{id.Cert, p.Inter.Cert}
 }
 
-// KeySigner liefert einen Signer für ein Endzertifikat.
+// KeySigner returns a signer for an end-entity certificate.
 func (p *PKI) KeySigner(t testing.TB, id Identity) *sign.KeySigner {
 	t.Helper()
 	s, err := sign.NewKeySigner(id.Key, p.Chain(id)...)
@@ -75,15 +75,15 @@ func (p *PKI) KeySigner(t testing.TB, id Identity) *sign.KeySigner {
 	return s
 }
 
-// New baut die PKI und startet den Server, der mit dem Test endet.
+// New builds the PKI and starts the server, which ends with the test.
 func New(t testing.TB) *PKI {
 	t.Helper()
 	return NewForHost(t, "")
 }
 
-// NewForHost baut die PKI wie New, die Adressen in den Zertifikaten nutzen
-// aber den Rechnernamen host statt 127.0.0.1, damit etwa ein Container den
-// Server erreicht. Client löst host im Test auf den Server auf.
+// NewForHost builds the PKI like New, but the addresses in the certificates
+// use the host name host instead of 127.0.0.1, so that a container, for
+// example, reaches the server. Client resolves host to the server in the test.
 func NewForHost(t testing.TB, host string) *PKI {
 	t.Helper()
 	p := &PKI{}
@@ -127,8 +127,8 @@ func NewForHost(t testing.TB, host string) *PKI {
 	p.Signer = leaf("Erika Musterfrau", now.Add(-time.Hour), now.Add(365*24*time.Hour), nil, nil)
 	p.Revoked = leaf("Gesperrt", now.Add(-time.Hour), now.Add(365*24*time.Hour), nil, nil)
 	p.Expired = leaf("Abgelaufen", now.Add(-48*time.Hour), now.Add(-24*time.Hour), nil, nil)
-	// Der Zeitstempeldienst braucht die kritische Erweiterung
-	// timeStamping (RFC 3161 2.3), crypto/x509 setzt sie nicht kritisch.
+	// The timestamp service needs the critical extension
+	// timeStamping (RFC 3161 2.3), crypto/x509 does not mark it critical.
 	ekuTS, _ := asn1.Marshal([]asn1.ObjectIdentifier{{1, 3, 6, 1, 5, 5, 7, 3, 8}})
 	p.TSA = leaf("pdx Test Zeitstempel", now.Add(-time.Hour), now.Add(365*24*time.Hour), nil,
 		[]pkix.Extension{{Id: asn1.ObjectIdentifier{2, 5, 29, 37}, Critical: true, Value: ekuTS}})
@@ -155,7 +155,7 @@ func (p *PKI) nextSerial() *big.Int {
 	return big.NewInt(1000 + p.serial)
 }
 
-// issue erzeugt Schlüssel und Zertifikat, selbst signiert ohne Aussteller.
+// issue creates a key and certificate, self-signed without an issuer.
 func (p *PKI) issue(t testing.TB, issuer *Identity, tpl *x509.Certificate) Identity {
 	t.Helper()
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
@@ -178,7 +178,7 @@ func (p *PKI) issue(t testing.TB, issuer *Identity, tpl *x509.Certificate) Ident
 	return Identity{Key: key, Cert: cert}
 }
 
-// crl liefert eine CRL des Ausstellers mit den gesperrten Zertifikaten.
+// crl returns a CRL of the issuer with the revoked certificates.
 func (p *PKI) crl(t testing.TB, issuer Identity, revoked *x509.Certificate) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tpl := &x509.RevocationList{Number: big.NewInt(1), ThisUpdate: time.Now().Add(-time.Minute), NextUpdate: time.Now().Add(24 * time.Hour)}
@@ -195,8 +195,8 @@ func (p *PKI) crl(t testing.TB, issuer Identity, revoked *x509.Certificate) http
 	}
 }
 
-// ocsp beantwortet Anfragen zu Zertifikaten der Zwischen-CA, signiert von
-// der Zwischen-CA selbst.
+// ocsp answers requests about certificates of the intermediate CA, signed by
+// the intermediate CA itself.
 func (p *PKI) ocsp(w http.ResponseWriter, r *http.Request) {
 	body, _ := io.ReadAll(io.LimitReader(r.Body, 1<<16))
 	req, err := ocsp.ParseRequest(body)
@@ -238,7 +238,7 @@ type timeStampReq struct {
 	CertReq bool                  `asn1:"optional,default:false"`
 }
 
-// tsa ist ein Zeitstempeldienst nach RFC 3161.
+// tsa is a timestamp service according to RFC 3161.
 func (p *PKI) tsa(w http.ResponseWriter, r *http.Request) {
 	body, _ := io.ReadAll(io.LimitReader(r.Body, 1<<16))
 	var req timeStampReq

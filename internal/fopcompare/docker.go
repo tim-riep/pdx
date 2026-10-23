@@ -1,8 +1,8 @@
-// Package fopcompare vergleicht die Ausgabe von pdx mit Apache FOP. FOP und
-// Poppler laufen ausschließlich in Docker und nur in Tests (PDX_FOP=1).
+// Package fopcompare compares the output of pdx with Apache FOP. FOP and
+// Poppler run exclusively in Docker and only in tests (PDX_FOP=1).
 //
-// Verglichen werden Seitenzahl, Zeileninhalte, Lage von Zeilen und Blöcken
-// und gerasterte Seiten. Die Toleranzen stehen in tolerance.go.
+// It compares the page count, line contents, positions of lines and blocks
+// and rasterized pages. The tolerances are in tolerance.go.
 package fopcompare
 
 import (
@@ -17,18 +17,18 @@ import (
 )
 
 const (
-	// FOPImage ist das lokal gebaute FOP-Image (testdata/docker/fop).
+	// FOPImage is the locally built FOP image (testdata/docker/fop).
 	FOPImage = "pdx-test/fop:2.11"
-	// PopplerImage ist das lokal gebaute Poppler-Image (testdata/docker/poppler).
+	// PopplerImage is the locally built Poppler image (testdata/docker/poppler).
 	PopplerImage = "pdx-test/poppler:2"
-	// EnvEnable schaltet die Vergleichstests ein.
+	// EnvEnable enables the comparison tests.
 	EnvEnable = "PDX_FOP"
 )
 
-// Enabled meldet, ob Vergleiche mit FOP laufen sollen.
+// Enabled reports whether comparisons with FOP should run.
 func Enabled() bool { return os.Getenv(EnvEnable) == "1" }
 
-// RepoRoot sucht das Verzeichnis mit go.mod oberhalb des aktuellen.
+// RepoRoot searches for the directory with go.mod above the current one.
 func RepoRoot() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -46,9 +46,9 @@ func RepoRoot() (string, error) {
 	}
 }
 
-var buildOnce sync.Map // Image zu error
+var buildOnce sync.Map // image to error
 
-// EnsureImages baut die Test-Images, falls sie fehlen.
+// EnsureImages builds the test images if they are missing.
 func EnsureImages(ctx context.Context) error {
 	root, err := RepoRoot()
 	if err != nil {
@@ -95,22 +95,22 @@ func lastLines(s string, n int) string {
 	return string(bytes.Join(lines, []byte("\n")))
 }
 
-// FOPResult enthält die Ausgaben von FOP.
+// FOPResult contains the outputs of FOP.
 type FOPResult struct {
 	PDF      []byte
 	AreaTree []byte
 	Log      string
 }
 
-// RunFOP setzt eine FO-Datei mit FOP. Das Verzeichnis der Datei wird nur
-// lesend eingebunden, damit relative Bilder gefunden werden.
+// RunFOP typesets an FO file with FOP. The directory of the file is mounted
+// read-only so that relative images are found.
 func RunFOP(ctx context.Context, foFile string) (*FOPResult, error) {
 	return runFOP(ctx, foFile, "")
 }
 
-// RunFOPRelaxed setzt wie RunFOP, aber mit gelockerter Prüfung (fop -r).
-// FOP lehnt Attribute fremder Namespaces wie pdx:id sonst als ungültige
-// Eigenschaft ab, obwohl XSL 1.1 sie erlaubt (siehe DEVIATIONS.md).
+// RunFOPRelaxed typesets like RunFOP, but with relaxed validation (fop -r).
+// Otherwise FOP rejects attributes of foreign namespaces such as pdx:id as
+// invalid properties, although XSL 1.1 allows them (see DEVIATIONS.md).
 func RunFOPRelaxed(ctx context.Context, foFile string) (*FOPResult, error) {
 	return runFOP(ctx, foFile, "-r ")
 }
@@ -154,8 +154,8 @@ func runFOP(ctx context.Context, foFile, flags string) (*FOPResult, error) {
 	return &FOPResult{PDF: pdf, AreaTree: at, Log: string(logOut)}, nil
 }
 
-// poppler führt ein Poppler-Werkzeug auf einer PDF-Datei aus und liefert das
-// Arbeitsverzeichnis mit den Ergebnissen. Der Aufrufer räumt es auf.
+// poppler runs a Poppler tool on a PDF file and returns the working
+// directory with the results. The caller cleans it up.
 func poppler(ctx context.Context, pdf []byte, args ...string) (string, error) {
 	if err := EnsureImages(ctx); err != nil {
 		return "", err

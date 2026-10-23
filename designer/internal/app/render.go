@@ -18,14 +18,14 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Ansichten des Canvas.
+// Views of the canvas.
 const (
 	ViewDesign  = "design"
 	ViewPreview = "preview"
 )
 
-// Manifest beschreibt die gesetzten Seiten eines Stands. Die Seiten selbst
-// holt die Oberfläche über /pdx/page/<hash>, nur geänderte Hashes sind neu.
+// Manifest describes the typeset pages of a state. The UI fetches the pages
+// themselves via /pdx/page/<hash>, only changed hashes are new.
 type Manifest struct {
 	View   string `json:"view"`
 	Rev    uint64 `json:"rev"`
@@ -33,13 +33,13 @@ type Manifest struct {
 	pipeline.Result
 }
 
-// RenderService setzt die Vorlage im Hintergrund.
+// RenderService typesets the template in the background.
 type RenderService struct{ c *Core }
 
-// NewRenderService liefert die Sicht auf den gemeinsamen Zustand.
+// NewRenderService returns the view on the shared state.
 func NewRenderService(c *Core) *RenderService { return &RenderService{c} }
 
-// renderDelay ist die Wartezeit nach der letzten Änderung bis zum Setzen.
+// renderDelay is the wait time after the last change until typesetting.
 const renderDelay = 80 * time.Millisecond
 
 type renderer struct {
@@ -49,11 +49,11 @@ type renderer struct {
 	timer  *time.Timer
 	cancel context.CancelFunc
 	latest Manifest
-	gen    uint64 // Zähler der Läufe, nur der neueste wird gemeldet
+	gen    uint64 // counter of the runs, only the newest is reported
 }
 
-// SetView wählt Ansicht und Beispieldatensatz (Pfad unter samples/, leer
-// behält die Auswahl) und setzt neu.
+// SetView chooses the view and the sample data set (path under samples/,
+// empty keeps the selection) and typesets again.
 func (s *RenderService) SetView(view, sample string) {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -67,8 +67,8 @@ func (s *RenderService) SetView(view, sample string) {
 	s.c.scheduleLocked(0)
 }
 
-// Access analysiert Strukturbaum und Vorprüfung der Barrierefreiheit für
-// die Daten der Vorschau, ohne ein PDF zu schreiben.
+// Access analyzes the structure tree and the accessibility pre-check for
+// the preview data, without writing a PDF.
 func (s *RenderService) Access() (*pipeline.Access, error) {
 	c := s.c
 	c.mu.Lock()
@@ -82,23 +82,23 @@ func (s *RenderService) Access() (*pipeline.Access, error) {
 	return c.r.pipe.Access(context.Background(), in)
 }
 
-// EInvoice beschreibt die E-Rechnung einer Vorlage mit den Daten der
-// Vorschau: erkannte Stufe, Dateiname, Beziehung und ob das Profil passt.
+// EInvoice describes the e-invoice of a template with the preview
+// data: detected level, file name, relationship and whether the profile fits.
 type EInvoice struct {
 	Present      bool   `json:"present"`
 	Level        string `json:"level"`
 	Guideline    string `json:"guideline"`
 	FileName     string `json:"fileName"`
 	Relationship string `json:"relationship"`
-	// Overridden meldet, dass die Vorlage die Beziehung vorgibt.
+	// Overridden reports that the template sets the relationship.
 	Overridden bool   `json:"overridden"`
 	Sample     string `json:"sample"`
 	Error      string `json:"error"`
-	// ProfileError ist gesetzt, wenn das Ausgabeprofil nicht PDF/A-3 ist.
+	// ProfileError is set if the output profile is not PDF/A-3.
 	ProfileError string `json:"profileError"`
 }
 
-// EInvoice erkennt die E-Rechnung in den Daten der Vorschau.
+// EInvoice detects the e-invoice in the preview data.
 func (s *RenderService) EInvoice() (EInvoice, error) {
 	c := s.c
 	c.mu.Lock()
@@ -131,15 +131,15 @@ func (s *RenderService) EInvoice() (EInvoice, error) {
 	return out, nil
 }
 
-// Latest liefert das zuletzt gesetzte Manifest.
+// Latest returns the most recently typeset manifest.
 func (s *RenderService) Latest() Manifest {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
 	return s.c.r.latest
 }
 
-// scheduleLocked plant das Setzen nach delay. Ein laufendes Setzen wird
-// abgebrochen, sobald das neue beginnt.
+// scheduleLocked schedules typesetting after delay. A running typesetting
+// run is canceled as soon as the new one starts.
 func (c *Core) scheduleLocked(delay time.Duration) {
 	if c.doc == nil {
 		return
@@ -151,7 +151,7 @@ func (c *Core) scheduleLocked(delay time.Duration) {
 	c.validateLocked(max(delay, validateDelay))
 }
 
-// render setzt den aktuellen Stand und meldet das Ergebnis.
+// render typesets the current state and reports the result.
 func (c *Core) render() {
 	c.mu.Lock()
 	if c.doc == nil {
@@ -173,14 +173,14 @@ func (c *Core) render() {
 	} else {
 		data, sample = c.previewDataLocked()
 	}
-	// Die Dateiliste kopieren: Befehle ändern sie, während gesetzt wird.
+	// Copy the file list: commands change it while typesetting runs.
 	in := pipeline.Input{Canon: template.Write(p.Template), Files: maps.Clone(p.Files), Data: data}
 	rev, view := c.doc.Rev(), c.r.view
 	c.mu.Unlock()
 
 	res, err := c.r.pipe.Run(ctx, in)
 	if err != nil {
-		return // abgebrochen, ein neuerer Lauf folgt
+		return // canceled, a newer run follows
 	}
 	m := Manifest{View: view, Rev: rev, Sample: sample, Result: *res}
 	c.mu.Lock()
@@ -191,11 +191,11 @@ func (c *Core) render() {
 	c.mu.Unlock()
 }
 
-// Assets liefert Seiten, Schriften und Bilder des Canvas über HTTP unter
-// /pdx/. Die Inhalte sind über ihren Hash adressiert und ändern sich nie.
+// Assets serves pages, fonts and images of the canvas over HTTP under
+// /pdx/. The contents are addressed by their hash and never change.
 type Assets struct{ c *Core }
 
-// NewAssets liefert den Handler.
+// NewAssets returns the handler.
 func NewAssets(c *Core) *Assets { return &Assets{c} }
 
 func (a *Assets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -207,8 +207,8 @@ func (a *Assets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	pipe := a.c.r.pipe
 	if kind == "pdf" {
-		// Das PDF des aktuellen Stands für die Ansicht PDF. key ist die
-		// Revision und dient nur dazu, alte Antworten nicht zu cachen.
+		// The PDF of the current state for the PDF view. key is the
+		// revision and only serves to avoid caching old responses.
 		a.servePDF(w, r)
 		return
 	}
@@ -235,8 +235,8 @@ func (a *Assets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// currentPDF erzeugt das PDF/A-3b des aktuellen Stands mit den Daten der
-// Vorschau. Befunde stehen in probs, err meldet einen Abbruch.
+// currentPDF generates the PDF/A-3b of the current state with the preview
+// data. Findings are in probs, err reports an abort.
 func (c *Core) currentPDF(ctx context.Context) (pdf []byte, probs []pipeline.Problem, err error) {
 	c.mu.Lock()
 	if c.doc == nil {
@@ -249,7 +249,7 @@ func (c *Core) currentPDF(ctx context.Context) (pdf []byte, probs []pipeline.Pro
 	return c.r.pipe.PDF(ctx, in, time.Now().UTC().Truncate(time.Second), nil)
 }
 
-// pdfError fasst Befunde beim Erzeugen zu einem Fehler zusammen.
+// pdfError combines findings during generation into one error.
 func pdfError(probs []pipeline.Problem) error {
 	var b strings.Builder
 	b.WriteString("Das PDF ließ sich nicht erzeugen:")
@@ -263,8 +263,8 @@ func pdfError(probs []pipeline.Problem) error {
 	return errors.New(b.String())
 }
 
-// servePDF liefert das PDF des aktuellen Stands. Fehler beim Erzeugen kommen
-// als Text mit Status 422.
+// servePDF serves the PDF of the current state. Errors during generation
+// come as text with status 422.
 func (a *Assets) servePDF(w http.ResponseWriter, r *http.Request) {
 	pdf, probs, err := a.c.currentPDF(r.Context())
 	if err != nil {
@@ -289,7 +289,7 @@ func (a *Assets) servePDF(w http.ResponseWriter, r *http.Request) {
 	w.Write(pdf)
 }
 
-// ExportPDF schreibt das PDF des aktuellen Stands in eine Datei.
+// ExportPDF writes the PDF of the current state to a file.
 func (s *RenderService) ExportPDF(path string) error {
 	pdf, probs, err := s.c.currentPDF(context.Background())
 	if err != nil {
@@ -301,8 +301,8 @@ func (s *RenderService) ExportPDF(path string) error {
 	return os.WriteFile(path, pdf, 0o644)
 }
 
-// ExportPDFDialog fragt nach dem Ziel und schreibt das PDF. Ein
-// abgebrochener Dialog liefert einen leeren Pfad.
+// ExportPDFDialog asks for the target and writes the PDF. A
+// canceled dialog returns an empty path.
 func (s *RenderService) ExportPDFDialog() (string, error) {
 	if s.c.dialogs == nil {
 		return "", ErrNoDialogs
@@ -323,8 +323,8 @@ func (s *RenderService) ExportPDFDialog() (string, error) {
 	return path, s.ExportPDF(path)
 }
 
-// OpenPDF schreibt das PDF in das Datenverzeichnis und öffnet es mit dem
-// PDF-Programm des Systems.
+// OpenPDF writes the PDF into the data directory and opens it with the
+// system's PDF program.
 func (s *RenderService) OpenPDF() error {
 	if s.c.dialogs == nil {
 		return ErrNoDialogs

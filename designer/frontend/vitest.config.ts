@@ -1,7 +1,7 @@
 import { defineConfig } from "vitest/config";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 
-// Komponententests in jsdom. Die Ende-zu-Ende-Tests unter e2e/ laufen mit
+// Component tests in jsdom. The end-to-end tests under e2e/ run with
 // Playwright.
 export default defineConfig({
   plugins: [svelte()],

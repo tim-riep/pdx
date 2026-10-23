@@ -15,8 +15,8 @@ import (
 
 var corpusDate = time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 
-// TestCorpus rendert jeden Fall in testdata/fo und vergleicht Area Tree und
-// PDF mit den Golden Files. Mit PDX_CONFORMANCE=1 prüft veraPDF jede Datei.
+// TestCorpus renders every case in testdata/fo and compares area tree and
+// PDF with the golden files. With PDX_CONFORMANCE=1 veraPDF checks every file.
 func TestCorpus(t *testing.T) {
 	files, err := filepath.Glob("testdata/fo/*.fo")
 	if err != nil {
@@ -43,19 +43,19 @@ func TestCorpus(t *testing.T) {
 	}
 }
 
-// matrixProfiles sind die Profile der Konformitätsmatrix neben pdfa-3b, das
-// TestCorpus mit Golden Files prüft. Sie wächst mit jedem neuen Profil.
+// matrixProfiles are the profiles of the conformance matrix besides pdfa-3b,
+// which TestCorpus checks with golden files. It grows with every new profile.
 var matrixProfiles = []string{"pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-3a,pdfua-1", "pdfa-4", "pdfa-4f", "pdfa-4,pdfua-2"}
 
-// inaccessible sind Korpusfälle, die PDF/UA bewusst nicht erfüllen
-// (Abbildungen ohne Alternativtext, Tabellen ohne Kopfzellen). Die
-// Vorprüfung muss sie mit Befund ablehnen.
+// inaccessible are corpus cases that deliberately do not satisfy PDF/UA
+// (figures without alternate text, tables without header cells). The
+// pre-check must reject them with a finding.
 var inaccessible = map[string]bool{"barcodes": true, "bilder": true, "rechnung": true, "tabellen": true}
 
-// TestCorpusProfiles rendert jeden Fall in jedem Profil der Matrix. Mit
-// PDX_CONFORMANCE=1 prüft veraPDF jeden beanspruchten Standard. Anhänge, die
-// ein Profil nicht erlaubt (unter PDF/A-2 und PDF/A-4 alles außer PDF/A),
-// und PDF/A-4f ohne Anhang müssen mit der Klausel abgelehnt werden.
+// TestCorpusProfiles renders every case in every profile of the matrix. With
+// PDX_CONFORMANCE=1 veraPDF checks every claimed standard. Attachments that
+// a profile does not allow (under PDF/A-2 and PDF/A-4 everything except
+// PDF/A), and PDF/A-4f without an attachment must be rejected with the clause.
 func TestCorpusProfiles(t *testing.T) {
 	files, err := filepath.Glob("testdata/fo/*.fo")
 	if err != nil {
@@ -68,15 +68,15 @@ func TestCorpusProfiles(t *testing.T) {
 				t.Parallel()
 				res, err := RenderFile(f, Options{Profile: prof, CreationDate: corpusDate})
 				if err != nil {
-					// Anhänge, die das Profil nicht erlaubt (PDF/A-2 und
-					// PDF/A-4 nur PDF/A), und 4f ohne Anhang lehnt der
-					// Writer ab.
+					// Attachments the profile does not allow (PDF/A-2 and
+					// PDF/A-4 only PDF/A), and 4f without an attachment, are
+					// rejected by the writer.
 					if strings.Contains(err.Error(), "ISO 19005-2 6.8") || strings.Contains(err.Error(), "ISO 19005-4 6.9") {
 						return
 					}
 					var ce render.CheckErrors
 					if inaccessible[name] && errors.As(err, &ce) {
-						return // nicht barrierefrei, wie verlangt abgelehnt
+						return // not accessible, rejected as required
 					}
 					t.Fatal(err)
 				}
@@ -92,7 +92,7 @@ func TestCorpusProfiles(t *testing.T) {
 	}
 }
 
-// TestReproducible rendert jeden Fall zweimal und verlangt identische Bytes.
+// TestReproducible renders every case twice and requires identical bytes.
 func TestReproducible(t *testing.T) {
 	files, _ := filepath.Glob("testdata/fo/*.fo")
 	for _, f := range files {

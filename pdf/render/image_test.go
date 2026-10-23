@@ -28,7 +28,7 @@ func imageDoc(t testing.TB, files ...string) *areatree.Document {
 		doc.Images = append(doc.Images, areatree.ImageRef{Source: im})
 		w, h := im.IntrinsicSize()
 		page.Areas = append(page.Areas, &areatree.Image{Rect: areatree.Rect{X: 72 * areatree.Pt, Y: y, W: w, H: h}, Image: areatree.ImageID(i)})
-		// Dasselbe Bild ein zweites Mal halb so groß, es wird nur einmal eingebettet.
+		// The same image a second time at half the size, it is embedded only once.
 		page.Areas = append(page.Areas, &areatree.Image{Rect: areatree.Rect{X: 72*areatree.Pt + w + 20*areatree.Pt, Y: y, W: w / 2, H: h / 2}, Image: areatree.ImageID(i)})
 		y += h + 20*areatree.Pt
 	}
@@ -49,7 +49,7 @@ func TestImagesPDFA(t *testing.T) {
 	testutil.Conform(t, "images.pdf", b, "pdfa-3b")
 }
 
-// noTransparency verbietet Transparenz, wie später PDF/A-1.
+// noTransparency forbids transparency, like PDF/A-1 later.
 type noTransparency struct{ denyAttach }
 
 func (noTransparency) Name() string { return "ohne-transparenz" }

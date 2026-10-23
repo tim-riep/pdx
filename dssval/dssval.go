@@ -1,8 +1,8 @@
-// Package dssval prüft Signaturen mit dem EU DSS Validator in Docker. Er
-// dient nur Tests: Das Image wird lokal aus dem gepinnten Quellstand gebaut
-// (build.sh), der Container startet je Testlauf mit den Vertrauensankern
-// der Test-PKI. Version, Quellstand und Image sind ausschließlich hier
-// konfiguriert.
+// Package dssval validates signatures with the EU DSS validator in Docker.
+// It serves only tests: the image is built locally from the pinned source
+// (build.sh), the container starts for each test run with the trust anchors
+// of the test PKI. Version, source and image are configured exclusively
+// here.
 package dssval
 
 import (
@@ -25,23 +25,23 @@ import (
 )
 
 const (
-	// Version ist der Tag von esig/dss-demonstrations.
+	// Version is the tag of esig/dss-demonstrations.
 	Version = "6.5.1"
-	// SourceCommit ist der Commit des Tags, build.sh prüft ihn.
+	// SourceCommit is the commit of the tag, build.sh checks it.
 	SourceCommit = "3c79488771671220542267129a9419586832ad55"
-	// Image ist der Name des lokal gebauten Images.
+	// Image is the name of the locally built image.
 	Image = "pdx-dss:6.5.1"
-	// EnvEnable schaltet die Prüfung in Tests ein.
+	// EnvEnable enables the validation in tests.
 	EnvEnable = "PDX_DSS"
-	// HostAlias ist der Name, unter dem der Container den Rechner des
-	// Tests erreicht, etwa für OCSP und CRL der Test-PKI.
+	// HostAlias is the name under which the container reaches the host of
+	// the test, for example for OCSP and CRL of the test PKI.
 	HostAlias = "pdx-host"
 )
 
-// Enabled meldet, ob Tests mit DSS prüfen sollen.
+// Enabled reports whether tests should validate with DSS.
 func Enabled() bool { return os.Getenv(EnvEnable) == "1" }
 
-// Server ist ein laufender DSS-Container.
+// Server is a running DSS container.
 type Server struct {
 	URL    string
 	id     string
@@ -49,8 +49,8 @@ type Server struct {
 	client *http.Client
 }
 
-// Start startet den Container mit trust als Vertrauensankern und wartet,
-// bis die REST-Schnittstelle antwortet.
+// Start starts the container with trust as trust anchors and waits until
+// the REST interface responds.
 func Start(ctx context.Context, trust []*x509.Certificate) (*Server, error) {
 	if out, err := exec.CommandContext(ctx, "docker", "image", "inspect", Image).CombinedOutput(); err != nil {
 		return nil, fmt.Errorf("Image %s fehlt, bitte dssval/build.sh ausführen (%s)", Image, strings.TrimSpace(string(out)))
@@ -84,8 +84,8 @@ func Start(ctx context.Context, trust []*x509.Certificate) (*Server, error) {
 	}
 	addr := strings.TrimSpace(strings.Split(string(port), "\n")[0])
 	s.URL = "http://" + addr
-	// Der Portproxy von Docker nimmt Verbindungen schon vor Tomcat an, daher
-	// ein kurzes Zeitlimit je Versuch.
+	// The Docker port proxy accepts connections before Tomcat does, hence
+	// a short timeout per attempt.
 	probe := &http.Client{Timeout: 2 * time.Second}
 	var lastErr error
 	deadline := time.Now().Add(3 * time.Minute)
@@ -94,8 +94,8 @@ func Start(ctx context.Context, trust []*x509.Certificate) (*Server, error) {
 		lastErr = err
 		if err == nil {
 			resp.Body.Close()
-			// Tomcat öffnet den Port erst nach dem Start der Anwendung, jede
-			// Antwort heißt bereit (CXF antwortet ohne Methode mit 500).
+			// Tomcat opens the port only after the application has started, any
+			// response means ready (CXF answers 500 without a method).
 			return s, nil
 		}
 		if time.Now().After(deadline) || ctx.Err() != nil {
@@ -107,25 +107,25 @@ func Start(ctx context.Context, trust []*x509.Certificate) (*Server, error) {
 	}
 }
 
-// Stop beendet den Container.
+// Stop stops the container.
 func (s *Server) Stop() {
 	exec.Command("docker", "rm", "-f", s.id).Run()
 	os.RemoveAll(s.dir)
 }
 
-// Signature ist das Ergebnis einer Signatur oder eines Zeitstempels im
-// einfachen Bericht von DSS.
+// Signature is the result of a signature or a timestamp in the simple
+// report of DSS.
 type Signature struct {
 	ID            string
-	Type          string // Signature oder Timestamp
-	Format        string // etwa PAdES-BASELINE-LTA
+	Type          string // Signature or Timestamp
+	Format        string // such as PAdES-BASELINE-LTA
 	Indication    string // TOTAL_PASSED, INDETERMINATE, TOTAL_FAILED
 	SubIndication string
 	Errors        []string
 	Warnings      []string
 }
 
-// Validate prüft ein signiertes Dokument mit der Standardrichtlinie.
+// Validate checks a signed document with the default policy.
 func (s *Server) Validate(ctx context.Context, doc []byte) ([]Signature, error) {
 	body, _ := json.Marshal(map[string]any{
 		"signedDocument": map[string]any{"bytes": base64.StdEncoding.EncodeToString(doc), "name": "dokument.pdf"},
@@ -169,7 +169,7 @@ type token struct {
 	} `json:"Timestamps"`
 }
 
-// parseReport liest den einfachen Bericht aus der Antwort.
+// parseReport reads the simple report from the response.
 func parseReport(raw []byte) ([]Signature, error) {
 	var r struct {
 		Simple struct {

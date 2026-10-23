@@ -19,7 +19,7 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// printErr gibt einen Fehler aus, Vorlagenfehler je Zeile mit ID.
+// printErr prints an error, template errors one per line with ID.
 func printErr(w io.Writer, cmd string, err error) {
 	var es template.Errors
 	if errors.As(err, &es) {
@@ -31,7 +31,7 @@ func printErr(w io.Writer, cmd string, err error) {
 	fmt.Fprintf(w, "pdx %s: %v\n", cmd, err)
 }
 
-// stripExt entfernt .zip oder einen Schrägstrich am Ende.
+// stripExt removes .zip or a trailing slash.
 func stripExt(p string) string {
 	p = strings.TrimSuffix(p, string(filepath.Separator))
 	return strings.TrimSuffix(p, ".zip")
@@ -80,7 +80,7 @@ func cmdCompile(args []string, stdout, stderr io.Writer) int {
 	return 0
 }
 
-// renderTemplate setzt Daten mit einer Vorlage (pdx render --template).
+// renderTemplate typesets data with a template (pdx render --template).
 func renderTemplate(tplPath, data, out string, opts pdx.TemplateOptions, foOut, treeOut string, stdout, stderr io.Writer) int {
 	p, err := pkg.Open(tplPath)
 	if err != nil {
@@ -133,8 +133,8 @@ func renderTemplate(tplPath, data, out string, opts pdx.TemplateOptions, foOut, 
 	return 0
 }
 
-// cmdCheck prüft eine Vorlage: Schema der Vorlage, Verweise im Paket,
-// Übersetzung, Bindungen gegen das Daten-XSD und die Beispieldaten.
+// cmdCheck validates a template: template schema, references in the
+// package, compilation, bindings against the data XSD and the sample data.
 func cmdCheck(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("check", flag.ContinueOnError)
 	fs.SetOutput(stderr)
@@ -173,7 +173,7 @@ func cmdCheck(args []string, stdout, stderr io.Writer) int {
 	return 0
 }
 
-// cmdFmt schreibt template.xml kanonisch.
+// cmdFmt writes template.xml in canonical form.
 func cmdFmt(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("fmt", flag.ContinueOnError)
 	fs.SetOutput(stderr)
@@ -212,7 +212,7 @@ func cmdFmt(args []string, stdout, stderr io.Writer) int {
 	return 0
 }
 
-// cmdPack packt ein Vorlagenverzeichnis deterministisch als ZIP.
+// cmdPack packs a template directory deterministically as a ZIP.
 func cmdPack(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("pack", flag.ContinueOnError)
 	fs.SetOutput(stderr)

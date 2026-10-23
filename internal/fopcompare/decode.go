@@ -9,7 +9,7 @@ import (
 	"sort"
 )
 
-// Symbol ist ein von zbar erkannter Barcode.
+// Symbol is a barcode recognized by zbar.
 type Symbol struct {
 	Type string
 	Data string
@@ -26,8 +26,8 @@ type zbarXML struct {
 	} `xml:"source"`
 }
 
-// Decode rastert die erste Seite mit 300 dpi und dekodiert alle Barcodes mit
-// zbar (QR-Code und Code 128, kein DataMatrix).
+// Decode rasterizes the first page at 300 dpi and decodes all barcodes with
+// zbar (QR code and Code 128, no DataMatrix).
 func Decode(ctx context.Context, pdf []byte) ([]Symbol, error) {
 	dir, err := poppler(ctx, pdf, "sh", "-c",
 		"pdftoppm -r 300 -gray -png -f 1 -l 1 in.pdf seite && zbarimg -q --xml seite-1.png > out.xml || true")

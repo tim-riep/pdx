@@ -44,7 +44,7 @@
 
   const design = $derived(render.view === "design");
 
-  // Bereiche des ausgewählten und des überfahrenen Elements auf dieser Seite.
+  // Areas of the selected and the hovered element on this page.
   const selected = $derived(selection.ref ? page.els.filter((a) => a.id === selection.ref) : []);
   const extras = $derived(selection.extra.length ? page.els.filter((a) => selection.extra.includes(a.id)) : []);
   const hovered = $derived(
@@ -54,7 +54,7 @@
     selected.length ? (selected[selection.instance?.page === page.n ? selection.instance.k : 0] ?? selected[0]).r : null,
   );
 
-  // Nummern der Lesereihenfolge: je Schritt der erste Bereich auf dieser Seite.
+  // Reading order numbers: per step the first area on this page.
   const orderSteps = $derived(access.showOrder ? steps(access.data) : []);
   const badges = $derived.by(() => {
     const out: { n: number; id: string; r: Rect }[] = [];
@@ -65,7 +65,7 @@
     return out;
   });
 
-  // Tab-Reihenfolge: Nummer je Formularfeld, an jedem seiner Bereiche.
+  // Tab order: number per form field, on each of its areas.
   const tabs = $derived.by(() => {
     if (!access.showTabs) return [];
     const order = tabStops(access.data);
@@ -75,7 +75,7 @@
     });
   });
 
-  // Ausfüllbare Vorschau: Eingabefelder über den Widgets.
+  // Fillable preview: input fields above the widgets.
   const fillable = $derived(render.view === "preview" ? (page.fields ?? []).filter((f) => f.type !== "signature") : []);
   const fontPx = $derived(Math.max(9, 10 * zoom));
   function value(f: NonNullable<typeof page.fields>[number], i: number): string {
@@ -85,7 +85,7 @@
     fill.values[fieldKey(f.name, page.n, i, f.type === "radio")] = v;
   }
 
-  // Rahmen der Teilformulare im Entwurf, fließende mit Pfeil für die Richtung.
+  // Frames of the subforms in the draft, flowing ones with an arrow for the direction.
   const frames = $derived.by(() => {
     if (!design || !tpl.snapshot) return [];
     const seen = new Set<string>();
@@ -109,15 +109,15 @@
   const canMove = (n: ViewNode | undefined) =>
     !!n && !!n.parent && n.name !== "body" && !n.type.startsWith("pageMaster") && node(n.parent)?.name !== "template";
 
-  // Ziehen: Verschieben oder Größe ändern positionierter Elemente,
-  // Umsortieren fließender.
+  // Dragging: moving or resizing positioned elements,
+  // reordering flowing ones.
   type Drag = {
     mode: "move" | "resize" | "reorder";
-    handle: [number, number]; // Kante beim Größe ändern: 0 links oder oben, 1 rechts oder unten
+    handle: [number, number]; // edge when resizing: 0 left or top, 1 right or bottom
     ref: string;
     start: [number, number];
-    rect: Rect; // Bereich zu Beginn
-    orig: { x: number; y: number; w: number; h: number }; // Vorlagenwerte in mm
+    rect: Rect; // area at the start
+    orig: { x: number; y: number; w: number; h: number }; // template values in mm
     live: Rect;
     active: boolean;
     guides: Guide[];
@@ -155,7 +155,7 @@
     window.addEventListener("mouseup", dragEnd, { once: true });
   }
 
-  // gridDelta rundet eine Verschiebung auf ganze Millimeter.
+  // gridDelta rounds a move to whole millimeters.
   const gridDelta = (d: number) => Math.round(d / PT_PER_MM) * PT_PER_MM;
 
   function dragMove(e: MouseEvent) {
@@ -182,7 +182,7 @@
         hy === 0 ? h - dy : hy === 1 ? h + dy : h,
       ];
     }
-    // Einrasten an Nachbarn und Elternelement, sonst am Raster.
+    // Snap to neighbors and the parent element, otherwise to the grid.
     const s = snap(r, siblings(drag.ref), 5 / zoom);
     if (drag.mode === "move") {
       r = [r[0] + s.dx, r[1] + s.dy, r[2], r[3]];
@@ -245,13 +245,13 @@
     if (e.button !== 0) return;
     const p = pagePoint(e);
     const hit: Area | undefined = index.at(...p);
-    // Ein Klick auf die Auswahl beginnt das Ziehen.
+    // A click on the selection starts dragging.
     if (design && current && hit?.id === selection.ref && canMove(node(selection.ref))) {
       startDrag(e, isPositioned(node(selection.ref)) ? "move" : "reorder", [0.5, 0.5]);
       return;
     }
-    // Umschalt+Klick nimmt positionierte Geschwister zur Auswahl hinzu.
-    // Ein Treffer im Inneren zählt für den Vorfahren, der Geschwister ist.
+    // Shift+click adds positioned siblings to the selection.
+    // A hit inside counts for the ancestor that is a sibling.
     if (e.shiftKey && hit && selection.ref && hit.id !== selection.ref) {
       const a = node(selection.ref);
       let b = node(hit.id);
@@ -265,8 +265,8 @@
     else select("");
   }
 
-  // Doppelklick auf Text öffnet den Editor an Ort und Stelle. Ein Treffer auf
-  // ein eingebettetes Feld bearbeitet den Text darum.
+  // A double click on text opens the editor in place. A hit on
+  // an embedded field edits the text around it.
   let editing = $state<{ ref: string; r: number[] } | null>(null);
   function dblclick(e: MouseEvent) {
     const hit: Area | undefined = index.at(...pagePoint(e));
@@ -288,7 +288,7 @@
     editing = { ref, r: [x0, y0, x1 - x0, y1 - y0] };
   }
 
-  // Rechtsklick wählt das Element unter dem Zeiger und öffnet sein Menü.
+  // A right click selects the element under the pointer and opens its menu.
   function contextmenu(e: MouseEvent) {
     const hit: Area | undefined = index.at(...pagePoint(e));
     if (!hit) return;
@@ -297,7 +297,7 @@
     openElementMenu(hit.id, e.clientX, e.clientY);
   }
 
-  // Ablage gezogener Datenknoten und Bausteine.
+  // Drop of dragged data nodes and building blocks.
   let target = $state<Target | null>(null);
   const model = {
     node,
@@ -494,7 +494,7 @@
   }
   .order {
     position: absolute;
-    /* links neben dem Bereich, damit der Text lesbar bleibt */
+    /* left of the area, so the text stays readable */
     transform: translateX(calc(-100% - 3px));
     min-width: 16px;
     height: 16px;

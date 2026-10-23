@@ -18,7 +18,7 @@
     select(ref, null, true);
   }
 
-  // Alle Vorlagen-IDs in Lesereihenfolge, auch Gruppen ohne eigenen Text.
+  // All template IDs in reading order, including groups without own text.
   const ids = $derived.by(() => {
     const out: string[] = [];
     const walk = (n: StructNode | null) => {
@@ -30,8 +30,8 @@
     return out;
   });
 
-  // siblings liefert die frei platzierten Geschwister eines Elements in
-  // ihrer aktuellen Lesereihenfolge.
+  // siblings returns the freely placed siblings of an element in
+  // their current reading order.
   function siblings(ref: string): string[] {
     const n = node(ref);
     const p = node(n?.parent);
@@ -44,8 +44,8 @@
     return refs.sort((x, y) => rank(x) - rank(y));
   }
 
-  // move verschiebt ein Element in der Lesereihenfolge und nummeriert alle
-  // Geschwister neu (readingOrder 1 bis n) in einem Befehl.
+  // move moves an element in the reading order and renumbers all
+  // siblings (readingOrder 1 to n) in one command.
   async function move(ref: string, dir: -1 | 1) {
     const sib = siblings(ref);
     const i = sib.indexOf(ref);

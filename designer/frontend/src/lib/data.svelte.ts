@@ -1,5 +1,5 @@
-// Datenbaum des Daten-XSD als Lesecache, neu geholt nach jeder Änderung der
-// Vorlage (das Backend cacht das aufbereitete Schema).
+// Data tree of the data XSD as a read cache, fetched again after every change of the
+// template (the backend caches the prepared schema).
 
 import { changeSchema } from "./schemadiff.svelte";
 import { EVENT, SchemaAPI, message, on, type DataNode, type DataSchema, type ProjectState } from "./api";
@@ -23,11 +23,11 @@ async function refresh() {
 on<ProjectState>(EVENT.project, (s) => (s.open ? refresh() : (data.schema = null)));
 refresh();
 
-// MIME-Typ für das Ziehen von Datenknoten.
+// MIME type for dragging data nodes.
 export const DATA_MIME = "application/x-pdx-data";
 
 export async function loadSchema(askPath: (title: string) => Promise<string | null>) {
-  // Mit vorhandenem Schema erst die Unterschiede zeigen.
+  // With an existing schema show the differences first.
   if (roots().length > 0) return changeSchema(askPath);
   try {
     const res = await SchemaAPI.ImportDialog("");
@@ -48,7 +48,7 @@ export async function loadSchema(askPath: (title: string) => Promise<string | nu
   }
 }
 
-// typeKey liefert die Art eines Datenknotens für Symbol und Beschriftung.
+// typeKey returns the kind of a data node for icon and label.
 export function typeKey(n: { type: string }): string {
   if (!n.type) return "complex";
   if (["decimal", "double", "float"].includes(n.type)) return "decimal";
@@ -62,7 +62,7 @@ export function cardinality(n: DataNode): string {
   return `${n.min}..${max}`;
 }
 
-// kids liefert die Kinder ohne Null-Einträge (Go-Zeigerlisten).
+// kids returns the children without null entries (Go pointer lists).
 export function kids(n: DataNode | null | undefined): DataNode[] {
   return (n?.children ?? []).filter((c): c is DataNode => !!c);
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// inner liefert den Inhalt eines Elements als Fragment zum Vergleich.
+// inner returns the content of an element as a fragment for comparison.
 func inner(n *template.Node) string {
 	var b strings.Builder
 	for _, c := range n.Children {
@@ -40,7 +40,7 @@ func TestSetContent(t *testing.T) {
 		t.Fatalf("Ausgangslage %q", before)
 	}
 
-	// Text ändern, Feld behalten, Zeilenumbruch und neues Feld.
+	// Change text, keep field, line break and new field.
 	_, err := ts.SetContent(ContentEdit{Ref: "rechnungsnummer", Segments: []Segment{
 		{Text: "Nr. "}, {Ref: "rechnungsnummer-wert"}, {Text: " vom\n"}, {Bind: "inv:issueDate"}, {Text: " & mehr"},
 	}})
@@ -51,11 +51,11 @@ func TestSetContent(t *testing.T) {
 	if got != "Nr. <field rechnungsnummer-wert inv:number> vom<br rechnungsnummer-umbruch><field rechnungsnummer-issueDate inv:issueDate> & mehr" {
 		t.Fatalf("Inhalt %q", got)
 	}
-	// Das behaltene Feld trägt weiter seine Attribute.
+	// The kept field still carries its attributes.
 	if tpl.ByID("rechnungsnummer-wert").Get("fontWeight", "") != "bold" {
 		t.Fatal("Attribute des Feldes verloren")
 	}
-	// Undo stellt den alten Inhalt her.
+	// Undo restores the old content.
 	if _, err := ts.Undo(); err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func TestSetContent(t *testing.T) {
 		t.Fatalf("Undo: %q", got)
 	}
 
-	// Feld weglassen löscht es.
+	// Leaving out a field deletes it.
 	if _, err := ts.SetContent(ContentEdit{Ref: "rechnungsnummer", Segments: []Segment{{Text: "ohne Feld"}}}); err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestSetContent(t *testing.T) {
 		t.Fatal("entferntes Feld bleibt")
 	}
 
-	// Textressource: nur Text.
+	// Text resource: text only.
 	if _, err := ts.SetContent(ContentEdit{Ref: "txt-de-rechnung", Segments: []Segment{{Text: "Faktura"}}}); err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func TestSetContent(t *testing.T) {
 	if _, err := ts.SetContent(ContentEdit{Ref: "txt-de-rechnung", Segments: []Segment{{Bind: "inv:number"}}}); err == nil {
 		t.Fatal("Feld in Textressource angenommen")
 	}
-	// Fremdes Element als Chip und Element ohne Text.
+	// Foreign element as a chip and element without text.
 	if _, err := ts.SetContent(ContentEdit{Ref: "rechnungsdatum", Segments: []Segment{{Ref: "empfaenger-name"}}}); err == nil {
 		t.Fatal("fremdes Element angenommen")
 	}

@@ -1,6 +1,6 @@
-# Konfiguration ohne Geheimnisse: Schlüssel stehen nur als SHA-256-Hash
-# darin. Passwort oder Token eines Signers gehören in ein Secret
-# (secret.example.yaml), nie hierher.
+# Configuration without secrets: keys appear in it only as SHA-256
+# hashes. The password or token of a signer belongs in a Secret
+# (secret.example.yaml), never here.
 apiVersion: v1
 kind: ConfigMap
 metadata:

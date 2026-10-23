@@ -1,5 +1,5 @@
-// Seitenformat aus internal/pipeline/format.go. Maße in Punkt, Ursprung oben
-// links. Jeder Eintrag trägt die ID seines Vorlagenelements.
+// Page format from internal/pipeline/format.go. Sizes in points, origin top
+// left. Each entry carries the ID of its template element.
 
 export type Rect = [number, number, number, number];
 export type Border = [number, string, string] | 0;
@@ -14,7 +14,7 @@ export type DrawItem = RectItem | TextItem | LineItem | PathItem | ImageItem | W
 
 export interface Area { id: string; r: Rect; k: "block" | "inline" | "text" | "image" | "code" | "field" }
 
-// FieldEl ist ein Formularfeld für die ausfüllbare Vorschau.
+// FieldEl is a form field for the fillable preview.
 export interface FieldEl {
   id: string; name: string; r: Rect; type: "text" | "checkbox" | "radio" | "list" | "combo" | "signature";
   value: string; export?: string; on?: string; label?: string; multiline?: boolean; maxLength?: number;

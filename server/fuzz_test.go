@@ -39,7 +39,7 @@ func fuzzCall(t *testing.T, s *Server, h http.Handler, target string, body []byt
 	}
 }
 
-// FuzzUpload lädt beliebige Bytes als Vorlagenpaket hoch.
+// FuzzUpload uploads arbitrary bytes as a template package.
 func FuzzUpload(f *testing.F) {
 	s, h, raw, _ := fuzzServer(f)
 	f.Add(raw)
@@ -49,7 +49,7 @@ func FuzzUpload(f *testing.F) {
 	})
 }
 
-// FuzzRender rendert beliebige Daten mit der Musterrechnung.
+// FuzzRender renders arbitrary data with the sample invoice.
 func FuzzRender(f *testing.F) {
 	s, h, _, data := fuzzServer(f)
 	f.Add(data, "pdfa-3b")

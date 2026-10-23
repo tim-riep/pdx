@@ -1,17 +1,17 @@
-// Package compile übersetzt Vorlagen (template.xml) in XSLT 3.0. Das
-// Stylesheet erzeugt aus den Daten XSL-FO für die Layout-Engine.
+// Package compile translates templates (template.xml) into XSLT 3.0. The
+// stylesheet produces XSL-FO for the layout engine from the data.
 //
-// Die Ausgabe ist deterministisch und lesbar: feste Einrückung, Attribute in
-// fester Reihenfolge, jedes erzeugte FO-Element trägt pdx:id mit der ID des
-// Vorlagenelements. Eine Quellzuordnung (SourceMap) übersetzt Zeilen im
-// Stylesheet zurück in Vorlagen-IDs, damit Fehler beim Transformieren dem
-// Element im Designer zugeordnet werden können.
+// The output is deterministic and readable: fixed indentation, attributes in
+// fixed order, every generated FO element carries pdx:id with the ID of the
+// template element. A source map (SourceMap) translates lines in the
+// stylesheet back into template IDs, so that errors during transformation can
+// be attributed to the element in the designer.
 //
-// Überträge und Zwischensummen laufen über Marker: Jede Datenzeile einer
-// Tabelle trägt die Summe vor der Zeile (für carryOver im Tabellenkopf, über
-// retrieve-position-within-table="first-starting") und die Summe einschließlich
-// der Zeile (für subtotal im Tabellenfuß, über "last-ending"). Die laufende
-// Summe entsteht mit xsl:iterate.
+// Carry-overs and subtotals work through markers: every data row of a table
+// carries the sum before the row (for carryOver in the table header, via
+// retrieve-position-within-table="first-starting") and the sum including
+// the row (for subtotal in the table footer, via "last-ending"). The running
+// sum is computed with xsl:iterate.
 package compile
 
 import (
@@ -25,63 +25,63 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Namespaces im erzeugten Stylesheet.
+// Namespaces in the generated stylesheet.
 const (
 	nsXSL = "http://www.w3.org/1999/XSL/Transform"
 	nsFO  = "http://www.w3.org/1999/XSL/Format"
 	nsXS  = "http://www.w3.org/2001/XMLSchema"
 )
 
-// SequenceID ist die FO-ID der Seitenfolge. {total} in pageNumber verweist
-// mit fo:page-number-citation-last auf sie.
+// SequenceID is the FO ID of the page sequence. {total} in pageNumber refers
+// to it with fo:page-number-citation-last.
 const SequenceID = "pdx-sequence"
 
-// reserved sind Präfixe, die das Stylesheet selbst belegt.
+// reserved are prefixes that the stylesheet itself uses.
 var reserved = map[string]bool{"xsl": true, "fo": true, "pdx": true, "xs": true, "xml": true, "xmlns": true}
 
-// Options steuert Compile.
+// Options controls Compile.
 type Options struct {
-	// Lang wählt Textressourcen und Formatmuster, leer bedeutet template/@lang.
+	// Lang selects text resources and format patterns, empty means template/@lang.
 	Lang string
-	// Enums sind die Werte der Enumeration im Daten-XSD je Vorlagen-ID.
-	// Auswahlfelder ohne option-Elemente bieten sie an.
+	// Enums are the enumeration values in the data XSD per template ID.
+	// Choice fields without option elements offer them.
 	Enums map[string][]string
-	// MaxLengths sind die Höchstlängen aus dem Daten-XSD je Vorlagen-ID,
-	// für Textfelder ohne maxLength.
+	// MaxLengths are the maximum lengths from the data XSD per template ID,
+	// for text fields without maxLength.
 	MaxLengths map[string]int
 }
 
-// Mapping ordnet einen Zeilenbereich im Stylesheet einer Vorlagen-ID zu.
+// Mapping maps a line range in the stylesheet to a template ID.
 type Mapping struct {
 	Start, End int
 	ID         string
 }
 
-// Attachment ist ein Anhang aus den Eingabedaten (source="data"). Die
-// Pipeline bettet die Daten selbst ein, im FO steht er nicht.
+// Attachment is an attachment from the input data (source="data"). The
+// pipeline embeds the data itself, it does not appear in the FO.
 type Attachment struct {
 	ID, Name, MIMEType, Relationship, Description string
 }
 
-// EInvoice ist das Element einvoice: die Daten werden als Factur-X oder
-// ZUGFeRD eingebettet. Relationship ist leer, wenn die Stufe entscheidet.
+// EInvoice is the einvoice element: the data is embedded as Factur-X or
+// ZUGFeRD. Relationship is empty when the profile decides.
 type EInvoice struct {
 	ID, Relationship string
 }
 
-// Result ist eine kompilierte Vorlage.
+// Result is a compiled template.
 type Result struct {
 	XSLT        []byte
 	SourceMap   []Mapping
 	Attachments []Attachment
-	// EInvoice ist gesetzt, wenn die Vorlage eine E-Rechnung erzeugt.
+	// EInvoice is set when the template produces an e-invoice.
 	EInvoice *EInvoice
 
 	sheet *engine.Stylesheet
 }
 
-// IDAt liefert die Vorlagen-ID zur Zeile im Stylesheet, bei verschachtelten
-// Bereichen die innerste.
+// IDAt returns the template ID for the line in the stylesheet, the innermost
+// one for nested ranges.
 func (r *Result) IDAt(line int) string {
 	best := -1
 	for i, m := range r.SourceMap {
@@ -112,7 +112,7 @@ type compiler struct {
 	maxLens map[string]int
 }
 
-// Compile übersetzt eine geprüfte Vorlage in XSLT 3.0.
+// Compile translates a validated template into XSLT 3.0.
 func Compile(t *template.Template, opts Options) (*Result, error) {
 	t, errs := resolveTokens(t)
 	if len(errs) > 0 {
@@ -141,8 +141,8 @@ func (c *compiler) errorf(n *node, format string, args ...any) {
 	c.errs = append(c.errs, &template.Error{ID: n.NearestID(), Line: n.Line, Col: n.Col, Msg: fmt.Sprintf(format, args...)})
 }
 
-// matchLang wählt aus Elementen mit lang das passende: gleiche Sprache, dann
-// gleiche Hauptsprache, sonst das erste.
+// matchLang selects the matching one from elements with lang: same language,
+// then same primary language, otherwise the first.
 func matchLang(ns []*node, lang string) *node {
 	if len(ns) == 0 {
 		return nil
@@ -186,8 +186,8 @@ func (c *compiler) resources() {
 	}
 }
 
-// open öffnet ein Element und den Quellbereich der Vorlagen-ID. Das
-// zugehörige close schließt beides.
+// open opens an element and the source range of the template ID. The
+// matching close closes both.
 func (c *compiler) open(id, name string, attrs ...string) int {
 	i := c.w.enter(id)
 	c.w.start(name, attrs...)
@@ -254,8 +254,8 @@ func (c *compiler) stylesheet() {
 
 func (c *compiler) foRoot() {
 	root := c.t.Root
-	// Die Dokumentsprache folgt der gewählten Sprache (Option Lang), sonst der
-	// Vorlage.
+	// The document language follows the selected language (option Lang),
+	// otherwise the template.
 	r := c.open(root.ID(), "fo:root", "pdx:id", root.ID(), "xml:lang", c.lang)
 	ps := root.First("pageSet")
 	c.masters(ps)
@@ -299,13 +299,13 @@ func (c *compiler) foRoot() {
 	c.close(r)
 }
 
-// Seitenformate in Millimetern (Breite, Höhe im Hochformat).
+// Page sizes in millimeters (width, height in portrait).
 var sizes = map[string][2]string{
 	"A3": {"297mm", "420mm"}, "A4": {"210mm", "297mm"}, "A5": {"148mm", "210mm"},
 	"Letter": {"8.5in", "11in"}, "Legal": {"8.5in", "14in"},
 }
 
-// Reihenfolge, in der die Bedingungen der Seitenvorlagen geprüft werden.
+// Order in which the conditions of the page masters are checked.
 var useOrder = []string{"only", "first", "last", "odd", "even", "rest", "any"}
 
 func (c *compiler) masters(ps *node) {
@@ -347,9 +347,9 @@ func (c *compiler) masters(ps *node) {
 			if pm.Get("use", "any") != use {
 				continue
 			}
-			// rest heißt in der Vorlage jede Seite außer der ersten. In XSL
-			// schließt page-position="rest" die letzte Seite aus (6.4.12),
-			// daher folgt eine zweite Referenz für die letzte Seite.
+			// rest in the template means every page except the first. In XSL
+			// page-position="rest" excludes the last page (6.4.12), so a
+			// second reference for the last page follows.
 			conds := [][]string{nil}
 			switch use {
 			case "only", "first", "last":
@@ -406,7 +406,7 @@ func (c *compiler) declarations() {
 	c.w.end()
 }
 
-// presence umschließt den Inhalt mit xsl:if, wenn das Element presence hat.
+// presence wraps the content in xsl:if when the element has presence.
 func (c *compiler) presence(n *node, body func()) {
 	if p, ok := n.Attr("presence"); ok {
 		c.w.start("xsl:if", "test", p)
@@ -417,8 +417,8 @@ func (c *compiler) presence(n *node, body func()) {
 	body()
 }
 
-// content übersetzt ein Inhaltselement. positioned gilt für Kinder von
-// Kopf, Fuß und Teilformularen mit layout="positioned".
+// content translates a content element. positioned applies to children of
+// header, footer and subforms with layout="positioned".
 func (c *compiler) content(n *node, positioned bool) {
 	region := c.w.enter(n.ID())
 	defer c.w.leave(region)
@@ -435,8 +435,8 @@ func (c *compiler) content(n *node, positioned bool) {
 		attrs = append(attrs, "left", orZero(n.Get("x", "")), "top", orZero(n.Get("y", "")),
 			"width", n.Get("w", ""), "height", n.Get("h", ""))
 		if n.Name == "subform" {
-			// Das Teilformular ist selbst der Container, seine Bindung
-			// umschließt ihn.
+			// The subform is itself the container, its binding
+			// wraps it.
 			c.bound(n, func() {
 				c.start("fo:block-container", n, append(attrs, c.style(n)...)...)
 				c.children(n)
@@ -457,8 +457,8 @@ func orZero(s string) string {
 	return s
 }
 
-// bound setzt den Kontext eines Teilformulars mit bind: bei repeat="true"
-// je Datenknoten, sonst auf den ersten.
+// bound sets the context of a subform with bind: per data node for
+// repeat="true", otherwise to the first one.
 func (c *compiler) bound(n *node, body func()) {
 	b, ok := n.Attr("bind")
 	if !ok {
@@ -474,7 +474,7 @@ func (c *compiler) bound(n *node, body func()) {
 	c.w.end()
 }
 
-// children übersetzt die Kinder eines Teilformulars nach seinem Layout.
+// children translates the children of a subform according to its layout.
 func (c *compiler) children(n *node) {
 	kids := n.Elements("")
 	if len(kids) == 0 {
@@ -485,8 +485,8 @@ func (c *compiler) children(n *node) {
 	}
 }
 
-// inner übersetzt ein Element im Fluss. wrapped ist gesetzt, wenn ein
-// absolut positionierter Container es bereits umschließt.
+// inner translates an element in the flow. wrapped is set when an
+// absolutely positioned container already wraps it.
 func (c *compiler) inner(n *node, wrapped bool) {
 	switch n.Name {
 	case "subform":
@@ -590,8 +590,8 @@ func (c *compiler) barcode(n *node) {
 	c.w.end()
 }
 
-// textContent schreibt den Inhalt eines text-Elements: Textressource oder
-// gemischten Inhalt.
+// textContent writes the content of a text element: a text resource or
+// mixed content.
 func (c *compiler) textContent(n *node) {
 	if ref, ok := n.Attr("ref"); ok {
 		for _, ch := range n.Children {
@@ -647,7 +647,7 @@ func (c *compiler) inlines(n *node) {
 
 var placeholder = regexp.MustCompile(`\{[^{}]*\}`)
 
-// pageNumber schreibt das Muster mit {current} und {total}.
+// pageNumber writes the pattern with {current} and {total}.
 func (c *compiler) pageNumber(n *node) {
 	pat := n.Get("pattern", "{current}")
 	last := 0
@@ -668,7 +668,7 @@ func (c *compiler) pageNumber(n *node) {
 
 var simplePath = regexp.MustCompile(`^[\p{L}\p{N}_:./@*\-]+$`)
 
-// paren klammert einen Ausdruck, wenn er kein einfacher Pfad ist.
+// paren parenthesizes an expression when it is not a simple path.
 func paren(expr string) string {
 	if simplePath.MatchString(expr) {
 		return expr
@@ -676,7 +676,7 @@ func paren(expr string) string {
 	return "(" + expr + ")"
 }
 
-// pattern sucht ein Formatmuster im gewählten Gebietsschema.
+// pattern looks up a format pattern in the selected locale.
 func (c *compiler) pattern(n *node, name string) *node {
 	if c.locale == nil {
 		c.errorf(n, "Formatmuster %q verlangt formats in der Vorlage", name)
@@ -691,7 +691,7 @@ func (c *compiler) pattern(n *node, name string) *node {
 	return nil
 }
 
-// formatCall formatiert arg mit dem Muster.
+// formatCall formats arg with the pattern.
 func (c *compiler) formatCall(p *node, arg string) string {
 	pic := xpathString(p.Get("picture", ""))
 	lang := xpathString(strings.SplitN(c.locale.Get("lang", ""), "-", 2)[0])
@@ -704,7 +704,7 @@ func (c *compiler) formatCall(p *node, arg string) string {
 	return "format-number(xs:decimal(" + arg + "), " + pic + ", " + xpathString(c.locale.ID()) + ")"
 }
 
-// fieldExpr liefert den Ausdruck für den Wert eines Feldes.
+// fieldExpr returns the expression for the value of a field.
 func (c *compiler) fieldExpr(n *node) string {
 	base := paren(n.Get("bind", ""))
 	def, hasDef := n.Attr("default")
@@ -723,8 +723,8 @@ func (c *compiler) fieldExpr(n *node) string {
 	return expr
 }
 
-// styleProps ordnet Stilattribute FO-Eigenschaften zu. Die Reihenfolge ist
-// die Reihenfolge im erzeugten FO.
+// styleProps maps style attributes to FO properties. The order is the
+// order in the generated FO.
 var styleProps = []struct {
 	attr, fo  string
 	inherited bool
@@ -748,8 +748,8 @@ var styleProps = []struct {
 	{"borderRight", "border-right", false},
 }
 
-// resolved liefert die wirksamen Stilattribute: Kette der Stile über parent,
-// dann die eigenen Attribute des Elements.
+// resolved returns the effective style attributes: the chain of styles via
+// parent, then the element's own attributes.
 func (c *compiler) resolved(n *node) map[string]string {
 	out := map[string]string{}
 	var chain []*node
@@ -779,13 +779,13 @@ func (c *compiler) resolved(n *node) map[string]string {
 	return out
 }
 
-// style liefert die FO-Eigenschaften der Stilattribute als Name-Wert-Paare.
+// style returns the FO properties of the style attributes as name-value pairs.
 func (c *compiler) style(n *node) []string {
 	inh, non := c.styleSplit(n)
 	return append(inh, non...)
 }
 
-// styleSplit trennt vererbte und nicht vererbte Eigenschaften.
+// styleSplit separates inherited and non-inherited properties.
 func (c *compiler) styleSplit(n *node) (inh, non []string) {
 	r := c.resolved(n)
 	for _, p := range styleProps {
@@ -805,38 +805,38 @@ func (c *compiler) styleSplit(n *node) (inh, non []string) {
 	return inh, non
 }
 
-// semantic liefert die Angaben für Tagged PDF als FO-Attribute: Rolle,
-// statischer Alternativtext, Sprache, Lesereihenfolge und Artefakt. Ein
-// Alternativtext aus den Daten (altBind) folgt mit altBind als
-// xsl:attribute direkt nach dem Start des Elements.
+// semantic returns the Tagged PDF information as FO attributes: role,
+// static alternate text, language, reading order and artifact. An
+// alternate text from the data (altBind) follows via altBind as
+// xsl:attribute directly after the start of the element.
 func (c *compiler) semantic(n *node) []string {
 	out := []string{"role", n.Get("role", ""), "xml:lang", n.Get("lang", ""),
 		"pdx:reading-order", n.Get("readingOrder", "")}
 	if _, dyn := n.Attr("altBind"); !dyn {
 		out = append(out, "pdx:alt", n.Get("alt", ""))
 	}
-	// artifact="false" macht Inhalt von Kopf und Fuß zu echtem Inhalt.
+	// artifact="false" turns header and footer content into real content.
 	if v, ok := n.Attr("artifact"); ok {
 		out = append(out, "pdx:artifact", v)
 	}
 	return out
 }
 
-// altBind schreibt den Alternativtext aus den Daten als Attribut des eben
-// begonnenen Elements.
+// altBind writes the alternate text from the data as an attribute of the
+// element just started.
 func (c *compiler) altBind(n *node) {
 	if b, ok := n.Attr("altBind"); ok {
 		c.w.empty("xsl:attribute", "name", "pdx:alt", "select", "string("+paren(b)+")")
 	}
 }
 
-// start beginnt ein FO-Element mit den Angaben für Tagged PDF.
+// start begins an FO element with the Tagged PDF information.
 func (c *compiler) start(name string, n *node, attrs ...string) {
 	c.w.start(name, append(attrs, c.semantic(n)...)...)
 	c.altBind(n)
 }
 
-// blockAttrs liefert Rolle, Umbrüche, Keeps und Stil eines Blockelements.
+// blockAttrs returns role, breaks, keeps and style of a block element.
 func (c *compiler) blockAttrs(n *node) []string {
 	out := c.semantic(n)
 	breaks := map[string]string{"page": "page", "oddPage": "odd-page", "evenPage": "even-page"}
@@ -856,7 +856,7 @@ func (c *compiler) blockAttrs(n *node) []string {
 
 var lengthRe = regexp.MustCompile(`^(-?[0-9]+(?:\.[0-9]+)?)(pt|mm|cm|in|pc|px|%)?$`)
 
-// lengths ergänzt Zahlen ohne Einheit um pt.
+// lengths appends pt to numbers without a unit.
 func lengths(s string) string {
 	parts := strings.Fields(s)
 	for i, p := range parts {
@@ -867,11 +867,11 @@ func lengths(s string) string {
 	return strings.Join(parts, " ")
 }
 
-// Punkte je Einheit.
+// Points per unit.
 var unitPt = map[string]float64{"pt": 1, "mm": 72 / 25.4, "cm": 72 / 2.54, "in": 72, "pc": 12, "px": 0.75, "": 1}
 
-// addLengths addiert zwei Längen. Gleiche Einheiten bleiben erhalten, sonst
-// wird in Punkten gerechnet.
+// addLengths adds two lengths. Equal units are preserved, otherwise the
+// computation is done in points.
 func (c *compiler) addLengths(n *node, a, b string) string {
 	ma, mb := lengthRe.FindStringSubmatch(a), lengthRe.FindStringSubmatch(b)
 	if ma == nil || mb == nil || ma[2] == "%" || mb[2] == "%" {

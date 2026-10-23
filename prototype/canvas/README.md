@@ -1,9 +1,9 @@
-# Canvas-Prototyp (Phase 2)
+# Canvas prototype (phase 2)
 
-Vergleich von Svelte und React für den Canvas des Designers. Beide zeichnen
-die Musterrechnung aus dem Area Tree der Engine mit demselben Kern
-(`core/`), nur Zustand und Überlagerung (Hover, Auswahl, Griffe, Ziehen)
-gehören zum Framework. Der Prototyp wird nach der Entscheidung entfernt.
+Comparison of Svelte and React for the designer canvas. Both draw the
+sample invoice from the engine's area tree with the same core
+(`core/`). Only the state and the overlay (hover, selection, handles, dragging)
+belong to the framework. The prototype will be removed after the decision.
 
 ```bash
 go run ./prototype/canvas/export
@@ -21,10 +21,10 @@ npm --prefix prototype/canvas run build
 npm --prefix prototype/canvas run preview
 ```
 
-Danach `http://localhost:5180/index.html?suite=1` öffnen. Die Seite misst
-beide Frameworks mit 3 und mit 30 Seiten (`?x=10`) und zeigt eine Übersicht.
-`svelte.html?bench=1` und `react.html?bench=1` messen einzeln.
+Then open `http://localhost:5180/index.html?suite=1`. The page measures
+both frameworks with 3 and with 30 pages (`?x=10`) and shows an overview.
+`svelte.html?bench=1` and `react.html?bench=1` measure them individually.
 
-Gemessen werden Bilder je Sekunde bei Zoom, Scrollen, Hover und Ziehen
-(ein Schritt je Frame), die Zeit vom Ereignis bis zur DOM-Änderung (Commit)
-und bis zum nächsten Frame.
+The measurements are frames per second for zoom, scrolling, hover and
+dragging (one step per frame), the time from the event to the DOM change
+(commit) and to the next frame.

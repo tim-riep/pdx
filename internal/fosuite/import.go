@@ -14,9 +14,9 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// extractFO holt fo:root aus einem FOP-Testfall und setzt Variablen ein:
-// Attributwerte "##name" werden durch /testcase/variables/name ersetzt, wie
-// es FOPs testcase2fo.xsl tut.
+// extractFO extracts fo:root from a FOP test case and substitutes variables:
+// attribute values "##name" are replaced by /testcase/variables/name, as
+// FOP's testcase2fo.xsl does.
 const extractFO = `<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="xml" encoding="UTF-8" indent="no"/>
@@ -38,8 +38,8 @@ const extractFO = `<?xml version="1.0" encoding="UTF-8"?>
 </xsl:stylesheet>
 `
 
-// Gründe, die der Import selbst vergibt. Beim erneuten Import werden Zeilen
-// mit diesen Anfängen neu geschrieben, alle anderen bleiben stehen.
+// Reasons assigned by the import itself. On a repeated import, lines with
+// these prefixes are rewritten, all others stay in place.
 const (
 	ReasonUnsupported = "nicht im Teilumfang von pdx: "
 	ReasonFOPDisabled = "in FOP 2.11 deaktiviert: "
@@ -48,13 +48,14 @@ const (
 	ReasonNoText      = "keine vergleichbaren Zeilen, FOP prüft hier nur Flächen"
 )
 
-// importReason meldet, ob eine Begründung vom Import stammt. Gründe der
-// Referenz (FOP setzt den Fall nicht) prüft nur die Referenz neu.
+// importReason reports whether a reason comes from the import. Reasons from
+// the reference (FOP does not typeset the case) are only rechecked by the
+// reference.
 func importReason(why string) bool {
 	return autoReason(why) && !strings.HasPrefix(why, ReasonFOPFails)
 }
 
-// autoReason meldet, ob eine Begründung vom Import oder der Referenz stammt.
+// autoReason reports whether a reason comes from the import or the reference.
 func autoReason(why string) bool {
 	for _, p := range []string{ReasonUnsupported, ReasonFOPDisabled, ReasonResources, ReasonFOPFails, ReasonNoText} {
 		if strings.HasPrefix(why, p) {
@@ -69,9 +70,9 @@ var (
 	externalRef   = regexp.MustCompile(`(?:src|external-destination|background-image)="\s*(?:url\()?\s*['"]?([^'")]+)`)
 )
 
-// unsupportedProps sind Eigenschaften, die das Layout von pdx noch nicht
-// umsetzt, mit ihren Anfangswerten und gleichwertigen Schreibweisen. Ein Fall,
-// der einen anderen Wert setzt, liegt außerhalb des Teilumfangs.
+// unsupportedProps are properties that the pdx layout does not implement
+// yet, with their initial values and equivalent spellings. A case that sets a
+// different value lies outside the supported subset.
 var unsupportedProps = map[string][]string{
 	"column-count":                 {"1"},
 	"span":                         {"none"},
@@ -108,11 +109,11 @@ var (
 	remoteSrc      = regexp.MustCompile(`src="\s*(?:url\()?\s*['"]?https?:`)
 )
 
-// nsFOX ist der Namespace der FOP-Erweiterungen.
+// nsFOX is the namespace of the FOP extensions.
 const nsFOX = "http://xmlgraphics.apache.org/fop/extensions"
 
-// unsupported liefert den Grund, warum ein Fall außerhalb des Teilumfangs
-// liegt, oder "".
+// unsupported returns the reason why a case lies outside the supported
+// subset, or "".
 func unsupported(fo string) string {
 	if strings.Contains(fo, nsFOX) {
 		return "nutzt FOP-Erweiterungen (fox)"
@@ -145,9 +146,9 @@ func unsupported(fo string) string {
 	return ""
 }
 
-// ImportFOP liest die Testfälle aus test/layoutengine eines FOP-Quellbaums.
-// Fälle im Teilumfang landen in testdata/suites/fop/cases, die übrigen mit
-// Begründung in disabled.
+// ImportFOP reads the test cases from test/layoutengine of a FOP source tree.
+// Cases in the supported subset go to testdata/suites/fop/cases, the others
+// go to disabled with a reason.
 func ImportFOP(layoutDir, root string, disabled map[string]string) (int, error) {
 	fopDisabled, err := readFOPDisabled(filepath.Join(layoutDir, "disabled-testcases.xml"))
 	if err != nil {
@@ -202,7 +203,7 @@ func ImportFOP(layoutDir, root string, disabled map[string]string) (int, error) 
 			disabled[id] = ReasonUnsupported + why
 			continue
 		}
-		// Der Lizenzkopf des Testfalls bleibt erhalten (Apache License 2.0).
+		// The license header of the test case is preserved (Apache License 2.0).
 		var b bytes.Buffer
 		b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
 		if h := headerComment.Find(src); h != nil {
@@ -221,7 +222,7 @@ func ImportFOP(layoutDir, root string, disabled map[string]string) (int, error) 
 	return n, nil
 }
 
-// removeStaleExpect löscht Erwartungen zu Fällen, die nicht mehr vorliegen.
+// removeStaleExpect deletes expectations for cases that no longer exist.
 func removeStaleExpect(root, suite string) {
 	files, _ := filepath.Glob(filepath.Join(DataDir(root), suite, "expect", "*.txt"))
 	for _, f := range files {
@@ -240,7 +241,7 @@ func oneLine(s string) string {
 	return s
 }
 
-// readFOPDisabled liest FOPs Liste deaktivierter Fälle (Datei zu Beschreibung).
+// readFOPDisabled reads FOP's list of disabled cases (file to description).
 func readFOPDisabled(path string) (map[string]string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -267,7 +268,7 @@ func readFOPDisabled(path string) (map[string]string, error) {
 	return out, nil
 }
 
-// sortedKeys liefert die Schlüssel einer Liste sortiert.
+// sortedKeys returns the keys of a list in sorted order.
 func sortedKeys(m map[string]string) []string {
 	out := make([]string, 0, len(m))
 	for k := range m {

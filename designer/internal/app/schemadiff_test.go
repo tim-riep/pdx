@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// changedXSD schreibt eine geänderte Fassung des Rechnungs-XSD: seller heißt
-// vendor, tax entfällt, taxRate wird Text und orderRef ist neu und Pflicht.
+// changedXSD writes a changed version of the invoice XSD: seller becomes
+// vendor, tax is dropped, taxRate becomes text and orderRef is new and required.
 func changedXSD(t *testing.T) string {
 	t.Helper()
 	b, err := os.ReadFile(filepath.Join(muster, "schema", "invoice.xsd"))
@@ -69,13 +69,13 @@ func TestSchemaDiffAndReplace(t *testing.T) {
 	if ad := byKind["added"]; len(ad) != 1 || ad[0].Path != "inv:invoice/inv:orderRef" || !ad[0].Required {
 		t.Fatalf("neu %+v", ad)
 	}
-	// Diff ändert nichts.
+	// Diff changes nothing.
 	if c.doc.Pkg.Template.Root.Get("schema", "") != "schema/invoice.xsd" {
 		t.Fatal("Diff hat die Vorlage geändert")
 	}
 
-	// Ersetzen mit Umstellung: Bindungen auf seller zeigen auf vendor, das
-	// alte XSD ist weg, alles in einem Schritt.
+	// Replace with switching: bindings to seller point to vendor, the
+	// old XSD is gone, all in one step.
 	if _, err := ss.Replace(p, []Rename{{From: ren[0].Path, To: ren[0].To}}); err != nil {
 		t.Fatal(err)
 	}
@@ -89,13 +89,13 @@ func TestSchemaDiffAndReplace(t *testing.T) {
 	if tpl.Root.Get("schema", "") != "schema/rechnung-v2.xsd" {
 		t.Fatalf("schema=%s", tpl.Root.Get("schema", ""))
 	}
-	// Übrig bleibt der entfernte Knoten tax als Befund.
+	// What remains is the removed node tax as a finding.
 	var taxProblem bool
 	for _, pr := range runChecksFor(c) {
 		if pr.Level == "Fehler" && strings.Contains(pr.Msg, "tax") {
 			taxProblem = true
 		}
-		// Die alten Beispieldaten passen nicht mehr, das ist eine eigene Aufgabe.
+		// The old sample data no longer fits, that is a separate task.
 		if pr.Source == "vorlage" && strings.Contains(pr.Msg, "seller") {
 			t.Errorf("seller noch gemeldet: %+v", pr)
 		}
@@ -103,7 +103,7 @@ func TestSchemaDiffAndReplace(t *testing.T) {
 	if !taxProblem {
 		t.Fatal("tax nicht gemeldet")
 	}
-	// Ein Undo stellt alles wieder her.
+	// One Undo restores everything.
 	if _, err := NewTemplateService(c).Undo(); err != nil {
 		t.Fatal(err)
 	}

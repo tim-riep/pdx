@@ -15,24 +15,24 @@ import (
 	"time"
 )
 
-// OIDTSTInfo ist der Inhaltstyp eines Zeitstempels (RFC 3161 2.4.2).
+// OIDTSTInfo is the content type of a timestamp (RFC 3161 2.4.2).
 var OIDTSTInfo = oidTSTInfo
 
-// TSA fragt Zeitstempel nach RFC 3161 bei einem Dienst über HTTP ab
-// (RFC 3161 3.4, Medientyp application/timestamp-query).
+// TSA requests timestamps according to RFC 3161 from a service over HTTP
+// (RFC 3161 3.4, media type application/timestamp-query).
 type TSA struct {
 	URL string
-	// Client ist der HTTP-Client, Vorgabe mit 30 Sekunden Zeitlimit.
+	// Client is the HTTP client, default with a 30 second timeout.
 	Client *http.Client
-	// Hash ist das Verfahren für den Abdruck, Vorgabe SHA-256.
+	// Hash is the algorithm for the imprint, default SHA-256.
 	Hash crypto.Hash
 }
 
-// maxTSAResponse begrenzt die Antwort eines Zeitstempeldienstes.
+// maxTSAResponse limits the response of a timestamp service.
 const maxTSAResponse = 1 << 20
 
-// Timestamp liefert einen Zeitstempel über data als CMS ContentInfo. Er
-// prüft, dass Abdruck und Nonce der Antwort zur Anfrage passen.
+// Timestamp returns a timestamp over data as a CMS ContentInfo. It
+// checks that the imprint and nonce of the response match the request.
 func (t *TSA) Timestamp(ctx context.Context, data []byte) ([]byte, error) {
 	hash := t.Hash
 	if hash == 0 {
@@ -49,7 +49,7 @@ func (t *TSA) Timestamp(ctx context.Context, data []byte) ([]byte, error) {
 		integer(big.NewInt(1)),
 		seq(algorithm(hashOIDs[hash], false), octets(imprint)),
 		integer(nonce),
-		[]byte{0x01, 0x01, 0xff}, // certReq TRUE: Zertifikat des Dienstes mitliefern
+		[]byte{0x01, 0x01, 0xff}, // certReq TRUE: include the certificate of the service
 	)
 	client := t.Client
 	if client == nil {
@@ -100,14 +100,14 @@ type timeStampResp struct {
 	Token  asn1.RawValue `asn1:"optional"`
 }
 
-// parseTimeStampResp liefert das Token einer erfolgreichen Antwort.
+// parseTimeStampResp returns the token of a successful response.
 func parseTimeStampResp(der []byte) ([]byte, error) {
 	var r timeStampResp
 	rest, err := asn1.Unmarshal(der, &r)
 	if err != nil || len(rest) > 0 {
 		return nil, fmt.Errorf("Zeitstempel: Antwort nicht lesbar")
 	}
-	// granted (0) oder grantedWithMods (1), RFC 3161 2.4.2.
+	// granted (0) or grantedWithMods (1), RFC 3161 2.4.2.
 	if r.Status.Status > 1 {
 		return nil, fmt.Errorf("Zeitstempel abgelehnt, Status %d", r.Status.Status)
 	}
@@ -117,15 +117,15 @@ func parseTimeStampResp(der []byte) ([]byte, error) {
 	return r.Token.FullBytes, nil
 }
 
-// TimeStampInfo sind die Angaben eines Zeitstempels.
+// TimeStampInfo are the attributes of a timestamp.
 type TimeStampInfo struct {
 	Time    time.Time
 	Imprint []byte
 	Hash    asn1.ObjectIdentifier
 	Nonce   *big.Int
 	Serial  *big.Int
-	// Certificates sind die Zertifikate im Token, das des Dienstes zuerst,
-	// soweit mitgeliefert.
+	// Certificates are the certificates in the token, that of the service first,
+	// if included.
 	Certificates []*x509.Certificate
 }
 
@@ -139,8 +139,8 @@ type algorithmIdentifier struct {
 	Parameters asn1.RawValue `asn1:"optional"`
 }
 
-// accuracy ist eine SEQUENCE (RFC 3161 2.4.2). Als RawValue würde sie bei
-// fehlender Angabe die folgende Nonce aufnehmen.
+// accuracy is a SEQUENCE (RFC 3161 2.4.2). As a RawValue it would take up the
+// following nonce if it were absent.
 type accuracy struct {
 	Seconds int `asn1:"optional"`
 	Millis  int `asn1:"optional,tag:0"`
@@ -160,7 +160,7 @@ type tstInfo struct {
 	Extension asn1.RawValue `asn1:"optional,tag:1"`
 }
 
-// ParseTimeStamp liest ein Zeitstempel-Token.
+// ParseTimeStamp reads a timestamp token.
 func ParseTimeStamp(token []byte) (*TimeStampInfo, error) {
 	sd, err := ParseSignedData(token)
 	if err != nil {
@@ -177,12 +177,12 @@ func ParseTimeStamp(token []byte) (*TimeStampInfo, error) {
 		Nonce: ti.Nonce, Serial: ti.Serial, Certificates: sd.Certificates}, nil
 }
 
-// SignedDataInfo sind die Teile eines CMS SignedData, die pdx braucht.
+// SignedDataInfo are the parts of a CMS SignedData that pdx needs.
 type SignedDataInfo struct {
 	ContentType  asn1.ObjectIdentifier
 	Content      []byte
 	Certificates []*x509.Certificate
-	// SignerInfos sind die DER-Kodierungen der SignerInfo-Einträge.
+	// SignerInfos are the DER encodings of the SignerInfo entries.
 	SignerInfos [][]byte
 }
 
@@ -205,7 +205,7 @@ type signedData struct {
 	SignerInfos asn1.RawValue
 }
 
-// ParseSignedData liest einen CMS ContentInfo mit SignedData (RFC 5652).
+// ParseSignedData reads a CMS ContentInfo with SignedData (RFC 5652).
 func ParseSignedData(der []byte) (*SignedDataInfo, error) {
 	var ci contentInfo
 	if _, err := asn1.Unmarshal(der, &ci); err != nil {

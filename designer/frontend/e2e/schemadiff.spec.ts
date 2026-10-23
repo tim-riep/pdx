@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { muster, openMuster } from "./helpers";
 
-// Neues XSD: seller heißt vendor, tax entfällt, orderRef ist neu und Pflicht.
+// New XSD: seller is called vendor, tax is dropped, orderRef is new and required.
 function changedXSD(): string {
   let s = readFileSync(join(muster, "schema/invoice.xsd"), "utf8");
   s = s.replace(`<xs:element name="seller" type="Party"/>`, `<xs:element name="vendor" type="Party"/>`);
@@ -34,7 +34,7 @@ test("Schemaänderung: Unterschiede, Umstellung und Aufgabenliste", async ({ pag
   await page.getByRole("button", { name: "Übernehmen" }).click();
   await expect(diff).toHaveCount(0);
 
-  // Datenbaum mit vendor, Aufgaben für tax und die Beispieldaten.
+  // Data tree with vendor, tasks for tax and the sample data.
   await expect(page.getByTestId("data").locator('[data-path="inv:invoice/inv:vendor"]')).toBeVisible();
   const tasks = page.getByTestId("schema-tasks");
   const tax = tasks.locator('[data-task="removed:inv:invoice/inv:totals/inv:tax"]');
@@ -43,13 +43,13 @@ test("Schemaänderung: Unterschiede, Umstellung und Aufgabenliste", async ({ pag
   await expect(tasks.locator('[data-task="samples"] input')).not.toBeChecked();
   await expect(tasks).not.toContainText("seller");
 
-  // Zum Element springen und es entfernen: die Aufgabe ist erledigt.
+  // Jump to the element and remove it: the task is done.
   await tax.getByRole("button", { name: "steuer-wert" }).click();
   await expect(page.getByTestId("inspector").locator("header code")).toHaveText("steuer-wert");
   await page.locator("body").press("Delete");
   await expect(tax.getByRole("checkbox")).toBeChecked();
 
-  // Zwei Schritte zurück: das alte Schema ist wieder da.
+  // Two steps back: the old schema is back.
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(page.getByTestId("data").locator('[data-path="inv:invoice/inv:seller"]')).toBeVisible();

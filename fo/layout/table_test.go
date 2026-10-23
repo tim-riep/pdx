@@ -21,7 +21,7 @@ func layoutFO(t *testing.T, fo string) *areatree.Document {
 	return doc
 }
 
-// smallPage liefert ein FO mit kleiner Seite, damit Umbrüche schnell nötig sind.
+// smallPage returns an FO with a small page so that breaks are needed quickly.
 func smallPage(body string) string {
 	return `<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
 <fo:layout-master-set><fo:simple-page-master master-name="p" page-width="200pt" page-height="120pt">
@@ -53,8 +53,8 @@ func TestRowSplits(t *testing.T) {
 	if len(doc.Pages) != 2 {
 		t.Fatalf("%d Seiten, erwartet 2", len(doc.Pages))
 	}
-	// Seite 1 (120pt, Zeilen à 12pt): Davor, daneben Links und 9 Zeilen der
-	// hohen Zelle. Seite 2: die übrigen 6 Zeilen.
+	// Page 1 (120pt, lines of 12pt each): Davor, next to it Links and 9 lines of
+	// the tall cell. Page 2: the remaining 6 lines.
 	if got := countLines(doc.Pages[0]); got != 11 {
 		t.Errorf("Seite 1 hat %d Zeilen, erwartet 11", got)
 	}
@@ -65,8 +65,8 @@ func TestRowSplits(t *testing.T) {
 
 func TestRowKeepTogether(t *testing.T) {
 	doc := layoutFO(t, tallRow(`keep-together.within-page="always"`))
-	// Die Zeile passt auf keine Seite, sie wird trotzdem nicht vor der Seite
-	// mit "Davor" geteilt, sondern beginnt auf Seite 2.
+	// The row fits on no page, it is still not split before the page
+	// with "Davor" but starts on page 2.
 	if got := countLines(doc.Pages[0]); got != 1 {
 		t.Errorf("Seite 1 hat %d Zeilen, erwartet nur Davor", got)
 	}
@@ -94,9 +94,9 @@ func TestHeaderRepeats(t *testing.T) {
 	}
 }
 
-// TestRowResumeAfterWidthChange prüft, dass ein Listenpunkt, der beim
-// Wechsel zu einer breiteren Seite umbricht, keinen Text verliert und keinen
-// doppelt setzt.
+// TestRowResumeAfterWidthChange checks that a list item that breaks when
+// changing to a wider page loses no text and places none
+// twice.
 func TestRowResumeAfterWidthChange(t *testing.T) {
 	var words []string
 	for i := 1; i <= 80; i++ {

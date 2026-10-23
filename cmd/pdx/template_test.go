@@ -45,7 +45,7 @@ func TestTemplateCLI(t *testing.T) {
 	if _, err := os.Stat(fo); err != nil {
 		t.Error("--fo nicht geschrieben")
 	}
-	// Aus Verzeichnis und ZIP entsteht dieselbe Datei.
+	// Directory and ZIP produce the same file.
 	pdf2 := filepath.Join(dir, "r2.pdf")
 	if code := run([]string{"render", "--template", musterDir, data, "-o", pdf2, "--creation-date", "2026-01-15T09:00:00Z"}, &so, &se); code != 0 {
 		t.Fatalf("render --template Verzeichnis: %d %s", code, se.String())
@@ -55,7 +55,7 @@ func TestTemplateCLI(t *testing.T) {
 	}
 }
 
-// copyDir kopiert das Vorlagenverzeichnis, damit Tests es ändern können.
+// copyDir copies the template directory so that tests can modify it.
 func copyDir(t *testing.T, src string) string {
 	t.Helper()
 	dst := t.TempDir()
@@ -79,9 +79,9 @@ func TestCheckFindings(t *testing.T) {
 	src, _ := os.ReadFile(tp)
 	s := string(src)
 	for _, r := range [][2]string{
-		{`bind="inv:seller/inv:name"/></text>`, `bind="inv:seller/inv:nam"/></text>`},       // Pfad
-		{`bind="inv:description"`, `bind="inv:description" format="betrag"`},                // Typ
-		{`bind="inv:number" fontWeight`, `bind="inv:items/inv:item/inv:amount" fontWeight`}, // Kardinalität
+		{`bind="inv:seller/inv:name"/></text>`, `bind="inv:seller/inv:nam"/></text>`},       // path
+		{`bind="inv:description"`, `bind="inv:description" format="betrag"`},                // type
+		{`bind="inv:number" fontWeight`, `bind="inv:items/inv:item/inv:amount" fontWeight`}, // cardinality
 	} {
 		if !strings.Contains(s, r[0]) {
 			t.Fatalf("%q nicht in der Vorlage", r[0])

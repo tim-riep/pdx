@@ -11,7 +11,7 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// policy erlaubt alles außer den angegebenen Funktionen.
+// policy allows everything except the given functions.
 type policy struct{ deny pdf.Feature }
 
 func (policy) Name() string { return "test" }
@@ -31,7 +31,7 @@ func helvetica(t *testing.T) *Face {
 	return f
 }
 
-// toUnicodeOf liefert die entpackte ToUnicode-CMap einer eingebetteten Schrift.
+// toUnicodeOf returns the decompressed ToUnicode CMap of an embedded font.
 func toUnicodeOf(t *testing.T, d *pdf.Document, e *Embedded) string {
 	t.Helper()
 	font := d.Get(e.Ref).(*pdf.Dict)
@@ -44,8 +44,8 @@ func toUnicodeOf(t *testing.T, d *pdf.Document, e *Embedded) string {
 	return string(b)
 }
 
-// Folgeglyphen eines Clusters tragen keinen Text, sie bekommen das Zeichen
-// aus der cmap der Schrift.
+// Subsequent glyphs of a cluster carry no text, they get the character
+// from the font's cmap.
 func TestToUnicodeFromCmap(t *testing.T) {
 	f := helvetica(t)
 	gid, ok := f.GlyphFor('a')
@@ -64,8 +64,8 @@ func TestToUnicodeFromCmap(t *testing.T) {
 	}
 }
 
-// Ohne Zuordnung entscheidet das Profil: die Stufen U und A lehnen ab, mit
-// Schrift und Glyphe in der Meldung.
+// Without a mapping the profile decides: the levels U and A reject, with
+// font and glyph in the message.
 func TestUnmappedGlyph(t *testing.T) {
 	f := helvetica(t)
 	reverse := f.face.Cmap().CollectReverseMapping()

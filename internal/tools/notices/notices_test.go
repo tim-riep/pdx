@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-// THIRD_PARTY_NOTICES.txt im Wurzelordner passt zu den gelinkten Modulen.
-// Nach einer Änderung der Abhängigkeiten: make notices.
+// THIRD_PARTY_NOTICES.txt in the root folder matches the linked modules.
+// After a change of the dependencies: make notices.
 func TestRootNoticesCurrent(t *testing.T) {
 	if testing.Short() {
 		t.Skip("ruft go list auf")

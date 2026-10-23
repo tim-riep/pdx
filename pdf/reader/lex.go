@@ -1,6 +1,6 @@
-// Package reader liest PDF-Dateien so weit, wie pdx es zum Prüfen braucht:
-// Objekte über Xref-Tabellen und Xref-Streams, Objektstreams, Flate und
-// Content Streams. Verschlüsselte Dateien werden abgelehnt.
+// Package reader reads PDF files as far as pdx needs it for checking:
+// objects via xref tables and xref streams, object streams, Flate and
+// content streams. Encrypted files are rejected.
 package reader
 
 import (
@@ -9,42 +9,42 @@ import (
 	"strconv"
 )
 
-// Name ist ein PDF-Name ohne Schrägstrich.
+// Name is a PDF name without slash.
 type Name string
 
-// String ist eine PDF-Zeichenkette als Bytes.
+// String is a PDF string as bytes.
 type String []byte
 
-// Array ist ein PDF-Array.
+// Array is a PDF array.
 type Array []Object
 
-// Dict ist ein PDF-Dictionary.
+// Dict is a PDF dictionary.
 type Dict map[Name]Object
 
-// Ref ist ein indirekter Verweis.
+// Ref is an indirect reference.
 type Ref struct{ Num, Gen int }
 
-// Stream ist ein Stream mit Dictionary und rohen Bytes.
+// Stream is a stream with dictionary and raw bytes.
 type Stream struct {
 	Dict Dict
 	Raw  []byte
 }
 
-// Operator ist ein Operator in einem Content Stream.
+// Operator is an operator in a content stream.
 type Operator string
 
-// Object ist eines von nil, bool, int64, float64, Name, String, Array, Dict,
-// Ref, *Stream oder Operator.
+// Object is one of nil, bool, int64, float64, Name, String, Array, Dict,
+// Ref, *Stream or Operator.
 type Object any
 
 type lexer struct {
 	b     []byte
 	pos   int
-	depth int // Verschachtelung von Arrays und Dictionaries
+	depth int // nesting of arrays and dictionaries
 }
 
-// maxDepth begrenzt die Verschachtelung, damit bösartige Eingaben den
-// Stapel nicht sprengen.
+// maxDepth limits the nesting so that malicious input does not blow
+// the stack.
 const maxDepth = 256
 
 func isSpace(c byte) bool {
@@ -75,8 +75,8 @@ func (l *lexer) skip() {
 	}
 }
 
-// token liefert das nächste Grundelement. Klammern von Arrays und
-// Dictionaries kommen als Operator "[", "]", "<<", ">>".
+// token returns the next basic element. Brackets of arrays and
+// dictionaries come as operator "[", "]", "<<", ">>".
 func (l *lexer) token() (Object, error) {
 	l.skip()
 	if l.pos >= len(l.b) {
@@ -255,8 +255,8 @@ func hexVal(c byte) int {
 	return -1
 }
 
-// object liest ein vollständiges Objekt. refs erlaubt "n g R" (nicht in
-// Content Streams).
+// object reads a complete object. refs allows "n g R" (not in
+// content streams).
 func (l *lexer) object(refs bool) (Object, error) {
 	t, err := l.token()
 	if err != nil {
@@ -317,7 +317,7 @@ func (l *lexer) complete(t Object, refs bool) (Object, error) {
 		if !refs {
 			return v, nil
 		}
-		// Vorausschauen auf "g R".
+		// Look ahead for "g R".
 		save := l.pos
 		t2, err := l.token()
 		if g, ok := t2.(int64); err == nil && ok {

@@ -8,7 +8,7 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// specKind ist die Art einer Teilfolge in fo:page-sequence-master.
+// specKind is the kind of a sub-sequence in fo:page-sequence-master.
 type specKind uint8
 
 const (
@@ -17,16 +17,16 @@ const (
 	specAlternatives
 )
 
-// pageSpec ist eine Teilfolge (sub-sequence-specifier).
+// pageSpec is a sub-sequence (sub-sequence-specifier).
 type pageSpec struct {
 	kind   specKind
 	master string
-	max    int // -1 unbegrenzt
+	max    int // -1 unlimited
 	conds  []condRef
 	node   *tree.Node
 }
 
-// condRef ist eine fo:conditional-page-master-reference.
+// condRef is an fo:conditional-page-master-reference.
 type condRef struct {
 	master   string
 	position string // first, last, rest, only, any
@@ -35,7 +35,7 @@ type condRef struct {
 	node     *tree.Node
 }
 
-// seqMaster ist eine fo:page-sequence-master.
+// seqMaster is an fo:page-sequence-master.
 type seqMaster struct {
 	node  *tree.Node
 	specs []pageSpec
@@ -105,7 +105,7 @@ func maxRepeats(n *tree.Node) (int, error) {
 	return m, nil
 }
 
-// checkMasters prüft, dass alle Verweise auf einfache Seitenvorlagen zeigen.
+// checkMasters checks that all references point to simple page masters.
 func (e *engine) checkMasters() error {
 	for _, sm := range e.seqMasters {
 		for _, sp := range sm.specs {
@@ -132,22 +132,22 @@ func (e *engine) checkMasters() error {
 	return nil
 }
 
-// pageCond beschreibt die zu wählende Seite.
+// pageCond describes the page to select.
 type pageCond struct {
-	number int  // Seitenzahl (für gerade und ungerade)
-	first  bool // erste Seite der Folge
-	last   bool // letzte Seite der Folge
-	blank  bool // Leerseite ohne Inhalt aus dem Fluss
+	number int  // page number (for even and odd)
+	first  bool // first page of the sequence
+	last   bool // last page of the sequence
+	blank  bool // blank page without content from the flow
 }
 
-// selector wählt die Seitenvorlage je Seite.
+// selector selects the page master per page.
 type selector struct {
 	e      *engine
 	simple *master
 	sm     *seqMaster
-	i      int    // aktuelle Teilfolge
-	used   int    // in der aktuellen Teilfolge verbrauchte Seiten
-	last   string // zuletzt verwendete Vorlage
+	i      int    // current sub-sequence
+	used   int    // pages consumed in the current sub-sequence
+	last   string // most recently used master
 }
 
 func (e *engine) newSelector(ps *tree.Node, ref string) (*selector, error) {
@@ -160,8 +160,8 @@ func (e *engine) newSelector(ps *tree.Node, ref string) (*selector, error) {
 	return nil, tree.Errorf(ps, "Seitenvorlage %q nicht gefunden", ref)
 }
 
-// pick wählt die Vorlage für eine Seite. Mit commit wird die Seite
-// verbraucht, sonst nur vorausgeschaut.
+// pick selects the master for a page. With commit the page is
+// consumed, otherwise it only looks ahead.
 func (s *selector) pick(c pageCond, commit bool) (*master, error) {
 	if s.simple != nil {
 		return s.simple, nil
@@ -183,8 +183,8 @@ func (s *selector) pick(c pageCond, commit bool) (*master, error) {
 				}
 			}
 			if name == "" {
-				// Keine Alternative passt. XSL 1.1 6.4.5 erlaubt, die zuletzt
-				// verwendete Vorlage weiter zu nutzen.
+				// No alternative matches. XSL 1.1 6.4.5 allows continuing to use the
+				// most recently used master.
 				if s.last == "" {
 					return nil, tree.Errorf(sp.node, "keine fo:conditional-page-master-reference passt zu Seite %d", c.number)
 				}
@@ -196,7 +196,7 @@ func (s *selector) pick(c pageCond, commit bool) (*master, error) {
 		}
 		return s.e.masters[name], nil
 	}
-	// Erschöpfte Folge: ebenso die zuletzt verwendete Vorlage (6.4.5).
+	// Exhausted sequence: likewise the most recently used master (6.4.5).
 	if s.last != "" {
 		return s.e.masters[s.last], nil
 	}
@@ -241,8 +241,8 @@ func (cr condRef) matches(c pageCond) bool {
 	return true
 }
 
-// formatNumber formatiert eine Seitenzahl nach dem Attribut format der
-// fo:page-sequence (XSL 1.1 7.26.1): 1, 01, i, I, a, A.
+// formatNumber formats a page number according to the format attribute of
+// the fo:page-sequence (XSL 1.1 7.26.1): 1, 01, i, I, a, A.
 func formatNumber(n int, format string) string {
 	switch {
 	case format == "" || format == "1":

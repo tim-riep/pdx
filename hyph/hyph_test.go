@@ -37,7 +37,7 @@ func TestGerman(t *testing.T) {
 			t.Errorf("%s: %s, erwartet %s", in, got, want)
 		}
 	}
-	// Mindestlängen aus hyphenation-remain- und -push-character-count.
+	// Minimum lengths from hyphenation-remain- and -push-character-count.
 	if got := show("Silbentrennung", p.Hyphenate("Silbentrennung", 4, 5)); got != "Silben-trennung" {
 		t.Errorf("mit 4/5: %s", got)
 	}
@@ -50,8 +50,8 @@ func TestEnglish(t *testing.T) {
 	}
 	cases := map[string]string{
 		"hyphenation": "hy-phen-ation",
-		"table":       "ta-ble",  // Ausnahmeliste
-		"project":     "project", // Ausnahmeliste ohne Trennung
+		"table":       "ta-ble",  // exception list
+		"project":     "project", // exception list without hyphenation
 		"typesetting": "type-set-ting",
 	}
 	for in, want := range cases {

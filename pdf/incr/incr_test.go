@@ -10,7 +10,7 @@ import (
 	"github.com/tim-riep/pdx/pdf/reader"
 )
 
-// xrefStreamPDF baut eine kleine Datei mit Xref-Stream.
+// xrefStreamPDF builds a small file with an xref stream.
 func xrefStreamPDF() []byte {
 	var b bytes.Buffer
 	b.WriteString("%PDF-1.7\n")
@@ -34,7 +34,7 @@ func xrefStreamPDF() []byte {
 	return b.Bytes()
 }
 
-// Eine Datei mit Xref-Stream bekommt ein Update mit Xref-Stream.
+// A file with an xref stream gets an update with an xref stream.
 func TestUpdateXRefStream(t *testing.T) {
 	u, err := Open(xrefStreamPDF())
 	if err != nil {
@@ -64,7 +64,7 @@ func TestUpdateXRefStream(t *testing.T) {
 	if f.Dict(f.Root()["Pages"])["Type"] != reader.Name("Pages") {
 		t.Error("altes Objekt über Prev nicht lesbar")
 	}
-	// Ein leeres Update ist ein Fehler.
+	// An empty update is an error.
 	u2, _ := Open(xrefStreamPDF())
 	if _, err := u2.Bytes(); err == nil {
 		t.Error("leeres Update angenommen")

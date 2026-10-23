@@ -1,6 +1,6 @@
-// Package image lädt Rasterbilder für die PDF-Ausgabe. JPEG-Daten werden
-// unverändert durchgereicht (DCTDecode), PNG wird dekodiert und als
-// Flate-Stream mit getrenntem Alphakanal bereitgestellt.
+// Package image loads raster images for PDF output. JPEG data is passed
+// through unchanged (DCTDecode), PNG is decoded and provided as a
+// Flate stream with a separate alpha channel.
 package image
 
 import (
@@ -19,56 +19,56 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// Format ist das Quellformat eines Bildes.
+// Format is the source format of an image.
 type Format uint8
 
 const (
-	// JPEG wird unverändert als DCTDecode eingebettet.
+	// JPEG is embedded unchanged as DCTDecode.
 	JPEG Format = iota + 1
-	// PNG wird dekodiert und mit Flate komprimiert.
+	// PNG is decoded and compressed with Flate.
 	PNG
 )
 
-// ColorSpace ist der Farbraum der Pixeldaten.
+// ColorSpace is the color space of the pixel data.
 type ColorSpace uint8
 
 const (
-	// Gray ist DeviceGray.
+	// Gray is DeviceGray.
 	Gray ColorSpace = iota + 1
-	// RGB ist DeviceRGB.
+	// RGB is DeviceRGB.
 	RGB
-	// CMYK ist DeviceCMYK.
+	// CMYK is DeviceCMYK.
 	CMYK
 )
 
-// Image ist ein geladenes Bild.
+// Image is a loaded image.
 type Image struct {
 	key    string
 	Format Format
 	Width  int
 	Height int
 	Space  ColorSpace
-	// BitsPerComponent ist bei PNG immer 8.
+	// BitsPerComponent is always 8 for PNG.
 	BitsPerComponent int
-	// Data enthält bei JPEG die Originaldatei, bei PNG die unkomprimierten
-	// Pixel Zeile für Zeile.
+	// Data holds the original file for JPEG, for PNG the uncompressed
+	// pixels row by row.
 	Data []byte
-	// Alpha enthält bei PNG mit Transparenz einen Kanal je Pixel, sonst nil.
+	// Alpha holds one channel value per pixel for PNG with transparency, else nil.
 	Alpha []byte
-	// InvertCMYK ist bei Adobe-CMYK-JPEGs gesetzt (invertierte Werte).
+	// InvertCMYK is set for Adobe CMYK JPEGs (inverted values).
 	InvertCMYK bool
-	// DPIX und DPIY sind die Auflösung aus der Datei, 0 wenn unbekannt.
+	// DPIX and DPIY are the resolution from the file, 0 if unknown.
 	DPIX, DPIY float64
 }
 
-// Key identifiziert das Bild über einen Hash der Quelldaten.
+// Key identifies the image by a hash of the source data.
 func (im *Image) Key() string { return im.key }
 
-// PixelSize liefert Breite und Höhe in Pixel und erfüllt areatree.ImageSource.
+// PixelSize returns width and height in pixels and satisfies areatree.ImageSource.
 func (im *Image) PixelSize() (int, int) { return im.Width, im.Height }
 
-// IntrinsicSize liefert die natürliche Größe. Ohne Auflösungsangabe gilt
-// wie bei Apache FOP 72 dpi, also ein Pixel je Punkt.
+// IntrinsicSize returns the natural size. Without a resolution, 72 dpi
+// applies as in Apache FOP, so one pixel per point.
 func (im *Image) IntrinsicSize() (w, h areatree.Length) {
 	dx, dy := im.DPIX, im.DPIY
 	if dx <= 0 || dy <= 0 {
@@ -77,7 +77,7 @@ func (im *Image) IntrinsicSize() (w, h areatree.Length) {
 	return areatree.Points(float64(im.Width) * 72 / dx), areatree.Points(float64(im.Height) * 72 / dy)
 }
 
-// Load erkennt das Format an den ersten Bytes und lädt das Bild.
+// Load detects the format from the first bytes and loads the image.
 func Load(data []byte) (*Image, error) {
 	sum := sha256.Sum256(data)
 	key := "sha256:" + hex.EncodeToString(sum[:8])
@@ -107,8 +107,8 @@ func Load(data []byte) (*Image, error) {
 	return nil, errors.New("Bildformat nicht unterstützt, erwartet JPEG, PNG oder GIF")
 }
 
-// loadGIF dekodiert das erste Bild einer GIF-Datei. Es wird wie ein PNG
-// verlustfrei mit Flate geschrieben, Transparenz wird zur Alphamaske.
+// loadGIF decodes the first image of a GIF file. Like a PNG it is written
+// losslessly with Flate, transparency becomes the alpha mask.
 func loadGIF(data []byte) (*Image, error) {
 	cfg, err := gif.DecodeConfig(bytes.NewReader(data))
 	if err != nil {
@@ -124,7 +124,7 @@ func loadGIF(data []byte) (*Image, error) {
 	return raster(src, 0, 0), nil
 }
 
-// loadJPEG liest Größe, Komponenten und Auflösung aus den Markern.
+// loadJPEG reads size, components and resolution from the markers.
 func loadJPEG(data []byte) (*Image, error) {
 	im := &Image{Format: JPEG, Data: data}
 	p := 2
@@ -133,7 +133,7 @@ func loadJPEG(data []byte) (*Image, error) {
 			return nil, fmt.Errorf("JPEG: Marker erwartet an Position %d", p)
 		}
 		marker := data[p+1]
-		if marker == 0xff { // Füllbyte
+		if marker == 0xff { // fill byte
 			p++
 			continue
 		}
@@ -196,7 +196,7 @@ func loadJPEG(data []byte) (*Image, error) {
 	return nil, errors.New("JPEG: kein SOF-Segment gefunden")
 }
 
-// loadPNG dekodiert ein PNG in 8 Bit Grau oder RGB plus optionalem Alpha.
+// loadPNG decodes a PNG into 8 bit gray or RGB plus optional alpha.
 func loadPNG(data []byte) (*Image, error) {
 	cfg, err := png.DecodeConfig(bytes.NewReader(data))
 	if err != nil {
@@ -213,8 +213,8 @@ func loadPNG(data []byte) (*Image, error) {
 	return raster(src, dx, dy), nil
 }
 
-// raster wandelt ein dekodiertes Bild in 8 Bit Grau oder RGB plus optionalem
-// Alpha. Es wird mit Flate geschrieben (Format PNG).
+// raster converts a decoded image into 8 bit gray or RGB plus optional
+// alpha. It is written with Flate (format PNG).
 func raster(src goimage.Image, dpiX, dpiY float64) *Image {
 	b := src.Bounds()
 	w, h := b.Dx(), b.Dy()
@@ -256,7 +256,7 @@ func isGrayModel(m color.Model) bool {
 	return m == color.GrayModel || m == color.Gray16Model
 }
 
-// pngDPI liest den pHYs-Chunk, falls vorhanden und in Metern angegeben.
+// pngDPI reads the pHYs chunk if present and given in meters.
 func pngDPI(data []byte) (float64, float64) {
 	p := 8
 	for p+12 <= len(data) {

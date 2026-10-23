@@ -18,9 +18,9 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	json.NewEncoder(w).Encode(v)
 }
 
-// uploadTemplate legt ein Vorlagenpaket (ZIP im Rumpf) als neue Version
-// ab: POST /v1/templates/{id}?activate=true. Das Paket wird vorher gelesen
-// und kompiliert, eine fehlerhafte Vorlage kommt nicht in die Ablage.
+// uploadTemplate stores a template package (ZIP in the body) as a new
+// version: POST /v1/templates/{id}?activate=true. The package is read and
+// compiled first, a faulty template does not get into the store.
 func (s *Server) uploadTemplate(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if !ValidID(id) {
@@ -108,8 +108,8 @@ func (s *Server) listVersions(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"id": r.PathValue("id"), "versions": vs})
 }
 
-// getVersion liefert das Paket einer Version als ZIP, etwa für den
-// Vergleich im Designer: GET /v1/templates/{id}/versions/{version}.
+// getVersion returns the package of a version as ZIP, for example for the
+// comparison in the designer: GET /v1/templates/{id}/versions/{version}.
 func (s *Server) getVersion(w http.ResponseWriter, r *http.Request) {
 	raw, ver, err := s.store.Get(r.Context(), r.PathValue("id"), r.PathValue("version"))
 	if err != nil {
@@ -123,7 +123,7 @@ func (s *Server) getVersion(w http.ResponseWriter, r *http.Request) {
 	w.Write(raw)
 }
 
-// activate macht eine Version aktiv: PUT /v1/templates/{id}/active mit
+// activate makes a version active: PUT /v1/templates/{id}/active with
 // {"version": "2"}.
 func (s *Server) activate(w http.ResponseWriter, r *http.Request) {
 	var req struct {

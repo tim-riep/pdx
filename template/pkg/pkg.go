@@ -1,10 +1,10 @@
-// Package pkg lädt, prüft und schreibt Vorlagenpakete: ZIP-Dateien oder
-// Verzeichnisse mit template.xml und den Ordnern schema (Daten-XSD), assets
-// (Schriften, Bilder, ICC), samples (Beispieldaten) und texts.
+// Package pkg loads, validates and writes template packages: ZIP files or
+// directories with template.xml and the folders schema (data XSD), assets
+// (fonts, images, ICC), samples (sample data) and texts.
 //
-// Geschrieben wird deterministisch: Einträge sortiert, fester Zeitstempel,
-// feste Kompression und template.xml in kanonischer Form. Gleiche Pakete
-// ergeben byte-identische ZIP-Dateien, Änderungen bleiben in Git lesbar.
+// Writing is deterministic: entries sorted, fixed timestamp, fixed
+// compression and template.xml in canonical form. Equal packages yield
+// byte-identical ZIP files, changes stay readable in Git.
 package pkg
 
 import (
@@ -25,27 +25,27 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Grenzen gegen entartete Pakete (ZIP-Bomben).
+// Limits against degenerate packages (ZIP bombs).
 const (
 	MaxFiles     = 10_000
 	MaxFileSize  = 64 << 20
 	MaxTotalSize = 512 << 20
 )
 
-// Ordner, die ein Paket enthalten darf.
+// Folders that a package may contain.
 var dirs = []string{"schema", "assets", "samples", "texts"}
 
-// zipTime ist der feste Zeitstempel aller Einträge.
+// zipTime is the fixed timestamp of all entries.
 var zipTime = time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC)
 
-// Package ist ein geladenes Vorlagenpaket.
+// Package is a loaded template package.
 type Package struct {
 	Template *template.Template
-	// Files enthält alle übrigen Dateien unter ihrem Pfad mit Schrägstrichen.
+	// Files contains all other files under their path with forward slashes.
 	Files map[string][]byte
 }
 
-// Open lädt ein Paket aus einer ZIP-Datei oder einem Verzeichnis.
+// Open loads a package from a ZIP file or a directory.
 func Open(p string) (*Package, error) {
 	st, err := os.Stat(p)
 	if err != nil {
@@ -61,7 +61,7 @@ func Open(p string) (*Package, error) {
 	return Read(data)
 }
 
-// Read lädt ein Paket aus ZIP-Daten.
+// Read loads a package from ZIP data.
 func Read(data []byte) (*Package, error) {
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil {
@@ -103,7 +103,7 @@ func Read(data []byte) (*Package, error) {
 	return build(files)
 }
 
-// ReadDir lädt ein Paket aus einem Verzeichnis, etwa für die Entwicklung.
+// ReadDir loads a package from a directory, for example during development.
 func ReadDir(dir string) (*Package, error) {
 	files := map[string][]byte{}
 	var total int64
@@ -112,7 +112,7 @@ func ReadDir(dir string) (*Package, error) {
 			return err
 		}
 		if d.IsDir() {
-			// Versteckte Ordner wie .git gehören nicht zum Paket.
+			// Hidden folders such as .git do not belong to the package.
 			if p != dir && strings.HasPrefix(d.Name(), ".") {
 				return filepath.SkipDir
 			}
@@ -124,7 +124,7 @@ func ReadDir(dir string) (*Package, error) {
 		}
 		name := filepath.ToSlash(rel)
 		if strings.HasPrefix(path.Base(name), ".") {
-			return nil // .DS_Store und ähnliche
+			return nil // .DS_Store and similar
 		}
 		info, err := d.Info()
 		if err != nil {
@@ -150,7 +150,7 @@ func ReadDir(dir string) (*Package, error) {
 	return build(files)
 }
 
-// checkPath prüft einen Pfad im Paket.
+// checkPath checks a path in the package.
 func checkPath(name string) error {
 	if name == "" || strings.HasPrefix(name, "/") || strings.Contains(name, "\\") || path.Clean(name) != name ||
 		name == ".." || strings.HasPrefix(name, "../") {
@@ -190,7 +190,7 @@ func build(files map[string][]byte) (*Package, error) {
 	return p, nil
 }
 
-// checkRefs prüft, dass Dateien, auf die die Vorlage verweist, im Paket sind.
+// checkRefs checks that files referenced by the template are in the package.
 func (p *Package) checkRefs() error {
 	var errs template.Errors
 	need := func(n *template.Node, attr, file string) {
@@ -227,13 +227,13 @@ func (p *Package) checkRefs() error {
 	return nil
 }
 
-// File liefert eine Datei aus dem Paket.
+// File returns a file from the package.
 func (p *Package) File(name string) ([]byte, bool) {
 	b, ok := p.Files[name]
 	return b, ok
 }
 
-// Names liefert die Pfade aller Dateien außer template.xml, sortiert.
+// Names returns the paths of all files except template.xml, sorted.
 func (p *Package) Names() []string {
 	names := make([]string, 0, len(p.Files))
 	for n := range p.Files {
@@ -243,7 +243,7 @@ func (p *Package) Names() []string {
 	return names
 }
 
-// Samples liefert die Pfade der Beispieldaten.
+// Samples returns the paths of the sample data.
 func (p *Package) Samples() []string {
 	var out []string
 	for _, n := range p.Names() {
@@ -254,8 +254,8 @@ func (p *Package) Samples() []string {
 	return out
 }
 
-// Schemas liefert das Haupt-XSD (aus template/@schema) und alle XSD-Dateien
-// unter schema/ für xs:import und xs:include.
+// Schemas returns the main XSD (from template/@schema) and all XSD files
+// under schema/ for xs:import and xs:include.
 func (p *Package) Schemas() (main string, all map[string][]byte) {
 	all = map[string][]byte{}
 	for n, b := range p.Files {
@@ -267,7 +267,7 @@ func (p *Package) Schemas() (main string, all map[string][]byte) {
 	return main, all
 }
 
-// Write schreibt das Paket deterministisch als ZIP.
+// Write writes the package deterministically as a ZIP.
 func (p *Package) Write(w io.Writer) error {
 	zw := zip.NewWriter(w)
 	zw.RegisterCompressor(zip.Deflate, func(out io.Writer) (io.WriteCloser, error) {
@@ -294,8 +294,8 @@ func (p *Package) Write(w io.Writer) error {
 	return zw.Close()
 }
 
-// New baut ein Paket aus einer geladenen Vorlage und Dateien, ohne die
-// Vorlage erneut zu lesen. Pfade und Verweise werden geprüft wie beim Laden.
+// New builds a package from a loaded template and files without reading the
+// template again. Paths and references are checked as when loading.
 func New(t *template.Template, files map[string][]byte) (*Package, error) {
 	if files == nil {
 		files = map[string][]byte{}
@@ -315,10 +315,10 @@ func New(t *template.Template, files map[string][]byte) (*Package, error) {
 	return p, nil
 }
 
-// WriteDir schreibt das Paket in ein Verzeichnis: template.xml kanonisch
-// und alle Dateien. Jede Datei wird erst vollständig geschrieben und dann
-// umbenannt. Dateien in den Paketordnern, die das Paket nicht mehr enthält,
-// werden gelöscht. Andere Dateien im Verzeichnis (etwa .git) bleiben.
+// WriteDir writes the package to a directory: template.xml canonically and
+// all files. Each file is first written completely and then renamed. Files
+// in the package folders that the package no longer contains are deleted.
+// Other files in the directory (such as .git) are kept.
 func (p *Package) WriteDir(dir string) error {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
@@ -386,7 +386,7 @@ func (p *Package) WriteDir(dir string) error {
 	return nil
 }
 
-// Bytes liefert das Paket als ZIP-Daten.
+// Bytes returns the package as ZIP data.
 func (p *Package) Bytes() ([]byte, error) {
 	var b bytes.Buffer
 	if err := p.Write(&b); err != nil {

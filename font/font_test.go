@@ -45,7 +45,7 @@ func TestRegistryStandardFonts(t *testing.T) {
 			t.Errorf("Lookup(%q, %d, %v) = %s, erwartet %s", c.family, c.weight, c.italic, f.PostScript, c.want)
 		}
 	}
-	// Unbekannte Familien fallen nach XSL 1.1 7.9.3 auf die Ersatzfamilie.
+	// Unknown families fall back to the fallback family per XSL 1.1 7.9.3.
 	if f, err := r.Lookup("Symbol", 700, false); err != nil || f.PostScript != "LiberationSans-Bold" {
 		t.Errorf("Ersatz für Symbol: %v %v", f, err)
 	}

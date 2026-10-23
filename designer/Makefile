@@ -1,11 +1,11 @@
-# Designer bauen und testen. Das Frontend wird vor jedem Go-Build gebaut,
-# weil main.go frontend/dist einbettet.
+# Build and test the designer. The frontend is built before every Go build
+# because main.go embeds frontend/dist.
 GO ?= go
 WAILS := $(GO) run github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-beta.30
 OUT := ../out
 EXE := $(if $(filter Windows_NT,$(OS)),.exe,)
-# macOS: gleiche Mindestversion für Go und die Objective-C-Teile von Wails.
-# Nur dort, gcc unter Linux und Windows kennt die Option nicht.
+# macOS: same minimum version for Go and the Objective-C parts of Wails.
+# Only there, gcc on Linux and Windows does not know the option.
 ifeq ($(shell uname -s 2>/dev/null),Darwin)
 export MACOSX_DEPLOYMENT_TARGET ?= 11.0
 export CGO_CFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
@@ -25,16 +25,16 @@ bindings:
 frontend:
 	cd frontend && npx vite build
 
-# Drittanbieterhinweise aus den gelinkten Go-Modulen und den gebündelten
-# npm-Paketen (frontend/bundled-packages.json schreibt der Vite-Build).
+# Third-party notices from the linked Go modules and the bundled npm
+# packages (the Vite build writes frontend/bundled-packages.json).
 notices: frontend
 	$(GO) run ../internal/tools/notices -cgo -npm frontend/bundled-packages.json -node frontend/node_modules -title "pdx Designer" -o notices/THIRD_PARTY_NOTICES.txt
 
-# notices-check scheitert, wenn die Hinweise nicht zum Stand passen (CI).
+# notices-check fails if the notices do not match the current state (CI).
 notices-check: notices
 	git diff --exit-code -- notices/THIRD_PARTY_NOTICES.txt frontend/bundled-packages.json
 
-# Windows: Icon, Manifest und Versionsinfo als Ressource im Binary.
+# Windows: icon, manifest and version info as resources in the binary.
 ifeq ($(OS),Windows_NT)
 SYSO := pdx-designer_windows_amd64.syso
 $(SYSO): packaging/icon/pdx-designer.ico packaging/windows/pdx-designer.exe.manifest internal/app/app.go
@@ -50,8 +50,8 @@ VERSION := $(shell sed -n 's/^const Version = "\(.*\)"/\1/p' internal/app/app.go
 APP := $(OUT)/pdx Designer.app
 PKG := $(OUT)/package/pdx-designer
 
-# macOS: App-Bündel aus dem nativen Binary. Mit MACOS_SIGN_IDENTITY wird
-# es signiert und, mit Zugangsdaten, notarisiert (packaging/macos/lib.sh).
+# macOS: app bundle from the native binary. With MACOS_SIGN_IDENTITY it is
+# signed and, with credentials, notarized (packaging/macos/lib.sh).
 bundle: build
 	rm -rf "$(APP)"
 	mkdir -p "$(APP)/Contents/MacOS" "$(APP)/Contents/Resources"
@@ -62,8 +62,8 @@ bundle: build
 	cp packaging/icon/pdx-designer.icns "$(APP)/Contents/Resources/AppIcon.icns"
 	packaging/macos/sign-app.sh "$(APP)"
 
-# Inhalt des Release-Archivs für dieses System mit Installationsskript nach
-# der Konvention pro Benutzer (siehe README).
+# Content of the release archive for this system with an install script
+# following the per-user convention (see README).
 ifeq ($(OS),Windows_NT)
 package: build
 	rm -rf "$(PKG)" && mkdir -p "$(PKG)"
@@ -80,9 +80,9 @@ package: build
 endif
 	cp ../LICENSE ../NOTICE notices/THIRD_PARTY_NOTICES.txt README.md "$(PKG)/"
 
-# Setup-Programm für dieses System nach ../out/installer: macOS .pkg (pro
-# Benutzer), Linux .deb (systemweit), Windows Setup mit Inno Setup 6
-# (pro Benutzer, ISCC=Pfad zu ISCC.exe, Vorgabe aus dem PATH).
+# Setup program for this system into ../out/installer: macOS .pkg (per
+# user), Linux .deb (system-wide), Windows setup with Inno Setup 6
+# (per user, ISCC=path to ISCC.exe, default from the PATH).
 INST := $(OUT)/installer
 ifeq ($(OS),Windows_NT)
 ISCC ?= ISCC.exe

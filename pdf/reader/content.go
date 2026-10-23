@@ -5,9 +5,9 @@ import (
 	"unicode/utf16"
 )
 
-// font dekodiert Text einer Schrift über ihre ToUnicode-CMap.
+// font decodes the text of a font through its ToUnicode CMap.
 type font struct {
-	bytes int // Bytes je Code
+	bytes int // bytes per code
 	uni   map[uint32]string
 }
 
@@ -124,31 +124,31 @@ func (ft *font) decode(s String) string {
 	return b.String()
 }
 
-// Marked ist eine markierte Inhaltsfolge mit MCID auf einer Seite.
+// Marked is a marked-content sequence with MCID on a page.
 type Marked struct {
 	Tag  string
 	MCID int
 	Text string
 }
 
-// PageContent ist das Ergebnis der Auswertung eines Content Streams.
+// PageContent is the result of evaluating a content stream.
 type PageContent struct {
-	// Marked sind die Folgen mit MCID in Reihenfolge des Streams.
+	// Marked are the sequences with MCID in stream order.
 	Marked []Marked
-	// ArtifactText ist der Text in Artefakten.
+	// ArtifactText is the text in artifacts.
 	ArtifactText []string
-	// Unmarked zählt zeichnende Operatoren außerhalb jeder Markierung,
-	// Nested zählt Artefakte in Inhalt und Inhalt in Artefakten.
+	// Unmarked counts painting operators outside any marking,
+	// Nested counts artifacts in content and content in artifacts.
 	Unmarked, Nested int
 }
 
-// painting sind die Operatoren, die sichtbaren Inhalt erzeugen.
+// painting are the operators that produce visible content.
 var painting = map[Operator]bool{
 	"Tj": true, "TJ": true, "'": true, "\"": true, "f": true, "F": true, "f*": true,
 	"B": true, "B*": true, "b": true, "b*": true, "S": true, "s": true, "Do": true, "sh": true, "BI": true,
 }
 
-// Content wertet den Inhalt einer Seite aus.
+// Content evaluates the content of a page.
 func (f *File) Content(page Dict) (*PageContent, error) {
 	var data []byte
 	switch v := f.Resolve(page["Contents"]).(type) {
@@ -176,8 +176,8 @@ func (f *File) Content(page Dict) (*PageContent, error) {
 	pc := &PageContent{}
 	type frame struct {
 		artifact bool
-		marked   int // Index in pc.Marked oder -1
-		// actual: Ersatztext gilt, der gezeichnete Text entfällt.
+		marked   int // index in pc.Marked or -1
+		// actual: the replacement text applies, the drawn text is dropped.
 		actual bool
 	}
 	var stack []frame
@@ -232,7 +232,7 @@ func (f *File) Content(page Dict) (*PageContent, error) {
 		}
 		switch op {
 		case "BI":
-			// Inline-Bild bis EI überspringen.
+			// Skip inline image up to EI.
 			for {
 				t, err := l.token()
 				if err != nil || t == Operator("EI") {
@@ -263,8 +263,8 @@ func (f *File) Content(page Dict) (*PageContent, error) {
 					fr.marked = len(pc.Marked) - 1
 				}
 				if at, ok := f.Resolve(d["ActualText"]).(String); ok && !replaced() {
-					// Der Ersatztext gehört zur eigenen Folge, wenn sie eine
-					// MCID hat, sonst zur umgebenden.
+					// The replacement text belongs to its own sequence if it has an
+					// MCID, otherwise to the enclosing one.
 					if fr.marked >= 0 {
 						pc.Marked[fr.marked].Text += textString(at)
 					} else {
@@ -302,8 +302,8 @@ func (f *File) Content(page Dict) (*PageContent, error) {
 						case String:
 							b.WriteString(cur.decode(v))
 						case int64, float64:
-							// Großer Abstand gilt als Wortzwischenraum, wenn
-							// dort nicht schon ein Leerzeichen steht.
+							// A large gap counts as a word space unless
+							// there already is a space.
 							if num(v) < -250 && b.Len() > 0 && !strings.HasSuffix(b.String(), " ") {
 								b.WriteByte(' ')
 							}

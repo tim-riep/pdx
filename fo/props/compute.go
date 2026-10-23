@@ -9,29 +9,29 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// Computed sind die aufgelösten Eigenschaften eines FO-Elements. Längen sind
-// absolut. Die ersten Felder werden vererbt, die übrigen nicht.
+// Computed holds the resolved properties of an FO element. Lengths are
+// absolute. The first fields are inherited, the others are not.
 type Computed struct {
-	// env ist der Kontext für body-start() und label-end(). Er gilt für den
-	// Listenpunkt und alle Nachfahren (XSL 1.1 5.10.4).
+	// env is the context for body-start() and label-end(). It applies to the
+	// list item and all descendants (XSL 1.1 5.10.4).
 	env *Env
 
-	// Vererbte Eigenschaften.
+	// Inherited properties.
 	FontFamily    string
 	FontSize      Length
 	FontWeight    int
 	Italic        bool
 	Color         areatree.Color
-	TextAlign     string // start, center, end, justify (left und right sind abgebildet)
+	TextAlign     string // start, center, end, justify (left and right are mapped)
 	TextAlignLast string
-	// LineHeightFactor ist gesetzt, wenn line-height als Zahl oder normal
-	// angegeben ist. Dann vererbt sich der Faktor, nicht die Länge.
+	// LineHeightFactor is set if line-height is given as a number or normal.
+	// Then the factor is inherited, not the length.
 	LineHeightFactor float64
 	LineHeight       Length
 	StartIndent      Length
 	EndIndent        Length
 	TextIndent       Length
-	// LastLineEndIndent wird zur Endkante der letzten Zeile addiert (XSL 1.1
+	// LastLineEndIndent is added to the end edge of the last line (XSL 1.1
 	// 7.16.3).
 	LastLineEndIndent Length
 	LinefeedPreserve  bool
@@ -43,34 +43,34 @@ type Computed struct {
 	Orphans           int
 	Lang              string
 
-	// Nicht vererbte Eigenschaften.
+	// Non-inherited properties.
 	SpaceBefore, SpaceAfter Length
-	// SpaceBeforeMin und SpaceAfterMin sind die Komponente .minimum. Bei
-	// einem einfachen Wert gleich dem Optimum, bei .optimum allein 0pt.
+	// SpaceBeforeMin and SpaceAfterMin are the .minimum component. For
+	// a simple value equal to the optimum, for .optimum alone 0pt.
 	SpaceBeforeMin, SpaceAfterMin Length
-	// SpaceBeforeRetain ist gesetzt, wenn space-before am Anfang einer Seite
-	// erhalten bleibt: bei .conditionality="retain" und immer, wenn der
-	// Abstand aus margin-top stammt (XSL 1.1 5.3.2).
+	// SpaceBeforeRetain is set if space-before is retained at the start of a
+	// page: with .conditionality="retain" and always if the
+	// space comes from margin-top (XSL 1.1 5.3.2).
 	SpaceBeforeRetain bool
-	// SpaceBeforePrec und SpaceAfterPrec sind die Komponente .precedence
-	// (XSL 1.1 4.3.1), PrecForce steht für force.
+	// SpaceBeforePrec and SpaceAfterPrec are the .precedence component
+	// (XSL 1.1 4.3.1), PrecForce stands for force.
 	SpaceBeforePrec, SpaceAfterPrec int
 	Padding                         [4]Length
-	// Margin sind die berechneten Ränder, für inherit an Kindern.
+	// Margin holds the computed margins, for inherit on children.
 	Margin     [4]Length
 	Border     [4]areatree.Border
 	Background *areatree.Color
-	// Absolute ist "absolute" oder "fixed" bei absoluter Positionierung.
+	// Absolute is "absolute" or "fixed" for absolute positioning.
 	Absolute                 string
 	Top, Left, Right, Bottom *Length
 	Width, Height            *Length
 }
 
-// PrecForce ist der Wert force der Komponente .precedence.
+// PrecForce is the value force of the .precedence component.
 const PrecForce = 1 << 30
 
-// Root liefert die Anfangswerte nach XSL 1.1 (Schrift wie bei Apache FOP
-// 12pt sans-serif).
+// Root returns the initial values according to XSL 1.1 (font as in Apache
+// FOP 12pt sans-serif).
 func Root() *Computed {
 	return &Computed{
 		FontFamily:       "sans-serif",
@@ -89,7 +89,7 @@ func Root() *Computed {
 	}
 }
 
-// inherit kopiert die vererbten Eigenschaften.
+// inherit copies the inherited properties.
 func (c *Computed) inherit() *Computed {
 	return &Computed{
 		env:        c.env,
@@ -102,20 +102,20 @@ func (c *Computed) inherit() *Computed {
 	}
 }
 
-// fontSizes sind die Schlüsselwörter von font-size mit dem Faktor 1,2
-// zwischen benachbarten Größen, wie XSL 1.1 7.9.4 ihn empfiehlt.
+// fontSizes are the font-size keywords with the factor 1.2
+// between adjacent sizes, as recommended by XSL 1.1 7.9.4.
 var fontSizes = map[string]float64{
 	"xx-small": 12 / 1.2 / 1.2 / 1.2, "x-small": 12 / 1.2 / 1.2, "small": 12 / 1.2, "medium": 12,
 	"large": 12 * 1.2, "x-large": 12 * 1.2 * 1.2, "xx-large": 12 * 1.2 * 1.2 * 1.2,
 }
 
-// Compute löst die Eigenschaften eines Elements auf. width ist die Breite
-// des umgebenden Bereichs für Prozentangaben.
+// Compute resolves the properties of an element. width is the width
+// of the enclosing area for percentages.
 func Compute(parent *Computed, n *tree.Node, width Length) (*Computed, error) {
 	return ComputeEnv(parent, n, width, nil)
 }
 
-// ComputeEnv ist Compute mit Kontextfunktionen wie body-start().
+// ComputeEnv is Compute with context functions such as body-start().
 func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Computed, error) {
 	if env == nil {
 		env = parent.env
@@ -127,7 +127,7 @@ func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Comput
 		return tree.Errorf(n, "%s: %v", prop, err)
 	}
 
-	// Schriftgröße zuerst, weil em-Angaben davon abhängen.
+	// Font size first, because em values depend on it.
 	if v, ok := a["font-size"]; ok {
 		switch {
 		case fontSizes[v] > 0:
@@ -206,8 +206,8 @@ func ComputeEnv(parent *Computed, n *tree.Node, width Length, env *Env) (*Comput
 			c.TextAlignLast = al
 		}
 	}
-	// line-height: Faktor oder Länge. Ein vererbter Faktor gilt mit der
-	// eigenen Schriftgröße.
+	// line-height: factor or length. An inherited factor applies with the
+	// element's own font size.
 	if v, ok := a["line-height"]; ok {
 		if v == "normal" {
 			c.LineHeightFactor = 1.2
@@ -283,7 +283,7 @@ func align(v string) (string, error) {
 	return "", fmt.Errorf("ungültiger Wert %q", v)
 }
 
-// sides ordnet die Bezeichner der vier Seiten zu (Schreibrichtung lr-tb).
+// sides maps the identifiers of the four sides (writing mode lr-tb).
 var sides = [4][]string{
 	areatree.Top:    {"top", "before"},
 	areatree.Right:  {"right", "end"},
@@ -291,7 +291,7 @@ var sides = [4][]string{
 	areatree.Left:   {"left", "start"},
 }
 
-// lookupSide sucht prop-Seite, etwa padding-top oder padding-before.
+// lookupSide looks up prop-side, such as padding-top or padding-before.
 func lookupSide(a map[string]string, prefix string, side int, suffix string) (string, bool) {
 	for _, s := range sides[side] {
 		k := prefix + "-" + s
@@ -302,7 +302,7 @@ func lookupSide(a map[string]string, prefix string, side int, suffix string) (st
 			return v, true
 		}
 		if suffix == "" {
-			// Komponentenform wie padding-before.length.
+			// Component form such as padding-before.length.
 			if v, ok := a[k+".length"]; ok {
 				return v, true
 			}
@@ -341,8 +341,8 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}
 	for side := 0; side < 4; side++ {
 		if v, ok := lookupSide(a, "padding", side, ""); ok {
-			// inherit übernimmt den berechneten Wert des Elternelements
-			// (XSL 1.1 5.1.4), Prozentangaben sind dort schon aufgelöst.
+			// inherit takes the computed value of the parent element
+			// (XSL 1.1 5.1.4), percentages are already resolved there.
 			if strings.TrimSpace(v) == "inherit" {
 				c.Padding[side] = parent.Padding[side]
 				continue
@@ -355,7 +355,7 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		}
 	}
 
-	// Rahmen: Shorthand border, border-Seite, border-width/style/color, Einzelwerte.
+	// Borders: shorthand border, border-side, border-width/style/color, single values.
 	var bw [4]Length
 	var bs [4]areatree.BorderStyle
 	var bc [4]areatree.Color
@@ -435,11 +435,11 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		}
 	}
 
-	// Ränder. margin-top und margin-bottom wirken wie space-before und
-	// space-after, margin-left und margin-right setzen die Einzüge (XSL 1.1
+	// Margins. margin-top and margin-bottom act like space-before and
+	// space-after, margin-left and margin-right set the indents (XSL 1.1
 	// 5.3.2).
-	// auto ergibt bei Blöcken 0pt (XSL 1.1 5.3.2 und CSS2 10.3.3 bei
-	// automatischer Breite).
+	// auto yields 0pt for blocks (XSL 1.1 5.3.2 and CSS2 10.3.3 with
+	// automatic width).
 	marginLen := func(name, s string, side int) (Length, error) {
 		switch strings.TrimSpace(s) {
 		case "auto":
@@ -531,7 +531,7 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 	}{{"space-before", &c.SpaceBefore, &c.SpaceBeforeMin}, {"space-after", &c.SpaceAfter, &c.SpaceAfterMin}} {
 		v, ok := a[sp.name]
 		if !ok {
-			// Ohne .minimum bleibt es beim Anfangswert 0pt (XSL 1.1 7.11.5).
+			// Without .minimum the initial value 0pt remains (XSL 1.1 7.11.5).
 			if v, ok = a[sp.name+".optimum"]; ok {
 				*sp.min = 0
 			}
@@ -583,8 +583,8 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		*sp.dst = k
 	}
 
-	// Positionierung und Größe. Die Kurzform position aus CSS2 (XSL 1.1
-	// 7.31.20) gilt, wenn absolute-position fehlt.
+	// Positioning and size. The CSS2 shorthand position (XSL 1.1
+	// 7.31.20) applies if absolute-position is missing.
 	if v, ok := a["position"]; ok {
 		if _, set := a["absolute-position"]; !set {
 			switch v {
@@ -619,9 +619,9 @@ func (c *Computed) boxProps(n *tree.Node, parent *Computed, width Length, env *E
 		}
 		*p.dst = &l
 	}
-	// inline-progression-dimension und block-progression-dimension sind im
-	// Schreibmodus lr-tb width und height (XSL 1.1 7.15.6, 7.15.14). Sie
-	// haben Vorrang, von den Komponenten zählt optimum, sonst minimum.
+	// inline-progression-dimension and block-progression-dimension are
+	// width and height in writing mode lr-tb (XSL 1.1 7.15.6, 7.15.14). They
+	// take precedence, of the components optimum counts, else minimum.
 	for _, p := range []struct {
 		name string
 		dst  **Length
@@ -669,7 +669,7 @@ func (c *Computed) borderPart(kind, s string, side int, bw *[4]Length, bs *[4]ar
 	return nil
 }
 
-// BorderWidth liefert die sichtbare Rahmenbreite einer Seite.
+// BorderWidth returns the visible border width of a side.
 func (c *Computed) BorderWidth(side int) Length {
 	if c.Border[side].Visible() {
 		return c.Border[side].Width
@@ -677,8 +677,8 @@ func (c *Computed) BorderWidth(side int) Length {
 	return 0
 }
 
-// Margins liest die Ränder eines Seiten- oder Regionselements (margin und
-// margin-Seite). Prozentangaben beziehen sich auf base.
+// Margins reads the margins of a page or region element (margin and
+// margin-side). Percentages refer to base.
 func Margins(n *tree.Node, base Length) ([4]Length, error) {
 	var m [4]Length
 	fs := 12 * areatree.Pt
@@ -707,7 +707,7 @@ func Margins(n *tree.Node, base Length) ([4]Length, error) {
 	return m, nil
 }
 
-// LengthAttr liest ein Längenattribut oder liefert def.
+// LengthAttr reads a length attribute or returns def.
 func LengthAttr(n *tree.Node, name string, def, fontSize, percentBase Length) (Length, error) {
 	v, ok := n.Attrs[name]
 	if !ok || v == "auto" {

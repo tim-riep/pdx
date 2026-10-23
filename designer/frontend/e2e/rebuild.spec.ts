@@ -4,9 +4,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { dragData, muster, selectInTree } from "./helpers";
 
-// Abnahme: die Musterrechnung im Designer von Grund auf nachbauen, ohne XML
-// zu schreiben. Mit PDX_E2E_REAL_VERAPDF=1 prüft das echte veraPDF (lokal
-// oder Docker) das Ergebnis gegen PDF/A-3b, sonst die Attrappe.
+// Acceptance: rebuild the sample invoice in the designer from scratch, without
+// writing XML. With PDX_E2E_REAL_VERAPDF=1 the real veraPDF (local
+// or Docker) checks the result against PDF/A-3b, otherwise the stand-in.
 const realVeraPDF = !!process.env.PDX_E2E_REAL_VERAPDF;
 
 class Designer {
@@ -24,12 +24,12 @@ class Designer {
     await box.press("Enter");
   }
 
-  // selected wartet, bis das Element mit der ID im Inspektor steht.
+  // selected waits until the element with the ID is in the inspector.
   async selected(id: string) {
     await expect(this.inspector.locator("header code")).toHaveText(id);
   }
 
-  // prop setzt eine Eigenschaft im Inspektor: Auswahl, Feld oder XPath.
+  // prop sets a property in the inspector: select, field or XPath.
   async prop(name: string, value: string) {
     const box = this.inspector.locator(`[data-prop="${name}"]`);
     const select = box.locator("select");
@@ -45,7 +45,7 @@ class Designer {
     await expect(field).toHaveValue(value);
   }
 
-  // rename gibt dem gewählten Element eine sprechende ID.
+  // rename gives the selected element a meaningful ID.
   async rename(id: string) {
     await this.prop("id", id);
     await this.selected(id);
@@ -55,7 +55,7 @@ class Designer {
     for (const [k, v] of Object.entries(values)) await this.prop(k, v);
   }
 
-  // insert fügt einen Baustein in das Element ein, das gerade gewählt ist.
+  // insert inserts a building block into the element that is selected.
   async insert(kind: string, id: string, values: Record<string, string> = {}) {
     const before = await this.inspector.locator("header code").textContent();
     await this.page.getByTestId("palette").locator(`[data-kind="${kind}"]`).click();
@@ -64,14 +64,14 @@ class Designer {
     await this.props(values);
   }
 
-  // child fügt über das Kontextmenü der Hierarchie ein Kind ein.
+  // child inserts a child via the context menu of the hierarchy.
   async child(key: string, id?: string, values: Record<string, string> = {}) {
     const header = this.inspector.locator("header");
     const before = (await header.textContent()) ?? "";
     await this.tree.getByRole("button", { name: "Aktionen" }).click();
     await this.page.getByTestId("context-menu").getByTestId(`insert-${key}`).click();
     await expect(this.page.getByTestId("context-menu")).toHaveCount(0);
-    await expect(header).not.toHaveText(before); // das neue Element ist gewählt
+    await expect(header).not.toHaveText(before); // the new element is selected
     if (id) await this.rename(id);
     await this.props(values);
   }
@@ -81,7 +81,7 @@ class Designer {
     await this.selected(path[path.length - 1]);
   }
 
-  // content schreibt den Text im Inspektor. @pfad fügt ein Feld ein.
+  // content writes the text in the inspector. @path inserts a field.
   async content(parts: (string | { field: string })[]) {
     const editor = this.inspector.getByTestId("inspector-content").getByTestId("content-editor");
     await editor.click({ position: { x: 4, y: 4 } });
@@ -100,7 +100,7 @@ class Designer {
     await expect(this.page.getByRole("alert")).toHaveCount(0);
   }
 
-  // keys bedient die Hierarchie mit der Tastatur ab der Auswahl.
+  // keys operates the hierarchy with the keyboard from the selection.
   async keys(...keys: string[]) {
     await this.tree.locator('[aria-selected="true"] button.name').focus();
     for (const k of keys) await this.page.keyboard.press(k);
@@ -114,12 +114,12 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await page.getByRole("button", { name: "Neu", exact: true }).first().click();
   await expect(page.getByTestId("doc-title")).toHaveText("Neue Vorlage");
 
-  // Daten: XSD und Beispieldaten.
+  // Data: XSD and sample data.
   await page.getByRole("tab", { name: "Daten" }).click();
   await page.getByRole("button", { name: "XSD laden" }).click();
   await d.answer(`${muster}/schema/invoice.xsd`);
   await expect(page.getByTestId("data").locator('[data-path$=":invoice"]')).toBeVisible();
-  // Präfix des Daten-Namespace, den der Designer vergeben hat.
+  // Prefix of the data namespace that the designer assigned.
   const p = (await page.getByTestId("data").locator("[data-path]").first().getAttribute("data-path"))!.split(":")[0];
   await page.getByRole("tab", { name: "Beispiele" }).click();
   await page.getByRole("button", { name: "Importieren" }).click();
@@ -127,10 +127,10 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await expect(page.getByTestId("samples").locator('[data-sample="samples/rechnung.xml"]')).toBeVisible();
   const f = (path: string) => ({ field: path.replace(/(^|\/)/g, `$1${p}:`) });
 
-  // Formate und Textressourcen über das Kontextmenü der Wurzel.
+  // Formats and text resources via the context menu of the root.
   await d.go(["vorlage"]);
   await d.child("formats");
-  await d.keys("ArrowRight"); // Elemente ohne ID per Tastatur aufklappen
+  await d.keys("ArrowRight"); // expand elements without ID by keyboard
   await d.go(["vorlage", "locale"]);
   await d.props({ decimalSeparator: ",", groupingSeparator: "." });
   await d.go(["vorlage", "locale", "locale-pattern"]);
@@ -144,7 +144,7 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await d.prop("key", "rechnung");
   await d.content(["Rechnung"]);
 
-  // Stil und Farb-Token im Panel Stile.
+  // Style and color token in the Styles panel.
   await page.getByRole("tab", { name: "Stile" }).click();
   await page.getByTestId("styles").getByRole("button", { name: "+ Farbe" }).click();
   const token = page.getByTestId("styles").locator('[data-token="farbe"]');
@@ -157,8 +157,8 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await d.rename("st-klein");
   await d.props({ fontSize: "7.5pt", color: "#555555" });
 
-  // Erste Seite: Kopf mit Briefkopf, Adressfenster und Rechnungsdaten, Fuß
-  // mit Seitenzahl.
+  // First page: header with letterhead, address window and invoice data, footer
+  // with page number.
   await d.go(["seiten", "seite"]);
   await d.rename("erste");
   await d.props({ use: "first", margin: "15mm 20mm 15mm 25mm" });
@@ -196,7 +196,7 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await d.go(["seiten", "erste", "erste-fuss"]);
   await d.insert("pageNumber", "erste-seitenzahl", { x: "0mm", y: "4mm", w: "165mm", textAlign: "center", style: "st-klein" });
 
-  // Folgeseiten: schmaler Kopf und Seitenzahl.
+  // Following pages: narrow header and page number.
   await d.go(["seiten"]);
   await d.child("pageMaster", "folge", { use: "rest", margin: "15mm 20mm 15mm 25mm" });
   await d.child("pageMaster/header", "folge-kopf", { height: "10mm" });
@@ -206,17 +206,17 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await d.child("pageMaster/footer", "folge-fuss", { height: "12mm" });
   await d.insert("pageNumber", "folge-seitenzahl", { x: "0mm", y: "4mm", w: "165mm", textAlign: "center", style: "st-klein" });
 
-  // Inhalt: Titel aus der Textressource, Tabelle per Drag-and-drop.
+  // Content: title from the text resource, table by drag and drop.
   await d.go(["inhalt"]);
   await d.insert("text", "titel");
-  await d.content([]); // ein Text mit Textressource hat keinen eigenen Inhalt
+  await d.content([]); // a text with a text resource has no content of its own
   await d.props({ ref: "rechnung", role: "H1", fontSize: "16pt", fontWeight: "bold", spaceAfter: "4mm" });
   await page.getByRole("tab", { name: "Daten" }).click();
   const data = page.getByTestId("data");
   await data.locator(`[data-path="${p}:invoice/${p}:items"] .twisty`).click();
   const zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
   const mm = (72 / 25.4) * zoom;
-  // Unter den gesetzten Titel ablegen: erst warten, bis der Canvas ihn zeigt.
+  // Drop below the laid out title: first wait until the canvas shows it.
   const title = page.locator('[data-page="1"] [data-sel="titel"]');
   await expect(title).toBeVisible();
   const pageBox = (await page.locator('[data-page="1"]').boundingBox())!;
@@ -226,14 +226,14 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await expect(d.inspector.locator("header strong")).toHaveText("Tabelle");
   await d.rename("positionen");
 
-  // Kopf: zweite Zeile mit Übertrag, Fuß mit Zwischensumme.
+  // Header: second row with carry-over, footer with subtotal.
   await page.getByRole("tab", { name: "Hierarchie" }).click();
   const tools = page.getByTestId("table-tools");
-  await d.keys("ArrowRight"); // Tabelle aufklappen
+  await d.keys("ArrowRight"); // expand the table
   await expect(d.tree.locator('[data-row="positionen"]')).toHaveAttribute("aria-expanded", "true");
   const headerRow = d.tree.locator("[data-row]", { hasText: /^.*Tabellenkopf/ }).first();
   await headerRow.locator("button.name").click();
-  await d.keys("ArrowRight", "ArrowRight", "ArrowRight", "ArrowRight"); // Kopf, Zeile, erste Zelle
+  await d.keys("ArrowRight", "ArrowRight", "ArrowRight", "ArrowRight"); // header, row, first cell
   await expect(d.inspector.locator("header strong")).toHaveText("Zelle");
   await tools.getByRole("button", { name: "Zeile einfügen" }).click();
   await expect(d.inspector.locator("header strong")).toHaveText("Zeile");
@@ -247,7 +247,7 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await d.go(["inhalt", "positionen"]);
   await tools.getByRole("button", { name: "Fuß hinzufügen" }).click();
   await expect(d.inspector.locator("header strong")).toHaveText("Tabellenfuß");
-  await d.keys("ArrowRight", "ArrowRight", "ArrowRight", "ArrowRight"); // Fuß, Zeile, erste Zelle
+  await d.keys("ArrowRight", "ArrowRight", "ArrowRight", "ArrowRight"); // footer, row, first cell
   await expect(d.inspector.locator("header strong")).toHaveText("Zelle");
   await tools.getByRole("spinbutton").fill("4");
   await tools.getByRole("spinbutton").press("Tab");
@@ -255,7 +255,7 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await tools.getByRole("button", { name: "Zwischensumme" }).click();
   await expect(d.inspector.locator("header strong")).toHaveText("Zwischensumme");
 
-  // Summen mit GiroCode.
+  // Totals with GiroCode.
   await d.go(["inhalt", "positionen"]);
   await d.insert("flowed", "summen", { spaceBefore: "4mm" });
   for (const [id, label, path] of [
@@ -279,14 +279,14 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
     await d.child("barcode/data", `gc-${i}`, { name, bind: f(path).field });
   }
 
-  // Anhang mit den Rechnungsdaten.
+  // Attachment with the invoice data.
   await d.go(["vorlage"]);
   await d.child("attachments");
   await d.keys("ArrowRight");
   await d.go(["vorlage", "attachment"]);
   await d.props({ name: "rechnung.xml", relationship: "Alternative", description: "Rechnungsdaten" });
 
-  // Ergebnis: ohne Fehler, Vorschau über mehrere Seiten, PDF.
+  // Result: without errors, preview over several pages, PDF.
   const problems = page.getByTestId("problems");
   await expect(problems.locator("li.error")).toHaveCount(0);
   await page.getByRole("tab", { name: "Vorschau" }).click();
@@ -295,7 +295,7 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
   await page.getByRole("tab", { name: "PDF" }).click();
   await expect(page.getByTestId("pdf-info")).toContainText("PDF/A-3b", { timeout: 20_000 });
 
-  // Konformität.
+  // Conformance.
   await page.getByRole("tab", { name: "Konformität" }).click();
   await page.getByTestId("conformance").getByRole("button", { name: "Konformität prüfen" }).click();
   const verdict = page.getByTestId("conformance-verdict");
@@ -305,7 +305,7 @@ test("Musterrechnung von Grund auf nachbauen", async ({ page }) => {
     await expect(verdict).toBeVisible({ timeout: 30_000 });
   }
 
-  // Speichern als Paket.
+  // Save as a package.
   const out = join(mkdtempSync(join(tmpdir(), "pdx-nachbau-")), "nachbau.zip");
   await page.getByRole("button", { name: "Speichern", exact: true }).click();
   await d.answer(out);

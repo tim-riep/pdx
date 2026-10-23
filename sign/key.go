@@ -8,15 +8,15 @@ import (
 	"errors"
 )
 
-// KeySigner signiert mit einem Schlüssel im Speicher, etwa aus einer
-// PKCS#12-Datei. Der Schlüssel wird nie geschrieben oder protokolliert.
+// KeySigner signs with a key in memory, for example from a
+// PKCS#12 file. The key is never written or logged.
 type KeySigner struct {
 	key   crypto.Signer
 	chain []*x509.Certificate
 }
 
-// NewKeySigner legt einen Signer an. chain beginnt mit dem
-// Signaturzertifikat, dessen öffentlicher Schlüssel zu key passen muss.
+// NewKeySigner creates a Signer. chain starts with the
+// signing certificate, whose public key must match key.
 func NewKeySigner(key crypto.Signer, chain ...*x509.Certificate) (*KeySigner, error) {
 	if len(chain) == 0 {
 		return nil, errors.New("Signaturzertifikat fehlt")
@@ -33,14 +33,14 @@ func samePublic(a, b crypto.PublicKey) bool {
 	return ok && e.Equal(b)
 }
 
-// Certificates liefert das Signaturzertifikat und seine Kette.
+// Certificates returns the signing certificate and its chain.
 func (k *KeySigner) Certificates() []*x509.Certificate { return k.chain }
 
-// SignDigest signiert einen Hashwert.
+// SignDigest signs a hash value.
 func (k *KeySigner) SignDigest(_ context.Context, hash crypto.Hash, digest []byte) ([]byte, error) {
 	return k.key.Sign(rand.Reader, digest, hash)
 }
 
-// String verrät nichts über den Schlüssel, falls ein Signer versehentlich
-// ausgegeben wird.
+// String reveals nothing about the key in case a Signer is accidentally
+// printed.
 func (k *KeySigner) String() string { return "KeySigner(" + k.chain[0].Subject.CommonName + ")" }

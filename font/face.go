@@ -1,10 +1,10 @@
-// Package font lädt TrueType- und OpenType-Schriften, formt Text über
-// textshape, bildet Teilmengen und bettet sie als Type0-Schrift mit
-// Identity-H, /W-Array und ToUnicode-CMap in ein PDF ein.
+// Package font loads TrueType and OpenType fonts, shapes text via
+// textshape, builds subsets and embeds them into a PDF as Type0 fonts with
+// Identity-H, /W array and ToUnicode CMap.
 //
-// Schriften werden ausnahmslos eingebettet. Auch die Standardschriften von
-// PDF werden über die Registry auf metrikgleiche Liberation-Schriften
-// abgebildet.
+// Fonts are embedded without exception. Even the standard fonts of
+// PDF are mapped via the registry to metric-compatible Liberation
+// fonts.
 package font
 
 import (
@@ -17,45 +17,45 @@ import (
 	"github.com/boxesandglue/textshape/ot"
 )
 
-// Face ist eine geladene Schrift.
+// Face is a loaded font.
 type Face struct {
 	data  []byte
 	index int
 	font  *ot.Font
 	face  *ot.Face
-	// shapers hält Shaper zur Wiederverwendung. Ein Shaper ist nicht
-	// nebenläufig nutzbar, mit einem Pool formen parallele Läufe dieselbe
-	// Schrift gleichzeitig statt nacheinander.
+	// shapers holds shapers for reuse. A shaper cannot be used
+	// concurrently, with a pool parallel runs shape the same font
+	// at the same time instead of one after the other.
 	shapers sync.Pool
 
 	key  string
 	upem float64
 
-	// PostScript ist der PostScript-Name, etwa "LiberationSans-Bold".
+	// PostScript is the PostScript name, such as "LiberationSans-Bold".
 	PostScript string
-	// Family ist der Familienname aus der name-Tabelle.
+	// Family is the family name from the name table.
 	Family string
-	// Weight ist die Strichstärke nach OS/2, 100 bis 900.
+	// Weight is the weight according to OS/2, 100 to 900.
 	Weight int
-	// Italic meldet einen kursiven oder schrägen Schnitt.
+	// Italic reports an italic or oblique face.
 	Italic bool
-	// CFF meldet CFF-Konturen (OpenType/CFF) statt TrueType-Konturen.
+	// CFF reports CFF outlines (OpenType/CFF) instead of TrueType outlines.
 	CFF bool
-	// FixedPitch meldet eine Schrift mit fester Breite.
+	// FixedPitch reports a fixed-width font.
 	FixedPitch bool
-	// Ascender, Descender, LineGap, CapHeight und XHeight in Schrifteinheiten.
+	// Ascender, Descender, LineGap, CapHeight and XHeight in font units.
 	Ascender, Descender, LineGap, CapHeight, XHeight int
-	// BBox ist die Schriftbox in Schrifteinheiten (xMin, yMin, xMax, yMax).
+	// BBox is the font box in font units (xMin, yMin, xMax, yMax).
 	BBox [4]int
 	// ItalicAngle in Grad.
 	ItalicAngle float64
-	// FsType sind die Einbettungsrechte aus OS/2.
+	// FsType holds the embedding permissions from OS/2.
 	FsType uint16
 }
 
-// Load lädt eine Schrift aus TTF-, OTF- oder TTC-Daten. index wählt bei
-// Sammlungen die Schrift. Load gerät bei kaputten Daten nicht in Panik,
-// sondern liefert einen Fehler.
+// Load loads a font from TTF, OTF or TTC data. For collections index
+// selects the font. Load does not panic on broken data but
+// returns an error.
 func Load(data []byte, index int) (f *Face, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -121,8 +121,8 @@ func Load(data []byte, index int) (f *Face, err error) {
 	}
 	if os2, err := fnt.TableData(ot.TagOS2); err == nil && len(os2) >= 10 {
 		f.FsType = binary.BigEndian.Uint16(os2[8:10])
-		// Ober- und Unterlänge aus den Typo-Metriken, wie Apache FOP sie für
-		// die Zeilenhöhe nutzt. hhea bleibt der Rückfall.
+		// Ascender and descender from the typo metrics, as Apache FOP uses them for
+		// the line height. hhea remains the fallback.
 		if len(os2) >= 74 {
 			asc := int(int16(binary.BigEndian.Uint16(os2[68:70])))
 			desc := int(int16(binary.BigEndian.Uint16(os2[70:72])))
@@ -135,33 +135,33 @@ func Load(data []byte, index int) (f *Face, err error) {
 	return f, nil
 }
 
-// PostScriptName liefert den PostScript-Namen und erfüllt areatree.FontSource.
+// PostScriptName returns the PostScript name and satisfies areatree.FontSource.
 func (f *Face) PostScriptName() string { return f.PostScript }
 
-// Key identifiziert die Schriftdaten über einen Hash.
+// Key identifies the font data by a hash.
 func (f *Face) Key() string { return f.key }
 
-// Data liefert die Bytes der Schriftdatei, etwa um sie im Designer als
-// FontFace anzuzeigen. Der Aufrufer darf sie nicht verändern.
+// Data returns the bytes of the font file, for example to show it in the
+// designer as a FontFace. The caller must not modify them.
 func (f *Face) Data() []byte { return f.data }
 
-// Index ist die Nummer der Schrift in einer Sammlung (TTC), sonst 0.
+// Index is the number of the font in a collection (TTC), else 0.
 func (f *Face) Index() int { return f.index }
 
-// Upem liefert die Schrifteinheiten pro Geviert.
+// Upem returns the font units per em.
 func (f *Face) Upem() float64 { return f.upem }
 
-// Embeddable meldet, ob die Lizenzbits in OS/2 das Einbetten erlauben. Nur
-// "Restricted License" (fsType 0x0002 ohne weitere Bits) verbietet es.
+// Embeddable reports whether the license bits in OS/2 allow embedding. Only
+// "Restricted License" (fsType 0x0002 without further bits) forbids it.
 func (f *Face) Embeddable() bool { return f.FsType&0x000f != 0x0002 }
 
-// Advance liefert die Vorschubbreite einer Glyphe in Schrifteinheiten.
+// Advance returns the advance width of a glyph in font units.
 func (f *Face) Advance(gid uint16) float64 {
 	return float64(f.face.HorizontalAdvance(ot.GlyphID(gid)))
 }
 
-// GlyphFor liefert die Glyphe eines Zeichens ohne Shaping. ok ist false,
-// wenn die Schrift das Zeichen nicht enthält.
+// GlyphFor returns the glyph of a character without shaping. ok is false
+// if the font does not contain the character.
 func (f *Face) GlyphFor(r rune) (gid uint16, ok bool) {
 	g, ok := f.face.Cmap().Lookup(ot.Codepoint(r))
 	if !ok || g == 0 {
@@ -170,14 +170,14 @@ func (f *Face) GlyphFor(r rune) (gid uint16, ok bool) {
 	return uint16(g), true
 }
 
-// HasRune meldet, ob die Schrift ein Zeichen enthält.
+// HasRune reports whether the font contains a character.
 func (f *Face) HasRune(r rune) bool {
 	_, ok := f.GlyphFor(r)
 	return ok
 }
 
-// shaper liefert einen freien Shaper. Ein neuer bekommt eine eigene
-// Kopie der geparsten Schrift, damit Shaper keinen Zustand teilen.
+// shaper returns a free shaper. A new one gets its own
+// copy of the parsed font so that shapers share no state.
 func (f *Face) shaper() (*ot.Shaper, error) {
 	if s, ok := f.shapers.Get().(*ot.Shaper); ok {
 		return s, nil

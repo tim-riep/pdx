@@ -15,15 +15,15 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// NotComparable sind Korpusfälle, die FOP nicht verarbeiten kann. Die Gründe
-// stehen ausführlich in testdata/suites/DEVIATIONS.md.
+// NotComparable lists corpus cases that FOP cannot process. The reasons are
+// described in detail in testdata/suites/DEVIATIONS.md.
 var NotComparable = map[string]string{
 	"barcodes": "FOP setzt pdx:barcode nicht und kann dafür keinen Area Tree schreiben",
 }
 
-// TestCorpusAgainstFOP vergleicht den Korpus mit FOP und gibt die Berichte
-// aus. Er schlägt nur bei Werkzeugfehlern fehl. Ob ein Fall innerhalb der
-// Toleranz liegen muss, entscheidet der Bericht von make fo-conformance.
+// TestCorpusAgainstFOP compares the corpus with FOP and prints the reports.
+// It fails only on tool errors. Whether a case must lie within the
+// tolerance is decided by the report of make fo-conformance.
 func TestCorpusAgainstFOP(t *testing.T) {
 	if !fopcompare.Enabled() {
 		t.Skip("PDX_FOP=1 setzen, um mit Apache FOP zu vergleichen")
@@ -53,9 +53,9 @@ func TestCorpusAgainstFOP(t *testing.T) {
 	}
 }
 
-// TestMusterrechnungAgainstFOP setzt die Musterrechnung aus der Vorlage und
-// vergleicht das FO mit FOP. Der GiroCode wird für beide entfernt, weil FOP
-// pdx:barcode nicht setzen kann (siehe NotComparable).
+// TestMusterrechnungAgainstFOP typesets the sample invoice from the template
+// and compares the FO with FOP. The GiroCode is removed for both, because FOP
+// cannot typeset pdx:barcode (see NotComparable).
 func TestMusterrechnungAgainstFOP(t *testing.T) {
 	if !fopcompare.Enabled() {
 		t.Skip("PDX_FOP=1 setzen, um mit Apache FOP zu vergleichen")

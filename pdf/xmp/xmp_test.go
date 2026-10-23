@@ -27,7 +27,7 @@ func TestGolden(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Wohlgeformt?
+	// Well-formed?
 	dec := xml.NewDecoder(bytes.NewReader(b))
 	for {
 		if _, err := dec.Token(); err != nil {

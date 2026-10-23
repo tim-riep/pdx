@@ -5,18 +5,18 @@
 # PDX_SUITE_RECORD=1 trägt neue Abweichungen als offen ein und behobene aus.
 
 fop/block-container_absolute-position: begründet, FOP bricht nach dem Schrägstrich um, XSL 1.1 legt Umbruchstellen nicht fest (1.1.2), gleiche Breite und ohne Überlauf
-fop/block-container_absolute-position_border_padding: begründet, left und top messen nach CSS2 9.3.2 und 10.3.7 bis zur Randkante, FOP setzt die Inhaltskante auf left und lässt margin-top weg (DEVIATIONS.md, left und top bei absoluter Positionierung)
-fop/block-container_absolute-position_overflow: begründet, left und top beziehen sich auf die Randkante (DEVIATIONS.md, left und top bei absoluter Positionierung)
+fop/block-container_absolute-position_border_padding: begründet, left und top messen nach CSS2 9.3.2 und 10.3.7 bis zur Randkante, FOP setzt die Inhaltskante auf left und lässt margin-top weg (DEVIATIONS.md, left and top with absolute positioning)
+fop/block-container_absolute-position_overflow: begründet, left und top beziehen sich auf die Randkante (DEVIATIONS.md, left and top with absolute positioning)
 fop/block_break-before_bug44412: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/block_font-size_relative: begründet, smaller und larger nach XSL 1.1 7.9.4 und CSS2 15.2.4, der Formatierer darf zwischen den Tabellenwerten interpolieren, pdx rechnet mit dem Faktor 1,2, FOP rundet auf die Stufen 12 × 1,2 hoch n
-fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+fop/block_font-style: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 fop/block_last-line-end-indent: begründet, anderer Zeilenumbruch im Blocksatz, Wortabstände sind nach XSL 1.1 7.17.8 Sache des Formatierers, die letzte Zeile mit last-line-end-indent="-20pt" reicht zulässig bis 360 pt
 fop/block_margin_shorthands: begründet, ein leerer fo:block mit Rahmen erzeugt einen Bereich mit dessen Höhe (XSL 1.1 6.5.2, 4.2.2), FOP übergeht die Höhe beim Stapeln
 fop/block_space-before_space-after_1: begründet, Abstandsauflösung nach XSL 1.1 4.3.1: ein negativer Abstand verliert gegen den Anfangswert 0pt des Nachbarn, FOP wendet ihn an
 fop/block_space-before_space-after_bug38102: begründet, pdx nimmt das Optimum von Abständen, FOP staucht bis zum Minimum, XSL 1.1 4.3 lässt jeden Wert im Bereich zu
 fop/block_text-align_1: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
-fop/block_uax14_explicit-breaks: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
-fop/block_uax14_linebreaking: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
+fop/block_uax14_explicit-breaks: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Missing characters)
+fop/block_uax14_linebreaking: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Missing characters)
 fop/empty_table: begründet, leeres fo:table-body verletzt das Inhaltsmodell aus XSL 1.1 6.7.6 (table-row+|table-cell+)
 fop/flow_changing-ipd_5: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/flow_changing-ipd_break-before: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
@@ -34,27 +34,27 @@ fop/markers_6b: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und
 fop/page-number-citation-last_complex: begründet, nach XSL 1.1 7.30.10 zählen auch Bereiche der Nachfahren, für table-header, table-footer, table-body und table-row also die Zellen auf Seite 1, FOP gibt nichts aus
 fop/page-number-citation_border_padding: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 fop/page-sequence-force-page-count-odd: begründet, Zirkelschluss bei page-position only und first, den XSL 1.1 nicht regelt, pdx setzt eine Seite, FOP fügt leere Seiten an
-fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+fop/table-body_basic_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 fop/table-cell_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-cell_display-align_page-break: begründet, eine Zeile ohne keep-together darf umbrochen werden (XSL 1.1 4.8, 7.20.3), FOP verschiebt Zeilen mit fester Höhe ganz
-fop/table-cell_keep-together: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-cell_keep-with-next: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-cell_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-cell_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
-fop/table-column_column-width_proportional-column-width: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+fop/table-cell_keep-together: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
+fop/table-cell_keep-with-next: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
+fop/table-cell_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
+fop/table-cell_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding on tables)
+fop/table-column_column-width_proportional-column-width: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 fop/table-header_in_list_bug: begründet, pdx zentriert in der Inhaltsbreite der Zelle (7.16.9), die Rumpfzeilen stimmen mit FOP überein, FOP zählt den Einzug des Listenrumpfs zur Breite der Kopfzeile
 fop/table-row_break-before_break-after_2: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-row_break-before_first-row: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
 fop/table-row_break-before_row-span: begründet, der Umbruch vor der ersten Rumpfzeile wirkt vor der Tabelle, deren erster Bereich behält border-before (7.8.12), FOP nimmt einen leeren ersten Bereich an
-fop/table-row_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-row_keep-with-next_3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-row_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table-row_keep-with-previous_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+fop/table-row_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
+fop/table-row_keep-with-next_3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
+fop/table-row_keep-with-previous: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
+fop/table-row_keep-with-previous_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 fop/table-stepper_colspan_border-before: begründet, ohne keep-together darf die Zeile nach XSL 1.1 4.8 innerhalb umbrechen, pdx teilt nach dem ersten Block von Zelle 2.1, FOP schiebt die ganze Zeile auf die nächste Seite, ohne Überlauf
 fop/table_break-before_break-after: begründet, der erste Bereich einer Tabelle behält border-before (Konditionalität discard gilt nur für Folgebereiche, XSL 1.1 7.8.12), FOP lässt ihn nach break-before weg
-fop/table_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
-fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding bei Tabellen)
-w3c/fopc-fonts: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Fehlende Zeichen)
+fop/table_keep-together_2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
+fop/table_padding_percentages: begründet, Padding liegt innerhalb von start-indent (XSL 1.1 5.3.2), FOP zählt es bei angegebenem margin doppelt (DEVIATIONS.md, Padding on tables)
+w3c/fopc-fonts: begründet, fehlendes Zeichen, XSL 1.1 7.9.3 empfiehlt nur ein Ersatzzeichen, PDF/A verbietet .notdef (DEVIATIONS.md, Missing characters)
 w3c/fopc-hyphen: begründet, FOP staucht Abstände unter das Optimum, um Seiten zu füllen, pdx nimmt das Optimum, beides liegt im Bereich nach XSL 1.1 4.3, dazu andere Trennmuster
 w3c/fopc-leader: begründet, FOP staucht Abstände unter das Optimum, um Seiten zu füllen, pdx nimmt das Optimum, beides liegt im Bereich nach XSL 1.1 4.3
 w3c/fopc-newlinktest: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
@@ -102,7 +102,7 @@ w3c/nist-cbpbp-border-width-inline2: begründet, px als Referenzpixel von CSS2 (
 w3c/nist-cbpbp-border-width2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-border4: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-cbpbp-border7: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+w3c/nist-cbpbp-border7: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 w3c/nist-cbpbp-padding-left-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-cbpbp-padding-left-inline2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-cbpbp-padding-right-inline1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
@@ -120,7 +120,7 @@ w3c/nist-cfp-font5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1
 w3c/nist-cmpb-margin-left3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cmpb-margin-right3: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
 w3c/nist-cmpi-margin-top-inline1: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
-w3c/nist-crp-color-units8: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+w3c/nist-crp-color-units8: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 w3c/nist-inl-inline-elem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-keepandbreak13: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-keepandbreak14: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
@@ -130,13 +130,13 @@ w3c/nist-keepandbreak17: begründet, anderer Zeilenumbruch bei gleichen Zeilenbr
 w3c/nist-lbfomarginbottom2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-lbfospacebefore2: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
 w3c/nist-lifoborderwidth6: begründet, anderer Zeilenumbruch bei gleichen Zeilenbreiten und ohne Überlauf, XSL 1.1 1.1.2 legt den Umbruchalgorithmus nicht fest
-w3c/nist-misc-comments2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+w3c/nist-misc-comments2: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 w3c/nist-misc-hformatting1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-hformatting2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer
-w3c/nist-misc-hformatting9: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+w3c/nist-misc-hformatting9: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 w3c/nist-misc-len-units10: begründet, pdx setzt margin-left="+3pc" wie der NIST-Test erwartet (3 Pica), FOP verwirft den Wert
 w3c/nist-misc-len-units11: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
-w3c/nist-misc-parsing3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Ungültige Eigenschaftswerte)
+w3c/nist-misc-parsing3: begründet, ungültiger Wert, XSL 1.1 5.9.6 und 5.9.13 (DEVIATIONS.md, Invalid property values)
 w3c/nist-misc-replelem1: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-replelem2: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP
 w3c/nist-misc-replelem5: begründet, px als Referenzpixel von CSS2 (1/96 in), XSL 1.1 5.9.13.1 lässt den Wert dem Formatierer, mit 1 px = 1 pt gleich mit FOP

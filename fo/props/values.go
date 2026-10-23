@@ -1,8 +1,8 @@
-// Package props löst XSL-FO-Eigenschaften auf: Längen, Farben, Shorthands,
-// Vererbung und die Umrechnung von Rändern in Einzüge.
+// Package props resolves XSL-FO properties: lengths, colors, shorthands,
+// inheritance and the conversion of margins into indents.
 //
-// Unterstützt wird der Teilumfang von Phase 0. Ausdrücke wie "2pt + 3mm"
-// sind noch nicht möglich und führen zu einem Fehler mit Position.
+// The subset of phase 0 is supported. Expressions such as "2pt + 3mm"
+// are not possible yet and lead to an error with position.
 package props
 
 import (
@@ -13,7 +13,7 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// Length ist eine Länge in Millipunkt.
+// Length is a length in millipoints.
 type Length = areatree.Length
 
 var units = map[string]float64{
@@ -22,15 +22,15 @@ var units = map[string]float64{
 	"cm": 72 / 2.54,
 	"in": 72,
 	"pc": 12,
-	"px": 0.75, // Referenzpixel von CSS2, 1/96 Zoll (XSL 1.1 5.9.13.1)
+	"px": 0.75, // CSS2 reference pixel, 1/96 inch (XSL 1.1 5.9.13.1)
 }
 
-// SetPixelSize setzt die Größe von px in Punkt. Nur für Analysen in Tests,
-// die Vorgabe ist 0,75 (1/96 Zoll).
+// SetPixelSize sets the size of px in points. Only for analyses in tests,
+// the default is 0.75 (1/96 inch).
 func SetPixelSize(pt float64) { units["px"] = pt }
 
-// ParseLength liest eine Länge. em bezieht sich auf fontSize, Prozent auf
-// percentBase. Ist percentBase negativ, sind Prozentangaben nicht erlaubt.
+// ParseLength reads a length. em refers to fontSize, percent to
+// percentBase. If percentBase is negative, percentages are not allowed.
 func ParseLength(s string, fontSize, percentBase Length) (Length, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -53,9 +53,9 @@ func ParseLength(s string, fontSize, percentBase Length) (Length, error) {
 	num, unit := s[:i], s[i:]
 	v, err := strconv.ParseFloat(num, 64)
 	if err != nil {
-		// Ausdrücke wie "0.5in + 1mm" (XSL 1.1 5.9) wertet der
-		// Ausdrucksauswerter aus. Einzelne Token, die er selbst hierher
-		// reicht, enthalten keine Operatoren.
+		// Expressions such as "0.5in + 1mm" (XSL 1.1 5.9) are evaluated by the
+		// expression evaluator. Single tokens that it passes here itself
+		// contain no operators.
 		if strings.ContainsAny(s, " (*+") || strings.LastIndex(s, "-") > 0 {
 			return EvalLength(s, fontSize, percentBase, nil)
 		}
@@ -77,8 +77,8 @@ func ParseLength(s string, fontSize, percentBase Length) (Length, error) {
 	return areatree.Points(v * f), nil
 }
 
-// namedColors sind die 16 Farbnamen aus CSS2, auf die XSL 1.1 5.11 verweist,
-// erweitert um die Namen aus CSS3 und SVG 1.1, die auch FOP versteht.
+// namedColors are the 16 color names from CSS2 that XSL 1.1 5.11 refers to,
+// extended by the names from CSS3 and SVG 1.1 that FOP also understands.
 var namedColors = map[string]uint32{
 	"aliceblue": 0xf0f8ff, "antiquewhite": 0xfaebd7, "aqua": 0x00ffff, "aquamarine": 0x7fffd4,
 	"azure": 0xf0ffff, "beige": 0xf5f5dc, "bisque": 0xffe4c4, "black": 0x000000,
@@ -121,9 +121,9 @@ var namedColors = map[string]uint32{
 	"yellow": 0xffff00, "yellowgreen": 0x9acd32,
 }
 
-// ParseColor liest eine Farbe. transparent liefert ok=false ohne Fehler.
-// Unterstützt werden #rgb, #rrggbb, rgb(), rgb-icc() mit RGB-Rückfall und
-// die Farbnamen aus CSS3 und SVG 1.1.
+// ParseColor reads a color. transparent returns ok=false without an error.
+// Supported are #rgb, #rrggbb, rgb(), rgb-icc() with RGB fallback and
+// the color names from CSS3 and SVG 1.1.
 func ParseColor(s string) (c areatree.Color, ok bool, err error) {
 	s = strings.ToLower(strings.TrimSpace(s))
 	if s == "transparent" {
@@ -176,8 +176,8 @@ func ParseColor(s string) (c areatree.Color, ok bool, err error) {
 	return c, false, fmt.Errorf("unbekannte Farbe %q", s)
 }
 
-// rgbOrGray liefert reine Grautöne als DeviceGray, das hält Content Streams
-// kurz und schwarzen Text rein schwarz.
+// rgbOrGray returns pure gray tones as DeviceGray, which keeps content streams
+// short and black text pure black.
 func rgbOrGray(r, g, b float64) areatree.Color {
 	if r == g && g == b {
 		return areatree.GrayColor(round4(r))
@@ -189,8 +189,8 @@ func round4(v float64) float64 {
 	return float64(int64(v*10000+0.5)) / 10000
 }
 
-// splitValues trennt eine Liste an Leerzeichen, ohne Klammerinhalte zu
-// zerlegen, etwa "1pt solid rgb(1, 2, 3)".
+// splitValues splits a list at spaces without splitting the contents of
+// parentheses, such as "1pt solid rgb(1, 2, 3)".
 func splitValues(s string) []string {
 	var out []string
 	depth := 0
@@ -220,7 +220,7 @@ func splitValues(s string) []string {
 	return out
 }
 
-// expand4 verteilt 1 bis 4 Werte auf oben, rechts, unten, links wie in CSS.
+// expand4 distributes 1 to 4 values to top, right, bottom, left as in CSS.
 func expand4(vs []string) ([4]string, error) {
 	switch len(vs) {
 	case 1:
@@ -238,7 +238,7 @@ func expand4(vs []string) ([4]string, error) {
 var borderStyles = map[string]areatree.BorderStyle{
 	"none": areatree.None, "hidden": areatree.Hidden, "solid": areatree.Solid, "dashed": areatree.Dashed,
 	"dotted": areatree.Dotted, "double": areatree.Double,
-	// groove, ridge, inset und outset werden als durchgezogen gezeichnet.
+	// groove, ridge, inset and outset are drawn as solid.
 	"groove": areatree.Solid, "ridge": areatree.Solid, "inset": areatree.Solid, "outset": areatree.Solid,
 }
 

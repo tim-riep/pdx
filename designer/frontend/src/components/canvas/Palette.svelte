@@ -3,10 +3,10 @@
   import { ELEMENT_MIME, insertAtSelection, kinds, type Kind } from "../../lib/insert";
   import { tpl } from "../../lib/template.svelte";
 
-  // Bis die Struktur der Vorlage geladen ist, hätte ein Klick kein Ziel.
+  // Until the structure of the template has loaded, a click would have no target.
   const ready = $derived(!!tpl.snapshot);
 
-  // Einfache Symbole als SVG-Pfade, 16 mal 16.
+  // Simple icons as SVG paths, 16 by 16.
   const icons: Record<Kind, string> = {
     text: "M3 3h10M8 3v10M6 13h4",
     positioned: "M2 2h12v12H2zM5 5h4v3H5z",

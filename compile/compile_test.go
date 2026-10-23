@@ -19,8 +19,8 @@ import (
 
 const musterDir = "../testdata/templates/musterrechnung"
 
-// render setzt FO ohne PDF. Das Wurzelpaket pdx importiert compile, die
-// Tests setzen daher direkt mit fo/layout.
+// render lays out FO without PDF. The root package pdx imports compile, so
+// the tests lay out directly with fo/layout.
 func render(fo []byte) (*areatree.Document, error) {
 	root, err := tree.Parse(bytes.NewReader(fo))
 	if err != nil {
@@ -42,8 +42,8 @@ func compileMuster(t testing.TB) (*pkg.Package, *Result) {
 	return p, res
 }
 
-// TestMusterrechnung prüft XSLT und FO gegen Golden Files und setzt das
-// Ergebnis: mindestens drei Seiten, Übertrag und Zwischensumme je Seite.
+// TestMusterrechnung checks XSLT and FO against golden files and lays out
+// the result: at least three pages, carry-over and subtotal per page.
 func TestMusterrechnung(t *testing.T) {
 	p, res := compileMuster(t)
 	testutil.Golden(t, "../testdata/golden/musterrechnung.xsl", res.XSLT)
@@ -61,7 +61,7 @@ func TestMusterrechnung(t *testing.T) {
 		t.Fatalf("%d Seiten, erwartet mindestens 3", n)
 	}
 	pages := pageLines(r)
-	// Seite 1 endet mit der Zwischensumme, Seite 2 beginnt mit ihr als Übertrag.
+	// Page 1 ends with the subtotal, page 2 starts with it as the carry-over.
 	p1, p2 := pages[0], pages[1]
 	sub := after(t, p1, "Zwischensumme")
 	if after(t, p2, "Übertrag") != sub {
@@ -78,7 +78,7 @@ func TestMusterrechnung(t *testing.T) {
 	}
 }
 
-// pageLines liefert je Seite die Texte der Zeilen.
+// pageLines returns the texts of the lines per page.
 func pageLines(d *areatree.Document) [][]string {
 	var pages [][]string
 	for _, l := range strings.Split(string(areatree.Dump(d)), "\n") {
@@ -110,7 +110,7 @@ func contains(lines []string, s string) bool {
 	return false
 }
 
-// after liefert die Zeile nach der letzten Zeile mit dem Text.
+// after returns the line after the last line containing the text.
 func after(t *testing.T, lines []string, s string) string {
 	t.Helper()
 	for i := len(lines) - 2; i >= 0; i-- {
@@ -144,7 +144,7 @@ func TestSourceMap(t *testing.T) {
 	t.Fatal("z-menge-f nicht im XSLT")
 }
 
-// errorIDs liefert die Vorlagen-IDs der Fehler.
+// errorIDs returns the template IDs of the errors.
 func errorIDs(err error) []string {
 	var es template.Errors
 	if !errors.As(err, &es) {
@@ -185,7 +185,7 @@ func TestWrongRoot(t *testing.T) {
 	}
 }
 
-// mini baut eine kleine Vorlage um den Inhalt von body.
+// mini builds a small template around the content of body.
 func mini(t *testing.T, head, body string) *template.Template {
 	t.Helper()
 	src := `<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="t" lang="de-DE" version="1" dataRoot="d">` + head +
@@ -279,8 +279,8 @@ func FuzzCompile(f *testing.F) {
 		if err != nil {
 			return
 		}
-		// Gültige Vorlagen ergeben XSLT oder Fehler mit Meldung, nie einen
-		// Absturz, und das zweimal gleich.
+		// Valid templates yield XSLT or errors with a message, never a
+		// crash, and the same result twice.
 		r1, err1 := Compile(tpl, Options{})
 		r2, err2 := Compile(tpl, Options{})
 		if (err1 == nil) != (err2 == nil) {
@@ -315,8 +315,8 @@ func TestInlines(t *testing.T) {
 	}
 }
 
-// TestFormular prüft das XSLT des Formulars: Feldtypen, Optionen aus der
-// Enumeration und den Kontextpfad für das Zurückschreiben.
+// TestFormular checks the XSLT of the form: field types, options from the
+// enumeration and the context path for writing back.
 func TestFormular(t *testing.T) {
 	p, err := pkg.ReadDir("../testdata/templates/formular")
 	if err != nil {
@@ -343,7 +343,7 @@ func TestFormular(t *testing.T) {
 			t.Errorf("%q fehlt im FO", want)
 		}
 	}
-	// Ohne Optionen und Enumeration ist die Optionsfeldgruppe ein Fehler.
+	// Without options and enumeration the radio button group is an error.
 	if _, err := Compile(p.Template, Options{}); err == nil || !strings.Contains(err.Error(), "[anrede]") {
 		t.Errorf("Optionsfeldgruppe ohne Optionen: %v", err)
 	}

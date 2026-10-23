@@ -6,7 +6,7 @@
 
   let { doc }: { doc: Doc } = $props();
 
-  // Der Area Tree ändert sich im Prototyp nicht, daher genügt der Anfangswert.
+  // The area tree does not change in the prototype, so the initial value is enough.
   // svelte-ignore state_referenced_locally
   const cache = new PageCache(doc);
   // svelte-ignore state_referenced_locally
@@ -22,7 +22,7 @@
 
   window.__app = { setZoom: (z) => (zoom = z), zoom: () => zoom };
 
-  // Sichtbare Seiten aus der Scrollposition, mit einer Seite Vorlauf.
+  // Visible pages from the scroll position, with one page of lookahead.
   const tops = $derived.by(() => {
     let y = 24;
     return doc.pages.map((p) => {

@@ -1,4 +1,4 @@
-// Befehlspalette: alle Aktionen und die Suche nach Elementen an einer Stelle.
+// Command palette: all actions and the search for elements in one place.
 
 export type PaletteItem = { id: string; label: string; group: string; shortcut?: string; hint?: string; run: () => unknown };
 
@@ -7,8 +7,8 @@ export const palette = $state({ open: false });
 export const openPalette = () => (palette.open = true);
 export const closePalette = () => (palette.open = false);
 
-// match bewertet einen Eintrag: alle Wörter der Suche müssen vorkommen,
-// Treffer am Wortanfang zählen mehr. 0 heißt kein Treffer.
+// match scores an entry: all words of the search must occur,
+// matches at the start of a word count more. 0 means no match.
 export function match(item: { label: string; hint?: string }, query: string): number {
   const q = query.trim().toLowerCase();
   if (!q) return 1;

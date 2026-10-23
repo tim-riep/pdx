@@ -1,6 +1,6 @@
-/* Farbsystem des Designers als Tokens. Zurückhaltend, damit das Dokument im
-   Mittelpunkt steht. Hell ist Standard, dunkel folgt dem System oder der
-   Wahl in der Oberfläche (data-theme). */
+/* Color system of the designer as tokens. Restrained, so the document stays in
+   the center. Light is the default, dark follows the system or the
+   choice in the UI (data-theme). */
 
 :root {
   --bg: #f3f4f6;

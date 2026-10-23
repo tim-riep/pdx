@@ -29,7 +29,7 @@ func TestLinksAndOutlines(t *testing.T) {
 		}
 	}
 	testutil.Conform(t, "links.pdf", b, "pdfa-3b")
-	// Unbekanntes Ziel ist ein Fehler.
+	// An unknown destination is an error.
 	doc.Bookmarks[0].Dest = "fehlt"
 	if _, err := Render(doc, Options{CreationDate: testDate}); err == nil {
 		t.Error("unbekanntes Sprungziel nicht erkannt")

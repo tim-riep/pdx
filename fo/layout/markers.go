@@ -7,16 +7,16 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// Marker (XSL 1.1 6.13.5 bis 6.13.7). Der Placer protokolliert je Seite die
-// Bereiche mit Markern in Vorordnung: ob sie auf der Seite beginnen (is-first)
-// und ob sie dort enden (is-last). fo:retrieve-marker in statischen Inhalten
-// und fo:retrieve-table-marker in Tabellenkopf und -fuß wählen daraus.
+// Markers (XSL 1.1 6.13.5 to 6.13.7). The placer records per page the
+// areas with markers in pre-order: whether they start on the page (is-first)
+// and whether they end there (is-last). fo:retrieve-marker in static content
+// and fo:retrieve-table-marker in table header and footer choose from them.
 
-// markerSet sind die fo:marker eines Elements nach Klasse.
+// markerSet holds the fo:marker elements of an element by class.
 type markerSet map[string]*tree.Node
 
-// collectMarkers liest die fo:marker-Kinder eines Elements und, bei Zeilen,
-// die ihrer Zellen.
+// collectMarkers reads the fo:marker children of an element and, for rows,
+// those of their cells.
 func collectMarkers(n *tree.Node) markerSet {
 	var m markerSet
 	add := func(x *tree.Node) {
@@ -44,21 +44,21 @@ func collectMarkers(n *tree.Node) markerSet {
 	return m
 }
 
-// mkEvent ist ein Bereich mit Markern auf einer Seite.
+// mkEvent is an area with markers on a page.
 type mkEvent struct {
 	markers markerSet
-	start   bool // der Bereich beginnt auf dieser Seite
-	end     bool // der Bereich endet auf dieser Seite
+	start   bool // the area starts on this page
+	end     bool // the area ends on this page
 }
 
-// pageMarks sind die Marker-Ereignisse einer Seite.
+// pageMarks are the marker events of a page.
 type pageMarks struct {
 	page   *areatree.Page
 	seq    *tree.Node
 	events []*mkEvent
 }
 
-// marksFor liefert die Ereignisliste einer Seite.
+// marksFor returns the event list of a page.
 func (e *engine) marksFor(p *areatree.Page) *pageMarks {
 	if pm, ok := e.marks[p]; ok {
 		return pm
@@ -69,8 +69,8 @@ func (e *engine) marksFor(p *areatree.Page) *pageMarks {
 	return pm
 }
 
-// note vermerkt einen Bereich mit Markern. key identifiziert den Bereich auf
-// der Seite, damit Fortsetzungen nicht doppelt zählen.
+// note records an area with markers. key identifies the area on
+// the page so that continuations are not counted twice.
 func (pl *placer) note(key any, m markerSet, start, end bool) (*mkEvent, bool) {
 	if m == nil {
 		return nil, false
@@ -89,8 +89,8 @@ func (pl *placer) note(key any, m markerSet, start, end bool) (*mkEvent, bool) {
 	return ev, true
 }
 
-// pick wählt aus Ereignissen nach Position. first: vorne beginnen, starting:
-// nur beginnende, ending: nur endende.
+// pick chooses from events by position. first: start at the front, starting:
+// only starting ones, ending: only ending ones.
 func pick(events []*mkEvent, cls, pos string) *tree.Node {
 	match := func(ev *mkEvent) *tree.Node {
 		m := ev.markers[cls]
@@ -126,7 +126,7 @@ func pick(events []*mkEvent, cls, pos string) *tree.Node {
 	return nil
 }
 
-// lastAny liefert den letzten Marker einer Klasse in den Ereignissen.
+// lastAny returns the last marker of a class in the events.
 func lastAny(events []*mkEvent, cls string) *tree.Node {
 	for i := len(events) - 1; i >= 0; i-- {
 		if m := events[i].markers[cls]; m != nil {
@@ -136,9 +136,9 @@ func lastAny(events []*mkEvent, cls string) *tree.Node {
 	return nil
 }
 
-// retrieveMarker löst ein fo:retrieve-marker für die aktuelle Seite auf.
-// Findet sich auf der Seite nichts, gilt der letzte Marker der Klasse auf den
-// vorigen Seiten innerhalb von retrieve-boundary.
+// retrieveMarker resolves an fo:retrieve-marker for the current page.
+// If nothing is found on the page, the last marker of the class on the
+// previous pages within retrieve-boundary applies.
 func (e *engine) retrieveMarker(n *tree.Node, page *areatree.Page) (*tree.Node, error) {
 	cls, _ := n.Attr("retrieve-class-name")
 	if cls == "" {
@@ -173,13 +173,13 @@ func (e *engine) retrieveMarker(n *tree.Node, page *areatree.Page) (*tree.Node, 
 	return nil, nil
 }
 
-// tableFrag sind die Marker-Ereignisse eines Tabellenfragments (einer Seite).
+// tableFrag holds the marker events of a table fragment (one page).
 type tableFrag struct {
 	page   *areatree.Page
 	events []*mkEvent
 }
 
-// tableMarks liefert das Fragment der Tabelle auf einer Seite.
+// tableMarks returns the fragment of the table on a page.
 func (t *tableCtx) fragFor(p *areatree.Page) *tableFrag {
 	if n := len(t.frags); n > 0 && t.frags[n-1].page == p {
 		return t.frags[n-1]
@@ -189,8 +189,8 @@ func (t *tableCtx) fragFor(p *areatree.Page) *tableFrag {
 	return f
 }
 
-// retrieveTableMarker löst ein fo:retrieve-table-marker im Fragment der
-// aktuellen Seite auf.
+// retrieveTableMarker resolves an fo:retrieve-table-marker in the fragment of
+// the current page.
 func (t *tableCtx) retrieveTableMarker(n *tree.Node, page *areatree.Page) (*tree.Node, error) {
 	cls, _ := n.Attr("retrieve-class-name")
 	if cls == "" {
@@ -221,7 +221,7 @@ func (t *tableCtx) retrieveTableMarker(n *tree.Node, page *areatree.Page) (*tree
 	return nil, nil
 }
 
-// hasTableMarker meldet, ob ein Teilbaum ein fo:retrieve-table-marker enthält.
+// hasTableMarker reports whether a subtree contains an fo:retrieve-table-marker.
 func hasTableMarker(n *tree.Node) bool {
 	if n.IsFO("retrieve-table-marker") {
 		return true
@@ -234,8 +234,8 @@ func hasTableMarker(n *tree.Node) bool {
 	return false
 }
 
-// sample liefert den ersten fo:marker einer Klasse in der Tabelle, beim
-// Messen wiederholter Köpfe den ersten nicht leeren.
+// sample returns the first fo:marker of a class in the table, when
+// measuring repeated headers the first non-empty one.
 func (t *tableCtx) sample(cls string) *tree.Node {
 	var found *tree.Node
 	var walk func(n *tree.Node)
@@ -257,7 +257,7 @@ func (t *tableCtx) sample(cls string) *tree.Node {
 	return found
 }
 
-// emptyMarker meldet einen fo:marker ohne Elemente und ohne sichtbaren Text.
+// emptyMarker reports an fo:marker without elements and without visible text.
 func emptyMarker(n *tree.Node) bool {
 	for _, c := range n.Children {
 		if c.Kind == tree.Element || strings.TrimSpace(c.Data) != "" {

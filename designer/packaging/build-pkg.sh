@@ -14,20 +14,20 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
 mkdir -p "$work/root" "$work/resources"
-# Ohne erweiterte Attribute, sonst landen ._-Dateien im Paket.
+# Without extended attributes, otherwise ._ files end up in the package.
 export COPYFILE_DISABLE=1
 ditto --norsrc --noextattr --noqtn "$app" "$work/root/pdx Designer.app"
 pkgbuild --analyze --root "$work/root" "$work/component.plist" >/dev/null
-# An Ort und Stelle installieren, nicht eine vorhandene Kopie woanders
-# ersetzen.
+# Install in place, do not replace an existing copy somewhere
+# else.
 plutil -replace 0.BundleIsRelocatable -bool NO "$work/component.plist"
 pkgbuild --quiet --root "$work/root" --component-plist "$work/component.plist" \
   --identifier com.github.tim-riep.pdx.designer --version "$version" \
   --install-location /Applications "$work/component.pkg"
-# Nutzlast und Stückliste selbst schreiben: pkgbuild packt erweiterte
-# Attribute wie com.apple.provenance als ._-Dateien ein, cpio im Format odc
-# kennt keine. Dazu verlangt pkgbuild immer Administratorrechte
-# (auth="root"), für die Installation pro Benutzer reicht auth="none".
+# Write payload and bill of materials ourselves: pkgbuild packs extended
+# attributes such as com.apple.provenance as ._ files, cpio in odc format
+# knows none. Also pkgbuild always requires administrator rights
+# (auth="root"), for the per-user installation auth="none" is enough.
 pkgutil --expand "$work/component.pkg" "$work/expanded"
 rm -f "$work/expanded/Payload" "$work/expanded/Bom"
 (cd "$work/root" && find . | LC_ALL=C sort | cpio -o --quiet --format odc -R 0:80 | gzip -9 -n) > "$work/expanded/Payload"

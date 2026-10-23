@@ -1,7 +1,7 @@
-// Attrappe der veraPDF-CLI für die Ende-zu-Ende-Tests auf allen Systemen:
-// meldet die Version und einen festen Bericht mit Befunden an den ersten
-// Operatoren der ersten Seite und einem Befund ohne Seite. Das PDF selbst
-// prüft sie nicht. Aufgerufen über verapdf-attrappe (sh) oder
+// Stand-in for the veraPDF CLI for the end-to-end tests on all systems:
+// reports the version and a fixed report with findings at the first
+// operators of the first page and one finding without page. It does not
+// check the PDF itself. Called via verapdf-attrappe (sh) or
 // verapdf-attrappe.cmd (Windows).
 if (process.argv.includes("--version")) {
   console.log("veraPDF 1.30.3");

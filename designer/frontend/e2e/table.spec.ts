@@ -19,7 +19,7 @@ test("Tabelle mit Spalte, Kopf, Fuß, verbundener Zelle und Summe", async ({ pag
   const tools = page.getByTestId("table-tools");
   await expect(inspector.locator("header strong")).toHaveText("Tabelle");
 
-  // Der Kopf entsteht schon beim Ziehen. Spalte und Fuß ergänzen.
+  // The header is created during dragging already. Add a column and footer.
   await expect(tools.getByRole("button", { name: "Kopf hinzufügen" })).toHaveCount(0);
   await tools.getByRole("button", { name: "Spalte rechts" }).click();
   await tools.getByRole("button", { name: "Fuß hinzufügen" }).click();
@@ -33,19 +33,19 @@ test("Tabelle mit Spalte, Kopf, Fuß, verbundener Zelle und Summe", async ({ pag
   const cells = page.getByTestId("hierarchy").locator("button.name", { hasText: "Zelle" }).filter({ hasText: /fuss/ });
   await expect(cells).toHaveCount(6);
 
-  // Über der Beschreibung lässt sich nichts summieren.
+  // Nothing can be summed over the description.
   await cells.nth(1).click();
   await expect(inspector.locator("header strong")).toHaveText("Zelle");
   await tools.getByRole("button", { name: "Summe", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("summieren");
 
-  // Über dem Betrag schon.
+  // Over the amount it can.
   await cells.nth(4).click();
   await tools.getByRole("button", { name: "Summe", exact: true }).click();
   await expect(inspector.locator("header strong")).toHaveText("Summe");
   await expect(inspector.locator('[data-prop="of"] input')).toHaveValue(/amount/);
 
-  // Die erste Fußzelle über zwei Spalten, Rückgängig stellt es wieder her.
+  // The first footer cell over two columns, undo restores it.
   await cells.nth(0).click();
   const span = tools.getByRole("spinbutton");
   await span.fill("2");

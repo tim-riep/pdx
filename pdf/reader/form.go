@@ -2,25 +2,25 @@ package reader
 
 import "fmt"
 
-// Field ist ein Formularfeld mit den von Eltern geerbten Angaben
+// Field is a form field with the attributes inherited from its parents
 // (ISO 32000-1 12.7.3.1).
 type Field struct {
-	// Name ist der volle Feldname aus den Teilnamen T, mit Punkt getrennt.
+	// Name is the full field name from the partial names T, separated by dots.
 	Name string
-	// Type ist FT: Tx, Btn, Ch oder Sig.
+	// Type is FT: Tx, Btn, Ch or Sig.
 	Type Name
-	// Value ist V als Text: Textstring, bei Schaltflächen der Name des
-	// Zustands, bei Listen mit Mehrfachauswahl der erste Wert. Empty meldet,
-	// dass V fehlt.
+	// Value is V as text: text string, for buttons the name of the
+	// state, for lists with multiple selection the first value. Empty reports
+	// that V is missing.
 	Value string
 	Empty bool
 	Flags int
-	// TU ist der zugängliche Name, TM der Name für den Export.
+	// TU is the accessible name, TM the name for export.
 	TU, TM string
 }
 
-// Fields liefert die Felder des AcroForm in Dokumentreihenfolge. Felder ohne
-// eigene Felder unter sich (Endfelder) erscheinen, Zwischenknoten nicht.
+// Fields returns the fields of the AcroForm in document order. Fields without
+// own fields below them (terminal fields) appear, intermediate nodes do not.
 func (f *File) Fields() []Field {
 	acro := f.Dict(f.Root()["AcroForm"])
 	if acro == nil {
@@ -63,7 +63,7 @@ func (f *File) Fields() []Field {
 		if ff, ok := f.Int(d["Ff"]); ok {
 			in.flags = ff
 		}
-		// Kinder mit eigenem T sind Felder, ohne T nur Widgets.
+		// Kids with their own T are fields, without T only widgets.
 		var fieldKids []Object
 		for _, k := range f.Array(d["Kids"]) {
 			if kd := f.Dict(k); kd != nil && kd["T"] != nil {
@@ -105,7 +105,7 @@ func (f *File) Fields() []Field {
 	return out
 }
 
-// Field sucht ein Feld nach vollem Namen.
+// Field looks up a field by its full name.
 func (f *File) Field(name string) (Field, bool) {
 	for _, fl := range f.Fields() {
 		if fl.Name == name {
@@ -115,8 +115,8 @@ func (f *File) Field(name string) (Field, bool) {
 	return Field{}, false
 }
 
-// EmbeddedFiles liefert die eingebetteten Dateien aus dem Namensbaum
-// EmbeddedFiles (ISO 32000-1 7.11.4) nach Namen.
+// EmbeddedFiles returns the embedded files from the name tree
+// EmbeddedFiles (ISO 32000-1 7.11.4) by name.
 func (f *File) EmbeddedFiles() (map[string][]byte, error) {
 	out := map[string][]byte{}
 	names := f.Dict(f.Root()["Names"])

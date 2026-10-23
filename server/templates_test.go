@@ -26,9 +26,9 @@ func do(t *testing.T, method, url, key string, body []byte) (*http.Response, []b
 	return resp, b
 }
 
-// Lebenszyklus einer Vorlage über die Schnittstelle mit DirStore: hochladen,
-// gleicher Inhalt ergibt dieselbe Version, aktivieren, rendern mit aktiver
-// und bestimmter Version, Paket zurückholen.
+// Life cycle of a template through the API with DirStore: upload, same
+// content yields the same version, activate, render with the active and
+// a specific version, fetch the package back.
 func TestTemplateLifecycle(t *testing.T) {
 	store := &DirStore{Dir: t.TempDir()}
 	s, err := New(testConfig(), store, nil)
@@ -118,8 +118,8 @@ func TestTemplateLifecycle(t *testing.T) {
 	}
 }
 
-// Gleichzeitiges Hochladen verschiedener Inhalte vergibt verschiedene
-// Nummern, auch mit getrennten Ablagen auf demselben Verzeichnis.
+// Concurrent uploads of different contents assign different numbers,
+// also with separate stores on the same directory.
 func TestDirStoreConcurrent(t *testing.T) {
 	dir := t.TempDir()
 	var wg sync.WaitGroup

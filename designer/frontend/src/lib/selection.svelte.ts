@@ -1,16 +1,16 @@
-// Auswahl und Hover gehören zur Ansicht, nicht zum Modell. Ausgewählt ist
-// immer ein Vorlagenelement. instance merkt sich das angeklickte Vorkommen
-// (Seite und Nummer unter den Bereichen des Elements auf dieser Seite), damit
-// es im Canvas stärker erscheint, auch nachdem neu gesetzt wurde.
+// Selection and hover belong to the view, not to the model. The selection is
+// always a template element. instance remembers the clicked occurrence
+// (page and number among the areas of the element on that page), so
+// it appears stronger in the canvas, even after a new layout run.
 
 export const selection = $state({
   ref: "",
   hover: "",
   instance: null as null | { page: number; k: number },
-  // reveal bittet den Canvas, das Element sichtbar zu machen.
+  // reveal asks the canvas to make the element visible.
   reveal: 0,
-  // extra sind weitere gewählte Elemente (Umschalt+Klick) zum Ausrichten
-  // und Verteilen, Geschwister des ersten.
+  // extra are further selected elements (Shift+click) for aligning
+  // and distributing, siblings of the first.
   extra: [] as string[],
 });
 

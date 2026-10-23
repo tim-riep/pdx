@@ -61,7 +61,7 @@ func TestCommands(t *testing.T) {
 	if h := d.History(); h.Undo != "Mehrere" || !h.Can[0] || h.Can[1] {
 		t.Errorf("History: %+v", h)
 	}
-	// Alles zurück, Schritt für Schritt bis zum Ausgangszustand.
+	// Everything back, step by step to the initial state.
 	for i := len(steps) - 1; i >= 0; i-- {
 		if _, err := d.Undo(); err != nil {
 			t.Fatalf("Undo %s: %v", steps[i].label, err)
@@ -73,7 +73,7 @@ func TestCommands(t *testing.T) {
 	if !bytes.Equal(canon(d), start) || d.Dirty() {
 		t.Fatalf("nach Undo nicht im Ausgangszustand (Dirty %v)", d.Dirty())
 	}
-	// Und wieder vor.
+	// And forward again.
 	for range steps {
 		if _, err := d.Redo(); err != nil {
 			t.Fatal(err)
@@ -87,7 +87,7 @@ func TestCommands(t *testing.T) {
 	}
 }
 
-// TestInvalidRollback erwartet, dass ungültige Befehle nichts ändern.
+// TestInvalidRollback expects that invalid commands change nothing.
 func TestInvalidRollback(t *testing.T) {
 	d := muster(t)
 	start := canon(d)
@@ -115,7 +115,7 @@ func TestInvalidRollback(t *testing.T) {
 	}
 }
 
-// TestSaveAfterUndo prüft den Geändert-Zustand über Speichern und Undo.
+// TestSaveAfterUndo checks the changed state across saving and Undo.
 func TestSaveAfterUndo(t *testing.T) {
 	d := muster(t)
 	d.Apply("a", Command{Op: "setAttr", Ref: "summen", Name: "spaceBefore", Value: "8mm"})
@@ -181,7 +181,7 @@ func TestSetFile(t *testing.T) {
 	if _, ok := d.Pkg.Files["schema/neu.xsd"]; !ok {
 		t.Fatal("Datei fehlt")
 	}
-	// Eine Datei außerhalb der Paketordner scheitert und ändert nichts.
+	// A file outside the package folders fails and changes nothing.
 	if err := d.Apply("x", Command{Op: "setFile", Name: "geheim.txt", Data: []byte("x")}); err == nil {
 		t.Error("Datei außerhalb der Paketordner angenommen")
 	}

@@ -7,7 +7,7 @@ test("Tokens anlegen, umbenennen und in Stilen verwenden", async ({ page }) => {
   const panel = page.getByTestId("styles");
   await expect(panel).toContainText("Noch keine Tokens");
 
-  // Farb-Token anlegen, Wert und Name ändern.
+  // Create a color token, change value and name.
   await panel.getByRole("button", { name: "+ Farbe" }).click();
   const row = panel.locator('[data-token="farbe"]');
   await expect(row).toBeVisible();
@@ -21,7 +21,7 @@ test("Tokens anlegen, umbenennen und in Stilen verwenden", async ({ page }) => {
   const primaer = panel.locator('[data-token="primaer"]');
   await expect(primaer).toBeVisible();
 
-  // Stil öffnen und das Token als Farbe setzen.
+  // Open a style and set the token as color.
   await panel.getByRole("button", { name: /st-titel/ }).click();
   const inspector = page.getByTestId("inspector");
   await expect(inspector.locator("header code")).toHaveText("st-titel");
@@ -32,20 +32,20 @@ test("Tokens anlegen, umbenennen und in Stilen verwenden", async ({ page }) => {
   await color.press("Enter");
   await expect(inspector.locator('[data-prop="color"] .swatch')).toHaveCSS("background-color", "rgb(170, 0, 0)");
 
-  // Verwendet: Entfernen gesperrt, Satz ohne Fehler.
+  // In use: removing locked, layout without errors.
   await page.getByRole("tab", { name: "Stile" }).click();
   await expect(primaer.locator(".used")).toHaveText("1×");
   await expect(primaer.getByRole("button", { name: "Token entfernen" })).toBeDisabled();
   await expect(page.getByTestId("problems").locator("li.error")).toHaveCount(0);
   await expect(page.getByTestId("render-info")).toContainText("Seite");
 
-  // Umbenennen zieht den Verweis im Stil mit.
+  // Renaming updates the reference in the style.
   await primaer.getByRole("textbox", { name: "Name" }).fill("marke");
   await primaer.getByRole("textbox", { name: "Name" }).press("Enter");
   await panel.getByRole("button", { name: /st-titel/ }).click();
   await expect(color).toHaveValue("$marke");
 
-  // Rückgängig: Name wieder primaer.
+  // Undo: name is primaer again.
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(color).toHaveValue("$primaer");
 });

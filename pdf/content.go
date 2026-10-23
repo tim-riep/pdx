@@ -5,22 +5,22 @@ import (
 	"strconv"
 )
 
-// Content baut einen Content Stream. Alle Zahlen laufen über FormatNumber,
-// damit die Ausgabe deterministisch bleibt. Koordinaten sind PDF-Koordinaten
-// in Punkt mit Ursprung unten links.
+// Content builds a content stream. All numbers go through FormatNumber
+// so that the output stays deterministic. Coordinates are PDF coordinates
+// in points with the origin at the bottom left.
 type Content struct {
 	b   bytes.Buffer
 	ops int
 }
 
-// Ops liefert die Zahl der bisher geschriebenen Operatoren. Sie entspricht
-// der Zählung von veraPDF im Objektkontext (operators[n]).
+// Ops returns the number of operators written so far. It matches the
+// count of veraPDF in the object context (operators[n]).
 func (c *Content) Ops() int { return c.ops }
 
-// Bytes liefert den unkomprimierten Stream-Inhalt.
+// Bytes returns the uncompressed stream content.
 func (c *Content) Bytes() []byte { return c.b.Bytes() }
 
-// Len liefert die Länge des bisherigen Inhalts.
+// Len returns the length of the content so far.
 func (c *Content) Len() int { return c.b.Len() }
 
 func (c *Content) nums(vs ...float64) {
@@ -40,19 +40,19 @@ func (c *Content) op(s string) {
 	}
 }
 
-// Save schreibt q.
+// Save writes q.
 func (c *Content) Save() { c.op("q") }
 
-// Restore schreibt Q.
+// Restore writes Q.
 func (c *Content) Restore() { c.op("Q") }
 
-// Transform schreibt cm.
+// Transform writes cm.
 func (c *Content) Transform(a, b, cc, d, e, f float64) { c.nums(a, b, cc, d, e, f); c.op("cm") }
 
-// LineWidth schreibt w.
+// LineWidth writes w.
 func (c *Content) LineWidth(w float64) { c.nums(w); c.op("w") }
 
-// Dash schreibt d. Ein leeres Muster setzt durchgezogene Linien.
+// Dash writes d. An empty pattern sets solid lines.
 func (c *Content) Dash(pattern []float64, phase float64) {
 	c.b.WriteByte('[')
 	for i, v := range pattern {
@@ -66,41 +66,41 @@ func (c *Content) Dash(pattern []float64, phase float64) {
 	c.op("d")
 }
 
-// LineCap schreibt J.
+// LineCap writes J.
 func (c *Content) LineCap(v int) { c.b.WriteString(strconv.Itoa(v)); c.op(" J") }
 
-// FillRGB schreibt rg.
+// FillRGB writes rg.
 func (c *Content) FillRGB(r, g, b float64) { c.nums(r, g, b); c.op("rg") }
 
-// StrokeRGB schreibt RG.
+// StrokeRGB writes RG.
 func (c *Content) StrokeRGB(r, g, b float64) { c.nums(r, g, b); c.op("RG") }
 
-// FillGray schreibt g.
+// FillGray writes g.
 func (c *Content) FillGray(v float64) { c.nums(v); c.op("g") }
 
-// StrokeGray schreibt G.
+// StrokeGray writes G.
 func (c *Content) StrokeGray(v float64) { c.nums(v); c.op("G") }
 
-// MoveTo schreibt m.
+// MoveTo writes m.
 func (c *Content) MoveTo(x, y float64) { c.nums(x, y); c.op("m") }
 
-// LineTo schreibt l.
+// LineTo writes l.
 func (c *Content) LineTo(x, y float64) { c.nums(x, y); c.op("l") }
 
-// Rect schreibt re.
+// Rect writes re.
 func (c *Content) Rect(x, y, w, h float64) { c.nums(x, y, w, h); c.op("re") }
 
-// CurveTo schreibt c, eine kubische Bézierkurve.
+// CurveTo writes c, a cubic Bézier curve.
 func (c *Content) CurveTo(x1, y1, x2, y2, x3, y3 float64) {
 	c.nums(x1, y1, x2, y2, x3, y3)
 	c.op("c")
 }
 
-// ClosePath schreibt h.
+// ClosePath writes h.
 func (c *Content) ClosePath() { c.op("h") }
 
-// BeginTag beginnt eine markierte Inhaltsfolge ohne Eigenschaften: /Tag BMC.
-// Formularfelder umschließen ihren variablen Text mit /Tx BMC
+// BeginTag begins a marked-content sequence without properties: /Tag BMC.
+// Form fields enclose their variable text with /Tx BMC
 // (ISO 32000-1 12.7.3.3).
 func (c *Content) BeginTag(tag Name) {
 	var b bytes.Buffer
@@ -109,28 +109,28 @@ func (c *Content) BeginTag(tag Name) {
 	c.op(b.String())
 }
 
-// Fill schreibt f.
+// Fill writes f.
 func (c *Content) Fill() { c.op("f") }
 
-// Stroke schreibt S.
+// Stroke writes S.
 func (c *Content) Stroke() { c.op("S") }
 
-// Clip schreibt W n.
+// Clip writes W n.
 func (c *Content) Clip() { c.op("W n") }
 
-// ExtGState schreibt gs.
+// ExtGState writes gs.
 func (c *Content) ExtGState(name Name) { name.writePDF(&c.b); c.op(" gs") }
 
-// XObject schreibt Do.
+// XObject writes Do.
 func (c *Content) XObject(name Name) { name.writePDF(&c.b); c.op(" Do") }
 
-// BeginText schreibt BT.
+// BeginText writes BT.
 func (c *Content) BeginText() { c.op("BT") }
 
-// EndText schreibt ET.
+// EndText writes ET.
 func (c *Content) EndText() { c.op("ET") }
 
-// Font schreibt Tf.
+// Font writes Tf.
 func (c *Content) Font(name Name, size float64) {
 	name.writePDF(&c.b)
 	c.b.WriteByte(' ')
@@ -138,15 +138,15 @@ func (c *Content) Font(name Name, size float64) {
 	c.op("Tf")
 }
 
-// TextMatrix schreibt Tm.
+// TextMatrix writes Tm.
 func (c *Content) TextMatrix(a, b, cc, d, e, f float64) { c.nums(a, b, cc, d, e, f); c.op("Tm") }
 
-// TextRise schreibt Ts.
+// TextRise writes Ts.
 func (c *Content) TextRise(v float64) { c.nums(v); c.op("Ts") }
 
-// ShowGlyphs schreibt TJ für zweibyteige Glyph-IDs (Identity-H). adjust[i]
-// ist die Korrektur vor Glyph i in Tausendstel der Schriftgröße, positiv nach
-// links wie in TJ üblich. adjust darf nil sein.
+// ShowGlyphs writes TJ for two-byte glyph IDs (Identity-H). adjust[i]
+// is the adjustment before glyph i in thousandths of the font size, positive
+// to the left as usual in TJ. adjust may be nil.
 func (c *Content) ShowGlyphs(gids []uint16, adjust []float64) {
 	const hex = "0123456789ABCDEF"
 	c.b.WriteByte('[')
@@ -175,7 +175,7 @@ func (c *Content) ShowGlyphs(gids []uint16, adjust []float64) {
 	c.op("] TJ")
 }
 
-// BeginMarked beginnt eine markierte Inhaltsfolge mit Strukturbezug:
+// BeginMarked begins a marked-content sequence with a structure reference:
 // /Tag <</MCID n>> BDC (ISO 32000-1 14.6, 14.7.4).
 func (c *Content) BeginMarked(tag Name, mcid int) {
 	var b bytes.Buffer
@@ -186,9 +186,9 @@ func (c *Content) BeginMarked(tag Name, mcid int) {
 	c.op(b.String())
 }
 
-// BeginMarkedText beginnt markierten Inhalt mit MCID und Ersatztext:
-// /Tag <</MCID n /ActualText (…)>> BDC (ISO 32000-1 14.9.4). Der Ersatztext
-// ersetzt beim Vorlesen alles, was die Folge zeichnet.
+// BeginMarkedText begins marked content with MCID and replacement text:
+// /Tag <</MCID n /ActualText (…)>> BDC (ISO 32000-1 14.9.4). When read
+// aloud, the replacement text replaces everything the sequence draws.
 func (c *Content) BeginMarkedText(tag Name, mcid int, actual string) {
 	var b bytes.Buffer
 	tag.writePDF(&b)
@@ -200,13 +200,13 @@ func (c *Content) BeginMarkedText(tag Name, mcid int, actual string) {
 	c.op(b.String())
 }
 
-// BeginArtifact beginnt einen Artefakt-Bereich: /Artifact BMC (ISO 32000-1
-// 14.8.2.2). Artefakte gehören nicht zum Strukturbaum.
+// BeginArtifact begins an artifact section: /Artifact BMC (ISO 32000-1
+// 14.8.2.2). Artifacts are not part of the structure tree.
 func (c *Content) BeginArtifact() { c.op("/Artifact BMC") }
 
-// BeginActualText beginnt eine Span mit Ersatztext:
-// /Span <</ActualText …>> BDC (ISO 32000-1 14.9.4). Sie liegt innerhalb
-// markierten Inhalts und trägt keine MCID.
+// BeginActualText begins a span with replacement text:
+// /Span <</ActualText …>> BDC (ISO 32000-1 14.9.4). It lies within
+// marked content and carries no MCID.
 func (c *Content) BeginActualText(text string) {
 	var b bytes.Buffer
 	b.WriteString("/Span <</ActualText ")
@@ -215,11 +215,11 @@ func (c *Content) BeginActualText(text string) {
 	c.op(b.String())
 }
 
-// EndMarked beendet eine markierte Inhaltsfolge: EMC.
+// EndMarked ends a marked-content sequence: EMC.
 func (c *Content) EndMarked() { c.op("EMC") }
 
-// ShowBytes schreibt Tj mit einbyteigen Codes einer einfachen Schrift als
-// Hexstring.
+// ShowBytes writes Tj with single-byte codes of a simple font as a
+// hex string.
 func (c *Content) ShowBytes(codes []byte) {
 	const hex = "0123456789ABCDEF"
 	c.b.WriteByte('<')

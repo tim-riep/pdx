@@ -1,7 +1,7 @@
-// Package dataxml ist ein kleines XML-Baummodell für Daten. Es liest ein
-// Dokument, erlaubt Werte zu setzen und Elemente einzufügen und schreibt es
-// mit den ursprünglichen Präfixen wieder. pdx extract-data schreibt damit
-// Formulareingaben in die Daten zurück.
+// Package dataxml is a small XML tree model for data. It reads a document,
+// allows setting values and inserting elements and writes it back with the
+// original prefixes. pdx extract-data uses it to write form input back
+// into the data.
 package dataxml
 
 import (
@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-// Kind ist die Art eines Knotens.
+// Kind is the kind of a node.
 type Kind int
 
 const (
@@ -24,28 +24,28 @@ const (
 	ProcInst
 )
 
-// Node ist ein Knoten. Name ist bei Elementen der aufgelöste Name, Attrs
-// enthalten auch die Namespace-Deklarationen (Name.Space "xmlns" oder Local
-// "xmlns" ohne Space).
+// Node is a node. For elements, Name is the resolved name, Attrs also
+// contain the namespace declarations (Name.Space "xmlns" or Local
+// "xmlns" without Space).
 type Node struct {
 	Kind     Kind
 	Name     xml.Name
 	Attrs    []xml.Attr
 	Children []*Node
 	Parent   *Node
-	Data     string // Text, Kommentar oder Inhalt einer Verarbeitungsanweisung
-	Target   string // Ziel einer Verarbeitungsanweisung
+	Data     string // text, comment or content of a processing instruction
+	Target   string // target of a processing instruction
 }
 
-// Document ist ein Dokument mit genau einem Wurzelelement.
+// Document is a document with exactly one root element.
 type Document struct {
 	Root *Node
-	// Before sind Kommentare und Verarbeitungsanweisungen vor der Wurzel
-	// (ohne die XML-Deklaration).
+	// Before holds comments and processing instructions before the root
+	// (without the XML declaration).
 	Before []*Node
 }
 
-// Parse liest ein Dokument.
+// Parse reads a document.
 func Parse(data []byte) (*Document, error) {
 	d := xml.NewDecoder(bytes.NewReader(data))
 	doc := &Document{}
@@ -100,8 +100,8 @@ func Parse(data []byte) (*Document, error) {
 	return doc, nil
 }
 
-// RawToken liefert Präfixe statt Namespaces. resolve ersetzt sie durch die
-// deklarierten Namespaces, behält die Präfixe aber in prefix.
+// RawToken returns prefixes instead of namespaces. resolve replaces them with
+// the declared namespaces, but keeps the prefixes in prefix.
 func (doc *Document) resolve() {
 	var walk func(n *Node, scope map[string]string)
 	walk = func(n *Node, scope map[string]string) {
@@ -143,7 +143,7 @@ func copyMap(m map[string]string) map[string]string {
 	return out
 }
 
-// Elements liefert die Kindelemente mit dem Namen, alle bei leerem Local.
+// Elements returns the child elements with the name, all of them for an empty Local.
 func (n *Node) Elements(name xml.Name) []*Node {
 	var out []*Node
 	for _, c := range n.Children {
@@ -154,7 +154,7 @@ func (n *Node) Elements(name xml.Name) []*Node {
 	return out
 }
 
-// Attr liefert ein Attribut.
+// Attr returns an attribute.
 func (n *Node) Attr(name xml.Name) (string, bool) {
 	for _, a := range n.Attrs {
 		if a.Name == name {
@@ -164,7 +164,7 @@ func (n *Node) Attr(name xml.Name) (string, bool) {
 	return "", false
 }
 
-// SetAttr setzt ein Attribut.
+// SetAttr sets an attribute.
 func (n *Node) SetAttr(name xml.Name, v string) {
 	for i, a := range n.Attrs {
 		if a.Name == name {
@@ -175,7 +175,7 @@ func (n *Node) SetAttr(name xml.Name, v string) {
 	n.Attrs = append(n.Attrs, xml.Attr{Name: name, Value: v})
 }
 
-// SetText ersetzt den Inhalt eines Elements durch Text.
+// SetText replaces the content of an element with text.
 func (n *Node) SetText(v string) {
 	n.Children = nil
 	if v != "" {
@@ -183,7 +183,7 @@ func (n *Node) SetText(v string) {
 	}
 }
 
-// Text liefert den Textinhalt.
+// Text returns the text content.
 func (n *Node) Text() string {
 	var b strings.Builder
 	for _, c := range n.Children {
@@ -197,8 +197,8 @@ func (n *Node) Text() string {
 	return b.String()
 }
 
-// Insert fügt ein Kindelement an Position i der Kindelemente ein (nicht der
-// Knoten), am Ende bei i außerhalb.
+// Insert inserts a child element at position i of the child elements (not
+// of the nodes), at the end if i is out of range.
 func (n *Node) Insert(c *Node, i int) {
 	c.Parent = n
 	elems := 0
@@ -215,10 +215,10 @@ func (n *Node) Insert(c *Node, i int) {
 	n.Children = append(n.Children, c)
 }
 
-// Bytes schreibt das Dokument als UTF-8 mit XML-Deklaration. Elemente und
-// Attribute bekommen das im Gültigkeitsbereich deklarierte Präfix ihres
-// Namespace. Fehlt eine Deklaration, wird sie mit prefixes ergänzt, einer
-// Zuordnung Namespace zu bevorzugtem Präfix.
+// Bytes writes the document as UTF-8 with an XML declaration. Elements and
+// attributes get the prefix of their namespace declared in scope. If a
+// declaration is missing, it is added using prefixes, a mapping from
+// namespace to preferred prefix.
 func (doc *Document) Bytes(prefixes map[string]string) []byte {
 	var b bytes.Buffer
 	b.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -231,7 +231,7 @@ func (doc *Document) Bytes(prefixes map[string]string) []byte {
 	return b.Bytes()
 }
 
-// writeNode schreibt einen Knoten. scope ordnet Präfixe Namespaces zu.
+// writeNode writes a node. scope maps prefixes to namespaces.
 func writeNode(b *bytes.Buffer, n *Node, scope map[string]string, prefixes map[string]string) {
 	switch n.Kind {
 	case Text:
@@ -256,7 +256,7 @@ func writeNode(b *bytes.Buffer, n *Node, scope map[string]string, prefixes map[s
 			decls = append(decls, a)
 		}
 	}
-	// prefix liefert das Präfix für einen Namespace, deklariert es bei Bedarf.
+	// prefix returns the prefix for a namespace and declares it if needed.
 	prefix := func(uri string, attr bool) string {
 		if uri == "" {
 			return ""
@@ -328,8 +328,8 @@ func writeNode(b *bytes.Buffer, n *Node, scope map[string]string, prefixes map[s
 	b.WriteString("</" + elem + ">")
 }
 
-// escapeText maskiert &, < und > und lässt Zeilenwechsel stehen, anders als
-// xml.EscapeText, das sie als &#xA; schreibt.
+// escapeText escapes &, < and > and leaves line breaks as they are, unlike
+// xml.EscapeText, which writes them as &#xA;.
 func escapeText(b *bytes.Buffer, s string) {
 	for _, r := range s {
 		switch r {

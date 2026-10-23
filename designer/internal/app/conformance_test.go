@@ -15,7 +15,7 @@ import (
 	"github.com/tim-riep/pdx/verapdf"
 )
 
-// fakeRunner meldet je Operator der ersten Seite eine verletzte Regel.
+// fakeRunner reports one violated rule per operator of the first page.
 type fakeRunner struct{ ops int }
 
 func (fakeRunner) Name() string { return "Attrappe" }
@@ -93,8 +93,8 @@ func TestConformanceMapping(t *testing.T) {
 	}
 }
 
-// flavourRunner merkt sich die geprüften Flavours und meldet je Flavour
-// einen Befund.
+// flavourRunner remembers the checked flavours and reports one finding
+// per flavour.
 type flavourRunner struct {
 	mu   sync.Mutex
 	seen []string
@@ -109,8 +109,8 @@ func (f *flavourRunner) Validate(ctx context.Context, file, flavour string) (*ve
 	return &verapdf.Report{Compliant: flavour != "ua1", Findings: []verapdf.Finding{{Specification: "Norm " + flavour, Clause: "1"}}}, nil
 }
 
-// Die Prüfung folgt dem Profil der Vorlage: ein Lauf je beanspruchtem
-// Standard, konform nur, wenn alle bestehen.
+// The check follows the profile of the template: one run per claimed
+// standard, compliant only if all pass.
 func TestConformanceProfile(t *testing.T) {
 	rec := &recorder{}
 	c := NewCore(rec, nil, t.TempDir())
@@ -133,8 +133,8 @@ func TestConformanceProfile(t *testing.T) {
 	}
 }
 
-// TestConformanceVeraPDF prüft die Musterrechnung mit dem echten veraPDF
-// (lokal oder Docker). Nur mit PDX_VERAPDF_TEST=1, der Lauf dauert.
+// TestConformanceVeraPDF checks the sample invoice with the real veraPDF
+// (local or Docker). Only with PDX_VERAPDF_TEST=1, the run takes a while.
 func TestConformanceVeraPDF(t *testing.T) {
 	if os.Getenv("PDX_VERAPDF_TEST") == "" {
 		t.Skip("PDX_VERAPDF_TEST nicht gesetzt")
@@ -154,8 +154,8 @@ func TestConformanceVeraPDF(t *testing.T) {
 	t.Logf("%s, %d ms", st.Runner, st.Millis)
 }
 
-// Ohne Daten-XSD und Beispiele entsteht der Platzhalter aus der Datenwurzel
-// der Vorlage mit ihrem Namespace.
+// Without data XSD and samples the placeholder is built from the data root
+// of the template with its namespace.
 func TestPlaceholderFromDataRoot(t *testing.T) {
 	c := NewCore(&recorder{}, nil, t.TempDir())
 	if _, err := NewProjectService(c).Open("../../../testdata/templates/cii-rechnung"); err != nil {
@@ -168,8 +168,8 @@ func TestPlaceholderFromDataRoot(t *testing.T) {
 	}
 }
 
-// Ein gewählter Pfad zu veraPDF wird geprüft, gespeichert und genutzt, ein
-// ungültiger nicht übernommen, leer schaltet auf die Suche zurück.
+// A chosen path to veraPDF is checked, stored and used, an invalid
+// one is not accepted, empty switches back to the search.
 func TestVeraPDFSetting(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("Skript mit Shebang")

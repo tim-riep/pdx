@@ -36,7 +36,7 @@ func TestCatalog(t *testing.T) {
 		t.Error("text ist gemischter Inhalt")
 	}
 
-	// Jeder Knoten der Musterrechnung hat einen Typ, jedes Attribut ist bekannt.
+	// Every node of the sample invoice has a type, every attribute is known.
 	d, err := Open("../../../testdata/templates/musterrechnung")
 	if err != nil {
 		t.Fatal(err)
@@ -78,7 +78,7 @@ func TestProjection(t *testing.T) {
 		netto.Children[1].Ref != "netto-wert" || netto.Children[0].Text != "Nettobetrag: " {
 		t.Errorf("netto: %+v", netto)
 	}
-	// Elemente ohne ID sind über ihren Pfad erreichbar.
+	// Elements without ID are reachable via their path.
 	for ref, vn := range s.Nodes {
 		n, err := Resolve(d.Pkg.Template, ref)
 		if err != nil || n.Name != vn.Name {

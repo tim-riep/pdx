@@ -1,10 +1,10 @@
-// Package pdx ist die Fassade der PDF-Engine: XSL-FO lesen, setzen und unter
-// einem Konformitätsprofil als PDF schreiben.
+// Package pdx is the facade of the PDF engine: read XSL-FO, lay it out and
+// write it as PDF under a conformance profile.
 //
-// Ablauf: fo/tree liest das FO-Dokument, fo/layout erzeugt den Area Tree,
-// pdf/render schreibt ihn unter dem Profil aus pdf/profile. Die CLI in
-// cmd/pdx, später der Designer und der Serverbetrieb nutzen nur diese
-// Fassade.
+// Flow: fo/tree reads the FO document, fo/layout produces the area tree,
+// pdf/render writes it under the profile from pdf/profile. The CLI in
+// cmd/pdx, later the designer and the server mode use only this
+// facade.
 package pdx
 
 import (
@@ -25,50 +25,50 @@ import (
 	"github.com/tim-riep/pdx/pdf/render"
 )
 
-// Version ist die Programmversion. Sie steht im Producer der PDF-Dateien.
+// Version is the program version. It appears in the Producer of the PDF files.
 const Version = "0.3.1"
 
-// DefaultProfile ist das Profil ohne ausdrückliche Angabe.
+// DefaultProfile is the profile used when none is specified explicitly.
 const DefaultProfile = "pdfa-3b"
 
-// Options steuert Render.
+// Options controls Render.
 type Options struct {
-	// Profile ist der Profilname, etwa "pdfa-3b" oder "pdf-1.7".
+	// Profile is the profile name, for example "pdfa-3b" or "pdf-1.7".
 	Profile string
-	// CreationDate ist das Erstellungsdatum. Gleiche Eingabe und gleiches
-	// Datum ergeben byte-identische Dateien.
+	// CreationDate is the creation date. The same input and the same
+	// date produce byte-identical files.
 	CreationDate time.Time
-	// BaseDir ist das Verzeichnis für relative Pfade von Bildern und Anhängen.
+	// BaseDir is the directory for relative paths of images and attachments.
 	BaseDir string
-	// Resolver ersetzt den Dateizugriff relativ zu BaseDir, etwa für
-	// Vorlagenpakete. Optional.
+	// Resolver replaces file access relative to BaseDir, for example for
+	// template packages. Optional.
 	Resolver layout.Resolver
-	// Attachments werden zusätzlich zu den Anhängen aus dem FO eingebettet.
+	// Attachments are embedded in addition to the attachments from the FO.
 	Attachments []areatree.Attachment
-	// Fonts ist die Schriftregistry. nil bedeutet die eingebauten Schriften.
-	// Eine gemeinsame Registry hält geladene Schriften über viele Läufe.
+	// Fonts is the font registry. nil means the built-in fonts.
+	// A shared registry keeps loaded fonts across many runs.
 	Fonts *font.Registry
-	// Context bricht Layout und Rendern ab. nil bedeutet ohne Abbruch.
+	// Context cancels layout and rendering. nil means no cancellation.
 	Context context.Context
-	// Trace erhält, wenn gesetzt, die Zuordnung der PDF-Operatoren zu den
-	// Vorlagenelementen (für Befunde von veraPDF).
+	// Trace receives, if set, the mapping of the PDF operators to the
+	// template elements (for findings from veraPDF).
 	Trace *render.Trace
-	// Tagged schreibt Tagged PDF mit Strukturbaum, auch wenn das Profil es
-	// nicht verlangt.
+	// Tagged writes Tagged PDF with a structure tree, even if the profile
+	// does not require it.
 	Tagged bool
-	// XMP sind zusätzliche XMP-Schemata, etwa fx der E-Rechnung.
+	// XMP are additional XMP schemas, for example fx of the e-invoice.
 	XMP []areatree.XMPSchema
-	// Flatten zeichnet Formularfelder als festen Inhalt (pdx flatten).
+	// Flatten draws form fields as fixed content (pdx flatten).
 	Flatten bool
 }
 
-// Result enthält das PDF und den Area Tree.
+// Result contains the PDF and the area tree.
 type Result struct {
 	PDF  []byte
 	Tree *areatree.Document
 }
 
-// Render liest XSL-FO und erzeugt das PDF.
+// Render reads XSL-FO and produces the PDF.
 func Render(fo io.Reader, opts Options) (*Result, error) {
 	if opts.Profile == "" {
 		opts.Profile = DefaultProfile
@@ -98,8 +98,8 @@ func Render(fo io.Reader, opts Options) (*Result, error) {
 	return &Result{PDF: pdf, Tree: doc}, nil
 }
 
-// Layout liest XSL-FO und liefert nur den Area Tree, ohne PDF. Profil und
-// Erstellungsdatum werden nicht gebraucht. Für Vorschau und Designer.
+// Layout reads XSL-FO and returns only the area tree, without PDF. Profile
+// and creation date are not needed. For preview and designer.
 func Layout(fo io.Reader, opts Options) (*areatree.Document, error) {
 	root, err := tree.Parse(fo)
 	if err != nil {
@@ -118,7 +118,7 @@ func Layout(fo io.Reader, opts Options) (*areatree.Document, error) {
 	return doc, nil
 }
 
-// RenderFile liest eine FO-Datei. Ist BaseDir leer, gilt ihr Verzeichnis.
+// RenderFile reads an FO file. If BaseDir is empty, its directory is used.
 func RenderFile(path string, opts Options) (*Result, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {

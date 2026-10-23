@@ -9,17 +9,17 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// codeArt ist ein Barcode, der als Pfad aus Rechtecken gezeichnet wird.
+// codeArt is a barcode that is drawn as a path of rectangles.
 type codeArt struct {
 	m      *barcode.Matrix
 	color  areatree.Color
 	source string
 }
 
-// foreign nimmt ein fo:instream-foreign-object auf. Unterstützt wird
-// pdx:barcode. fo:instream-foreign-object ist in XSL 1.1 (6.6.6) der Ort für
-// Inhalte fremder Namespaces. Apache FOP 2.11 erzeugt das PDF ohne den Barcode
-// und meldet einen Fehler (SEVERE), siehe testdata/suites/DEVIATIONS.md.
+// foreign takes an fo:instream-foreign-object. pdx:barcode is
+// supported. In XSL 1.1 (6.6.6) fo:instream-foreign-object is the place for
+// content of foreign namespaces. Apache FOP 2.11 produces the PDF without the
+// barcode and reports an error (SEVERE), see testdata/suites/DEVIATIONS.md.
 //
 //	<fo:instream-foreign-object content-width="30mm">
 //	  <pdx:barcode type="girocode" name="…" iban="…" amount="1190.00" text="…"/>
@@ -65,7 +65,7 @@ func (pa *paragraph) foreign(n *tree.Node, parent *props.Computed) error {
 	if err != nil {
 		return tree.Errorf(bn, "%v", err)
 	}
-	// Natürliche Größe aus Modulbreite und Ruhezone.
+	// Natural size from module width and quiet zone.
 	defModule := "0.5mm"
 	if m.Linear {
 		defModule = "0.33mm"
@@ -94,7 +94,7 @@ func (pa *paragraph) foreign(n *tree.Node, parent *props.Computed) error {
 	return nil
 }
 
-// path liefert die Module als Pfad im Rechteck x, y, w, h.
+// path returns the modules as a path in the rectangle x, y, w, h.
 func (c *codeArt) path(x, y, w, h areatree.Length) *areatree.Path {
 	m := c.m
 	cols := m.Cols + 2*m.Quiet

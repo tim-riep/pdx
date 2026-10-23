@@ -9,7 +9,7 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// imageSet bettet jedes Bild einmal als XObject ein, beim ersten Gebrauch.
+// imageSet embeds each image once as an XObject, on first use.
 type imageSet struct {
 	r    *renderer
 	refs map[areatree.ImageID]pdf.Ref
@@ -51,8 +51,8 @@ func colorSpaceName(s image.ColorSpace) pdf.Name {
 func (is *imageSet) embed(im *image.Image) (pdf.Ref, error) {
 	d := is.r.d
 	if im.Space == image.CMYK {
-		// Mit dem sRGB-Output-Intent wäre DeviceCMYK unter PDF/A unzulässig
-		// (ISO 19005-3 6.2.4.3). CMYK-Ausgabe folgt mit den CMYK-Profilen.
+		// With the sRGB output intent, DeviceCMYK would not be allowed under PDF/A
+		// (ISO 19005-3 6.2.4.3). CMYK output follows with the CMYK profiles.
 		return pdf.Ref{}, fmt.Errorf("CMYK-Bilder werden in Phase 0 nicht unterstützt")
 	}
 	dict := pdf.D(
@@ -87,7 +87,7 @@ func (is *imageSet) embed(im *image.Image) (pdf.Ref, error) {
 	return pdf.Ref{}, fmt.Errorf("unbekanntes Bildformat")
 }
 
-// image zeichnet ein Bild skaliert auf sein Rechteck.
+// image draws an image scaled to its rectangle.
 func (pc *pageCtx) image(a *areatree.Image) error {
 	ref, err := pc.r.images.ref(a.Image)
 	if err != nil {

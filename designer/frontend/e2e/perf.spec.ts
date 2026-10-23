@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { muster, openPath, selectInTree } from "./helpers";
 
-// Leistungsmessung gegen die Ziele aus dem Plan. Die Werte stehen im
-// Testbericht (Anhang perf) und im README. Ohne PDX_PERF=1 prüft der Test
-// nur großzügige Grenzen, damit langsame CI-Rechner nicht scheitern.
+// Performance measurement against the goals from the plan. The values are in the
+// test report (attachment perf) and in the README. Without PDX_PERF=1 the test
+// checks only generous limits, so slow CI machines do not fail.
 const strict = !!process.env.PDX_PERF;
 
 const p95 = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length * 0.95)];
@@ -13,14 +13,14 @@ test("Leistung: Öffnen, Ziehen, Bearbeiten bis zur neuen Seite", async ({ page,
   test.setTimeout(120_000);
   const results: Record<string, number> = {};
 
-  // Öffnen bis zur ersten gezeichneten Seite.
+  // Opening until the first drawn page.
   await page.goto("/");
   const t0 = Date.now();
   await openPath(page, muster);
   await expect(page.locator('[data-page="1"] canvas')).toBeVisible();
   results.openToFirstPageMs = Date.now() - t0;
 
-  // Ziehen: Frame-Abstände während 120 Mausbewegungen.
+  // Dragging: frame intervals during 120 mouse moves.
   await selectInTree(page, ["seiten", "erste", "erste-kopf", "adressfenster"]);
   const sel = page.locator('[data-page="1"] [data-sel="adressfenster"]');
   await expect(sel).toBeVisible();
@@ -51,17 +51,17 @@ test("Leistung: Öffnen, Ziehen, Bearbeiten bis zur neuen Seite", async ({ page,
   await page.mouse.up();
   results.dragFrameP95Ms = Math.round(p95(frames) * 10) / 10;
   results.dragFrameMaxMs = Math.round(Math.max(...frames) * 10) / 10;
-  // Zurück, falls das Ziehen eine Änderung übernommen hat.
+  // Go back in case the dragging applied a change.
   if (await page.getByRole("button", { name: "Rückgängig", exact: true }).isEnabled()) {
     await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   }
 
-  // Bearbeiten bis zur neuen Seite: Lage ändern, bis die neue Seite geladen ist.
+  // Editing until the new page: change the position until the new page is loaded.
   await selectInTree(page, ["seiten", "erste", "erste-kopf", "adressfenster"]);
   const x = page.getByTestId("inspector").locator('[data-prop="x"] input');
   const edits: number[] = [];
-  // Gemessen bis die Auswahl an der neuen Stelle steht, also bis neu gesetzt,
-  // übertragen und gezeichnet ist. Jeder Schritt hat einen neuen Wert.
+  // Measured until the selection is at the new position, i.e. until laid out again,
+  // transferred and drawn. Each step has a new value.
   for (let i = 0; i < 12; i++) {
     const before = await sel.getAttribute("style");
     const start = Date.now();
@@ -76,9 +76,9 @@ test("Leistung: Öffnen, Ziehen, Bearbeiten bis zur neuen Seite", async ({ page,
   await info.attach("perf", { body: JSON.stringify(results, null, 2), contentType: "application/json" });
 
   expect(results.openToFirstPageMs).toBeLessThan(strict ? 1500 : 5000);
-  // Headless-Browser auf CI-Rechnern drosseln requestAnimationFrame oft auf
-  // 100 ms, die Frame-Abstände messen dort den Takt des Browsers. Geprüft
-  // werden sie nur bei der Messung mit PDX_PERF=1, sonst nur festgehalten.
+  // Headless browsers on CI machines often throttle requestAnimationFrame to
+  // 100 ms, so the frame intervals there measure the clock of the browser. They are
+  // checked only when measuring with PDX_PERF=1, otherwise only recorded.
   if (strict) expect(results.dragFrameP95Ms).toBeLessThan(33.4);
   expect(results.editToPageP95Ms).toBeLessThan(strict ? 300 : 1500);
 });

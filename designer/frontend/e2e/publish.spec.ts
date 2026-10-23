@@ -6,9 +6,9 @@ import { e2eServerKey } from "../playwright.config";
 
 const muster = resolve(dirname(fileURLToPath(import.meta.url)), "../../../testdata/templates/musterrechnung");
 
-// Veröffentlichen: verbinden, Vergleich zeigt eine neue Vorlage, hochladen
-// und aktivieren, danach keine Änderungen. Eine Änderung im Designer
-// erscheint als Zeilenvergleich, wird Version 2 und lässt sich aktivieren.
+// Publishing: connect, the comparison shows a new template, upload
+// and activate, then no changes. A change in the designer
+// appears as a line diff, becomes version 2 and can be activated.
 test("Veröffentlichen mit Versionsvergleich", async ({ page }, info) => {
   const id = `e2e-${info.project.name}-${info.repeatEachIndex}-${info.retry}`;
   await page.goto("/");
@@ -17,8 +17,8 @@ test("Veröffentlichen mit Versionsvergleich", async ({ page }, info) => {
   await page.getByTestId("publish-open").click();
   const dlg = page.getByTestId("publish");
   await expect(dlg).toHaveAttribute("data-ready", "true");
-  // Ein Backend für alle Tests: eine Verbindung aus einem früheren Lauf
-  // trennen.
+  // One backend for all tests: disconnect a connection from an earlier
+  // run.
   const disconnect = page.getByRole("button", { name: "Trennen" });
   await expect(dlg.getByTestId("publish-url").or(disconnect)).toBeVisible();
   if (await disconnect.isVisible()) {
@@ -44,7 +44,7 @@ test("Veröffentlichen mit Versionsvergleich", async ({ page }, info) => {
   await expect(dlg.getByTestId("publish-same")).toBeVisible();
   await page.getByRole("button", { name: "Schließen" }).click();
 
-  // Änderung: Rand der ersten Seitenvorlage.
+  // Change: margin of the first page master.
   await selectInTree(page, ["seiten", "erste"]);
   const margin = page.locator('[data-prop="margin"] input');
   await margin.fill("20mm");
@@ -63,7 +63,7 @@ test("Veröffentlichen mit Versionsvergleich", async ({ page }, info) => {
   await expect(dlg.getByTestId("publish-result")).toContainText("Version 2 ist aktiv");
   await expect(dlg.getByTestId("publish-diff")).toContainText("Aktive Version auf dem Server: 2 (von 2)");
 
-  // Der Schlüssel steht nirgends im Dokument der Seite, Trennen vergisst ihn.
+  // The key appears nowhere in the document of the page, disconnecting forgets it.
   expect(await page.content()).not.toContain(e2eServerKey);
   await disconnect.click();
   await expect(dlg.getByTestId("publish-key")).toHaveValue("");

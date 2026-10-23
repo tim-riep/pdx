@@ -9,33 +9,33 @@ import (
 	"strconv"
 )
 
-// Document sammelt indirekte Objekte und schreibt sie als PDF-Datei.
+// Document collects indirect objects and writes them as a PDF file.
 //
-// Objektnummern werden in der Reihenfolge von Add und Reserve vergeben. Vor
-// dem Schreiben prüft Write den gesamten Objektgraphen gegen die Policy und
-// verweigert Dateien, die eine nicht erlaubte Funktion enthalten.
+// Object numbers are assigned in the order of Add and Reserve. Before
+// writing, Write checks the whole object graph against the policy and
+// refuses files that contain a feature that is not allowed.
 type Document struct {
 	objs   []Object
 	policy Policy
 
-	// Root verweist auf den Katalog. Pflicht.
+	// Root refers to the catalog. Required.
 	Root Ref
-	// Info verweist auf das Info-Dictionary. Optional.
+	// Info refers to the info dictionary. Optional.
 	Info Ref
-	// Version ist die PDF-Version im Dateikopf, "1.7" (Vorgabe) oder "2.0".
+	// Version is the PDF version in the file header, "1.7" (default) or "2.0".
 	Version string
 }
 
-// NewDocument legt ein leeres Dokument an. Eine Policy nil erlaubt alles außer
-// den Funktionen, die pdx grundsätzlich nicht schreibt.
+// NewDocument creates an empty document. A nil policy allows everything
+// except the features that pdx never writes.
 func NewDocument(p Policy) *Document {
 	return &Document{policy: p}
 }
 
-// Policy liefert die Policy des Dokuments, eventuell nil.
+// Policy returns the policy of the document, possibly nil.
 func (d *Document) Policy() Policy { return d.policy }
 
-// Add legt ein indirektes Objekt an.
+// Add creates an indirect object.
 func (d *Document) Add(o Object) Ref {
 	if o == nil {
 		panic("pdf: Add mit nil")
@@ -44,18 +44,18 @@ func (d *Document) Add(o Object) Ref {
 	return Ref{Num: len(d.objs)}
 }
 
-// Reserve vergibt eine Objektnummer, deren Inhalt später mit Set folgt.
+// Reserve assigns an object number whose content follows later with Set.
 func (d *Document) Reserve() Ref {
 	d.objs = append(d.objs, nil)
 	return Ref{Num: len(d.objs)}
 }
 
-// Set füllt eine reservierte oder ersetzt eine vorhandene Objektnummer.
+// Set fills a reserved object number or replaces an existing one.
 func (d *Document) Set(r Ref, o Object) {
 	d.objs[r.Num-1] = o
 }
 
-// Get liefert das Objekt hinter einer Referenz oder nil.
+// Get returns the object behind a reference or nil.
 func (d *Document) Get(r Ref) Object {
 	if r.Num < 1 || r.Num > len(d.objs) {
 		return nil
@@ -63,7 +63,7 @@ func (d *Document) Get(r Ref) Object {
 	return d.objs[r.Num-1]
 }
 
-// Resolve löst Referenzen auf und liefert direkte Objekte unverändert.
+// Resolve resolves references and returns direct objects unchanged.
 func (d *Document) Resolve(o Object) Object {
 	for i := 0; i < 32; i++ {
 		r, ok := o.(Ref)
@@ -75,10 +75,10 @@ func (d *Document) Resolve(o Object) Object {
 	return nil
 }
 
-// NumObjects liefert die Anzahl der indirekten Objekte.
+// NumObjects returns the number of indirect objects.
 func (d *Document) NumObjects() int { return len(d.objs) }
 
-// Use prüft, ob eine Funktion genutzt werden darf.
+// Use checks whether a feature may be used.
 func (d *Document) Use(f Feature) error {
 	name := "pdx"
 	if d.policy != nil {
@@ -93,7 +93,7 @@ func (d *Document) Use(f Feature) error {
 	return d.policy.Allow(f)
 }
 
-// header liefert den Dateikopf mit Binärkommentar nach ISO 32000 7.5.2.
+// header returns the file header with binary comment according to ISO 32000 7.5.2.
 func header(version string) string {
 	if version == "" {
 		version = "1.7"
@@ -101,7 +101,7 @@ func header(version string) string {
 	return "%PDF-" + version + "\n%\xe2\xe3\xcf\xd3\n"
 }
 
-// Bytes schreibt das Dokument in einen Puffer.
+// Bytes writes the document into a buffer.
 func (d *Document) Bytes() ([]byte, error) {
 	var b bytes.Buffer
 	if err := d.Write(&b); err != nil {
@@ -110,8 +110,8 @@ func (d *Document) Bytes() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// Write prüft das Dokument und schreibt es. Die Datei-ID im Trailer ist der
-// MD5-Hash aller Bytes vor der Xref-Tabelle, beide Einträge sind gleich.
+// Write checks the document and writes it. The file ID in the trailer is the
+// MD5 hash of all bytes before the xref table, both entries are equal.
 func (d *Document) Write(w io.Writer) error {
 	if d.Root.Num == 0 {
 		return fmt.Errorf("pdf: kein Katalog gesetzt")
@@ -162,9 +162,9 @@ func (d *Document) Write(w io.Writer) error {
 	return err
 }
 
-// check durchsucht den Objektgraphen nach Funktionen, die die Policy freigeben
-// muss. Das ist die zweite Verteidigungslinie hinter den Aufrufen von Use in
-// den höheren Schichten.
+// check searches the object graph for features that the policy must
+// allow. This is the second line of defense behind the calls of Use in
+// the higher layers.
 func (d *Document) check() error {
 	st := &scanState{found: map[Feature]bool{}}
 	for _, o := range d.objs {
@@ -180,7 +180,7 @@ func (d *Document) check() error {
 	return d.checkActions(st)
 }
 
-// action ist eine gefundene Aktion, aa ein gefundenes AA-Dictionary.
+// action is a found action, aa a found AA dictionary.
 type action struct{ s, named Name }
 
 type aaEntry struct {
@@ -188,7 +188,7 @@ type aaEntry struct {
 	keys  []Name
 }
 
-// scanState sammelt beim Durchlauf Funktionen und Aktionen.
+// scanState collects features and actions during the traversal.
 type scanState struct {
 	found   map[Feature]bool
 	actions []action
@@ -196,8 +196,8 @@ type scanState struct {
 	widgetA int
 }
 
-// checkActions legt alle Aktionen der Policy vor und meldet alle Verstöße
-// auf einmal. Gleiche Verstöße erscheinen einmal.
+// checkActions submits all actions to the policy and reports all violations
+// at once. Identical violations appear once.
 func (d *Document) checkActions(st *scanState) error {
 	ap, ok := d.policy.(ActionPolicy)
 	if !ok {
@@ -236,12 +236,12 @@ func (st *scanState) scan(o Object) {
 	}
 }
 
-// actionKeys sind die Einträge, deren Wert eine Aktion oder eine Liste von
-// Aktionen ist (ISO 32000-1 12.6.2, 12.3.3, 12.6.3). Andere Dictionaries mit
-// S, etwa Rahmenstile (BS) oder Strukturelemente, sind keine Aktionen.
+// actionKeys are the entries whose value is an action or a list of
+// actions (ISO 32000-1 12.6.2, 12.3.3, 12.6.3). Other dictionaries with
+// S, for example border styles (BS) or structure elements, are not actions.
 var actionKeys = []Name{"A", "OpenAction", "Next"}
 
-// noteAction vermerkt eine Aktion oder eine Liste von Aktionen.
+// noteAction records an action or a list of actions.
 func (st *scanState) noteAction(o Object) {
 	switch v := o.(type) {
 	case *Dict:
@@ -265,9 +265,9 @@ func (st *scanState) scanDict(d *Dict, isStream bool) {
 		st.noteAction(d)
 	}
 	for _, k := range actionKeys {
-		// OpenAction kann auch ein Ziel sein (Array mit Seite), das enthält
-		// keine Dictionaries mit S. Doppelt gefundene Aktionen fasst
-		// checkActions zusammen.
+		// OpenAction can also be a destination (array with page), which contains
+		// no dictionaries with S. checkActions merges actions that were found
+		// twice.
 		if a := d.Get(k); a != nil {
 			st.noteAction(a)
 		}
@@ -336,8 +336,8 @@ func (st *scanState) scanDict(d *Dict, isStream bool) {
 	}
 }
 
-// aaOwner bestimmt den Besitzer eines AA-Dictionarys für die Regeln der
-// Profile.
+// aaOwner determines the owner of an AA dictionary for the rules of the
+// profiles.
 func aaOwner(d *Dict) Name {
 	switch t, _ := d.Get("Type").(Name); t {
 	case "Catalog", "Page":

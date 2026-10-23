@@ -7,10 +7,10 @@ test("Struktur: Kinder einfügen, duplizieren, verschieben, löschen", async ({ 
   await page.getByRole("tab", { name: "Hierarchie" }).click();
   const tree = page.getByTestId("hierarchy");
   const menu = page.getByTestId("context-menu");
-  // Erst wenn der Baum die neue Vorlage zeigt, nicht noch die vorige.
+  // Only once the tree shows the new template, not still the previous one.
   await expect(tree.locator(".id", { hasText: /^vorlage$/ })).toBeVisible();
 
-  // Wurzel wählen, über den Knopf Formate einfügen.
+  // Select the root, insert formats via the button.
   await tree.getByRole("button", { name: /^Vorlage/ }).click();
   await tree.getByRole("button", { name: "Aktionen" }).click();
   await expect(menu).toBeVisible();
@@ -20,18 +20,18 @@ test("Struktur: Kinder einfügen, duplizieren, verschieben, löschen", async ({ 
   await expect(tree.getByRole("button", { name: /^Formate/ })).toBeVisible();
   await expect(page.getByTestId("inspector").locator("header strong")).toHaveText("Formate");
 
-  // Rechtsklick auf die Wurzel: Stile einfügen.
+  // Right click on the root: insert styles.
   await tree.getByRole("button", { name: /^Vorlage/ }).click({ button: "right" });
   await menu.getByTestId("insert-styles").click();
   await expect(tree.getByRole("button", { name: /^Stile/ })).toBeVisible();
-  // Formate gibt es nur einmal.
+  // Formats exist only once.
   await tree.getByRole("button", { name: /^Vorlage/ }).click({ button: "right" });
   await expect(menu).toBeVisible();
   await expect(menu.getByTestId("insert-formats")).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(menu).toHaveCount(0);
 
-  // Stil duplizieren, verschieben und löschen per Tastatur.
+  // Duplicate, move and delete a style by keyboard.
   const stylesRow = tree.getByRole("treeitem").filter({ has: page.getByRole("button", { name: /^Stile$/ }) });
   await expect(stylesRow).toBeVisible();
   await expect(stylesRow.getByRole("button", { name: /^(Auf|Zu)klappen$/ })).toBeVisible();
@@ -51,7 +51,7 @@ test("Struktur: Kinder einfügen, duplizieren, verschieben, löschen", async ({ 
   await expect(style).toHaveCount(1);
   await expect(style.first().locator(".id")).toHaveText(first);
 
-  // Rückgängig holt die Kopie zurück.
+  // Undo brings the copy back.
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(style).toHaveCount(2);
 });

@@ -43,7 +43,7 @@ func muster(t testing.TB) (*pkg.Package, []byte) {
 	return p, data
 }
 
-// newTest startet den Dienst mit der Musterrechnung als Vorlage rechnung.
+// newTest starts the service with the sample invoice as template rechnung.
 func newTest(t *testing.T, cfg *Config, logw io.Writer) (*httptest.Server, []byte) {
 	t.Helper()
 	p, data := muster(t)
@@ -99,8 +99,8 @@ func problem(t *testing.T, resp *http.Response, b []byte, status int) Problem {
 	return p
 }
 
-// Die Musterrechnung wird in mehreren Profilen gerendert, gleiche
-// Eingabe mit gleichem creationDate ergibt gleiche Bytes.
+// The sample invoice is rendered in several profiles, the same input
+// with the same creationDate yields the same bytes.
 func TestRender(t *testing.T) {
 	var logs bytes.Buffer
 	srv, data := newTest(t, testConfig(), &logs)
@@ -119,7 +119,7 @@ func TestRender(t *testing.T) {
 	if !bytes.Equal(a, b) {
 		t.Error("gleiche Eingabe ergibt andere Bytes")
 	}
-	// Keine Nutzdaten im Log: weder Daten noch Schlüssel noch Abfrage.
+	// No payload data in the log: neither data nor key nor query.
 	for _, secret := range []string{"Musterstraße", keyRender, "creationDate", "rechnung?"} {
 		if strings.Contains(logs.String(), secret) {
 			t.Errorf("Log enthält %q", secret)
@@ -156,7 +156,7 @@ func TestAuth(t *testing.T) {
 	}
 }
 
-// Fehler kommen als Problem mit allen Befunden.
+// Errors come back as a Problem with all findings.
 func TestRenderErrors(t *testing.T) {
 	cfg := testConfig()
 	cfg.MaxBody = 64 << 10
@@ -192,7 +192,7 @@ func TestRenderErrors(t *testing.T) {
 	}
 }
 
-// Ist jeder Platz belegt, antwortet der Dienst nach QueueWait mit 503.
+// If every slot is taken, the service responds with 503 after QueueWait.
 func TestOverload(t *testing.T) {
 	cfg := testConfig()
 	cfg.MaxConcurrent = 1
@@ -240,10 +240,10 @@ func TestConfigCheck(t *testing.T) {
 	}
 }
 
-// Der Dienst rendert jedes Profil mit denselben Bytes wie die Bibliothek.
-// Profile, die die Musterrechnung nicht erfüllen kann (Datenanhang unter
-// PDF/A-2), lehnen beide mit Befund ab. Mit PDX_CONFORMANCE=1 prüft
-// veraPDF jedes Ergebnis.
+// The service renders every profile with the same bytes as the library.
+// Profiles the sample invoice cannot satisfy (data attachment below
+// PDF/A-2) are rejected by both with a finding. With PDX_CONFORMANCE=1
+// veraPDF checks every result.
 func TestRenderAllProfiles(t *testing.T) {
 	srv, data := newTest(t, testConfig(), nil)
 	p, _ := muster(t)

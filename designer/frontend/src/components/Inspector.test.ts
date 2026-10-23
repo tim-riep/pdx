@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/svelte";
 
-// Die API-Schicht spricht mit Wails, im Test ersetzt sie eine Attrappe.
+// The API layer talks to Wails, in the test a stand-in replaces it.
 const api = vi.hoisted(() => ({
   Apply: vi.fn(),
 }));

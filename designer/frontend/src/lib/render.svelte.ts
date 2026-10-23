@@ -1,5 +1,5 @@
-// Gesetzte Seiten als Lesecache. Das Backend meldet nach jedem Setzen ein
-// Manifest mit den Hashes der Seiten, nur unbekannte Seiten werden geholt.
+// Laid out pages as a read cache. After every layout run the backend reports a
+// manifest with the hashes of the pages, only unknown pages are fetched.
 
 import { EVENT, RenderAPI, on } from "./api";
 import type { Manifest, Page } from "./canvas/model";
@@ -10,7 +10,7 @@ export const render = $state({
   view: "design" as View,
   manifest: null as Manifest | null,
   pages: [] as Page[],
-  // version steigt, wenn Bilder nachgeladen sind und neu gezeichnet werden muss.
+  // version increases when images have loaded and a redraw is needed.
   version: 0,
 });
 
@@ -54,19 +54,19 @@ let latest = -1;
 
 async function apply(m: Manifest) {
   if (!m || !m.pages) return;
-  if (render.view !== "pdf" && m.view && m.view !== render.view) return; // veraltete Ansicht
+  if (render.view !== "pdf" && m.view && m.view !== render.view) return; // outdated view
   const seq = ++latest;
   await loadFonts(m);
   const pages = await Promise.all(m.pages.map((r) => page(r.hash)));
-  if (seq !== latest) return; // ein neueres Manifest ist schon unterwegs
+  if (seq !== latest) return; // a newer manifest is already on its way
   render.manifest = m;
   render.pages = pages;
 }
 
 on<Manifest>(EVENT.render, apply);
 RenderAPI.Latest().then((m) => apply(m as unknown as Manifest));
-// Das Backend kann noch die Ansicht einer früheren Sitzung haben, etwa nach
-// einem Neuladen. Die Oberfläche beginnt im Entwurf und meldet das.
+// The backend can still have the view of an earlier session, for example after
+// a reload. The UI starts in the draft and reports that.
 RenderAPI.SetView(render.view, "");
 
 export function setView(v: View) {

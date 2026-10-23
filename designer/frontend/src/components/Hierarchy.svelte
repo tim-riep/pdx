@@ -6,7 +6,7 @@
 
   let open: Record<string, boolean> = $state({});
 
-  // Die Wurzel ist immer aufgeklappt, sie nimmt Formate, Texte und Anhänge auf.
+  // The root is always expanded, it holds formats, texts and attachments.
   $effect(() => {
     const root = tpl.snapshot?.root;
     if (root && open[root] === undefined) open[root] = true;
@@ -23,14 +23,14 @@
     openElementMenu(ref, r.left, r.bottom + 2);
   }
 
-  // Vorfahren der Auswahl aufklappen.
+  // Expand the ancestors of the selection.
   $effect(() => {
     if (selection.ref && tpl.snapshot) for (const r of path(selection.ref).slice(0, -1)) open[r] = true;
   });
 
   const kids = (ref: string) => (node(ref)?.children ?? []).filter((c) => c.ref).map((c) => c.ref!);
 
-  // Sichtbare Zeilen in Reihenfolge, für die Tastatur.
+  // Visible rows in order, for the keyboard.
   function visible(): string[] {
     const out: string[] = [];
     const walk = (r: string) => {
@@ -46,8 +46,8 @@
     queueMicrotask(() => (document.querySelector(`.hierarchy [data-row="${CSS.escape(ref)}"] .name`) as HTMLElement | null)?.focus());
   }
 
-  // Pfeile wählen, Rechts klappt auf, Links zu oder zum Elternelement,
-  // Umschalt+F10 oder die Kontextmenütaste öffnen das Menü.
+  // Arrows select, Right expands, Left collapses or goes to the parent,
+  // Shift+F10 or the context menu key open the menu.
   function onkeydown(e: KeyboardEvent) {
     if (e.altKey || e.metaKey || e.ctrlKey) return;
     const rows = visible();
@@ -70,7 +70,7 @@
     } else handled = false;
     if (handled) {
       e.preventDefault();
-      e.stopPropagation(); // nicht als Verschieben im Canvas
+      e.stopPropagation(); // not as a move in the canvas
     }
   }
 </script>

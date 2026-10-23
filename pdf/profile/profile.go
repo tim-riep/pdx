@@ -1,8 +1,8 @@
-// Package profile enthält die Konformitätsprofile von pdx. Ein Profil legt
-// fest, welche PDF-Funktionen erlaubt sind, und ergänzt vor dem Schreiben die
-// Pflichtobjekte seines Standards. So entsteht Konformität durch Konstruktion:
-// eine verbotene Funktion führt zu einem Fehler beim Schreiben statt zu einer
-// nicht konformen Datei.
+// Package profile contains the conformance profiles of pdx. A profile
+// defines which PDF features are allowed and adds the required objects of
+// its standard before writing. This gives conformance by construction:
+// a forbidden feature leads to an error when writing instead of to a
+// non-conforming file.
 package profile
 
 import (
@@ -16,7 +16,7 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// Context übergibt einem Profil die Teile des Dokuments, die es ergänzen darf.
+// Context passes to a profile the parts of the document that it may extend.
 type Context struct {
 	Doc      *pdf.Document
 	Catalog  *pdf.Dict
@@ -26,38 +26,38 @@ type Context struct {
 	Producer string
 }
 
-// Profile ist ein Konformitätsprofil.
+// Profile is a conformance profile.
 type Profile interface {
 	pdf.Policy
-	// Prepare ergänzt Pflichtobjekte wie Output Intent und XMP. Es wird nach
-	// dem Anlegen aller Seiten und vor dem Schreiben aufgerufen.
+	// Prepare adds required objects such as output intent and XMP. It is called
+	// after all pages have been created and before writing.
 	Prepare(ctx *Context) error
 }
 
-// Claim beschreibt, was ein Profil von der Datei verlangt und was die Datei
-// über sich behauptet. Eine Kombination von Profilen vereint ihre Ansprüche.
+// Claim describes what a profile requires of the file and what the file
+// claims about itself. A combination of profiles merges their claims.
 type Claim struct {
-	// Version ist die PDF-Version des Headers, "1.7" oder "2.0".
+	// Version is the PDF version of the header, "1.7" or "2.0".
 	Version string
-	// PDFA ist der Teil von ISO 19005 (2, 3 oder 4), 0 ohne PDF/A.
+	// PDFA is the part of ISO 19005 (2, 3 or 4), 0 without PDF/A.
 	PDFA int
-	// Level ist die Konformitätsstufe von PDF/A: "B", "U", "A", "F", "E"
-	// oder leer (PDF/A-4 ohne Stufe).
+	// Level is the conformance level of PDF/A: "B", "U", "A", "F", "E"
+	// or empty (PDF/A-4 without a level).
 	Level string
-	// UA ist der Teil von ISO 14289 (1 oder 2), 0 ohne PDF/UA.
+	// UA is the part of ISO 14289 (1 or 2), 0 without PDF/UA.
 	UA int
 }
 
-// claimer liefert den Anspruch eines einzelnen Profils.
+// claimer returns the claim of a single profile.
 type claimer interface{ claim() Claim }
 
 var registry = map[string]func() Profile{}
 
 func register(name string, f func() Profile) { registry[name] = f }
 
-// Lookup liefert das Profil zu einem Namen wie "pdfa-3b" oder zu einer
-// Kombination wie "pdfa-3a,pdfua-1". Unzulässige Kombinationen lehnt es mit
-// allen Gründen auf einmal ab.
+// Lookup returns the profile for a name like "pdfa-3b" or for a
+// combination like "pdfa-3a,pdfua-1". It rejects invalid combinations with
+// all reasons at once.
 func Lookup(spec string) (Profile, error) {
 	names := Split(spec)
 	if len(names) == 0 {
@@ -90,7 +90,7 @@ func Lookup(spec string) (Profile, error) {
 	return &Set{parts: parts}, nil
 }
 
-// Split zerlegt eine Profilangabe an Kommas und entfernt Leerraum.
+// Split splits a profile specification at commas and removes whitespace.
 func Split(spec string) []string {
 	var out []string
 	for _, n := range strings.Split(spec, ",") {
@@ -101,8 +101,8 @@ func Split(spec string) []string {
 	return out
 }
 
-// Parts liefert die einzelnen Profile einer Kombination oder das Profil
-// selbst.
+// Parts returns the individual profiles of a combination or the profile
+// itself.
 func Parts(p Profile) []Profile {
 	if s, ok := p.(*Set); ok {
 		return s.parts
@@ -110,17 +110,17 @@ func Parts(p Profile) []Profile {
 	return []Profile{p}
 }
 
-// ClaimOf liefert den vereinten Anspruch eines Profils oder einer
-// Kombination.
+// ClaimOf returns the merged claim of a profile or of a
+// combination.
 func ClaimOf(p Profile) Claim {
 	c, _ := combine(Parts(p))
 	return c
 }
 
-// combine vereint die Ansprüche und prüft, ob sie zusammenpassen. Ein
-// PDF/A-Teil und ein PDF/UA-Teil sind kombinierbar, wenn sie dieselbe
-// PDF-Version verlangen: PDF/A-2 und PDF/A-3 beruhen auf PDF 1.7 (ISO 32000-1),
-// PDF/A-4 und PDF/UA-2 auf PDF 2.0 (ISO 32000-2), PDF/UA-1 auf PDF 1.7.
+// combine merges the claims and checks whether they fit together. A
+// PDF/A part and a PDF/UA part can be combined if they require the same
+// PDF version: PDF/A-2 and PDF/A-3 are based on PDF 1.7 (ISO 32000-1),
+// PDF/A-4 and PDF/UA-2 on PDF 2.0 (ISO 32000-2), PDF/UA-1 on PDF 1.7.
 func combine(parts []Profile) (Claim, error) {
 	var c Claim
 	var errs []error
@@ -167,11 +167,11 @@ func combine(parts []Profile) (Claim, error) {
 	return c, errors.Join(errs...)
 }
 
-// Set ist eine zulässige Kombination von Profilen, etwa PDF/A-3a mit
-// PDF/UA-1. Eine Funktion ist erlaubt, wenn jedes Profil sie erlaubt.
+// Set is a valid combination of profiles, for example PDF/A-3a with
+// PDF/UA-1. A feature is allowed if every profile allows it.
 type Set struct{ parts []Profile }
 
-// Name liefert die Profilnamen mit Komma, etwa "pdfa-3a,pdfua-1".
+// Name returns the profile names separated by commas, for example "pdfa-3a,pdfua-1".
 func (s *Set) Name() string {
 	names := make([]string, len(s.parts))
 	for i, p := range s.parts {
@@ -180,8 +180,8 @@ func (s *Set) Name() string {
 	return strings.Join(names, ",")
 }
 
-// Allow prüft eine Funktion gegen alle Profile und nennt das erste, das sie
-// verweigert.
+// Allow checks a feature against all profiles and names the first one that
+// refuses it.
 func (s *Set) Allow(f pdf.Feature) error {
 	for _, p := range s.parts {
 		if err := p.Allow(f); err != nil {
@@ -191,7 +191,7 @@ func (s *Set) Allow(f pdf.Feature) error {
 	return nil
 }
 
-// CheckAttachment fragt jedes Profil, das Anhänge inhaltlich prüft.
+// CheckAttachment asks every profile that checks the content of attachments.
 func (s *Set) CheckAttachment(name string, data []byte) error {
 	for _, p := range s.parts {
 		if c, ok := p.(AttachmentChecker); ok {
@@ -203,17 +203,17 @@ func (s *Set) CheckAttachment(name string, data []byte) error {
 	return nil
 }
 
-// AttachmentChecker prüft den Inhalt eines Anhangs, etwa PDF/A-2, das nur
-// PDF/A-Dokumente als Anhang zulässt.
+// AttachmentChecker checks the content of an attachment, for example PDF/A-2,
+// which only allows PDF/A documents as attachments.
 type AttachmentChecker interface {
 	CheckAttachment(name string, data []byte) error
 }
 
-// Prepare ergänzt die Pflichtobjekte einmal für den vereinten Anspruch, damit
-// Output Intent und XMP nicht doppelt entstehen.
+// Prepare adds the required objects once for the merged claim, so that
+// output intent and XMP are not created twice.
 func (s *Set) Prepare(ctx *Context) error { return prepareClaim(ctx, ClaimOf(s)) }
 
-// Names liefert alle Profilnamen sortiert.
+// Names returns all profile names sorted.
 func Names() []string {
 	var ns []string
 	for n := range registry {

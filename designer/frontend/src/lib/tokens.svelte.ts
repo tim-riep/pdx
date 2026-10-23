@@ -1,4 +1,4 @@
-// Design-Tokens aus dem Lesecache der Vorlage und Befehle dazu.
+// Design tokens from the read cache of the template and commands for them.
 
 import { TemplateAPI, message, type TokenOp, type ViewNode } from "./api";
 import { node, tpl } from "./template.svelte";
@@ -32,14 +32,14 @@ export function styles(): ViewNode[] {
   return (st?.children ?? []).map((c) => node(c.ref)).filter((n): n is ViewNode => !!n && n.name === "style");
 }
 
-// resolveColor liefert die Farbe hinter einem Wert, Tokens auch über Ketten.
+// resolveColor returns the color behind a value, tokens also through chains.
 export function resolveColor(v: string, list = tokens(), depth = 0): string {
   if (!v.startsWith("$") || depth > 8) return v;
   const t = list.find((x) => x.id === v.slice(1) && x.kind === "color");
   return t ? resolveColor(t.attrs.value ?? "", list, depth + 1) : "";
 }
 
-// hex6 bringt eine Farbe in die Form #rrggbb für input type=color.
+// hex6 brings a color into the form #rrggbb for input type=color.
 export function hex6(c: string): string {
   if (/^#[0-9a-f]{6}$/i.test(c)) return c.toLowerCase();
   if (/^#[0-9a-f]{3}$/i.test(c)) return ("#" + [...c.slice(1)].map((x) => x + x).join("")).toLowerCase();

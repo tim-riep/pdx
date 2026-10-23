@@ -12,7 +12,7 @@ func TestXPathService(t *testing.T) {
 	}
 	ts := NewTemplateService(c)
 
-	// Feld in der Tabellenzeile: Kontext ist die Position.
+	// Field in the table row: the context is the item.
 	info, err := ts.CheckXPath(XPathQuery{Ref: "z-betrag-f", Expr: "inv:amount"})
 	if err != nil {
 		t.Fatal(err)
@@ -24,13 +24,13 @@ func TestXPathService(t *testing.T) {
 		t.Fatalf("Ziel und Wert %+v %+v %+v", info, info.Target, info.Result)
 	}
 
-	// Unbekannter Knoten mit Position in UTF-16.
+	// Unknown node with position in UTF-16.
 	info, _ = ts.CheckXPath(XPathQuery{Ref: "z-betrag-f", Expr: "'ä' || inv:betrag"})
 	if len(info.Problems) != 1 || info.Problems[0].Pos != 7 || info.Problems[0].End != 17 {
 		t.Fatalf("Befund %+v", info.Problems)
 	}
 
-	// Vervollständigung mit Cursor in UTF-16.
+	// Completion with cursor in UTF-16.
 	comp, err := ts.CompleteXPath(XPathQuery{Ref: "z-betrag-f", Expr: "'ä' || inv:am", Cursor: 13})
 	if err != nil {
 		t.Fatal(err)
@@ -39,7 +39,7 @@ func TestXPathService(t *testing.T) {
 		t.Fatalf("Vorschläge %+v", comp)
 	}
 
-	// Felder für Präsenzbedingungen auf oberster Ebene.
+	// Fields for presence conditions at the top level.
 	fields, err := ts.XPathFields("inhalt")
 	if err != nil {
 		t.Fatal(err)

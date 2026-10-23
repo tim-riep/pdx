@@ -16,7 +16,7 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/model"
 )
 
-// ProjectState beschreibt das geöffnete Projekt für die Oberfläche.
+// ProjectState describes the open project for the UI.
 type ProjectState struct {
 	Open   bool   `json:"open"`
 	Path   string `json:"path"`
@@ -24,20 +24,20 @@ type ProjectState struct {
 	Format string `json:"format"`
 	Dirty  bool   `json:"dirty"`
 	Rev    uint64 `json:"rev"`
-	// Doc kennzeichnet das geöffnete Dokument. Wechselt es, ist jeder
-	// Lesecache der Oberfläche veraltet.
+	// Doc identifies the open document. When it changes, every
+	// read cache of the UI is outdated.
 	Doc string `json:"doc"`
 }
 
-// RecentFile ist ein zuletzt geöffnetes Paket.
+// RecentFile is a recently opened package.
 type RecentFile struct {
 	Path   string    `json:"path"`
 	Name   string    `json:"name"`
 	Opened time.Time `json:"opened"`
 }
 
-// Recovery ist eine automatische Sicherung, die nach einem Absturz übrig
-// geblieben ist.
+// Recovery is an automatic backup that was left over after a
+// crash.
 type Recovery struct {
 	ID    string    `json:"id"`
 	Path  string    `json:"path"`
@@ -45,15 +45,15 @@ type Recovery struct {
 	Saved time.Time `json:"saved"`
 }
 
-// ProjectService öffnet und speichert Vorlagenpakete.
+// ProjectService opens and saves template packages.
 type ProjectService struct{ c *Core }
 
-// NewProjectService liefert die Sicht auf den gemeinsamen Zustand.
+// NewProjectService returns the view on the shared state.
 func NewProjectService(c *Core) *ProjectService { return &ProjectService{c} }
 
 var filters = []Filter{{Name: "Vorlagenpaket (*.zip)", Pattern: "*.zip"}}
 
-// State liefert den Zustand des Projekts.
+// State returns the state of the project.
 func (s *ProjectService) State() ProjectState {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -68,12 +68,12 @@ func (c *Core) stateLocked() ProjectState {
 		Dirty: c.doc.Dirty(), Rev: c.doc.Rev(), Doc: c.session}
 }
 
-// New legt eine neue Vorlage an.
+// New creates a new template.
 func (s *ProjectService) New() ProjectState {
 	return s.c.setDoc(model.New())
 }
 
-// Open öffnet ein Paket (ZIP-Datei oder Verzeichnis).
+// Open opens a package (ZIP file or directory).
 func (s *ProjectService) Open(path string) (ProjectState, error) {
 	d, err := model.Open(path)
 	if err != nil {
@@ -84,8 +84,8 @@ func (s *ProjectService) Open(path string) (ProjectState, error) {
 	return st, nil
 }
 
-// OpenDialog fragt nach einem Paket und öffnet es. dir wählt ein Verzeichnis
-// statt einer ZIP-Datei. Ein abgebrochener Dialog ändert nichts.
+// OpenDialog asks for a package and opens it. dir chooses a directory
+// instead of a ZIP file. A canceled dialog changes nothing.
 func (s *ProjectService) OpenDialog(dir bool) (ProjectState, error) {
 	if s.c.dialogs == nil {
 		return s.State(), ErrNoDialogs
@@ -97,7 +97,7 @@ func (s *ProjectService) OpenDialog(dir bool) (ProjectState, error) {
 	return s.Open(path)
 }
 
-// Save speichert an den bisherigen Ort.
+// Save saves to the previous location.
 func (s *ProjectService) Save() (ProjectState, error) {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -110,8 +110,8 @@ func (s *ProjectService) Save() (ProjectState, error) {
 	return s.c.savedLocked(), nil
 }
 
-// SaveAs speichert an einen neuen Ort. Ein Pfad auf .zip ergibt eine
-// ZIP-Datei, sonst ein Verzeichnis.
+// SaveAs saves to a new location. A path ending in .zip results in a
+// ZIP file, otherwise a directory.
 func (s *ProjectService) SaveAs(path string) (ProjectState, error) {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -126,7 +126,7 @@ func (s *ProjectService) SaveAs(path string) (ProjectState, error) {
 	return st, nil
 }
 
-// SaveAsDialog fragt nach dem Ort und speichert.
+// SaveAsDialog asks for the location and saves.
 func (s *ProjectService) SaveAsDialog() (ProjectState, error) {
 	if s.c.dialogs == nil {
 		return s.State(), ErrNoDialogs
@@ -142,7 +142,7 @@ func (s *ProjectService) SaveAsDialog() (ProjectState, error) {
 	return s.SaveAs(path)
 }
 
-// savedLocked räumt nach dem Speichern die automatische Sicherung weg.
+// savedLocked removes the automatic backup after saving.
 func (c *Core) savedLocked() ProjectState {
 	if c.saver != nil {
 		c.saver.Stop()
@@ -154,7 +154,7 @@ func (c *Core) savedLocked() ProjectState {
 	return st
 }
 
-// setDoc macht d zum geöffneten Dokument.
+// setDoc makes d the open document.
 func (c *Core) setDoc(d *model.Document) ProjectState {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -180,15 +180,15 @@ func newSession() string {
 	return hex.EncodeToString(b)
 }
 
-// Changed vermerkt eine Änderung am Dokument und plant die automatische
-// Sicherung. Aufruf mit gehaltener Sperre.
+// Changed records a change to the document and schedules the automatic
+// backup. Call with the lock held.
 func (c *Core) changedLocked() {
 	c.doc.Touch()
 	c.afterChangeLocked()
 }
 
-// afterChangeLocked plant Sicherung und Setzen nach einer Änderung und
-// meldet den neuen Zustand. Aufruf mit gehaltener Sperre.
+// afterChangeLocked schedules backup and typesetting after a change and
+// reports the new state. Call with the lock held.
 func (c *Core) afterChangeLocked() {
 	if c.saver == nil {
 		c.saver = time.AfterFunc(c.AutosaveDelay, c.autosave)
@@ -197,7 +197,7 @@ func (c *Core) afterChangeLocked() {
 	c.emit.Emit(EventProject, c.stateLocked())
 }
 
-// autosave schreibt das Dokument als ZIP in das Datenverzeichnis.
+// autosave writes the document as a ZIP into the data directory.
 func (c *Core) autosave() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -221,8 +221,8 @@ func (c *Core) autosave() {
 	os.WriteFile(filepath.Join(dir, c.session+".json"), meta, 0o600)
 }
 
-// Flush schreibt eine anstehende automatische Sicherung sofort, etwa vor dem
-// Beenden.
+// Flush writes a pending automatic backup immediately, for example before
+// quitting.
 func (c *Core) Flush() {
 	c.mu.Lock()
 	pending := c.saver != nil
@@ -244,7 +244,7 @@ func (c *Core) removeAutosave(id string) {
 	os.Remove(filepath.Join(dir, id+".json"))
 }
 
-// Recoverable listet Sicherungen früherer Sitzungen, neueste zuerst.
+// Recoverable lists backups of earlier sessions, newest first.
 func (s *ProjectService) Recoverable() []Recovery {
 	s.c.mu.Lock()
 	session := s.c.session
@@ -266,8 +266,8 @@ func (s *ProjectService) Recoverable() []Recovery {
 	return out
 }
 
-// Recover öffnet eine Sicherung. Das Dokument behält seinen ursprünglichen
-// Speicherort und gilt als geändert.
+// Recover opens a backup. The document keeps its original
+// location and counts as changed.
 func (s *ProjectService) Recover(id string) (ProjectState, error) {
 	if !validID(id) {
 		return s.State(), fmt.Errorf("Sicherung %q unbekannt", id)
@@ -295,7 +295,7 @@ func (s *ProjectService) Recover(id string) (ProjectState, error) {
 	return st, nil
 }
 
-// Discard verwirft eine Sicherung.
+// Discard discards a backup.
 func (s *ProjectService) Discard(id string) error {
 	if !validID(id) {
 		return fmt.Errorf("Sicherung %q unbekannt", id)
@@ -318,7 +318,7 @@ func validID(id string) bool {
 
 const maxRecent = 10
 
-// Recent liefert die zuletzt geöffneten Pakete, die es noch gibt.
+// Recent returns the recently opened packages that still exist.
 func (s *ProjectService) Recent() []RecentFile {
 	out := []RecentFile{}
 	for _, r := range s.c.loadRecent() {

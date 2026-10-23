@@ -16,13 +16,13 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// SchemaService liefert den Datenbaum des Daten-XSD und lädt neue Schemas.
+// SchemaService returns the data tree of the data XSD and loads new schemas.
 type SchemaService struct{ c *Core }
 
-// NewSchemaService liefert die Sicht auf den gemeinsamen Zustand.
+// NewSchemaService returns the view on the shared state.
 func NewSchemaService(c *Core) *SchemaService { return &SchemaService{c} }
 
-// Tree liefert den Datenbaum. Ohne Daten-XSD ist er leer.
+// Tree returns the data tree. Without a data XSD it is empty.
 func (s *SchemaService) Tree() (*schema.Schema, error) {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -32,8 +32,8 @@ func (s *SchemaService) Tree() (*schema.Schema, error) {
 	return s.c.schemaLocked()
 }
 
-// schemaCache hält das aufbereitete Schema, solange sich XSD, Datenwurzel
-// und Namespaces der Vorlage nicht ändern.
+// schemaCache holds the prepared schema as long as the XSD, the data root
+// and the namespaces of the template do not change.
 type schemaCache struct {
 	key string
 	s   *schema.Schema
@@ -64,10 +64,10 @@ func (c *Core) schemaLocked() (*schema.Schema, error) {
 	return c.schema.s, c.schema.err
 }
 
-// Import lädt ein Daten-XSD aus einer Datei in das Paket (schema/) und
-// setzt es als Schema der Vorlage. XSD-Dateien im selben Ordner kommen für
-// xs:import und xs:include mit. root wählt die Datenwurzel, leer nimmt das
-// einzige globale Element. Der Schritt lässt sich rückgängig machen.
+// Import loads a data XSD from a file into the package (schema/) and
+// sets it as the schema of the template. XSD files in the same folder come
+// along for xs:import and xs:include. root chooses the data root, empty takes
+// the only global element. The step can be undone.
 func (s *SchemaService) Import(path, root string) (Result, error) {
 	x, err := readXSD(path, root)
 	if err != nil {
@@ -79,15 +79,15 @@ func (s *SchemaService) Import(path, root string) (Result, error) {
 	})
 }
 
-// xsdImport ist ein gelesenes Daten-XSD mit gewählter Datenwurzel.
+// xsdImport is a read data XSD with a chosen data root.
 type xsdImport struct {
-	main  string            // schema/<datei>.xsd
-	files map[string][]byte // alle XSD-Dateien unter schema/
+	main  string            // schema/<file>.xsd
+	files map[string][]byte // all XSD files under schema/
 	root  *dataschema.Decl
 }
 
-// readXSD liest ein Daten-XSD und die XSD-Dateien im selben Ordner (für
-// xs:import und xs:include) und wählt die Datenwurzel.
+// readXSD reads a data XSD and the XSD files in the same folder (for
+// xs:import and xs:include) and chooses the data root.
 func readXSD(path, root string) (*xsdImport, error) {
 	main, err := os.ReadFile(path)
 	if err != nil {
@@ -125,8 +125,8 @@ func readXSD(path, root string) (*xsdImport, error) {
 	return &xsdImport{main: mainName, files: files, root: rootDecl}, nil
 }
 
-// commands liefert die Befehle, die das XSD ins Paket legen und als Schema
-// der Vorlage setzen.
+// commands returns the commands that put the XSD into the package and set
+// it as the schema of the template.
 func (x *xsdImport) commands(t *template.Template) []model.Command {
 	var cmds []model.Command
 	names := make([]string, 0, len(x.files))
@@ -154,8 +154,8 @@ func (x *xsdImport) rootName(prefix string) string {
 	return x.root.Name.Local
 }
 
-// ensurePrefix liefert das Präfix eines Namespaces aus der Vorlage oder
-// einen Befehl, der ein neues deklariert.
+// ensurePrefix returns the prefix of a namespace from the template or
+// a command that declares a new one.
 func ensurePrefix(t *template.Template, uri string) (string, *model.Command) {
 	if uri == "" {
 		return "", nil
@@ -181,7 +181,7 @@ func ensurePrefix(t *template.Template, uri string) (string, *model.Command) {
 	return prefix, &model.Command{Op: "insert", Parent: model.Ref(t.Root), Index: 0, XML: "<namespaces>" + el + "</namespaces>"}
 }
 
-// ImportDialog fragt nach einem Daten-XSD und lädt es.
+// ImportDialog asks for a data XSD and loads it.
 func (s *SchemaService) ImportDialog(root string) (Result, error) {
 	if s.c.dialogs == nil {
 		return Result{}, ErrNoDialogs

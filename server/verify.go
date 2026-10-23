@@ -11,7 +11,7 @@ import (
 	"github.com/tim-riep/pdx/verapdf"
 )
 
-// verifyReport ist das Ergebnis von veraPDF je Flavour.
+// verifyReport is the result of veraPDF per flavour.
 type verifyReport struct {
 	Profile   string          `json:"profil"`
 	Compliant bool            `json:"konform"`
@@ -27,9 +27,9 @@ type verifyFinding struct {
 	FailedChecks  int    `json:"fehlschlaege"`
 }
 
-// verify prüft ein PDF mit veraPDF: POST /v1/verify?profile=pdfa-3b. Das
-// PDF liegt nur für die Dauer der Prüfung in einer temporären Datei, die
-// danach gelöscht wird.
+// verify checks a PDF with veraPDF: POST /v1/verify?profile=pdfa-3b. The
+// PDF is kept in a temporary file only for the duration of the check,
+// which is deleted afterwards.
 func (s *Server) verify(w http.ResponseWriter, r *http.Request) {
 	if s.Verifier == nil {
 		writeProblem(w, Problem{Status: http.StatusNotImplemented, Title: "veraPDF ist nicht konfiguriert"})
@@ -84,9 +84,9 @@ func (s *Server) verify(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"konform": all, "berichte": reports})
 }
 
-// sign signiert ein PDF mit dem Signer des Dienstes nach PAdES:
-// POST /v1/sign?level=B-T&field=&reason=&location=. Der Schlüssel bleibt
-// im Dienst oder beim Signaturdienst, er verlässt nie den Speicher.
+// sign signs a PDF with the signer of the service according to PAdES:
+// POST /v1/sign?level=B-T&field=&reason=&location=. The key stays in the
+// service or at the signing service, it never leaves memory.
 func (s *Server) sign(w http.ResponseWriter, r *http.Request) {
 	if s.Signer == nil {
 		writeProblem(w, Problem{Status: http.StatusNotImplemented, Title: "Signieren ist nicht konfiguriert"})
@@ -120,7 +120,7 @@ func (s *Server) sign(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 }
 
-// splitErrors zerlegt einen mit errors.Join verbundenen Fehler in Befunde.
+// splitErrors splits an error joined with errors.Join into findings.
 func splitErrors(err error) []Finding {
 	if j, ok := err.(interface{ Unwrap() []error }); ok {
 		var out []Finding

@@ -27,7 +27,7 @@ func TestRenderCLI(t *testing.T) {
 	if _, err := os.Stat(tree); err != nil {
 		t.Error("Area Tree nicht geschrieben")
 	}
-	// Gleiches Datum ergibt gleiche Bytes, auch über SOURCE_DATE_EPOCH.
+	// The same date yields the same bytes, also via SOURCE_DATE_EPOCH.
 	out2 := filepath.Join(dir, "r2.pdf")
 	t.Setenv("SOURCE_DATE_EPOCH", "1767225600") // 2026-01-01T00:00:00Z
 	if code := run([]string{"render", "../../testdata/fo/brief.fo", "-o", out2, "--attach", att + ":Data:application/xml"}, &so, &se); code != 0 {

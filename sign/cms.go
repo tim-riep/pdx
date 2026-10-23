@@ -12,7 +12,7 @@ import (
 	"math/big"
 )
 
-// Objektkennungen (RFC 5652, RFC 5035, RFC 3161, RFC 5754, RFC 8017,
+// Object identifiers (RFC 5652, RFC 5035, RFC 3161, RFC 5754, RFC 8017,
 // RFC 5758).
 var (
 	oidData                 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 1}
@@ -35,18 +35,18 @@ var (
 
 var hashOIDs = map[crypto.Hash]asn1.ObjectIdentifier{crypto.SHA256: oidSHA256, crypto.SHA384: oidSHA384, crypto.SHA512: oidSHA512}
 
-// Signer signiert einen Hashwert. Der Schlüssel verlässt dabei nie seinen
-// Speicherort, ob Datei im Speicher, HSM oder Signaturdienst.
+// Signer signs a hash value. The key never leaves its
+// storage location, whether a file in memory, an HSM or a signing service.
 type Signer interface {
-	// Certificates liefert das Signaturzertifikat und seine Kette bis
-	// ausschließlich der Wurzel.
+	// Certificates returns the signing certificate and its chain up to
+	// but excluding the root.
 	Certificates() []*x509.Certificate
-	// SignDigest signiert den Hashwert digest des Verfahrens hash. RSA
-	// liefert PKCS#1 v1.5, ECDSA die ASN.1-Signatur.
+	// SignDigest signs the hash value digest of the algorithm hash. RSA
+	// returns PKCS#1 v1.5, ECDSA the ASN.1 signature.
 	SignDigest(ctx context.Context, hash crypto.Hash, digest []byte) ([]byte, error)
 }
 
-// signatureAlgorithm liefert den Algorithmus der Signatur zum Schlüssel.
+// signatureAlgorithm returns the signature algorithm for the key.
 func signatureAlgorithm(pub crypto.PublicKey, hash crypto.Hash) ([]byte, error) {
 	switch pub.(type) {
 	case *rsa.PublicKey:
@@ -65,15 +65,15 @@ func signatureAlgorithm(pub crypto.PublicKey, hash crypto.Hash) ([]byte, error) 
 	return nil, fmt.Errorf("Schlüsseltyp %T wird nicht unterstützt, erwartet RSA oder ECDSA", pub)
 }
 
-// attribute kodiert ein Attribut mit einem Wert.
+// attribute encodes an attribute with one value.
 func attribute(o asn1.ObjectIdentifier, value []byte) []byte {
 	return seq(oid(o), set(value))
 }
 
-// signingCertificateV2 kodiert das Attribut nach RFC 5035 mit dem Hash des
-// Signaturzertifikats und Aussteller und Seriennummer. PAdES verlangt es
-// (ETSI EN 319 122-1 5.2.2.3, EN 319 142-1 5.2). Mit SHA-256 entfällt der
-// Algorithmus, er ist die Vorgabe.
+// signingCertificateV2 encodes the attribute according to RFC 5035 with the
+// hash of the signing certificate and issuer and serial number. PAdES requires
+// it (ETSI EN 319 122-1 5.2.2.3, EN 319 142-1 5.2). With SHA-256 the
+// algorithm is omitted, it is the default.
 func signingCertificateV2(cert *x509.Certificate, hash crypto.Hash) []byte {
 	h := hash.New()
 	h.Write(cert.Raw)
@@ -82,32 +82,32 @@ func signingCertificateV2(cert *x509.Certificate, hash crypto.Hash) []byte {
 		essCertID = append(essCertID, algorithm(hashOIDs[hash], false))
 	}
 	issuerSerial := seq(
-		seq(explicit(4, cert.RawIssuer)), // GeneralNames mit directoryName
+		seq(explicit(4, cert.RawIssuer)), // GeneralNames with directoryName
 		integer(cert.SerialNumber),
 	)
 	essCertID = append(essCertID, octets(h.Sum(nil)), issuerSerial)
 	return seq(seq(seq(essCertID...)))
 }
 
-// SignedOptions steuert den Aufbau von SignedData.
+// SignedOptions controls the structure of SignedData.
 type SignedOptions struct {
-	// Hash ist das Hashverfahren, Vorgabe SHA-256.
+	// Hash is the hash algorithm, default SHA-256.
 	Hash crypto.Hash
-	// Detached lässt den Inhalt weg (PAdES, ETSI.CAdES.detached), sonst
-	// steht Content im Container.
+	// Detached omits the content (PAdES, ETSI.CAdES.detached), otherwise
+	// Content is in the container.
 	Detached bool
-	// ContentType ist der Typ des Inhalts, Vorgabe id-data.
+	// ContentType is the type of the content, default id-data.
 	ContentType asn1.ObjectIdentifier
-	// Unsigned erzeugt unsignierte Attribute aus der Signatur, etwa den
-	// Zeitstempel für PAdES B-T.
+	// Unsigned generates unsigned attributes from the signature, for example the
+	// timestamp for PAdES B-T.
 	Unsigned func(signature []byte) ([][]byte, error)
 }
 
-// SignedData baut einen CMS-Container SignedData (RFC 5652 5) mit genau
-// einem SignerInfo und den signierten Attributen content-type,
-// message-digest und signing-certificate-v2. signing-time fehlt mit
-// Absicht: PAdES verbietet es, die Zeit steht in /M (ETSI EN 319 142-1
-// 5.2.1). content ist der zu signierende Inhalt, bei PDF die Bytes der
+// SignedData builds a CMS container SignedData (RFC 5652 5) with exactly
+// one SignerInfo and the signed attributes content-type,
+// message-digest and signing-certificate-v2. signing-time is missing on
+// purpose: PAdES forbids it, the time is in /M (ETSI EN 319 142-1
+// 5.2.1). content is the content to sign, for PDF the bytes of the
 // ByteRange.
 func SignedData(ctx context.Context, s Signer, content []byte, opt SignedOptions) ([]byte, error) {
 	if opt.Hash == 0 {
@@ -132,7 +132,7 @@ func SignedData(ctx context.Context, s Signer, content []byte, opt SignedOptions
 		attribute(oidMessageDigest, octets(h.Sum(nil))),
 		attribute(oidSigningCertificateV2, signingCertificateV2(cert, opt.Hash)),
 	)
-	// Signiert wird die DER-Kodierung als SET (RFC 5652 5.4).
+	// The DER encoding as SET is signed (RFC 5652 5.4).
 	ah := opt.Hash.New()
 	ah.Write(signedAttrs)
 	sig, err := s.SignDigest(ctx, opt.Hash, ah.Sum(nil))
@@ -178,8 +178,8 @@ func SignedData(ctx context.Context, s Signer, content []byte, opt SignedOptions
 	return seq(oid(oidSignedData), explicit(0, sd)), nil
 }
 
-// TimeStampAttribute kodiert den Zeitstempel als unsigniertes Attribut
-// (RFC 3161 Anhang A, id-aa-timeStampToken), für PAdES B-T.
+// TimeStampAttribute encodes the timestamp as an unsigned attribute
+// (RFC 3161 Annex A, id-aa-timeStampToken), for PAdES B-T.
 func TimeStampAttribute(token []byte) []byte {
 	return attribute(oidTimeStampToken, token)
 }

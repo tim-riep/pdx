@@ -9,9 +9,9 @@ import (
 	"github.com/tim-riep/pdx/pdf/reader"
 )
 
-// cmdStructure gibt den logischen Strukturbaum einer PDF-Datei aus, mit
-// Rolle, Sprache, Alternativtext und Text je Element. Widersprüche zwischen
-// Baum, ParentTree und Inhalt erscheinen als Befund und führen zu Exit-Code 1.
+// cmdStructure prints the logical structure tree of a PDF file, with role,
+// language, alternative text and text per element. Contradictions between
+// tree, ParentTree and content appear as findings and lead to exit code 1.
 func cmdStructure(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("structure", flag.ContinueOnError)
 	fs.SetOutput(stderr)

@@ -1,6 +1,6 @@
-// Package pipeline setzt die Vorlage für den Canvas: kompilieren (mit Cache
-// nach Inhalt), transformieren, setzen ohne PDF, Seiten in das kompakte
-// Format übersetzen und hashen. Nur geänderte Seiten müssen zur Oberfläche.
+// Package pipeline typesets the template for the canvas: compile (with a cache
+// by content), transform, typeset without PDF, translate pages into the compact
+// format and hash them. Only changed pages have to go to the UI.
 package pipeline
 
 import (
@@ -26,27 +26,27 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// Input ist ein Stand der Vorlage mit Daten.
+// Input is a state of the template with data.
 type Input struct {
-	// Canon ist template.xml in kanonischer Form, zugleich Schlüssel des
-	// Compiler-Caches.
+	// Canon is template.xml in canonical form, also the key of the
+	// compiler cache.
 	Canon []byte
 	Files map[string][]byte
 	Data  []byte
 	Lang  string
 }
 
-// Result ist das Ergebnis eines Laufs.
+// Result is the result of a run.
 type Result struct {
 	Pages    []PageRef `json:"pages"`
 	Fonts    []FontRef `json:"fonts"`
 	Problems []Problem `json:"problems"`
-	// Millis ist die Dauer des Laufs, Compiled meldet, ob kompiliert wurde.
+	// Millis is the duration of the run, Compiled reports whether it compiled.
 	Millis   int64 `json:"millis"`
 	Compiled bool  `json:"compiled"`
 }
 
-// PageRef verweist auf eine Seite über den Hash ihres Inhalts.
+// PageRef refers to a page via the hash of its content.
 type PageRef struct {
 	N    int     `json:"n"`
 	W    float64 `json:"w"`
@@ -54,20 +54,20 @@ type PageRef struct {
 	Hash string  `json:"hash"`
 }
 
-// FontRef ist eine Schrift für den Canvas.
+// FontRef is a font for the canvas.
 type FontRef struct {
 	Key    string `json:"key"`
 	Family string `json:"family"`
 }
 
-// Problem ist ein Befund beim Setzen mit Vorlagen-ID, soweit bekannt.
+// Problem is a finding during typesetting with template ID, as far as known.
 type Problem struct {
 	Level string `json:"level"`
 	ID    string `json:"id"`
 	Msg   string `json:"msg"`
 }
 
-// Pipeline hält die Caches über viele Läufe. Sie ist nebenläufig nutzbar.
+// Pipeline holds the caches across many runs. It is safe for concurrent use.
 type Pipeline struct {
 	reg *font.Registry
 
@@ -76,21 +76,21 @@ type Pipeline struct {
 		key string
 		tpl *pdx.Template
 	}
-	pages  map[string][]byte // Hash zu JSON der Seite
-	order  []string          // Reihenfolge für das Verdrängen alter Seiten
+	pages  map[string][]byte // hash to JSON of the page
+	order  []string          // order for evicting old pages
 	fonts  map[string]*font.Face
 	images map[string]*image.Image
 }
 
-// maxPages begrenzt den Seiten-Cache.
+// maxPages limits the page cache.
 const maxPages = 2000
 
-// New legt eine Pipeline mit gemeinsamer Schrift-Registry an.
+// New creates a pipeline with a shared font registry.
 func New() *Pipeline {
 	return &Pipeline{reg: font.NewRegistry(), pages: map[string][]byte{}, fonts: map[string]*font.Face{}, images: map[string]*image.Image{}}
 }
 
-// Run setzt einen Stand. Ein abgebrochener Kontext liefert ctx.Err().
+// Run typesets a state. A canceled context returns ctx.Err().
 func (p *Pipeline) Run(ctx context.Context, in Input) (*Result, error) {
 	start := time.Now()
 	res := &Result{Pages: []PageRef{}, Fonts: []FontRef{}, Problems: []Problem{}}
@@ -148,8 +148,8 @@ func (p *Pipeline) Run(ctx context.Context, in Input) (*Result, error) {
 	return res, nil
 }
 
-// compile liefert die kompilierte Vorlage, aus dem Cache, wenn sich der
-// kanonische Inhalt nicht geändert hat.
+// compile returns the compiled template, from the cache if the
+// canonical content has not changed.
 func (p *Pipeline) compile(in Input) (*pdx.Template, bool, error) {
 	sum := sha256.Sum256(append(append([]byte(in.Lang), 0), in.Canon...))
 	key := hex.EncodeToString(sum[:])
@@ -192,7 +192,7 @@ func (p *Pipeline) storePage(h string, b []byte) {
 	}
 }
 
-// PageJSON liefert eine Seite nach ihrem Hash.
+// PageJSON returns a page by its hash.
 func (p *Pipeline) PageJSON(hash string) ([]byte, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -200,7 +200,7 @@ func (p *Pipeline) PageJSON(hash string) ([]byte, bool) {
 	return b, ok
 }
 
-// Font liefert die Bytes einer Schrift nach ihrem Schlüssel.
+// Font returns the bytes of a font by its key.
 func (p *Pipeline) Font(key string) ([]byte, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -211,7 +211,7 @@ func (p *Pipeline) Font(key string) ([]byte, bool) {
 	return f.Data(), true
 }
 
-// Image liefert ein Bild für den Browser: JPEG unverändert, sonst PNG.
+// Image returns an image for the browser: JPEG unchanged, otherwise PNG.
 func (p *Pipeline) Image(key string) ([]byte, string, bool) {
 	p.mu.Lock()
 	im, ok := p.images[key]
@@ -229,7 +229,7 @@ func (p *Pipeline) Image(key string) ([]byte, string, bool) {
 	return b, "image/png", true
 }
 
-// encodePNG kodiert die unkomprimierten Pixel eines PNG-Bildes neu.
+// encodePNG re-encodes the uncompressed pixels of a PNG image.
 func encodePNG(im *image.Image) ([]byte, error) {
 	r := stdimage.Rect(0, 0, im.Width, im.Height)
 	out := stdimage.NewNRGBA(r)
@@ -262,10 +262,10 @@ func encodePNG(im *image.Image) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// PDF erzeugt das PDF eines Stands im Profil der Vorlage und mit ihren
-// Anhängen. created ist das Erstellungsdatum. trace erhält, wenn gesetzt, die Zuordnung der
-// Operatoren zu den Vorlagenelementen. Fehler tragen die Vorlagen-ID wie in
-// den Befunden von Run.
+// PDF generates the PDF of a state in the profile of the template and with its
+// attachments. created is the creation date. trace receives, if set, the mapping of the
+// operators to the template elements. Errors carry the template ID as in
+// the findings of Run.
 func (p *Pipeline) PDF(ctx context.Context, in Input, created time.Time, trace *render.Trace) ([]byte, []Problem, error) {
 	tpl, _, err := p.compile(in)
 	if err != nil {
@@ -281,7 +281,7 @@ func (p *Pipeline) PDF(ctx context.Context, in Input, created time.Time, trace *
 	return res.PDF, nil, nil
 }
 
-// problems übersetzt Fehler der Engine in Befunde mit Vorlagen-ID.
+// problems translates errors of the engine into findings with template ID.
 func problems(err error) []Problem {
 	var es template.Errors
 	var e *template.Error
@@ -298,27 +298,27 @@ func problems(err error) []Problem {
 	return []Problem{{Level: "Fehler", Msg: err.Error()}}
 }
 
-// AccessProfile ist das Profil, nach dem Access prüft, wenn das Profil der
-// Vorlage keine Barrierefreiheit verlangt.
+// AccessProfile is the profile Access checks against when the profile of the
+// template does not require accessibility.
 const AccessProfile = "pdfa-3a,pdfua-1"
 
-// Access ist die Analyse der Barrierefreiheit eines Stands.
+// Access is the accessibility analysis of a state.
 type Access struct {
-	// Profile ist das geprüfte Profil. Assumed meldet, dass das Profil der
-	// Vorlage keine Barrierefreiheit verlangt und ersatzweise nach
-	// AccessProfile geprüft wurde.
+	// Profile is the checked profile. Assumed reports that the profile of the
+	// template does not require accessibility and the check fell back to
+	// AccessProfile.
 	Profile string `json:"profile"`
 	Assumed bool   `json:"assumed"`
-	// Tree ist der Strukturbaum in Lesereihenfolge, nil, wenn das Setzen
-	// scheiterte.
+	// Tree is the structure tree in reading order, nil if typesetting
+	// failed.
 	Tree *render.StructNode `json:"tree"`
-	// Findings sind die Befunde der Vorprüfung, Problems Fehler beim Setzen.
+	// Findings are the findings of the pre-check, Problems errors during typesetting.
 	Findings []Problem `json:"findings"`
 	Problems []Problem `json:"problems"`
 }
 
-// Access setzt einen Stand und analysiert Strukturbaum und Vorprüfung, ohne
-// ein PDF zu schreiben.
+// Access typesets a state and analyzes the structure tree and pre-check, without
+// writing a PDF.
 func (p *Pipeline) Access(ctx context.Context, in Input) (*Access, error) {
 	res := &Access{Findings: []Problem{}, Problems: []Problem{}}
 	tpl, _, err := p.compile(in)

@@ -20,7 +20,7 @@ func TestParseAreaTree(t *testing.T) {
 		t.Fatalf("%d Seiten, %d Blöcke", pages, len(blocks))
 	}
 	b := blocks[0]
-	// Erster Block: Region beginnt bei 127.559 pt, keine Abstände davor.
+	// First block: the region starts at 127.559 pt, no spacing before it.
 	if b.FirstLine != "Beispiel GmbH · Hauptstraße 1 · 50667 Köln" || b.Top != 127.559 || b.Lines != 1 {
 		t.Errorf("erster Block: %+v", b)
 	}
@@ -71,7 +71,7 @@ func TestPixelDiff(t *testing.T) {
 	for i := range a.Pix {
 		a.Pix[i], b.Pix[i] = 255, 255
 	}
-	// Ein schwarzer Strich, in b um 1 px verschoben: gilt als gleich.
+	// A black stroke, shifted by 1 px in b: counts as equal.
 	for y := 10; y < 90; y++ {
 		a.SetGray(50, y, color.Gray{0})
 		b.SetGray(51, y, color.Gray{0})
@@ -79,7 +79,7 @@ func TestPixelDiff(t *testing.T) {
 	if r := PixelDiff(a, b, Default); r != 0 {
 		t.Errorf("Verschiebung um 1 px ergibt %v", r)
 	}
-	// Um 3 px verschoben: 2 * 80 Pixel weichen ab.
+	// Shifted by 3 px: 2 * 80 pixels differ.
 	b2 := image.NewGray(b.Rect)
 	copy(b2.Pix, a.Pix)
 	for y := 10; y < 90; y++ {

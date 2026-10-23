@@ -13,7 +13,7 @@ import (
 	"sync"
 )
 
-// batchResult ist der Eintrag eines Datensatzes in ergebnis.json.
+// batchResult is the entry of one record in ergebnis.json.
 type batchResult struct {
 	Data     string    `json:"daten"`
 	PDF      string    `json:"pdf,omitempty"`
@@ -21,11 +21,11 @@ type batchResult struct {
 	Findings []Finding `json:"befunde,omitempty"`
 }
 
-// batch rendert alle XML-Dateien eines ZIP mit derselben Vorlage:
-// POST /v1/render/{id}/batch, Parameter wie beim Einzelrendern. Die Antwort
-// ist ein ZIP als Stream mit einem PDF je Datensatz in Eingabereihenfolge
-// und ergebnis.json am Ende. Da der Status mit dem ersten Byte feststeht,
-// stehen Fehler einzelner Datensätze in ergebnis.json, alle auf einmal.
+// batch renders all XML files of a ZIP with the same template:
+// POST /v1/render/{id}/batch, parameters as for single rendering. The
+// response is a streamed ZIP with one PDF per record in input order and
+// ergebnis.json at the end. Since the status is fixed with the first byte,
+// errors of individual records are in ergebnis.json, all at once.
 func (s *Server) batch(w http.ResponseWriter, r *http.Request) {
 	opts, bad := s.renderOptions(r)
 	if len(bad) > 0 {
@@ -92,8 +92,8 @@ func (s *Server) batch(w http.ResponseWriter, r *http.Request) {
 		pdf []byte
 		res batchResult
 	}
-	// Je Runde so viele Datensätze wie Plätze, geschrieben in Reihenfolge.
-	// So bleibt der Speicher begrenzt.
+	// Each round takes as many records as there are slots, written in order.
+	// This keeps memory bounded.
 	window := cap(s.sem)
 	var results []batchResult
 	for start := 0; start < len(files); start += window {
@@ -155,8 +155,8 @@ func (s *Server) batch(w http.ResponseWriter, r *http.Request) {
 	zw.Close()
 }
 
-// readEntry liest einen Eintrag höchstens bis max Bytes, auch wenn die
-// Größe im Kopf falsch angegeben ist.
+// readEntry reads an entry up to at most max bytes, even if the size in
+// the header is wrong.
 func readEntry(f *zip.File, max int64) ([]byte, error) {
 	rc, err := f.Open()
 	if err != nil {

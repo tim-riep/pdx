@@ -17,11 +17,11 @@ import (
 	"time"
 )
 
-// ErrNotFound meldet eine fehlende Vorlage oder Version.
+// ErrNotFound reports a missing template or version.
 var ErrNotFound = errors.New("nicht gefunden")
 
-// Version beschreibt eine abgelegte Version einer Vorlage. Versionen sind
-// unveränderlich und fortlaufend nummeriert.
+// Version describes a stored version of a template. Versions are
+// immutable and numbered consecutively.
 type Version struct {
 	Version string    `json:"version"`
 	SHA256  string    `json:"sha256"`
@@ -30,31 +30,31 @@ type Version struct {
 	Active  bool      `json:"active"`
 }
 
-// TemplateInfo ist eine Vorlage mit ihrer aktiven Version.
+// TemplateInfo is a template with its active version.
 type TemplateInfo struct {
 	ID     string `json:"id"`
 	Active string `json:"active,omitempty"`
 }
 
-// Store ist die Vorlagenablage.
+// Store is the template store.
 type Store interface {
-	// Get liefert eine Version, leer bedeutet die aktive, mit Rohdaten
-	// des Pakets und Versionsnummer.
+	// Get returns a version, empty means the active one, with the raw data
+	// of the package and the version number.
 	Get(ctx context.Context, id, version string) ([]byte, string, error)
-	// Put legt ein Paket als neue Version ab. Gleicher Inhalt wie eine
-	// vorhandene Version liefert diese, ohne neue anzulegen.
+	// Put stores a package as a new version. The same content as an
+	// existing version returns that one without creating a new one.
 	Put(ctx context.Context, id string, raw []byte) (Version, bool, error)
-	// Activate macht eine Version zur aktiven.
+	// Activate makes a version the active one.
 	Activate(ctx context.Context, id, version string) error
-	// List liefert alle Vorlagen, Versions alle Versionen einer Vorlage.
+	// List returns all templates, Versions all versions of a template.
 	List(ctx context.Context) ([]TemplateInfo, error)
 	Versions(ctx context.Context, id string) ([]Version, error)
 }
 
 var reID = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,63}$`)
 
-// ValidID prüft eine Vorlagen-ID: Kleinbuchstaben, Ziffern, - und _, bis
-// 64 Zeichen. So bleibt sie als Verzeichnisname sicher.
+// ValidID checks a template ID: lowercase letters, digits, - and _, up to
+// 64 characters. This keeps it safe as a directory name.
 func ValidID(id string) bool { return reID.MatchString(id) }
 
 func digest(b []byte) string {
@@ -62,9 +62,9 @@ func digest(b []byte) string {
 	return hex.EncodeToString(h[:])
 }
 
-// DirStore legt Vorlagen in einem Verzeichnis ab, auch auf einem
-// gemeinsamen Volume für mehrere Instanzen: {id}/{n}.zip und {id}/active.
-// Neue Nummern werden exklusiv angelegt, active wird atomar ersetzt.
+// DirStore stores templates in a directory, also on a shared volume
+// for several instances: {id}/{n}.zip and {id}/active.
+// New numbers are created exclusively, active is replaced atomically.
 type DirStore struct {
 	Dir string
 }
@@ -149,8 +149,8 @@ func (d *DirStore) Put(ctx context.Context, id string, raw []byte) (Version, boo
 		n++
 	}
 	for ; ; n++ {
-		// Erst unter temporärem Namen schreiben, dann exklusiv verlinken,
-		// damit nie eine halbe Version sichtbar ist.
+		// Write under a temporary name first, then link exclusively, so
+		// that a partial version is never visible.
 		tmp, err := os.CreateTemp(dir, ".upload-*")
 		if err != nil {
 			return Version{}, false, err
@@ -227,7 +227,7 @@ func (d *DirStore) Versions(_ context.Context, id string) ([]Version, error) {
 	return out, nil
 }
 
-// MemStore hält Vorlagen im Speicher, für Tests.
+// MemStore holds templates in memory, for tests.
 type MemStore struct {
 	mu   sync.Mutex
 	data map[string][][]byte

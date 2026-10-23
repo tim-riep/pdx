@@ -7,34 +7,34 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/schema"
 )
 
-// Item ist ein Vorschlag der Vervollständigung.
+// Item is a suggestion of the completion.
 type Item struct {
 	Label string `json:"label"`
-	// Insert ersetzt den Bereich From bis To der Vervollständigung.
+	// Insert replaces the range From to To of the completion.
 	Insert string `json:"insert"`
-	// Kind ist element, attribute, function oder step.
+	// Kind is element, attribute, function or step.
 	Kind string `json:"kind"`
-	// Type ist der Datentyp eines Knotens oder die Signatur einer Funktion.
+	// Type is the data type of a node or the signature of a function.
 	Type string `json:"type"`
-	// Repeated markiert wiederholte Knoten.
+	// Repeated marks repeated nodes.
 	Repeated bool   `json:"repeated,omitempty"`
 	Optional bool   `json:"optional,omitempty"`
 	Doc      string `json:"doc,omitempty"`
 }
 
-// Completion sind die Vorschläge für die Stelle cursor.
+// Completion is the suggestions for the position cursor.
 type Completion struct {
 	From  int    `json:"from"`
 	To    int    `json:"to"`
 	Items []Item `json:"items"`
-	// Context ist der Knoten, dessen Kinder vorgeschlagen werden.
+	// Context is the node whose children are suggested.
 	Context string `json:"context"`
 }
 
-// Complete liefert Vorschläge für die Stelle cursor (Byte-Position) in expr.
+// Complete returns suggestions for the position cursor (byte position) in expr.
 func Complete(sc *schema.Schema, ctx, expr string, cursor int) Completion {
 	cursor = max(0, min(cursor, len(expr)))
-	// Das Wort vor dem Cursor: Namen, Präfixe, @ und Pfadschritte.
+	// The word before the cursor: names, prefixes, @ and path steps.
 	start := cursor
 	for start > 0 && (nameChar(expr[start-1]) || expr[start-1] == ':' || expr[start-1] == '@' || expr[start-1] == '/') {
 		start--
@@ -43,14 +43,14 @@ func Complete(sc *schema.Schema, ctx, expr string, cursor int) Completion {
 	if inString(expr[:start]) {
 		return Completion{From: cursor, To: cursor, Items: []Item{}}
 	}
-	// In einem Prädikat gilt der Schritt davor als Kontext.
+	// In a predicate the step before it is the context.
 	base := ctx
 	if p := openPredicate(expr[:start]); p >= 0 {
 		if pctx := pathBefore(sc, ctx, expr, p); pctx != "" {
 			base = pctx
 		}
 	}
-	// Präfix nach dem letzten Schrägstrich ergänzen, davor auflösen.
+	// Complete the prefix after the last slash, resolve what comes before.
 	from := start
 	partial := word
 	dir := ""
@@ -58,7 +58,7 @@ func Complete(sc *schema.Schema, ctx, expr string, cursor int) Completion {
 		dir, partial = word[:i], word[i+1:]
 		from = start + i + 1
 	}
-	// Bis zum Ende des Wortes nach dem Cursor ersetzen.
+	// Replace up to the end of the word after the cursor.
 	to := cursor
 	for to < len(expr) && (nameChar(expr[to]) || expr[to] == ':') {
 		to++
@@ -111,7 +111,7 @@ func Complete(sc *schema.Schema, ctx, expr string, cursor int) Completion {
 		if node != "" && strings.Contains(node, "/") && strings.HasPrefix("..", partial) {
 			out.Items = append(out.Items, Item{Label: "..", Insert: "..", Kind: "step", Doc: "Elternknoten"})
 		}
-		// Funktionen nur am Anfang eines Pfads, nach den Datenknoten.
+		// Functions only at the start of a path, after the data nodes.
 		for _, f := range functions {
 			if strings.HasPrefix(f.Label, strings.ToLower(partial)) {
 				out.Items = append(out.Items, f)
@@ -121,7 +121,7 @@ func Complete(sc *schema.Schema, ctx, expr string, cursor int) Completion {
 	return out
 }
 
-// resolve folgt einem relativen Pfad aus einfachen Schritten.
+// resolve follows a relative path of simple steps.
 func resolve(sc *schema.Schema, cur, rel string) string {
 	if sc == nil {
 		return unknown
@@ -149,13 +149,13 @@ func resolve(sc *schema.Schema, cur, rel string) string {
 	return cur
 }
 
-// inString meldet, ob s in einer offenen Zeichenkette endet.
+// inString reports whether s ends in an open string.
 func inString(s string) bool {
 	toks := lex(s)
 	return len(toks) > 0 && toks[len(toks)-1].kind == tBroken
 }
 
-// openPredicate liefert die Position der innersten offenen eckigen Klammer.
+// openPredicate returns the position of the innermost open square bracket.
 func openPredicate(s string) int {
 	var stack []int
 	for _, t := range lex(s) {
@@ -172,12 +172,12 @@ func openPredicate(s string) int {
 		if s[stack[i]] == '[' {
 			return stack[i]
 		}
-		return -1 // innerste Klammer ist rund: Funktionsargument
+		return -1 // innermost bracket is round: function argument
 	}
 	return -1
 }
 
-// pathBefore löst den Pfad unmittelbar vor der Klammer an pos auf.
+// pathBefore resolves the path immediately before the bracket at pos.
 func pathBefore(sc *schema.Schema, ctx, expr string, pos int) string {
 	start := pos
 	for start > 0 && (nameChar(expr[start-1]) || expr[start-1] == ':' || expr[start-1] == '@' || expr[start-1] == '/' || expr[start-1] == '.') {
@@ -199,7 +199,7 @@ func pathBefore(sc *schema.Schema, ctx, expr string, pos int) string {
 	return ""
 }
 
-// functions sind häufige Funktionen mit kurzer Beschreibung.
+// functions are common functions with a short description.
 var functions = func() []Item {
 	list := []struct{ name, sig, doc string }{
 		{"abs", "abs(zahl)", "Betrag einer Zahl"},

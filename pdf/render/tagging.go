@@ -9,14 +9,14 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// Tagged PDF (ISO 32000-1 14.7, 14.8): Aus dem Area Tree entsteht ein
-// logischer Strukturbaum. Ein Planungsdurchgang läuft vor dem Schreiben in
-// genau der Reihenfolge, in der der Renderer zeichnet, und legt für jeden
-// Bereich fest, ob er Inhalt eines Strukturelements (mit MCID) oder ein
-// Artefakt ist. Beim Zeichnen umschließt der Renderer jeden Bereich mit der
-// passenden markierten Inhaltsfolge, danach schreibt der Planer den Baum.
+// Tagged PDF (ISO 32000-1 14.7, 14.8): A logical structure tree is built
+// from the area tree. A planning pass runs before writing in
+// exactly the order in which the renderer draws, and decides for every
+// area whether it is content of a structure element (with MCID) or an
+// artifact. When drawing, the renderer encloses every area with the
+// matching marked-content sequence, afterwards the planner writes the tree.
 
-// structElem ist ein Strukturelement.
+// structElem is a structure element.
 type structElem struct {
 	typ    string
 	parent *structElem
@@ -24,18 +24,18 @@ type structElem struct {
 	alt    string
 	lang   string
 	scope  string
-	// colSpan und rowSpan sind die Spannen einer Tabellenzelle.
+	// colSpan and rowSpan are the spans of a table cell.
 	colSpan, rowSpan int
-	// label ist der zugängliche Name eines Formularfelds, form markiert das
-	// Form-Element eines Widgets.
+	// label is the accessible name of a form field, form marks the
+	// Form element of a widget.
 	label string
 	form  bool
-	id    string // Vorlagen-ID, für Meldungen
+	id    string // template ID, for messages
 	ref   pdf.Ref
-	// generic ist ein Block ohne Rolle: P mit eigenem Inhalt, sonst Div.
+	// generic is a block without a role: P with own content, otherwise Div.
 	generic bool
 	hasMC   bool
-	// Lage für die Lesereihenfolge positionierter Elemente.
+	// Position for the reading order of positioned elements.
 	positioned bool
 	order      int
 	located    bool
@@ -43,34 +43,34 @@ type structElem struct {
 	y, x       areatree.Length
 }
 
-// structKid ist ein Kind eines Strukturelements: Element, markierter
-// Inhalt (Seite und MCID) oder Annotation.
+// structKid is a kid of a structure element: element, marked
+// content (page and MCID) or annotation.
 type structKid struct {
 	elem *structElem
 	page int
 	mcid int
-	// annot ist eine Annotation: Link oder Widget.
+	// annot is an annotation: link or widget.
 	annot areatree.Area
 }
 
-// mark legt fest, wie ein Bereich gezeichnet wird.
+// mark defines how an area is drawn.
 type mark struct {
 	tag      pdf.Name
 	mcid     int
 	artifact bool
-	// actual ist ein Ersatztext für die ganze Folge, etwa bei
-	// abgeflachten Kontrollkästchen.
+	// actual is a replacement text for the whole sequence, for example for
+	// flattened check boxes.
 	actual string
-	// hyphen: die letzte Glyphe ist ein Trennstrich aus dem Zeilenumbruch.
+	// hyphen: the last glyph is a hyphen from the line break.
 	hyphen bool
 }
 
-// tagCtx ist der Zustand beim Abstieg in den Area Tree.
+// tagCtx is the state during the descent into the area tree.
 type tagCtx struct {
 	parent   *structElem
 	artifact bool
 	content  bool
-	// id ist die Vorlagen-ID des nächsten Containers, für Meldungen.
+	// id is the template ID of the next container, for messages.
 	id string
 }
 
@@ -79,42 +79,42 @@ type tableState struct {
 	rows     map[int]*structElem
 }
 
-// tagger plant den Strukturbaum eines Dokuments.
+// tagger plans the structure tree of a document.
 type tagger struct {
 	doc    *areatree.Document
 	root   *structElem
 	marks  map[areatree.Area]mark
-	pages  [][]*structElem // je Seite das Strukturelement je MCID
+	pages  [][]*structElem // per page the structure element per MCID
 	annots map[areatree.Area]int
-	// annotRefs sind die Annotationen in der Reihenfolge ihrer Schlüssel ab
-	// der Seitenzahl.
+	// annotRefs are the annotations in the order of their keys starting at
+	// the page count.
 	annotRefs []pdf.Ref
-	// state merkt sich je Quelle eines Containers den Zustand für Kinder
-	// und positionierte Nachfahren, last die letzte Instanz für
-	// Fortsetzungen auf Folgeseiten.
+	// state remembers per source of a container the state for kids
+	// and positioned descendants, last the last instance for
+	// continuations on following pages.
 	state  map[string]tagCtx
 	last   map[string]*structElem
 	tables map[*structElem]*tableState
 	cells  map[string]*structElem
 	links  map[string]*structElem
 	inline map[*structElem]map[string]*structElem
-	// linkText sammelt den Text je Verweis für /Contents der Annotation.
+	// linkText collects the text per link for /Contents of the annotation.
 	linkText map[string]*strings.Builder
-	// artifactLinks und artifactWidgets sind die Vorlagen-IDs von
-	// Verweisen und Formularfeldern in Artefakten.
+	// artifactLinks and artifactWidgets are the template IDs of
+	// links and form fields in artifacts.
 	artifactLinks, artifactWidgets []string
-	// labels sammelt den Text der Listenmarken je Liste für ListNumbering.
+	// labels collects the text of the list labels per list for ListNumbering.
 	labels map[*structElem]string
-	// pdf2 legt die Elemente in den Namespace von PDF 2.0
-	// (ISO 32000-2 14.8.6), wie PDF/UA-2 es für Document verlangt.
+	// pdf2 puts the elements into the namespace of PDF 2.0
+	// (ISO 32000-2 14.8.6), as PDF/UA-2 requires for Document.
 	pdf2 bool
-	// root ist das Objekt des StructTreeRoot, ns das des Namespace.
+	// root is the object of the StructTreeRoot, ns that of the namespace.
 	rootRef, ns pdf.Ref
-	// ids sind die vergebenen Element-IDs in Baumreihenfolge für den IDTree.
+	// ids are the assigned element IDs in tree order for the IDTree.
 	ids []idEntry
-	// texts sammelt den Text je Element für Analyze.
+	// texts collects the text per element for Analyze.
 	texts map[*structElem]*strings.Builder
-	// flatten: Widgets sind fester Seiteninhalt statt Annotationen.
+	// flatten: widgets are fixed page content instead of annotations.
 	flatten bool
 }
 
@@ -141,7 +141,7 @@ func newTagger(doc *areatree.Document) *tagger {
 	}
 }
 
-// plan geht alle Seiten durch und baut den Strukturbaum.
+// plan goes through all pages and builds the structure tree.
 func (t *tagger) plan() {
 	t.pages = make([][]*structElem, len(t.doc.Pages))
 	for pi, p := range t.doc.Pages {
@@ -152,8 +152,8 @@ func (t *tagger) plan() {
 	t.finish(t.root)
 }
 
-// foName liefert den lokalen Namen des FO-Elements aus der Quelle eines
-// Containers, etwa "table-cell" aus "fo:table-cell@12:5".
+// foName returns the local name of the FO element from the source of a
+// container, for example "table-cell" from "fo:table-cell@12:5".
 func foName(src string) string {
 	s := strings.TrimPrefix(src, "fo:")
 	if i := strings.IndexByte(s, '@'); i >= 0 {
@@ -191,7 +191,7 @@ func (t *tagger) walk(pi int, a areatree.Area, c tagCtx, top bool) {
 			t.artifactWidgets = append(t.artifactWidgets, v.ID)
 			return
 		}
-		// Je Widget ein Form-Element mit genau einer Objektreferenz
+		// One Form element per widget with exactly one object reference
 		// (ISO 14289-1 7.18.4, ISO 14289-2 8.10.1).
 		se := &structElem{typ: "Form", parent: c.parent, id: v.ID, label: v.Field.Label, form: true}
 		se.located, se.page, se.y, se.x = true, pi, v.Y, v.X
@@ -206,7 +206,7 @@ func (t *tagger) container(pi int, v *areatree.Container, c tagCtx, top bool) {
 	if v.Tag != nil {
 		tg = *v.Tag
 	}
-	// Positionierte Nachfahren setzen den Zustand ihres Vorfahren fort.
+	// Positioned descendants continue the state of their ancestor.
 	if tg.Parent != "" {
 		if st, ok := t.state[tg.Parent]; ok {
 			c = st
@@ -226,7 +226,7 @@ func (t *tagger) container(pi int, v *areatree.Container, c tagCtx, top bool) {
 		c.id = v.ID
 	}
 	if v.Background != nil || hasBorder(v.Border) {
-		t.marks[v] = mark{artifact: true} // Hintergrund und Rahmen sind Gestaltung
+		t.marks[v] = mark{artifact: true} // background and borders are decoration
 	}
 	if art {
 		st := tagCtx{parent: c.parent, artifact: true, id: c.id}
@@ -239,8 +239,8 @@ func (t *tagger) container(pi int, v *areatree.Container, c tagCtx, top bool) {
 	se := t.elemFor(pi, v, c.parent, tg)
 	if se != c.parent && !se.located {
 		se.located, se.page, se.y, se.x = true, pi, v.Y, v.X
-		// Positioniert ist ein Container auf Seitenebene außerhalb der
-		// Regionen sowie jeder mit positioniertem Vorfahren.
+		// Positioned is a container at page level outside the
+		// regions, and every one with a positioned ancestor.
 		if (top && v.Kind != areatree.KindRegion) || tg.Parent != "" {
 			se.positioned, se.order = true, tg.Order
 		}
@@ -263,7 +263,7 @@ func hasBorder(b [4]areatree.Border) bool {
 	return false
 }
 
-// roleTypes bildet die Rollen der Vorlage auf Strukturtypen ab
+// roleTypes maps the roles of the template to structure types
 // (ISO 32000-1 14.8.4).
 var roleTypes = map[string]string{
 	"H1": "H1", "H2": "H2", "H3": "H3", "H4": "H4", "H5": "H5", "H6": "H6",
@@ -273,8 +273,8 @@ var roleTypes = map[string]string{
 	"Reference": "Reference",
 }
 
-// elemFor liefert das Strukturelement eines Containers. Zeilen ohne Quelle
-// und Regionen sind durchlässig.
+// elemFor returns the structure element of a container. Lines without a source
+// and regions are transparent.
 func (t *tagger) elemFor(pi int, v *areatree.Container, parent *structElem, tg areatree.Tag) *structElem {
 	if v.Source == "" || v.Kind == areatree.KindLine || v.Kind == areatree.KindRegion {
 		return parent
@@ -294,7 +294,7 @@ func (t *tagger) elemFor(pi int, v *areatree.Container, parent *structElem, tg a
 			return se
 		}
 	}
-	// Ein Block ohne Rolle in einer Listenmarke gehört zur Marke.
+	// A block without a role in a list label belongs to the label.
 	if parent.typ == "Lbl" && fo == "block" && v.Role == "" && tg.Alt == "" && tg.Lang == "" {
 		return parent
 	}
@@ -328,8 +328,8 @@ func (t *tagger) elemFor(pi int, v *areatree.Container, parent *structElem, tg a
 
 var sectionTypes = map[string]string{"header": "THead", "body": "TBody", "footer": "TFoot"}
 
-// cell ordnet eine Zelle in Abschnitt und Zeile ihrer Tabelle oder ihres
-// Listenpunkts ein.
+// cell places a cell into the section and row of its table or its
+// list item.
 func (t *tagger) cell(v *areatree.Container, parent *structElem, tg areatree.Tag, fo string) *structElem {
 	ts := t.tables[parent]
 	if ts == nil {
@@ -396,8 +396,8 @@ func itoa(n int) string {
 	return string(b[i:])
 }
 
-// text plant einen Glyph-Run: Inhalt seines Elements, eines Verweises oder
-// eines Inline-Elements mit eigener Rolle oder Sprache.
+// text plans a glyph run: content of its element, of a link or
+// of an inline element with its own role or language.
 func (t *tagger) text(pi int, v *areatree.GlyphRun, c tagCtx) {
 	if c.artifact || v.Decor {
 		t.marks[v] = mark{artifact: true}
@@ -433,7 +433,7 @@ func (t *tagger) text(pi int, v *areatree.GlyphRun, c tagCtx) {
 			tb.WriteString(g.Text)
 		}
 	}
-	// Text einer Marke bestimmt die Nummerierung ihrer Liste.
+	// The text of a label determines the numbering of its list.
 	for e := target; e != nil; e = e.parent {
 		if e.typ == "Lbl" {
 			if li := e.parent; li != nil && li.parent != nil && li.parent.typ == "L" {
@@ -449,7 +449,7 @@ func (t *tagger) text(pi int, v *areatree.GlyphRun, c tagCtx) {
 	t.marks[v] = m
 }
 
-// figure plant ein Bild oder einen Barcode als Inhalt einer Abbildung.
+// figure plans an image or a barcode as content of a figure.
 func (t *tagger) figure(pi int, a areatree.Area, r areatree.Rect, id string, c tagCtx) {
 	if c.artifact {
 		t.marks[a] = mark{artifact: true}
@@ -466,7 +466,7 @@ func (t *tagger) figure(pi int, a areatree.Area, r areatree.Rect, id string, c t
 	t.marks[a] = t.content(pi, target, r)
 }
 
-// content vergibt die nächste MCID der Seite an ein Element.
+// content assigns the next MCID of the page to an element.
 func (t *tagger) content(pi int, se *structElem, r areatree.Rect) mark {
 	mcid := len(t.pages[pi])
 	t.pages[pi] = append(t.pages[pi], se)
@@ -478,8 +478,8 @@ func (t *tagger) content(pi int, se *structElem, r areatree.Rect) mark {
 	return mark{tag: pdf.Name(se.typ), mcid: mcid}
 }
 
-// linkElem liefert das Link-Element eines Verweises, das Text und
-// Annotation verbindet.
+// linkElem returns the Link element of a link, which connects text and
+// annotation.
 func (t *tagger) linkElem(parent *structElem, key string, r areatree.Rect, pi int) *structElem {
 	if se, ok := t.links[key]; ok && key != "" {
 		return se
@@ -492,8 +492,8 @@ func (t *tagger) linkElem(parent *structElem, key string, r areatree.Rect, pi in
 	return se
 }
 
-// inlineElem liefert das Element eines Inline-Elements mit Rolle oder
-// Sprache. Aufeinanderfolgende Runs desselben Elements teilen es.
+// inlineElem returns the element of an inline element with role or
+// language. Consecutive runs of the same element share it.
 func (t *tagger) inlineElem(parent *structElem, id string, it areatree.InlineTag) *structElem {
 	if it.Role == "" && it.Tag.Lang == "" && it.Tag.Alt == "" {
 		return parent
@@ -516,8 +516,8 @@ func (t *tagger) inlineElem(parent *structElem, id string, it areatree.InlineTag
 	return se
 }
 
-// finish legt die Typen allgemeiner Blöcke fest, entfernt leere Elemente
-// und ordnet positionierte Kinder in die Lesereihenfolge ein.
+// finish sets the types of generic blocks, removes empty elements
+// and places positioned kids into the reading order.
 func (t *tagger) finish(se *structElem) bool {
 	var kids []structKid
 	for _, k := range se.kids {
@@ -536,7 +536,7 @@ func (t *tagger) finish(se *structElem) bool {
 	}
 	se.kids = readingOrder(se.kids)
 	if se.typ == "Table" {
-		// Der Kopf wird nach dem Rumpf gezeichnet, gehört aber davor
+		// The header is drawn after the body but belongs before it
 		// (ISO 32000-1 14.8.4.3.4).
 		sort.SliceStable(se.kids, func(i, j int) bool {
 			return sectionRank(se.kids[i]) < sectionRank(se.kids[j])
@@ -560,9 +560,9 @@ func sectionRank(k structKid) int {
 	return 2
 }
 
-// readingOrder ordnet positionierte Kinder zwischen die übrigen ein: nach
-// readingOrder, sonst von oben nach unten und links nach rechts, jeweils vor
-// dem ersten fließenden Kind derselben Seite, das tiefer beginnt.
+// readingOrder places positioned kids between the others: by
+// readingOrder, otherwise top to bottom and left to right, each before
+// the first flowing kid of the same page that starts lower.
 func readingOrder(kids []structKid) []structKid {
 	var flow, pos []structKid
 	for _, k := range kids {
@@ -611,7 +611,7 @@ func readingOrder(kids []structKid) []structKid {
 	return append(out, flow[fi:]...)
 }
 
-// markOf liefert die Markierung eines Bereichs, false ohne Tagging.
+// markOf returns the marking of an area, false without tagging.
 func (t *tagger) markOf(a areatree.Area) (mark, bool) {
 	if t == nil {
 		return mark{}, false
@@ -619,8 +619,8 @@ func (t *tagger) markOf(a areatree.Area) (mark, bool) {
 	return t.marks[a], true
 }
 
-// annotation versieht eine Link-Annotation mit ihrem Schlüssel im
-// ParentTree und dem Linktext als /Contents (ISO 14289-1 7.18.1).
+// annotation gives a link annotation its key in the
+// ParentTree and the link text as /Contents (ISO 14289-1 7.18.1).
 func (t *tagger) annotation(l *areatree.Link, a *pdf.Dict, ref pdf.Ref) {
 	if !t.register(l, a, ref) {
 		return
@@ -630,8 +630,8 @@ func (t *tagger) annotation(l *areatree.Link, a *pdf.Dict, ref pdf.Ref) {
 	}
 }
 
-// register vergibt den Schlüssel einer Annotation im ParentTree und setzt
-// StructParent. false, wenn die Annotation nicht im Baum steht.
+// register assigns the key of an annotation in the ParentTree and sets
+// StructParent. false if the annotation is not in the tree.
 func (t *tagger) register(area areatree.Area, a *pdf.Dict, ref pdf.Ref) bool {
 	if _, ok := t.annots[area]; !ok {
 		return false
@@ -642,10 +642,10 @@ func (t *tagger) register(area areatree.Area, a *pdf.Dict, ref pdf.Ref) bool {
 	return true
 }
 
-// write schreibt den Strukturbaum und hängt ihn an den Katalog
+// write writes the structure tree and attaches it to the catalog
 // (ISO 32000-1 14.7.2, 14.7.4.4).
-// prepare reserviert die Objekte des Baums vor dem Zeichnen, damit
-// Annotationen und Lesezeichen auf Elemente verweisen können.
+// prepare reserves the objects of the tree before drawing so that
+// annotations and bookmarks can refer to elements.
 func (t *tagger) prepare(r *renderer) {
 	t.rootRef = r.d.Reserve()
 	if t.pdf2 {
@@ -654,11 +654,11 @@ func (t *tagger) prepare(r *renderer) {
 	t.reserve(r, t.root)
 }
 
-// ns20 ist der Namespace der Strukturtypen von PDF 2.0 (ISO 32000-2 14.8.6).
+// ns20 is the namespace of the structure types of PDF 2.0 (ISO 32000-2 14.8.6).
 const ns20 = "http://iso.org/pdf2/ssn"
 
-// destElem liefert das Strukturelement am Ziel eines Verweises, nil wenn das
-// Ziel eine Seite oder ein Artefakt ist.
+// destElem returns the structure element at the destination of a link, nil if
+// the destination is a page or an artifact.
 func (t *tagger) destElem(d areatree.Dest) *structElem {
 	st, ok := t.state[d.Source]
 	if !ok || st.artifact || st.parent == nil || st.parent == t.root {
@@ -700,7 +700,7 @@ func (t *tagger) write(r *renderer) {
 		str.Set("Namespaces", pdf.Array{t.ns})
 	}
 	if len(t.ids) > 0 {
-		// Der Namensbaum verlangt nach Bytes sortierte Schlüssel.
+		// The name tree requires keys sorted by bytes.
 		sort.Slice(t.ids, func(i, j int) bool { return t.ids[i].id < t.ids[j].id })
 		var arr pdf.Array
 		for _, e := range t.ids {
@@ -718,8 +718,8 @@ type annotKey struct {
 	elem *structElem
 }
 
-// sortedAnnots liefert die Annotationen nach Schlüssel mit ihrem
-// Link-Element.
+// sortedAnnots returns the annotations by key with their
+// Link element.
 func (t *tagger) sortedAnnots() []annotKey {
 	var out []annotKey
 	var visit func(se *structElem)
@@ -752,14 +752,14 @@ func (t *tagger) reserve(r *renderer, se *structElem) {
 func (t *tagger) writeElem(r *renderer, se *structElem, parent pdf.Ref) {
 	typ := se.typ
 	if t.pdf2 && typ == "Note" {
-		typ = "FENote" // Note gibt es im Namespace von PDF 2.0 nicht
+		typ = "FENote" // Note does not exist in the namespace of PDF 2.0
 	}
 	d := pdf.D("Type", pdf.Name("StructElem"), "S", pdf.Name(typ), "P", parent)
 	if t.pdf2 {
 		d.Set("NS", t.ns)
 	}
 	if typ == "Note" {
-		// PDF/UA-1 verlangt eine eindeutige ID je Note (ISO 14289-1 7.9).
+		// PDF/UA-1 requires a unique ID per Note (ISO 14289-1 7.9).
 		id := fmt.Sprintf("note-%d", len(t.ids)+1)
 		d.Set("ID", pdf.String(id))
 		t.ids = append(t.ids, idEntry{id, se.ref})
@@ -808,7 +808,7 @@ func (t *tagger) writeElem(r *renderer, se *structElem, parent pdf.Ref) {
 	if se.alt != "" {
 		d.Set("Alt", pdf.TextString(se.alt))
 	}
-	// Tabellenattribute (ISO 32000-1 14.8.5.7).
+	// Table attributes (ISO 32000-1 14.8.5.7).
 	if se.scope != "" || se.colSpan > 1 || se.rowSpan > 1 {
 		a := pdf.D("O", pdf.Name("Table"))
 		if se.scope != "" {
@@ -825,10 +825,10 @@ func (t *tagger) writeElem(r *renderer, se *structElem, parent pdf.Ref) {
 	r.d.Set(se.ref, d)
 }
 
-// listNumbering leitet die Nummerierung einer Liste aus dem Text ihrer
-// Marken ab (ISO 32000-1 14.8.5.5, Table 347). Ziffern ergeben Decimal,
-// Buchstaben LowerAlpha oder UpperAlpha, andere Zeichen ungeordnet: Disc in
-// PDF 1.7, Unordered in PDF 2.0. PDF/UA-2 verbietet None bei Marken
+// listNumbering derives the numbering of a list from the text of its
+// labels (ISO 32000-1 14.8.5.5, Table 347). Digits give Decimal,
+// letters LowerAlpha or UpperAlpha, other characters unordered: Disc in
+// PDF 1.7, Unordered in PDF 2.0. PDF/UA-2 forbids None for labels
 // (ISO 14289-2 8.2.5.25).
 func listNumbering(labels string, pdf2 bool) string {
 	for _, r := range labels {
@@ -847,10 +847,10 @@ func listNumbering(labels string, pdf2 bool) string {
 	return "Disc"
 }
 
-// tagWidget bindet ein Widget über sein Form-Element in den Strukturbaum
-// ein. Der zugängliche Name steht als TU am Feld (ISO 14289-1 7.18.1) und
-// als Contents am Widget, das PDF/UA-2 ohne Lbl verlangt (ISO 14289-2
-// 8.10.2.3). Bei Optionsfeldern nennt Contents zusätzlich die Option.
+// tagWidget binds a widget into the structure tree through its Form element.
+// The accessible name is TU on the field (ISO 14289-1 7.18.1) and
+// Contents on the widget, which PDF/UA-2 requires without Lbl (ISO 14289-2
+// 8.10.2.3). For radio buttons, Contents additionally names the option.
 func (r *renderer) tagWidget(w *areatree.Widget, annot *pdf.Dict, ref pdf.Ref) {
 	if r.tag == nil || !r.tag.register(w, annot, ref) {
 		return
@@ -864,10 +864,10 @@ func (r *renderer) tagWidget(w *areatree.Widget, annot *pdf.Dict, ref pdf.Ref) {
 	}
 }
 
-// flatWidget plant ein abgeflachtes Formularfeld als Inhalt seines
-// Absatzes. Weil der Text im Form XObject steht, trägt die Folge den Wert
-// als Ersatztext, Schaltflächen Bezeichnung und Zustand. Leere Felder und
-// Signaturfelder sind nur Gestaltung.
+// flatWidget plans a flattened form field as content of its
+// paragraph. Because the text is in the form XObject, the sequence carries
+// the value as replacement text, buttons carry label and state. Empty fields
+// and signature fields are only decoration.
 func (t *tagger) flatWidget(pi int, v *areatree.Widget, c tagCtx) {
 	f := v.Field
 	empty := (f.Type == "text" || f.Type == "combo" || f.Type == "list") && strings.TrimSpace(f.Value) == ""
@@ -875,8 +875,8 @@ func (t *tagger) flatWidget(pi int, v *areatree.Widget, c tagCtx) {
 		t.marks[v] = mark{artifact: true}
 		return
 	}
-	// Der Inhalt gehört zum umgebenden Absatz, etwa zusammen mit dem Text
-	// einer Option.
+	// The content belongs to the enclosing paragraph, for example together with
+	// the text of an option.
 	m := t.content(pi, c.parent, v.Rect)
 	switch f.Type {
 	case "text":
@@ -888,7 +888,7 @@ func (t *tagger) flatWidget(pi int, v *areatree.Widget, c tagCtx) {
 		}
 		m.actual = strings.TrimSpace(f.Label + ": " + state)
 	case "radio":
-		// Der Text der Option folgt im selben Absatz.
+		// The text of the option follows in the same paragraph.
 		m.actual = "nicht gewählt:"
 		if f.Value == f.Export {
 			m.actual = "gewählt:"
@@ -899,7 +899,7 @@ func (t *tagger) flatWidget(pi int, v *areatree.Widget, c tagCtx) {
 	t.marks[v] = m
 }
 
-// optionLabelOf liefert den Text der gewählten Option.
+// optionLabelOf returns the text of the selected option.
 func optionLabelOf(f areatree.Field) string {
 	for _, o := range f.Options {
 		if o.Value == f.Value {

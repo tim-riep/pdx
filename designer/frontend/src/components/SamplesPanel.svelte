@@ -15,7 +15,7 @@
     }
   }
 
-  // Neu laden nach jeder Änderung am Dokument und nach Auswahl.
+  // Reload after every change to the document and after selection.
   $effect(() => {
     void project.rev;
     void project.doc;
@@ -51,7 +51,7 @@
     await load();
   }
 
-  // Befunde der Prüfung je Datei (Beispieldaten gegen das Daten-XSD).
+  // Findings of the check per file (sample data against the data XSD).
   const findings = $derived.by(() => {
     const out: Record<string, number> = {};
     for (const p of problems.report?.problems ?? []) if (p.file) out[p.file] = (out[p.file] ?? 0) + 1;

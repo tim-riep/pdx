@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-// Dump serialisiert den Area Tree in ein stabiles, zeilenorientiertes
-// Textformat. Es dient Golden-File-Tests und der Fehlersuche. Gleiche Bäume
-// ergeben gleiche Bytes.
+// Dump serializes the area tree into a stable, line-oriented
+// text format. It serves golden file tests and debugging. Equal trees
+// yield equal bytes.
 func Dump(d *Document) []byte {
 	var b bytes.Buffer
 	b.WriteString("document")

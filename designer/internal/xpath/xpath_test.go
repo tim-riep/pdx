@@ -28,7 +28,7 @@ func TestPaths(t *testing.T) {
 	_, sc := load(t)
 	cases := []struct {
 		ctx, expr string
-		problems  []string // markierter Text der Befunde
+		problems  []string // marked text of the findings
 		target    string
 	}{
 		{inv, "inv:number", nil, inv + "/inv:number"},
@@ -49,7 +49,7 @@ func TestPaths(t *testing.T) {
 		{inv, "if (inv:paymentTerms) then 1 else 0", nil, ""},
 		{inv, "inv:items//inv:egal", nil, ""},
 		{inv, "sum(inv:items/inv:item/inv:amount) div 2", nil, ""},
-		{inv, "inv:number and or", []string{"or"}, ""}, // or ist hier ein Elementname
+		{inv, "inv:number and or", []string{"or"}, ""}, // or is an element name here
 	}
 	for _, c := range cases {
 		probs, target := Paths(sc, c.ctx, c.expr)
@@ -107,7 +107,7 @@ func TestEval(t *testing.T) {
 	if !r.NoContext {
 		t.Fatalf("fehlender Kontext: %+v", r)
 	}
-	// Platzhalterdaten taugen ebenso.
+	// Placeholder data works just as well.
 	r = Eval("count(inv:items/inv:item)", inv, ns, sc.Placeholder())
 	if r.Values[0] != "3" {
 		t.Fatalf("Platzhalter: %+v", r)
@@ -133,57 +133,57 @@ func TestComplete(t *testing.T) {
 		}
 		return true
 	}
-	// Leer: alle Kinder des Kontexts.
+	// Empty: all children of the context.
 	c := Complete(sc, inv, "", 0)
 	if !has(c, "inv:number", "inv:items", "inv:totals") || c.From != 0 || c.To != 0 {
 		t.Fatalf("leer: %v %+v", labels(c), c)
 	}
-	// Anfang des lokalen Namens genügt, Funktionen dazu.
+	// The start of the local name is enough, plus functions.
 	c = Complete(sc, inv, "nu", 2)
 	if !has(c, "inv:number", "number", "normalize-space") == has(c, "normalize-space") || !has(c, "inv:number", "number") || c.From != 0 {
 		t.Fatalf("nu: %v", labels(c))
 	}
-	// Nach einem Schritt die Kinder des Schritts, ohne Funktionen.
+	// After a step the children of the step, without functions.
 	expr := "inv:items/inv:item/inv:am"
 	c = Complete(sc, inv, expr, len(expr))
 	if !reflect.DeepEqual(labels(c), []string{"inv:amount"}) || c.From != len("inv:items/inv:item/") || c.Context != inv+"/inv:items/inv:item" {
 		t.Fatalf("Pfad: %v %+v", labels(c), c)
 	}
-	// Attribute
+	// Attributes
 	expr = "inv:items/inv:item/inv:quantity/@"
 	c = Complete(sc, inv, expr, len(expr))
 	if !reflect.DeepEqual(labels(c), []string{"@unit"}) {
 		t.Fatalf("Attribut: %v", labels(c))
 	}
-	// Im Prädikat gilt der Schritt davor.
+	// In a predicate the step before it applies.
 	expr = "inv:items/inv:item[inv:a"
 	c = Complete(sc, inv, expr, len(expr))
 	if !reflect.DeepEqual(labels(c), []string{"inv:amount"}) {
 		t.Fatalf("Prädikat: %v", labels(c))
 	}
-	// In Funktionsargumenten der äußere Kontext.
+	// In function arguments the outer context.
 	expr = "sum(inv:to"
 	c = Complete(sc, inv, expr, len(expr))
 	if !has(c, "inv:totals") {
 		t.Fatalf("Argument: %v", labels(c))
 	}
-	// In einer Zeichenkette nichts.
+	// Nothing in a string.
 	expr = "concat('inv:"
 	if c = Complete(sc, inv, expr, len(expr)); len(c.Items) != 0 {
 		t.Fatalf("Zeichenkette: %v", labels(c))
 	}
-	// Mitten im Wort ersetzt der Vorschlag das ganze Wort.
+	// In the middle of a word the suggestion replaces the whole word.
 	expr = "inv:numXX"
 	c = Complete(sc, inv, expr, 7)
 	if c.From != 0 || c.To != len(expr) {
 		t.Fatalf("Bereich: %+v", c)
 	}
-	// Elternschritt in tieferem Kontext.
+	// Parent step in a deeper context.
 	c = Complete(sc, inv+"/inv:items/inv:item", ".", 1)
 	if !has(c, "..") {
 		t.Fatalf("Eltern: %v", labels(c))
 	}
-	// Absolut
+	// Absolute
 	expr = "/inv:invoice/inv:sel"
 	c = Complete(sc, inv+"/inv:items/inv:item", expr, len(expr))
 	if !reflect.DeepEqual(labels(c), []string{"inv:seller"}) {

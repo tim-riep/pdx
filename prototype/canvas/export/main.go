@@ -1,8 +1,8 @@
-// Befehl export schreibt den Area Tree der Musterrechnung als kompaktes JSON
-// für den Canvas-Prototyp, dazu die verwendeten Schriften. Nur für den
-// Prototyp von Phase 2, kein Teil der Engine.
+// Command export writes the area tree of the sample invoice as compact JSON
+// for the canvas prototype, plus the fonts used. Only for the
+// phase 2 prototype, not part of the engine.
 //
-// Aufruf aus dem Wurzelverzeichnis: go run ./prototype/canvas/export
+// Call from the root directory: go run ./prototype/canvas/export
 package main
 
 import (
@@ -39,8 +39,8 @@ type page struct {
 	W    float64 `json:"w"`
 	H    float64 `json:"h"`
 	Draw []any   `json:"draw"`
-	// Els sind die Bereiche der Seite mit der ID ihres Vorlagenelements, in
-	// Zeichenreihenfolge. Wiederholte Elemente kommen mehrfach vor.
+	// Els are the areas of the page with the ID of their template element, in
+	// drawing order. Repeated elements occur several times.
 	Els []el `json:"els"`
 }
 
@@ -54,7 +54,7 @@ type rectItem struct {
 	ID string     `json:"id,omitempty"`
 	R  [4]float64 `json:"r"`
 	Bg string     `json:"bg,omitempty"`
-	// B sind die Rahmen oben, rechts, unten, links als [Breite, Farbe].
+	// B are the borders top, right, bottom, left as [width, color].
 	B []any `json:"b,omitempty"`
 }
 
@@ -178,7 +178,7 @@ func run() error {
 	return nil
 }
 
-// fontFiles ordnet die eingebetteten Liberation-Dateien ihrem PostScript-Namen zu.
+// fontFiles maps the embedded Liberation files to their PostScript name.
 func fontFiles() (map[string]string, error) {
 	entries, err := fonts.FS.ReadDir("liberation")
 	if err != nil {

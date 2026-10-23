@@ -12,7 +12,7 @@ test("Ansicht PDF zeigt das erzeugte PDF mit pdf.js", async ({ page }) => {
   const view = page.getByTestId("pdf-view");
   await expect(view.getByTestId("pdf-info")).toHaveText("3 Seiten, PDF/A-3b", { timeout: 15000 });
   await expect(view.locator("canvas[data-pdf-page]")).toHaveCount(3);
-  // Die Seite ist gezeichnet: nicht nur weiß.
+  // The page is drawn: not only white.
   const inked = await view.locator('canvas[data-pdf-page="1"]').evaluate((c) => {
     const ctx = (c as HTMLCanvasElement).getContext("2d")!;
     const d = ctx.getImageData(0, 0, (c as HTMLCanvasElement).width, (c as HTMLCanvasElement).height).data;
@@ -23,7 +23,7 @@ test("Ansicht PDF zeigt das erzeugte PDF mit pdf.js", async ({ page }) => {
   expect(inked).toBeGreaterThan(500);
   expect(external).toEqual([]);
 
-  // Speichern: im Browser über die Pfadabfrage.
+  // Save: in the browser via the path prompt.
   const { mkdtempSync, existsSync } = await import("node:fs");
   const { tmpdir } = await import("node:os");
   const { join } = await import("node:path");

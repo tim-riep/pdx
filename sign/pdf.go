@@ -21,7 +21,7 @@ import (
 	"github.com/tim-riep/pdx/pdf/reader"
 )
 
-// Level ist eine Stufe von PAdES baseline (ETSI EN 319 142-1 6.1).
+// Level is a level of PAdES baseline (ETSI EN 319 142-1 6.1).
 type Level string
 
 const (
@@ -33,35 +33,35 @@ const (
 
 var levelRank = map[Level]int{LevelB: 0, LevelT: 1, LevelLT: 2, LevelLTA: 3}
 
-// PDFOptions steuert das Signieren eines PDF.
+// PDFOptions controls the signing of a PDF.
 type PDFOptions struct {
 	Level Level
-	// TSA liefert Zeitstempel, Pflicht ab B-T.
+	// TSA provides timestamps, required from B-T on.
 	TSA *TSA
-	// Field ist der Name eines vorhandenen, unsignierten Signaturfelds.
-	// Leer legt pdx ein unsichtbares Feld an.
+	// Field is the name of an existing unsigned signature field.
+	// If empty, pdx creates an invisible field.
 	Field string
-	// Angaben im Signaturdictionary (ISO 32000-1 12.8.1).
+	// Entries in the signature dictionary (ISO 32000-1 12.8.1).
 	Reason, Location, ContactInfo, Name string
-	// Time ist die behauptete Signaturzeit für /M, Vorgabe jetzt.
+	// Time is the claimed signing time for /M, default now.
 	Time time.Time
-	// Reserve ist der Platz für den CMS-Container in Bytes, Vorgabe 16 KiB.
+	// Reserve is the space for the CMS container in bytes, default 16 KiB.
 	Reserve int
-	// Client holt Zertifikate, OCSP-Antworten und CRLs für B-LT, Vorgabe
-	// mit 30 Sekunden Zeitlimit.
+	// Client fetches certificates, OCSP responses and CRLs for B-LT, default
+	// with a 30 second timeout.
 	Client *http.Client
 }
 
-// SignPDF signiert ein fertiges PDF nach PAdES baseline in der gewählten
-// Stufe, ausschließlich per inkrementellem Update (ISO 32000-1 7.5.6), damit
-// PDF/A-Konformität und frühere Signaturen erhalten bleiben.
+// SignPDF signs a finished PDF according to PAdES baseline at the chosen
+// level, exclusively by incremental update (ISO 32000-1 7.5.6), so that
+// PDF/A conformance and earlier signatures are preserved.
 //
-// Signaturdictionary nach ETSI EN 319 142-1 6.3: Filter Adobe.PPKLite,
-// SubFilter ETSI.CAdES.detached, ByteRange über die ganze Datei außer
-// Contents, Zeit in M, kein Cert. B-T fügt einen Zeitstempel über die
-// Signatur als unsigniertes Attribut hinzu, B-LT einen DSS mit Zertifikaten,
-// OCSP-Antworten und CRLs (5.4.2), B-LTA danach einen Dokument-Zeitstempel
-// (5.4.3) und erneut den DSS.
+// Signature dictionary according to ETSI EN 319 142-1 6.3: Filter Adobe.PPKLite,
+// SubFilter ETSI.CAdES.detached, ByteRange over the whole file except
+// Contents, time in M, no Cert. B-T adds a timestamp over the
+// signature as an unsigned attribute, B-LT a DSS with certificates,
+// OCSP responses and CRLs (5.4.2), B-LTA after that a document timestamp
+// (5.4.3) and the DSS again.
 func SignPDF(ctx context.Context, in []byte, s Signer, opt PDFOptions) ([]byte, error) {
 	if opt.Level == "" {
 		opt.Level = LevelB
@@ -152,8 +152,8 @@ func SignPDF(ctx context.Context, in []byte, s Signer, opt PDFOptions) ([]byte, 
 	return addDSS(ctx, out, nil, [][]byte{docToken}, opt)
 }
 
-// checkValidity lehnt Zertifikate ab, die zur Signaturzeit noch nicht oder
-// nicht mehr gelten.
+// checkValidity rejects certificates that are not yet or no longer
+// valid at the signing time.
 func checkValidity(certs []*x509.Certificate, at time.Time) error {
 	var errs []error
 	for _, c := range certs {
@@ -167,13 +167,13 @@ func checkValidity(certs []*x509.Certificate, at time.Time) error {
 	return errors.Join(errs...)
 }
 
-// byteRangeMark ist der Platzhalter der ByteRange mit fester Breite.
+// byteRangeMark is the placeholder of the ByteRange with a fixed width.
 var byteRangeMark = pdf.Array{pdf.Int(0), pdf.Int(1111111111), pdf.Int(2222222222), pdf.Int(3333333333)}
 
-// signRevision hängt ein Signaturdictionary an ein Signaturfeld und setzt
-// nach dem Schreiben ByteRange und Contents ein. contents liefert aus den
-// Bytes der ByteRange den Inhalt von Contents (CMS oder Zeitstempel). Ein
-// sichtbares Feld aus der Vorlage zeigt danach lines.
+// signRevision attaches a signature dictionary to a signature field and fills
+// in ByteRange and Contents after writing. contents returns the content of
+// Contents (CMS or timestamp) from the bytes of the ByteRange. A
+// visible field from the template shows lines afterwards.
 func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, lines []string, reserve int, contents func([]byte) ([]byte, error)) ([]byte, error) {
 	u, err := incr.Open(in)
 	if err != nil {
@@ -206,9 +206,9 @@ func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, lines []st
 		if field.Has("V") {
 			return nil, fmt.Errorf("Signaturfeld %q ist bereits signiert", fieldName)
 		}
-		// Feld und Widget sind bei pdx ein Objekt. Das neue Bild nennt
-		// Unterzeichner und Zeit, Contents trägt denselben Text für
-		// Hilfstechnik (ISO 32000-1 12.5.2, ISO 14289-2 8.10.2.3).
+		// In pdx, field and widget are one object. The new image names the
+		// signer and the time, Contents carries the same text for
+		// assistive technology (ISO 32000-1 12.5.2, ISO 14289-2 8.10.2.3).
 		if ap := signatureAppearance(f, f.Dict(r), lines); ap != nil && !field.Has("Kids") {
 			field.Set("AP", pdf.D("N", u.Add(ap)))
 			field.Set("Contents", pdf.TextString(strings.Join(lines, ", ")))
@@ -220,8 +220,8 @@ func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, lines []st
 		}
 		page := pdf.Ref{Num: pageRefs[0].Num}
 		fieldRef = u.Reserve()
-		// Unsichtbares Widget ohne Fläche: kein Erscheinungsbild nötig
-		// (ISO 19005-2 6.3.3), F mit Print (6.3.2).
+		// Invisible widget without area: no appearance needed
+		// (ISO 19005-2 6.3.3), F with Print (6.3.2).
 		field = pdf.D(
 			"FT", pdf.Name("Sig"),
 			"T", pdf.TextString(uniqueName(f, prefix)),
@@ -243,7 +243,7 @@ func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, lines []st
 	field.Set("V", sigRef)
 	u.Set(fieldRef, field)
 	acro.Set("Fields", fields)
-	// SignaturesExist und AppendOnly (ISO 32000-1 Tabelle 219).
+	// SignaturesExist and AppendOnly (ISO 32000-1 Table 219).
 	acro.Set("SigFlags", pdf.Int(3))
 	if acroRef.Num != 0 {
 		u.Set(acroRef, acro)
@@ -285,8 +285,8 @@ func signRevision(in []byte, fieldName, prefix string, sig *pdf.Dict, lines []st
 	return data, nil
 }
 
-// acroForm liefert das AcroForm-Dictionary zum Ändern und seinen Verweis,
-// wenn es ein eigenes Objekt ist.
+// acroForm returns the AcroForm dictionary for changing and its reference,
+// if it is a separate object.
 func acroForm(u *incr.Update, cat *pdf.Dict) (*pdf.Dict, pdf.Ref, error) {
 	switch v := cat.Get("AcroForm").(type) {
 	case pdf.Ref:
@@ -295,7 +295,7 @@ func acroForm(u *incr.Update, cat *pdf.Dict) (*pdf.Dict, pdf.Ref, error) {
 			return nil, pdf.Ref{}, err
 		}
 		if fr, ok := d.Get("Fields").(pdf.Ref); ok {
-			// Fields als eigenes Objekt wird zum direkten Array.
+			// Fields as a separate object becomes a direct array.
 			o, err := u.Object(fr)
 			if err != nil {
 				return nil, pdf.Ref{}, err
@@ -311,7 +311,7 @@ func acroForm(u *incr.Update, cat *pdf.Dict) (*pdf.Dict, pdf.Ref, error) {
 	return nil, pdf.Ref{}, errors.New("AcroForm hat einen unerwarteten Typ")
 }
 
-// findField sucht ein Feld nach vollem Namen.
+// findField looks up a field by its full name.
 func findField(f *reader.File, acro reader.Object, name string) (reader.Ref, bool) {
 	var found reader.Ref
 	var walk func(o reader.Object, prefix string, depth int) bool
@@ -348,7 +348,7 @@ func findField(f *reader.File, acro reader.Object, name string) (reader.Ref, boo
 	return reader.Ref{}, false
 }
 
-// uniqueName liefert einen freien Feldnamen wie Signatur1.
+// uniqueName returns a free field name like Signatur1.
 func uniqueName(f *reader.File, prefix string) string {
 	used := map[string]bool{}
 	for _, fl := range f.Fields() {
@@ -362,7 +362,7 @@ func uniqueName(f *reader.File, prefix string) string {
 	}
 }
 
-// addAnnot hängt eine Annotation an die Seite.
+// addAnnot attaches an annotation to the page.
 func addAnnot(u *incr.Update, page, annot pdf.Ref) error {
 	pd, err := u.Dict(page)
 	if err != nil {
@@ -386,7 +386,7 @@ func addAnnot(u *incr.Update, page, annot pdf.Ref) error {
 	return nil
 }
 
-// validation sammelt Zertifikate und Sperrinformationen für den DSS.
+// validation collects certificates and revocation information for the DSS.
 type validation struct {
 	opt   PDFOptions
 	ctx   context.Context
@@ -397,9 +397,9 @@ type validation struct {
 	errs  []error
 }
 
-// addDSS hängt einen DSS mit allem an, was die Prüfung der Signatur und
-// der Zeitstempel braucht: Zertifikate bis zur Wurzel, OCSP-Antworten und
-// CRLs (ETSI EN 319 142-1 6.3 r, s). Ein vorhandener DSS wird übernommen
+// addDSS appends a DSS with everything that verifying the signature and
+// the timestamps needs: certificates up to the root, OCSP responses and
+// CRLs (ETSI EN 319 142-1 6.3 r, s). An existing DSS is taken over
 // (5.4.1).
 func addDSS(ctx context.Context, in []byte, certs []*x509.Certificate, tokens [][]byte, opt PDFOptions) ([]byte, error) {
 	v := &validation{opt: opt, ctx: ctx, seen: map[string]bool{}}
@@ -463,8 +463,8 @@ func addDSS(ctx context.Context, in []byte, certs []*x509.Certificate, tokens []
 	return res.Data, nil
 }
 
-// chain nimmt eine Kette auf, ergänzt fehlende Aussteller über AIA bis zur
-// Wurzel und holt für jedes Zertifikat außer der Wurzel OCSP und CRL.
+// chain takes in a chain, adds missing issuers via AIA up to the
+// root and fetches OCSP and CRL for every certificate except the root.
 func (v *validation) chain(certs []*x509.Certificate) {
 	pool := append([]*x509.Certificate(nil), certs...)
 	for i := 0; i < len(pool) && i < 16; i++ {
@@ -511,8 +511,8 @@ func findIssuer(c *x509.Certificate, pool []*x509.Certificate) *x509.Certificate
 	return nil
 }
 
-// revocation holt OCSP-Antwort und CRL zu einem Zertifikat. Ein gesperrtes
-// Zertifikat ist ein Fehler, fehlt jede Sperrinformation ebenso.
+// revocation fetches the OCSP response and CRL for a certificate. A revoked
+// certificate is an error, and so is missing all revocation information.
 func (v *validation) revocation(c, issuer *x509.Certificate) {
 	got := false
 	for _, url := range c.OCSPServer {

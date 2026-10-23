@@ -7,8 +7,8 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// fake ist ein Profil für Tests der Kombinationsregeln, bevor die echten
-// Profile für PDF/UA und PDF/A-4 existieren.
+// fake is a profile for tests of the combination rules, before the real
+// profiles for PDF/UA and PDF/A-4 exist.
 type fake struct {
 	name string
 	c    Claim
@@ -65,7 +65,7 @@ func TestLookupCombinations(t *testing.T) {
 	}
 }
 
-// Unzulässige Kombinationen nennen alle Gründe auf einmal.
+// Invalid combinations name all reasons at once.
 func TestLookupRejects(t *testing.T) {
 	cases := map[string][]string{
 		"test-a3a,test-ua2":          {"verlangt PDF 1.7", "verlangt PDF 2.0"},
@@ -104,8 +104,8 @@ func TestSetAllow(t *testing.T) {
 	}
 }
 
-// PDF/A-4 beruht auf PDF 2.0 und passt nicht zu PDF/UA-1, pdf-2.0 hat
-// keinen Anspruch und lässt sich nicht kombinieren.
+// PDF/A-4 is based on PDF 2.0 and does not fit PDF/UA-1, pdf-2.0 has
+// no claim and cannot be combined.
 func TestPDF20Combinations(t *testing.T) {
 	for spec, want := range map[string]string{
 		"pdfa-4,pdfua-1":  "beide lassen sich nicht kombinieren",

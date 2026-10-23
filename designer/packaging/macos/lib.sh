@@ -19,8 +19,8 @@ codesign_path() {
   codesign --force --options runtime --timestamp --sign "$MACOS_SIGN_IDENTITY" "$1"
 }
 
-# Variablen der Funktionen beginnen mit _n_, die Skripte, die diese Datei
-# einbinden, teilen sich sonst Namen wie out mit ihnen.
+# Variables of the functions start with _n_, otherwise the scripts that
+# source this file share names such as out with them.
 notary_args() {
   if [ -n "${NOTARY_KEY_PATH:-}" ] && [ -n "${NOTARY_KEY_ID:-}" ] && [ -n "${NOTARY_ISSUER_ID:-}" ]; then
     printf '%s\n' --key "$NOTARY_KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID"

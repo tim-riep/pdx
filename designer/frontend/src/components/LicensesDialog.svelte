@@ -19,7 +19,7 @@
     full = l.full;
   });
 
-  // Index 0 ist der Designer selbst, danach die Fremdbestandteile.
+  // Index 0 is the designer itself, then the third-party parts.
   const all = $derived(own ? [own, ...entries] : entries);
   const shown = $derived(
     all.map((e, i) => ({ e, i })).filter(({ e }) => {
@@ -57,7 +57,7 @@
           {/each}
         </ul>
       </div>
-      <!-- Scrollbare Bereiche müssen per Tastatur erreichbar sein (WCAG 2.1.1). -->
+      <!-- Scrollable areas must be reachable by keyboard (WCAG 2.1.1). -->
       <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
       <pre class="text" data-testid="licenses-text" role="region" aria-label={current?.name ?? t("licenses.title")} tabindex="0">{current?.text ?? ""}</pre>
     </div>

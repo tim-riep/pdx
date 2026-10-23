@@ -9,17 +9,17 @@ import (
 	"github.com/tim-riep/pdx/pdf/reader"
 )
 
-// winAnsiFont ist eine Schrift aus der Standardressource DR des Formulars.
+// winAnsiFont is a font from the default resources DR of the form.
 type winAnsiFont struct {
 	ref    pdf.Ref
 	first  int
 	widths []float64
 }
 
-// drFont sucht in DR eine eingebettete einfache Schrift mit
-// WinAnsiEncoding. pdx legt sie für Formulare an (ISO 32000-1 12.7.3.3),
-// PDF/A verlangt eingebettete Schriften (ISO 19005-2 6.2.11.4), daher kommt
-// keine neue Schrift ins Update.
+// drFont searches DR for an embedded simple font with
+// WinAnsiEncoding. pdx creates it for forms (ISO 32000-1 12.7.3.3),
+// PDF/A requires embedded fonts (ISO 19005-2 6.2.11.4), so no
+// new font goes into the update.
 func drFont(f *reader.File) *winAnsiFont {
 	fonts := f.Dict(f.Dict(f.Dict(f.Root()["AcroForm"])["DR"])["Font"])
 	for _, v := range fonts {
@@ -50,7 +50,7 @@ func drFont(f *reader.File) *winAnsiFont {
 	return nil
 }
 
-// encode kodiert Text in WinAnsi, nicht darstellbare Zeichen werden zu ?.
+// encode encodes text in WinAnsi, characters that cannot be represented become ?.
 func (wf *winAnsiFont) encode(s string) []byte {
 	var out []byte
 	for _, r := range s {
@@ -71,10 +71,10 @@ func (wf *winAnsiFont) width(b byte) float64 {
 	return wf.widths[i]
 }
 
-// signatureAppearance baut das Erscheinungsbild eines sichtbaren
-// Signaturfelds: den bisherigen Hintergrund des Felds und darüber die
-// Zeilen in der Schrift aus DR, so groß wie es passt, höchstens 10 pt. Ohne
-// passende Schrift oder Fläche liefert es nil, das Feld behält sein Bild.
+// signatureAppearance builds the appearance of a visible
+// signature field: the previous background of the field and on top of it the
+// lines in the font from DR, as large as fits, at most 10 pt. Without
+// a suitable font or area it returns nil, the field keeps its image.
 func signatureAppearance(f *reader.File, widget reader.Dict, lines []string) *pdf.Stream {
 	rect := f.Array(widget["Rect"])
 	if len(rect) != 4 {

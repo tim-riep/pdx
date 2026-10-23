@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Smoke-Test des nativen Designers in CI: starten, Musterrechnung setzen,
-# beenden. Auf dem Windows-Runner fehlt eine interaktive Sitzung, dort
-# scheitert WebView2 nach dem Setzen der Seite. Genau dieser Fall gilt als
-# Warnung, wenn die Engine die Seite gemeldet hat, jeder andere Fehler zählt.
+# Smoke test of the native designer in CI: start, typeset the sample invoice,
+# quit. The Windows runner has no interactive session, so WebView2 fails
+# there after the page has been typeset. Exactly this case counts as a
+# warning if the engine has reported the page, every other error counts.
 set -uo pipefail
 cd "$(dirname "$0")"
 EXT=""; [ "${RUNNER_OS:-}" = "Windows" ] && EXT=".exe"
 SMOKE=(../out/pdx-designer$EXT --smoke --open ../testdata/templates/musterrechnung)
 log=$(mktemp)
 if [ "${RUNNER_OS:-}" = "Linux" ]; then
-  # Ohne Benutzernamensräume scheitert die Sandbox von WebKitGTK.
+  # Without user namespaces the sandbox of WebKitGTK fails.
   WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1 xvfb-run -a "${SMOKE[@]}" 2>&1 | tee "$log"
 else
   "${SMOKE[@]}" 2>&1 | tee "$log"

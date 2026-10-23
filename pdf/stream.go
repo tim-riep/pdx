@@ -5,15 +5,15 @@ import (
 	"compress/zlib"
 )
 
-// Stream ist ein Stream-Objekt. Data enthält die bereits kodierten Bytes,
-// Dict den Stream-Dictionary ohne /Length, das beim Schreiben gesetzt wird.
+// Stream is a stream object. Data contains the already encoded bytes,
+// Dict the stream dictionary without /Length, which is set when writing.
 type Stream struct {
 	Dict *Dict
 	Data []byte
 }
 
-// NewStream legt einen Stream mit bereits kodierten Daten an. Ein eventueller
-// Filter muss im Dictionary stehen.
+// NewStream creates a stream with already encoded data. Any
+// filter must be in the dictionary.
 func NewStream(dict *Dict, data []byte) *Stream {
 	if dict == nil {
 		dict = NewDict()
@@ -21,8 +21,8 @@ func NewStream(dict *Dict, data []byte) *Stream {
 	return &Stream{Dict: dict, Data: data}
 }
 
-// NewFlateStream komprimiert raw mit Flate und setzt /Filter /FlateDecode.
-// Die Kompression ist für eine Go-Version deterministisch.
+// NewFlateStream compresses raw with Flate and sets /Filter /FlateDecode.
+// The compression is deterministic for a given Go version.
 func NewFlateStream(dict *Dict, raw []byte) *Stream {
 	if dict == nil {
 		dict = NewDict()
@@ -31,7 +31,7 @@ func NewFlateStream(dict *Dict, raw []byte) *Stream {
 	return &Stream{Dict: dict, Data: Deflate(raw)}
 }
 
-// Deflate komprimiert Daten im zlib-Format, wie FlateDecode es erwartet.
+// Deflate compresses data in zlib format, as FlateDecode expects it.
 func Deflate(raw []byte) []byte {
 	var b bytes.Buffer
 	w, _ := zlib.NewWriterLevel(&b, zlib.BestCompression)

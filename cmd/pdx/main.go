@@ -1,5 +1,5 @@
-// Command pdx erzeugt PDF-Dateien aus XSL-FO oder Vorlagen und prüft sie mit
-// veraPDF.
+// Command pdx creates PDF files from XSL-FO or templates and validates them
+// with veraPDF.
 //
 //	pdx render eingabe.fo -o ausgabe.pdf --profile pdfa-3b \
 //	    --attach factur-x.xml:Alternative:text/xml \
@@ -9,8 +9,8 @@
 //	pdx check vorlage.zip
 //	pdx verify ausgabe.pdf --profile pdfa-3b
 //
-// Exit-Codes: 0 Erfolg, 1 Prüfung fehlgeschlagen oder Fehler beim Rendern,
-// 2 Bedienfehler.
+// Exit codes: 0 success, 1 validation failed or rendering error,
+// 2 usage error.
 package main
 
 import (
@@ -102,13 +102,13 @@ func run(args []string, stdout, stderr io.Writer) int {
 	return 2
 }
 
-// multi sammelt wiederholbare Flags.
+// multi collects repeatable flags.
 type multi []string
 
 func (m *multi) String() string     { return strings.Join(*m, ",") }
 func (m *multi) Set(v string) error { *m = append(*m, v); return nil }
 
-// parse erlaubt Flags vor und nach dem Positionsargument.
+// parse allows flags before and after the positional argument.
 func parse(fs *flag.FlagSet, args []string) ([]string, error) {
 	var pos []string
 	for {
@@ -200,8 +200,9 @@ func cmdRender(args []string, stdout, stderr io.Writer) int {
 	return 0
 }
 
-// creationDate liest das Datum aus dem Flag, sonst aus SOURCE_DATE_EPOCH,
-// sonst gilt die aktuelle Zeit (dann ist die Ausgabe nicht reproduzierbar).
+// creationDate reads the date from the flag, otherwise from
+// SOURCE_DATE_EPOCH, otherwise the current time applies (then the output is
+// not reproducible).
 func creationDate(v string) (time.Time, error) {
 	if v != "" {
 		t, err := time.Parse(time.RFC3339, v)
@@ -220,12 +221,12 @@ func creationDate(v string) (time.Time, error) {
 	return time.Now().UTC().Truncate(time.Second), nil
 }
 
-// parseAttach liest DATEI:BEZIEHUNG:MIME. Der Pfad darf Doppelpunkte
-// enthalten, getrennt wird an den letzten beiden.
-// parseAttach liest DATEI:BEZIEHUNG:MIME[:BESCHREIBUNG]. Der MIME-Typ
-// enthält immer einen Schrägstrich, ein letzter Teil ohne Schrägstrich ist
-// die Beschreibung (PDF/UA-2 verlangt sie, ISO 14289-2 8.14.1). Sie darf
-// keinen Doppelpunkt enthalten.
+// parseAttach reads DATEI:BEZIEHUNG:MIME. The path may contain colons, the
+// split happens at the last two.
+// parseAttach reads DATEI:BEZIEHUNG:MIME[:BESCHREIBUNG]. The MIME type
+// always contains a slash, a last part without a slash is the description
+// (PDF/UA-2 requires it, ISO 14289-2 8.14.1). It must not contain a
+// colon.
 func parseAttach(v string) (areatree.Attachment, error) {
 	desc := ""
 	if k := strings.LastIndex(v, ":"); k > 0 && !strings.Contains(v[k+1:], "/") {
@@ -277,8 +278,8 @@ func cmdVerify(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "pdx verify: %v\n", err)
 		return 1
 	}
-	// Ein Lauf je beanspruchtem Standard, das Ergebnis gilt nur, wenn alle
-	// bestehen.
+	// One run per claimed standard, the result holds only if all of them
+	// pass.
 	var reports []*verapdf.Report
 	failed := false
 	for _, flavour := range flavours {

@@ -61,9 +61,9 @@ func TestContext(t *testing.T) {
 	}
 }
 
-// TestPlaceholder prüft, dass sich die Vorlage mit den Platzhalterdaten
-// setzen lässt. Streng gültig sind die Daten erst, wenn go-xslt Facetten wie
-// pattern liefert (tim-riep/go-xslt#3), für die Entwurfsansicht genügt das.
+// TestPlaceholder checks that the template can be typeset with the placeholder
+// data. The data is strictly valid only once go-xslt supports facets such as
+// pattern (tim-riep/go-xslt#3), for the design view this is enough.
 func TestPlaceholder(t *testing.T) {
 	p, s := load(t)
 	data := s.Placeholder()

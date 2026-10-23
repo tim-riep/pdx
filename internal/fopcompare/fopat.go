@@ -9,42 +9,42 @@ import (
 	"strings"
 )
 
-// Block ist ein Block mit Zeilen und der Lage seiner ersten und letzten
-// Zeile in Punkt (Ursprung oben links). Nur Blöcke mit eigenen Zeilen werden
-// erfasst, denn nur sie lassen sich über ihren Text zuordnen.
+// Block is a block with lines and the position of its first and last line
+// in points (origin top left). Only blocks with their own lines are
+// recorded, because only they can be matched by their text.
 type Block struct {
 	Page      int
 	FirstLine string
-	Top       float64 // Oberkante der ersten Zeile
-	Bottom    float64 // Unterkante der letzten Zeile
+	Top       float64 // top edge of the first line
+	Bottom    float64 // bottom edge of the last line
 	Lines     int
 }
 
-// ATLine ist eine Zeile aus einem Area Tree mit der Lage ihrer Grundlinie.
+// ATLine is a line from an area tree with the position of its baseline.
 type ATLine struct {
 	Page     int
 	Text     string
 	Baseline float64
-	// X ist der Anfang der ersten Glyphe, nur bei Zeilen aus pdx (HasX).
+	// X is the start of the first glyph, only for lines from pdx (HasX).
 	X    float64
 	HasX bool
 }
 
-// frame ist ein offener Bereich beim Lesen von FOPs Area Tree.
+// frame is an open area while reading FOP's area tree.
 type frame struct {
 	name    string
-	top     float64 // Oberkante des Inhalts in Punkt
-	cursor  float64 // nächste freie Position für Kinder
-	advance float64 // Höhe, um die der Elternbereich weiterrückt
-	block   *Block  // bei Blöcken mit Zeilen
+	top     float64 // top edge of the content in points
+	cursor  float64 // next free position for children
+	advance float64 // height by which the parent area advances
+	block   *Block  // for blocks with lines
 	line    *strings.Builder
-	stacks  bool    // Kinder werden übereinander gestapelt
-	space   float64 // space-before einer Zeile (halber Durchschuss)
-	base    float64 // Grundlinie relativ zur Zeilenoberkante, -1 wenn unbekannt
-	// inlineOff ist der Versatz einer Inline-Fläche zu ihrer Elternfläche.
+	stacks  bool    // children are stacked on top of each other
+	space   float64 // space-before of a line (half leading)
+	base    float64 // baseline relative to the line top edge, -1 if unknown
+	// inlineOff is the offset of an inline area to its parent area.
 	inlineOff float64
-	// positioned ist bei absolut oder fest positionierten Bereichen gesetzt.
-	// Sie sind der Bezug für absolut positionierte Nachfahren.
+	// positioned is set for absolutely or fixed positioned areas.
+	// They are the reference for absolutely positioned descendants.
 	positioned bool
 }
 
@@ -67,7 +67,7 @@ func attrS(a []xml.Attr, name string) string {
 	return ""
 }
 
-// bapBefore liefert Rahmen plus Padding oben aus bap="start end before after".
+// bapBefore returns the top border plus padding from bap="start end before after".
 func bapBefore(a []xml.Attr) float64 {
 	parts := strings.Fields(attrS(a, "bap"))
 	if len(parts) != 4 {
@@ -83,13 +83,13 @@ var stacking = map[string]bool{
 	"beforeFloat": true, "footnote": true,
 }
 
-// ParseAreaTree liest FOPs Area-Tree-XML (fop -at) und liefert die Blöcke.
+// ParseAreaTree reads FOP's area tree XML (fop -at) and returns the blocks.
 func ParseAreaTree(data []byte) ([]Block, int, error) {
 	b, _, n, err := ParseAreaTreeLines(data)
 	return b, n, err
 }
 
-// ParseAreaTreeLines liest Blöcke und Zeilen aus FOPs Area-Tree-XML.
+// ParseAreaTreeLines reads blocks and lines from FOP's area tree XML.
 func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	var stack []*frame
@@ -132,8 +132,8 @@ func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 				if parent != nil && parent.stacks {
 					top = parent.cursor
 				}
-				// Tabellenzellen und ähnliche Bereiche liegen mit top-offset
-				// relativ zur Inhaltsoberkante des Elternbereichs.
+				// Table cells and similar areas are placed with top-offset
+				// relative to the content top edge of the parent area.
 				if off, ok := attrF(t.Attr, "top-offset"); ok && parent != nil {
 					f.top = parent.top + off + bapBefore(t.Attr)
 					f.cursor = f.top
@@ -151,10 +151,10 @@ func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 					top = tp
 					bpda = 0
 				case "absolute":
-					// Mit top-position (block-container) relativ zum nächsten
-					// positionierten Vorfahren, sonst zur Region (XSL 1.1
-					// 7.6.1), ohne (etwa Label und Body einer Liste) über dem
-					// Elternbereich.
+					// With top-position (block-container) relative to the nearest
+					// positioned ancestor, otherwise to the region (XSL 1.1
+					// 7.6.1), without it (such as label and body of a list)
+					// above the parent area.
 					if tp, ok := attrF(t.Attr, "top-position"); ok {
 						top = regionTop + tp
 						for i := len(stack) - 1; i >= 0; i-- {
@@ -193,9 +193,9 @@ func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 			if name == "text" || name == "inlineparent" || name == "viewport" || name == "inlineblockparent" {
 				off, _ := attrF(t.Attr, "offset")
 				f.inlineOff = off
-				// Die erste Inline-Fläche mit baseline legt die Grundlinie fest.
-				// Versätze umschließender Inline-Flächen (etwa eines Leaders)
-				// zählen mit.
+				// The first inline area with baseline determines the baseline.
+				// Offsets of enclosing inline areas (such as a leader) are
+				// included.
 				if bl, ok := attrF(t.Attr, "baseline"); ok {
 					outer := 0.0
 					for i := len(stack) - 1; i >= 0; i-- {
@@ -228,7 +228,7 @@ func ParseAreaTreeLines(data []byte) ([]Block, []ATLine, int, error) {
 				if f.base >= 0 {
 					lines = append(lines, ATLine{Page: page, Text: strings.Join(strings.Fields(f.line.String()), " "), Baseline: f.top + f.base})
 				}
-				// Zeile dem nächsten Block zuordnen.
+				// Assign the line to the nearest block.
 				for i := len(stack) - 1; i >= 0; i-- {
 					if b := stack[i].block; b != nil {
 						text := strings.Join(strings.Fields(f.line.String()), " ")

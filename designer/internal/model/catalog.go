@@ -8,44 +8,44 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Property ist ein Attribut eines Vorlagenelements, abgeleitet aus dem XSD
-// des Vorlagenformats.
+// Property is an attribute of a template element, derived from the XSD
+// of the template format.
 type Property struct {
 	Name string `json:"name"`
-	// Group ordnet die Eigenschaft im Inspektor ein: general, access
-	// (Barrierefreiheit), form (Formularfeld), position, text, border,
-	// spacing, breaks, binding oder other.
+	// Group places the property in the inspector: general, access
+	// (accessibility), form (form field), position, text, border,
+	// spacing, breaks, binding or other.
 	Group string `json:"group"`
-	// Kind wählt den Editor: id, ref, length, lengths, color, font (Verweis
-	// auf ein Schrift-Token), xpath, enum, bool, number, profile
-	// (Konformitätsprofile) oder text.
+	// Kind chooses the editor: id, ref, length, lengths, color, font (reference
+	// to a font token), xpath, enum, bool, number, profile
+	// (conformance profiles) or text.
 	Kind     string   `json:"kind"`
 	Enum     []string `json:"enum,omitempty"`
 	Default  string   `json:"default,omitempty"`
 	Required bool     `json:"required,omitempty"`
 }
 
-// Child ist ein erlaubtes Kindelement.
+// Child is an allowed child element.
 type Child struct {
 	Name string `json:"name"`
 	Key  string `json:"key"`
 	Min  int    `json:"min"`
-	Max  int    `json:"max"` // -1 für beliebig viele
+	Max  int    `json:"max"` // -1 for any number
 }
 
-// ElementType beschreibt ein Element des Vorlagenformats.
+// ElementType describes an element of the template format.
 type ElementType struct {
 	Key        string     `json:"key"`
 	Name       string     `json:"name"`
 	Properties []Property `json:"properties"`
 	Children   []Child    `json:"children"`
 	Mixed      bool       `json:"mixed"`
-	// Text meldet Textinhalt: gemischt oder nur Text (etwa string).
+	// Text reports text content: mixed or text only (such as string).
 	Text bool `json:"text"`
 }
 
-// Catalog sind alle Elementtypen. Schlüssel ist bei globalen Elementen der
-// Name, bei lokalen "eltern/name" (etwa table/header).
+// Catalog is all element types. The key is the name for global elements,
+// "parent/name" for local ones (for example table/header).
 type Catalog map[string]*ElementType
 
 var (
@@ -54,13 +54,13 @@ var (
 	catalogErr  error
 )
 
-// LoadCatalog liest den Katalog einmal aus template.Schema.
+// LoadCatalog reads the catalog once from template.Schema.
 func LoadCatalog() (Catalog, error) {
 	catalogOnce.Do(func() { catalog, catalogErr = buildCatalog() })
 	return catalog, catalogErr
 }
 
-// TypeOf liefert den Elementtyp eines Knotens.
+// TypeOf returns the element type of a node.
 func (c Catalog) TypeOf(n *template.Node) *ElementType {
 	if n.Parent != nil {
 		if t, ok := c[n.Parent.Name+"/"+n.Name]; ok {
@@ -70,7 +70,7 @@ func (c Catalog) TypeOf(n *template.Node) *ElementType {
 	return c[n.Name]
 }
 
-// Property liefert eine Eigenschaft nach Namen.
+// Property returns a property by name.
 func (t *ElementType) Property(name string) (Property, bool) {
 	for _, p := range t.Properties {
 		if p.Name == name {
@@ -90,8 +90,8 @@ func buildCatalog() (Catalog, error) {
 		global[e.Name().Local] = e
 	}
 	cat := Catalog{}
-	// Lokale Elemente mit einem Namen, den es mehrfach gibt, erhalten den
-	// Elternnamen als Präfix.
+	// Local elements with a name that occurs more than once get the
+	// parent name as a prefix.
 	var visit func(e *xsd.Element, key string)
 	visit = func(e *xsd.Element, key string) {
 		if _, done := cat[key]; done {
@@ -112,7 +112,7 @@ func buildCatalog() (Catalog, error) {
 			et.Properties = append(et.Properties, property(a))
 		}
 		sort.SliceStable(et.Properties, func(i, j int) bool { return groupOrder[et.Properties[i].Group] < groupOrder[et.Properties[j].Group] })
-		seen := map[string]int{} // Schlüssel zu Index in et.Children
+		seen := map[string]int{} // key to index in et.Children
 		var walk func(p *xsd.Particle, lo, hi int)
 		walk = func(p *xsd.Particle, lo, hi int) {
 			lo, hi = lo*p.MinOccurs, mulMax(hi, p.MaxOccurs)
@@ -152,7 +152,7 @@ func buildCatalog() (Catalog, error) {
 	return cat, nil
 }
 
-// property leitet Editor und Gruppe einer Eigenschaft ab.
+// property derives the editor and group of a property.
 func property(a *xsd.AttributeUse) Property {
 	p := Property{Name: a.Name.Local, Group: groupOf(a.Name.Local), Required: a.Use == xsd.UseRequired}
 	if a.HasDefault {

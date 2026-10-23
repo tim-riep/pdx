@@ -27,7 +27,7 @@ func TestLengthString(t *testing.T) {
 	}
 }
 
-// Sample liefert einen kleinen Baum mit allen Bereichsarten.
+// Sample returns a small tree with all kinds of areas.
 func Sample() *Document {
 	red := RGBColor(1, 0, 0)
 	return &Document{

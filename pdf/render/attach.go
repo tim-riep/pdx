@@ -17,10 +17,10 @@ var relationships = map[areatree.Relationship]bool{
 	areatree.EncryptedPayload: true, areatree.FormData: true, areatree.Schema: true, areatree.Unspecified: true,
 }
 
-// attachments bettet die Dateianhänge ein. Jede Datei bekommt eine Filespec
-// mit F, UF, Desc und AFRelationship, einen EmbeddedFile-Stream mit
-// MIME-Subtyp und Params, einen Eintrag in /AF am Katalog und im
-// EmbeddedFiles-Namensbaum (ISO 19005-3 6.8, ISO 32000-2 14.13).
+// attachments embeds the file attachments. Each file gets a filespec
+// with F, UF, Desc and AFRelationship, an EmbeddedFile stream with
+// MIME subtype and Params, an entry in /AF on the catalog and in the
+// EmbeddedFiles name tree (ISO 19005-3 6.8, ISO 32000-2 14.13).
 func (r *renderer) attachments() error {
 	atts := r.doc.Attachments
 	if len(atts) == 0 {
@@ -40,7 +40,7 @@ func (r *renderer) attachments() error {
 	var af pdf.Array
 	var names []named
 	date := pdf.Date(r.opts.CreationDate)
-	// Alle Fehler der Anhänge auf einmal melden.
+	// Report all errors of the attachments at once.
 	var errs []error
 	checker, _ := r.opts.Profile.(profile.AttachmentChecker)
 	for _, a := range atts {
@@ -97,7 +97,7 @@ func (r *renderer) attachments() error {
 	if len(errs) > 0 {
 		return errors.Join(errs...)
 	}
-	// Der Namensbaum verlangt nach Bytes sortierte Schlüssel.
+	// The name tree requires keys sorted by bytes.
 	sort.Slice(names, func(i, j int) bool {
 		return string(keyBytes(names[i].name)) < string(keyBytes(names[j].name))
 	})
@@ -112,9 +112,9 @@ func (r *renderer) attachments() error {
 
 func keyBytes(s string) []byte { return []byte(pdf.TextString(s).(pdf.String)) }
 
-// fileSpecString liefert für /F eine ASCII-Fassung des Namens. Nicht
-// darstellbare Zeichen werden durch Unterstriche ersetzt, der volle Name
-// steht in /UF.
+// fileSpecString returns an ASCII version of the name for /F. Characters
+// that cannot be represented are replaced by underscores, the full name
+// is in /UF.
 func fileSpecString(name string) pdf.String {
 	var b strings.Builder
 	for _, r := range name {
@@ -127,7 +127,7 @@ func fileSpecString(name string) pdf.String {
 	return pdf.String(b.String())
 }
 
-// validMIME prüft grob die Form typ/subtyp ohne Leerzeichen.
+// validMIME roughly checks the form type/subtype without spaces.
 func validMIME(s string) bool {
 	i := strings.IndexByte(s, '/')
 	if i <= 0 || i == len(s)-1 || strings.Count(s, "/") != 1 {

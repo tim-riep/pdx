@@ -10,8 +10,8 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// TestWriteDir schreibt die Musterrechnung in ein Verzeichnis, liest sie
-// verlustfrei zurück und entfernt nur Dateien, die das Paket nicht mehr hat.
+// TestWriteDir writes the sample invoice to a directory, reads it back
+// losslessly and removes only files that the package no longer has.
 func TestWriteDir(t *testing.T) {
 	p, err := ReadDir("../../testdata/templates/musterrechnung")
 	if err != nil {
@@ -48,7 +48,7 @@ func TestWriteDir(t *testing.T) {
 	}
 }
 
-// TestNew prüft Pfade und Verweise beim Bauen aus einer geladenen Vorlage.
+// TestNew checks paths and references when building from a loaded template.
 func TestNew(t *testing.T) {
 	p, err := ReadDir("../../testdata/templates/musterrechnung")
 	if err != nil {

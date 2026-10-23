@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { openMuster, selectInTree } from "./helpers";
 
-// Läuft mit der veraPDF-Attrappe aus e2e/fixtures (siehe playwright.config.ts).
+// Runs with the veraPDF stand-in from e2e/fixtures (see playwright.config.ts).
 test("Konformität: Befunde nach Regeln, Klick führt zum Element", async ({ page }) => {
   await openMuster(page, true);
   await page.getByRole("tab", { name: "Konformität" }).click();
@@ -12,7 +12,7 @@ test("Konformität: Befunde nach Regeln, Klick führt zum Element", async ({ pag
   await expect(verdict).toContainText("veraPDF lokal");
   await expect(verdict).toContainText("rechnung.xml");
 
-  // Regel aufklappen, Befunde mit Element und ohne Seite.
+  // Expand a rule, findings with element and without page.
   await panel.getByRole("button", { name: /Attrappe: Farbraum/ }).click();
   const withRef = panel.locator("button.item:not([disabled])");
   await expect(withRef.first()).toBeVisible();
@@ -24,7 +24,7 @@ test("Konformität: Befunde nach Regeln, Klick führt zum Element", async ({ pag
   await panel.getByRole("button", { name: /Attrappe: Metadaten/ }).click();
   await expect(panel.locator("button.item", { hasText: "Attrappe ohne Seitenbezug" })).toContainText("Dokument");
 
-  // Nach einer Änderung ist das Ergebnis veraltet.
+  // After a change the result is outdated.
   await selectInTree(page, ["inhalt", "titel"]);
   const space = page.getByTestId("inspector").locator('[data-prop="spaceAfter"] input');
   await space.fill("6mm");
@@ -33,8 +33,8 @@ test("Konformität: Befunde nach Regeln, Klick führt zum Element", async ({ pag
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
 });
 
-// Die Einstellung veraPDF zeigt das gefundene Programm, übernimmt einen
-// gültigen Pfad, lehnt einen ungültigen mit Meldung ab und schaltet zurück.
+// The veraPDF setting shows the program found, accepts a valid
+// path, rejects an invalid one with a message and switches back.
 test("veraPDF-Pfad einstellen", async ({ page }) => {
   test.skip(!process.env.PDX_E2E_VERAPDF, "nur mit Attrappe oder Pfad");
   await openMuster(page);

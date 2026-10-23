@@ -8,23 +8,23 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Segment ist ein Stück gemischten Inhalts: Text (ein Zeilenumbruch wird zu
-// br), ein vorhandenes eingebettetes Element (Ref) oder ein neues Feld
-// (Bind, relativ zum Kontext des Elements).
+// Segment is a piece of mixed content: text (a line break becomes
+// br), an existing embedded element (Ref) or a new field
+// (Bind, relative to the context of the element).
 type Segment struct {
 	Text string `json:"text"`
 	Ref  string `json:"ref"`
 	Bind string `json:"bind"`
 }
 
-// ContentEdit ersetzt den Inhalt eines Elements mit gemischtem Inhalt.
+// ContentEdit replaces the content of an element with mixed content.
 type ContentEdit struct {
 	Ref      string    `json:"ref"`
 	Segments []Segment `json:"segments"`
 }
 
-// SetContent ersetzt Text und eingebettete Elemente als ein Schritt.
-// Eingebettete Elemente, die nicht mehr vorkommen, entfallen.
+// SetContent replaces text and embedded elements as one step.
+// Embedded elements that no longer occur are dropped.
 func (s *TemplateService) SetContent(ce ContentEdit) (Result, error) {
 	cat, err := model.LoadCatalog()
 	if err != nil {
@@ -40,7 +40,7 @@ func (s *TemplateService) SetContent(ce ContentEdit) (Result, error) {
 		if et == nil || !et.Text {
 			return "", fmt.Errorf("%s hat keinen Text", n.Name)
 		}
-		// Nur Text, wenn das Element keine Kinder kennt (etwa string).
+		// Text only, if the element allows no children (such as string).
 		textOnly := !et.Mixed || len(et.Children) == 0
 		hasBr := false
 		for _, c := range et.Children {

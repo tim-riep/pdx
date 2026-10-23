@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-// Die eingebetteten Texte sind vollständig und jeder Abschnitt der
-// Drittanbieterhinweise hat eine erkannte Lizenz.
+// The embedded texts are complete and every section of the third-party
+// notices has a recognized license.
 func TestLegalTexts(t *testing.T) {
 	if !strings.Contains(License, "Apache License") || !strings.Contains(License, "Version 2.0") {
 		t.Error("LICENSE ist nicht die Apache License 2.0")
@@ -51,7 +51,7 @@ func TestLegalTexts(t *testing.T) {
 	}
 }
 
-// Mit CRLF ausgecheckte Hinweise ergeben dieselben Abschnitte.
+// Notices checked out with CRLF yield the same sections.
 func TestComponentsCRLF(t *testing.T) {
 	lf := Components(ThirdPartyNotices)
 	crlf := Components(strings.ReplaceAll(ThirdPartyNotices, "\n", "\r\n"))

@@ -12,30 +12,30 @@ import (
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
-// Expect ist die Erwartung an einen Fall, abgeleitet aus FOP.
+// Expect is the expectation for a case, derived from FOP.
 type Expect struct {
 	Pages int
 	Lines []Line
 }
 
-// Line ist eine Zeile mit Grundlinie und, wenn bekannt, Anfang in Punkt.
+// Line is a line with its baseline and, if known, its start in points.
 type Line struct {
 	Page int
 	X    float64
 	HasX bool
 	Y    float64
-	// Text ist der normierte Zeilentext, bei der W3C-Suite ein Hashwert.
+	// Text is the normalized line text, a hash value for the W3C suite.
 	Text string
 }
 
-// HashText ersetzt einen Zeilentext durch einen Hashwert. Erwartungen der
-// W3C-Suite enthalten so keine Inhalte der Testdateien.
+// HashText replaces a line text with a hash value. This way expectations of
+// the W3C suite contain no content from the test files.
 func HashText(s string) string {
 	h := sha256.Sum256([]byte(fopcompare.Norm(s)))
 	return "#" + hex.EncodeToString(h[:8])
 }
 
-// textFor liefert den Text einer Zeile, wie er in der Erwartung steht.
+// textFor returns the text of a line as it appears in the expectation.
 func textFor(suite, s string) string {
 	if suite == SuiteW3C {
 		return HashText(s)
@@ -43,11 +43,11 @@ func textFor(suite, s string) string {
 	return fopcompare.Norm(s)
 }
 
-// ReadExpect liest eine Erwartung.
+// ReadExpect reads an expectation.
 //
 //	pages 2
-//	1 56.693 85.123 Text der Zeile
-//	1 - 99.120 Zeile ohne bekannten Anfang
+//	1 56.693 85.123 Text of the line
+//	1 - 99.120 Line without a known start
 func ReadExpect(path string) (*Expect, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -61,8 +61,8 @@ func ReadExpect(path string) (*Expect, error) {
 	for sc.Scan() {
 		n++
 		l := sc.Text()
-		// Kommentare beginnen am Zeilenanfang mit #, Hashwerte der W3C-Suite
-		// stehen erst nach Seite und Lage.
+		// Comments start with # at the beginning of the line, hash values of
+		// the W3C suite only come after page and position.
 		if l == "" || strings.HasPrefix(l, "#") {
 			continue
 		}
@@ -101,7 +101,7 @@ func ReadExpect(path string) (*Expect, error) {
 	return e, sc.Err()
 }
 
-// WriteExpect schreibt eine Erwartung mit Kopfkommentar.
+// WriteExpect writes an expectation with a header comment.
 func WriteExpect(path, header string, e *Expect) error {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s\n", header)

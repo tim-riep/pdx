@@ -1,6 +1,6 @@
-// Package schema bereitet das Daten-XSD eines Vorlagenpakets für den Designer
-// auf: Datenbaum mit Typen und Kardinalitäten, Präfixe der Vorlage, Kontext
-// von Bindungen und Platzhalterdaten für die Entwurfsansicht.
+// Package schema prepares the data XSD of a template package for the designer:
+// data tree with types and cardinalities, prefixes of the template, context
+// of bindings and placeholder data for the design view.
 package schema
 
 import (
@@ -15,49 +15,49 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// Node ist ein Knoten des Datenbaums.
+// Node is a node of the data tree.
 type Node struct {
-	// Path sind die Schritte von der Wurzel, etwa inv:invoice/inv:items.
+	// Path is the steps from the root, for example inv:invoice/inv:items.
 	Path string `json:"path"`
-	Name string `json:"name"` // mit Präfix, Attribute mit @
-	// Type ist der eingebaute Basistyp (string, decimal, date ...), leer bei
-	// Elementen ohne Textinhalt.
+	Name string `json:"name"` // with prefix, attributes with @
+	// Type is the built-in base type (string, decimal, date ...), empty for
+	// elements without text content.
 	Type     string   `json:"type"`
 	Min      int      `json:"min"`
-	Max      int      `json:"max"` // -1 für beliebig viele
+	Max      int      `json:"max"` // -1 for any number
 	Attr     bool     `json:"attr"`
 	Enum     []string `json:"enum,omitempty"`
 	Doc      string   `json:"doc,omitempty"`
 	Children []*Node  `json:"children"`
-	// Recursive markiert einen Knoten, dessen Inhalt sich wiederholt (der
-	// Baum endet dort).
+	// Recursive marks a node whose content repeats itself (the
+	// tree ends there).
 	Recursive bool `json:"recursive,omitempty"`
-	// Open meldet xs:any, dort ist der Inhalt unbekannt.
+	// Open reports xs:any, where the content is unknown.
 	Open bool `json:"open,omitempty"`
 
 	decl *dataschema.Decl
 }
 
-// Repeated meldet einen wiederholten Knoten.
+// Repeated reports a repeated node.
 func (n *Node) Repeated() bool { return n.Max == -1 || n.Max > 1 }
 
-// Schema ist das aufbereitete Daten-XSD.
+// Schema is the prepared data XSD.
 type Schema struct {
 	Main  string  `json:"main"`
 	Roots []*Node `json:"roots"`
-	// Prefixes ordnet Namespaces Präfixen zu, aus der Vorlage oder neu.
+	// Prefixes maps namespaces to prefixes, from the template or new.
 	Prefixes map[string]string `json:"prefixes"`
-	// Missing sind Namespaces, die in der Vorlage noch nicht deklariert sind.
+	// Missing are namespaces that are not declared in the template yet.
 	Missing map[string]string `json:"missing"`
 
 	model dataschema.Model
 	index map[string]*Node
 }
 
-// maxDepth begrenzt den Baum bei sehr tiefen Schemas.
+// maxDepth limits the tree for very deep schemas.
 const maxDepth = 24
 
-// Load liest das Daten-XSD eines Pakets. Ohne Schema liefert es nil.
+// Load reads the data XSD of a package. Without a schema it returns nil.
 func Load(p *pkg.Package) (*Schema, error) {
 	main, files := p.Schemas()
 	if main == "" {
@@ -89,8 +89,8 @@ func Load(p *pkg.Package) (*Schema, error) {
 	return s, nil
 }
 
-// name liefert den Namen mit Präfix. Ein Namespace ohne Präfix in der
-// Vorlage erhält einen neuen.
+// name returns the name with prefix. A namespace without a prefix in the
+// template gets a new one.
 func (s *Schema) name(d *dataschema.Decl) string {
 	local := d.Name.Local
 	if d.Attr {
@@ -137,7 +137,7 @@ func (s *Schema) build(d *dataschema.Decl, parent string, seen []xml.Name, depth
 	}
 	kids, open := s.model.Children(d)
 	n.Open = open
-	// Attribute zuerst, dann Elemente in der Reihenfolge des Schemas.
+	// Attributes first, then elements in the order of the schema.
 	sort.SliceStable(kids, func(i, j int) bool { return kids[i].Attr && !kids[j].Attr })
 	for _, k := range kids {
 		n.Children = append(n.Children, s.build(k, path, append(seen, d.Name), depth+1))
@@ -145,12 +145,12 @@ func (s *Schema) build(d *dataschema.Decl, parent string, seen []xml.Name, depth
 	return n
 }
 
-// Find liefert einen Knoten über seinen Pfad.
+// Find returns a node by its path.
 func (s *Schema) Find(path string) *Node { return s.index[path] }
 
-// Context bestimmt den Datenkontext eines Vorlagenelements als Pfad: die
-// Datenwurzel, erweitert um die Bindungen der umgebenden Teilformulare und
-// Tabellen.
+// Context determines the data context of a template element as a path: the
+// data root, extended by the bindings of the enclosing subforms and
+// tables.
 func Context(t *template.Template, n *template.Node) (string, error) {
 	var chain []*template.Node
 	for x := n; x != nil; x = x.Parent {
@@ -167,8 +167,8 @@ func Context(t *template.Template, n *template.Node) (string, error) {
 		case x.Name == "subform":
 			ctx = join(ctx, bind)
 		case x.Name == "table":
-			// Der Tabellenkontext gilt in Zeilen, Kopf und Fuß beziehen sich
-			// ebenfalls auf die einzelnen Positionen.
+			// The table context applies in rows, header and footer also refer
+			// to the individual items.
 			ctx = join(ctx, bind)
 		}
 	}
@@ -178,7 +178,7 @@ func Context(t *template.Template, n *template.Node) (string, error) {
 	return ctx, nil
 }
 
-// join verbindet einen Kontext mit einem relativen Pfad und löst .. auf.
+// join joins a context with a relative path and resolves .. steps.
 func join(ctx, rel string) string {
 	if strings.HasPrefix(rel, "/") {
 		return strings.TrimPrefix(rel, "/")
@@ -198,8 +198,8 @@ func join(ctx, rel string) string {
 	return strings.Join(steps, "/")
 }
 
-// Relative liefert den XPath von ctx zu target, mit .. für Schritte außerhalb
-// des Kontexts.
+// Relative returns the XPath from ctx to target, with .. for steps outside
+// the context.
 func Relative(ctx, target string) string {
 	a, b := strings.Split(ctx, "/"), strings.Split(target, "/")
 	i := 0
@@ -217,10 +217,10 @@ func Relative(ctx, target string) string {
 	return strings.Join(out, "/")
 }
 
-// Join verbindet einen Kontext mit einem relativen Pfad und löst .. auf.
+// Join joins a context with a relative path and resolves .. steps.
 func Join(ctx, rel string) string { return join(ctx, rel) }
 
-// Nodes liefert alle Knoten des Datenbaums in Dokumentreihenfolge.
+// Nodes returns all nodes of the data tree in document order.
 func (s *Schema) Nodes() []*Node {
 	var out []*Node
 	var walk func(n *Node)

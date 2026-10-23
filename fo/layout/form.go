@@ -10,31 +10,31 @@ import (
 	"github.com/tim-riep/pdx/font"
 )
 
-// Formularfelder kommen als pdx:form-field in fo:instream-foreign-object.
-// Das Layout bestimmt Größe und Lage und setzt die Glyphen des
-// Erscheinungsbilds, der Renderer schreibt daraus Feld, Widget und Appearance
-// Stream.
+// Form fields come as pdx:form-field in fo:instream-foreign-object.
+// The layout determines size and position and places the glyphs of the
+// appearance, the renderer writes field, widget and appearance
+// stream from that.
 //
 //	<fo:instream-foreign-object content-width="90mm" content-height="7mm">
 //	  <pdx:form-field type="text" name="name" label="Name" value="…" context="…"/>
 //	</fo:instream-foreign-object>
 
-// widgetArt ist ein Formularfeld als Stück einer Zeile.
+// widgetArt is a form field as a piece of a line.
 type widgetArt struct {
 	field areatree.Field
 	st    *style
 }
 
-// fieldPad ist der Innenabstand zwischen Rahmen und Text, mm eine
-// Längeneinheit für die natürlichen Größen.
+// fieldPad is the inner spacing between border and text, mm a
+// length unit for the natural sizes.
 const (
 	fieldPad = 2 * areatree.Pt
-	mm       = areatree.Length(2835) // 72000/25.4 Tausendstel Punkt
+	mm       = areatree.Length(2835) // 72000/25.4 thousandths of a point
 )
 
 var fieldTypes = map[string]bool{"text": true, "checkbox": true, "radio": true, "list": true, "combo": true, "signature": true}
 
-// formField nimmt ein pdx:form-field auf.
+// formField takes a pdx:form-field.
 func (pa *paragraph) formField(n, fn *tree.Node, p *props.Computed) error {
 	typ := attrOr(fn, "type", "")
 	if !fieldTypes[typ] {
@@ -72,7 +72,7 @@ func (pa *paragraph) formField(n, fn *tree.Node, p *props.Computed) error {
 	if typ == "radio" && f.Export == "" {
 		return tree.Errorf(fn, "pdx:form-field: Optionsfeld ohne export")
 	}
-	// Natürliche Größe je Feldtyp, content-width und content-height gehen vor.
+	// Natural size per field type, content-width and content-height take precedence.
 	line := p.FontSize * 12 / 10
 	iw, ih := 50*mm, line+2*fieldPad
 	switch typ {
@@ -102,8 +102,8 @@ func (pa *paragraph) formField(n, fn *tree.Node, p *props.Computed) error {
 	return nil
 }
 
-// fieldLength liest content-width oder content-height als Länge, ohne Angabe
-// gilt die natürliche Größe. Anders als bei Bildern wird nicht skaliert.
+// fieldLength reads content-width or content-height as a length, if not given
+// the natural size applies. Unlike images there is no scaling.
 func fieldLength(n *tree.Node, name string, def, fontSize areatree.Length) (areatree.Length, error) {
 	v, ok := n.Attr(name)
 	if !ok || v == "" || v == "auto" {
@@ -116,8 +116,8 @@ func fieldLength(n *tree.Node, name string, def, fontSize areatree.Length) (area
 	return l, nil
 }
 
-// build liefert das Widget im Rechteck x, y, w, h mit den Glyphen seines
-// Erscheinungsbilds.
+// build returns the widget in the rectangle x, y, w, h with the glyphs of its
+// appearance.
 func (wa *widgetArt) build(x, y, w, h areatree.Length) *areatree.Widget {
 	wd := &areatree.Widget{Rect: areatree.Rect{X: x, Y: y, W: w, H: h}, Field: wa.field}
 	f := wa.field
@@ -140,7 +140,7 @@ func (wa *widgetArt) build(x, y, w, h areatree.Length) *areatree.Widget {
 			wd.Runs = append(wd.Runs, r)
 		}
 	}
-	// centered ist die Oberkante einer einzelnen, senkrecht zentrierten Zeile.
+	// centered is the top edge of a single, vertically centered line.
 	centered := y + (h-st.asc-st.desc)/2
 	switch f.Type {
 	case "text":
@@ -168,7 +168,7 @@ func (wa *widgetArt) build(x, y, w, h areatree.Length) *areatree.Widget {
 	return wd
 }
 
-// optionLabel liefert den Text zum Wert, ohne passende Option den Wert.
+// optionLabel returns the text for the value, without matching option the value.
 func optionLabel(opts []areatree.FieldOption, v string) string {
 	for _, o := range opts {
 		if o.Value == v {
@@ -178,7 +178,7 @@ func optionLabel(opts []areatree.FieldOption, v string) string {
 	return v
 }
 
-// wrap bricht Text an Leerzeichen und Zeilenwechseln auf die Breite um.
+// wrap breaks text at spaces and line feeds to the width.
 func (wa *widgetArt) wrap(text string, width areatree.Length) []string {
 	var out []string
 	adv := func(s string) areatree.Length {

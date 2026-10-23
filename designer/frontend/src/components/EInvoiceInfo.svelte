@@ -1,6 +1,6 @@
 <script lang="ts">
-  // Stand der E-Rechnung zum Element einvoice: erkannte Stufe aus den Daten
-  // der Vorschau, eingebettete Datei, Beziehung und ob das Profil passt.
+  // State of the e-invoice for the einvoice element: level detected from the data
+  // of the preview, embedded file, relationship and whether the profile fits.
   import { RenderAPI, message } from "../lib/api";
   import { t } from "../lib/i18n";
   import { project } from "../lib/project.svelte";
@@ -11,7 +11,7 @@
   let error = $state("");
 
   $effect(() => {
-    // Neu nach jeder Änderung und bei anderem Beispiel.
+    // Again after every change and for another sample.
     void project.rev;
     void render.manifest?.sample;
     RenderAPI.EInvoice().then(

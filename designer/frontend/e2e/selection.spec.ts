@@ -4,10 +4,10 @@ import { openMuster } from "./helpers";
 test("Klick im Canvas wählt das Vorlagenelement", async ({ page }) => {
   await openMuster(page);
   await expect(page.locator('[data-page="1"] canvas')).toBeVisible();
-  // Das Adressfenster liegt bei 20 mm bis 105 mm waagerecht und 45 mm bis
-  // 90 mm senkrecht. Ein Punkt darin ist 60 mm, 75 mm (170 pt, 213 pt).
-  // Der Zoom kann sich nach dem Öffnen noch ändern, daher lesen und
-  // klicken, bis die Auswahl steht.
+  // The address window lies at 20 mm to 105 mm horizontally and 45 mm to
+  // 90 mm vertically. A point inside is 60 mm, 75 mm (170 pt, 213 pt).
+  // The zoom can still change after opening, so read and
+  // click until the selection is set.
   await expect(async () => {
     const zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
     await page.locator('[data-page="1"]').click({ position: { x: 170 * zoom, y: 213 * zoom } });
@@ -15,7 +15,7 @@ test("Klick im Canvas wählt das Vorlagenelement", async ({ page }) => {
   }).toPass({ timeout: 15_000 });
   const inspector = page.getByTestId("inspector");
   await expect(inspector.locator("code")).toHaveText(/adressfenster|empfaenger/);
-  // Die Hierarchie zeigt die Auswahl.
+  // The hierarchy shows the selection.
   await expect(page.getByTestId("hierarchy").locator('[aria-selected="true"]')).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.locator("[data-sel]")).toHaveCount(0);
@@ -29,9 +29,9 @@ test("Auswahl in der Hierarchie zeigt Eigenschaften und alle Vorkommen", async (
   const inspector = page.getByTestId("inspector");
   await expect(inspector.locator("header strong")).toHaveText("Tabelle");
   await expect(inspector.locator('[data-prop="bind"] input')).toHaveValue(/inv:/);
-  // Suche filtert die Eigenschaften.
+  // Search filters the properties.
   await inspector.getByRole("searchbox").fill("bindung");
   await expect(inspector.locator("[data-prop]")).toHaveCount(1);
-  // Die Tabelle läuft über drei Seiten, jede Seite zeigt ein Vorkommen.
+  // The table runs over three pages, each page shows one occurrence.
   await expect(page.locator(".box.related")).toHaveCount(2);
 });

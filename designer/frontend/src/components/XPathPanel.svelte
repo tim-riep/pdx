@@ -9,7 +9,7 @@
   import XPathInput from "./XPathInput.svelte";
   import XPathStatus from "./XPathStatus.svelte";
 
-  // Folgt der Auswahl: gesetzte Ausdrücke zuerst, sonst der erste mögliche.
+  // Follows the selection: set expressions first, otherwise the first possible one.
   $effect(() => {
     const ref = selection.ref;
     untrack(() => {
@@ -62,14 +62,14 @@
         <XPathInput ref={n.ref} prop={xp.prop} value={current} multiline status={false} label={propLabel(xp.prop)} placeholder={t("xpath.hint")} />
         <div class="actions">
           <div class="result">{#if xp.draft.trim()}<XPathStatus />{/if}</div>
-          <!-- mousedown verhindert, dass der Editor den Fokus verliert und dabei schon übernimmt -->
+          <!-- mousedown prevents the editor from losing the focus and applying already -->
           <button disabled={!dirty} onmousedown={(e) => e.preventDefault()} onclick={() => commit(current)}>{t("xpath.apply")}</button>
           <button disabled={!dirty} onmousedown={(e) => e.preventDefault()} onclick={() => setDraft(current)}>{t("xpath.revert")}</button>
         </div>
       </div>
       <div class="list" aria-label={t("xpath.fields")}>
         <h4>{t("xpath.fields")}</h4>
-        <!-- mousedown, damit der Fokus im Editor bleibt -->
+        <!-- mousedown, so the focus stays in the editor -->
         {#each fields as f (f.path)}
           <button class="item" title={t(`data.type.${typeKey(f)}`)}
             onmousedown={(e) => {

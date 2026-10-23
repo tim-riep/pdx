@@ -9,21 +9,21 @@ import (
 	"strings"
 )
 
-// Resolver lädt Ressourcen wie Bilder und Anhänge. Der Designer wird später
-// einen Resolver auf das Vorlagenpaket setzen.
+// Resolver loads resources such as images and attachments. The designer will
+// later set a resolver on the template package.
 type Resolver interface {
 	Read(uri string) ([]byte, error)
 }
 
-// DirResolver liest Dateien relativ zu einem Verzeichnis. Netzwerkadressen
-// werden abgelehnt, weil pdx nur in sich geschlossene Dateien erzeugt und
-// keine Daten nachlädt.
+// DirResolver reads files relative to a directory. Network addresses
+// are rejected because pdx only produces self-contained files and
+// does not load data afterwards.
 type DirResolver struct {
 	Dir string
 }
 
-// Read liest eine Datei. Erlaubt sind relative und absolute Pfade sowie
-// file:-URIs.
+// Read reads a file. Relative and absolute paths as well as
+// file: URIs are allowed.
 func (r DirResolver) Read(uri string) ([]byte, error) {
 	if u, err := url.Parse(uri); err == nil && u.Scheme != "" && len(u.Scheme) > 1 {
 		if u.Scheme != "file" {

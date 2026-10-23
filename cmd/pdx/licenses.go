@@ -8,9 +8,9 @@ import (
 	"github.com/tim-riep/pdx"
 )
 
-// cmdLicenses gibt die Lizenz von pdx, den Hinweis und die Lizenztexte
-// aller enthaltenen Fremdbestandteile aus. --list nennt nur die
-// Bestandteile mit ihrer Lizenz.
+// cmdLicenses prints the license of pdx, the notice and the license texts
+// of all included third-party components. --list names only the
+// components with their license.
 func cmdLicenses(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("licenses", flag.ContinueOnError)
 	fs.SetOutput(stderr)

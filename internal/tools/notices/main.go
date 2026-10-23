@@ -1,14 +1,14 @@
-// Befehl notices schreibt Drittanbieterhinweise mit allen Lizenztexten für
-// die Programme dieses Repositorys: den Hinweis von pdx, die in den
-// Programmen eingebetteten Fremdbestandteile (Schriften, Trennmuster), die
-// Laufzeit von Go, alle gelinkten Go-Module über macOS, Linux und Windows
-// und auf Wunsch die npm-Pakete eines Frontend-Bündels.
+// Command notices writes third-party notices with all license texts for the
+// programs of this repository: the notice of pdx, the third-party components
+// embedded in the programs (fonts, hyphenation patterns), the Go runtime,
+// all linked Go modules across macOS, Linux and Windows and, on request,
+// the npm packages of a frontend bundle.
 //
 //	go run ./internal/tools/notices -pkgs ./cmd/pdx,./cmd/pdx-server -o THIRD_PARTY_NOTICES.txt
 //	cd designer && go run ../internal/tools/notices -cgo -npm frontend/bundled-packages.json \
 //	    -node frontend/node_modules -title "pdx Designer" -o notices/THIRD_PARTY_NOTICES.txt
 //
-// Mit -check vergleicht es nur und scheitert bei Abweichung.
+// With -check it only compares and fails on a difference.
 package main
 
 import (
@@ -26,11 +26,11 @@ import (
 
 type module struct{ path, version, dir string }
 
-// own sind Module dieses Repositorys, für sie gilt der Hinweis von pdx.
+// own lists the modules of this repository, the notice of pdx applies to them.
 var own = map[string]bool{"github.com/tim-riep/pdx": true, "github.com/tim-riep/pdx/designer": true}
 
-// assets sind Fremdbestandteile, die als Dateien in Pakete von pdx
-// eingebettet werden. Sie erscheinen, wenn das Paket gelinkt ist.
+// assets lists third-party components that are embedded as files in pdx
+// packages. They appear when the package is linked.
 var assets = []struct {
 	pkg, title string
 	files      []string
@@ -41,8 +41,8 @@ var assets = []struct {
 
 var licenseFile = regexp.MustCompile(`(?i)^(licen[cs]e|copying|notice)(\.(txt|md))?$`)
 
-// sameProject ordnet npm-Pakete ohne Lizenzdatei dem Go-Modul desselben
-// Projekts zu, dessen Lizenz für sie gilt.
+// sameProject maps npm packages without a license file to the Go module of
+// the same project, whose license applies to them.
 var sameProject = map[string]string{"@wailsio/runtime": "github.com/wailsapp/wails/v3"}
 
 func main() {
@@ -118,7 +118,7 @@ func generate(pkgs []string, cgo bool, npm, node, title string) ([]byte, error) 
 	if err != nil {
 		return nil, err
 	}
-	// Manche Installationen (etwa Homebrew) legen die Lizenz über GOROOT ab.
+	// Some installations (such as Homebrew) place the license above GOROOT.
 	var goLicense []byte
 	for _, dir := range []string{goroot, filepath.Dir(goroot)} {
 		if goLicense, err = os.ReadFile(filepath.Join(dir, "LICENSE")); err == nil {
@@ -183,8 +183,8 @@ func section(b *bytes.Buffer, title string) {
 	b.WriteString("\n" + strings.Repeat("=", 72) + "\n" + title + "\n" + strings.Repeat("=", 72) + "\n\n")
 }
 
-// goModules liefert die Module und Pakete, die in die Programme gelinkt
-// werden, vereint über die drei Zielsysteme.
+// goModules returns the modules and packages that are linked into the
+// programs, merged across the three target systems.
 func goModules(pkgs []string, cgo bool) ([]module, map[string]bool, error) {
 	seen := map[string]module{}
 	linked := map[string]bool{}
@@ -222,8 +222,8 @@ func goModules(pkgs []string, cgo bool) ([]module, map[string]bool, error) {
 	return out, linked, nil
 }
 
-// licenses liefert die Lizenz- und Hinweisdateien im Wurzelordner eines
-// Pakets.
+// licenses returns the license and notice files in the root folder of a
+// package.
 func licenses(dir string) (string, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {

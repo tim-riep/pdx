@@ -1,7 +1,7 @@
 #!/bin/sh
-# Baut das Image der DSS-Prüfinstanz aus dem gepinnten Quellstand.
-# Lädt Quellcode von GitHub, Basisimages von Docker Hub und Bibliotheken
-# von Maven Central. Das Image bleibt lokal.
+# Builds the image of the DSS validation instance from the pinned source.
+# Downloads source code from GitHub, base images from Docker Hub and
+# libraries from Maven Central. The image stays local.
 set -eu
 cd "$(dirname "$0")"
 VERSION=$(sed -n 's/^\tVersion = "\(.*\)"/\1/p' dssval.go)

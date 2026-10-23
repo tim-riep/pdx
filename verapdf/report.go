@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Report ist das Ergebnis einer Prüfung.
+// Report is the result of a check.
 type Report struct {
 	File         string
 	Version      string
@@ -18,12 +18,12 @@ type Report struct {
 	PassedChecks int
 	FailedChecks int
 	Findings     []Finding
-	// Exception enthält eine Fehlermeldung, wenn veraPDF die Datei nicht
-	// prüfen konnte, etwa weil sie nicht lesbar ist.
+	// Exception contains an error message if veraPDF could not check the
+	// file, for example because it is not readable.
 	Exception string
 }
 
-// Finding ist eine fehlgeschlagene Regel.
+// Finding is a failed rule.
 type Finding struct {
 	Specification string
 	Clause        string
@@ -35,14 +35,14 @@ type Finding struct {
 	Checks        []Check
 }
 
-// Check ist eine einzelne fehlgeschlagene Prüfung mit Objektkontext.
+// Check is a single failed check with object context.
 type Check struct {
 	Context string
 	Message string
 }
 
-// Failed meldet, ob mindestens ein Test fehlgeschlagen ist oder die Prüfung
-// nicht durchgeführt werden konnte.
+// Failed reports whether at least one test failed or the check could
+// not be performed.
 func (r *Report) Failed() bool {
 	return !r.Compliant || r.FailedChecks > 0 || r.FailedRules > 0 || r.Exception != ""
 }
@@ -86,8 +86,8 @@ type mrrReport struct {
 	} `xml:"jobs>job"`
 }
 
-// ParseMRR liest einen veraPDF-Bericht im Format mrr und liefert einen
-// Report je Job.
+// ParseMRR reads a veraPDF report in mrr format and returns one
+// Report per job.
 func ParseMRR(r io.Reader) ([]*Report, error) {
 	var m mrrReport
 	if err := xml.NewDecoder(r).Decode(&m); err != nil {
@@ -135,10 +135,10 @@ func ParseMRR(r io.Reader) ([]*Report, error) {
 	return out, nil
 }
 
-// MaxContexts begrenzt die ausgegebenen Objektkontexte je Regel.
+// MaxContexts limits the reported object contexts per rule.
 const MaxContexts = 5
 
-// WriteText gibt den Bericht lesbar aus.
+// WriteText writes the report in readable form.
 func (r *Report) WriteText(w io.Writer) {
 	fmt.Fprintf(w, "veraPDF %s, %s\n", r.Version, r.Profile)
 	if r.Exception != "" {

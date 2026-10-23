@@ -15,8 +15,8 @@ import (
 
 const expectHeader = "Erwartung aus Apache FOP 2.11 (fop -r), erzeugt mit PDX_FOP=1 PDX_SUITE_UPDATE=1"
 
-// TestReference erzeugt die Erwartungen aller aktiven Fälle mit FOP.
-// PDX_SUITE=fop oder w3c beschränkt auf eine Suite.
+// TestReference generates the expectations of all active cases with FOP.
+// PDX_SUITE=fop or w3c restricts it to one suite.
 func TestReference(t *testing.T) {
 	if !fopcompare.Enabled() || os.Getenv("PDX_SUITE_UPDATE") != "1" {
 		t.Skip("PDX_FOP=1 und PDX_SUITE_UPDATE=1 setzen, um Erwartungen mit FOP zu erzeugen")
@@ -45,14 +45,14 @@ func TestReference(t *testing.T) {
 			if !strings.HasPrefix(why, ReasonFOPFails) {
 				continue
 			}
-			delete(disabled, c.ID()) // neu versuchen
+			delete(disabled, c.ID()) // try again
 		}
 		bySuite[c.Suite] = append(bySuite[c.Suite], c)
 	}
 	for suite, cs := range bySuite {
 		out := filepath.Join(root, "out", "suites", "ref", suite)
-		// PDX_SUITE_REUSE=1 nutzt die Ausgaben von FOP und Poppler aus dem
-		// letzten Lauf, etwa nach einer Änderung an der Auswertung.
+		// PDX_SUITE_REUSE=1 reuses the outputs of FOP and Poppler from the
+		// last run, for example after a change to the evaluation.
 		if os.Getenv("PDX_SUITE_REUSE") != "1" {
 			os.RemoveAll(out)
 			var files []string
@@ -89,7 +89,7 @@ func TestReference(t *testing.T) {
 	}
 }
 
-// expectFromFOP baut die Erwartung aus Area Tree und pdftotext-Ausgabe.
+// expectFromFOP builds the expectation from the area tree and pdftotext output.
 func expectFromFOP(out string, c Case) (*Expect, string) {
 	at, err := os.ReadFile(filepath.Join(out, c.Name+".at.xml"))
 	if err != nil {
@@ -103,10 +103,10 @@ func expectFromFOP(out string, c Case) (*Expect, string) {
 		page int
 		text string
 	}
-	// Poppler liefert X, der Area Tree Text und Grundlinie. Gleiche Texte
-	// einer Seite werden über die Höhe einander zugeordnet, bei gleicher
-	// Höhe von links nach rechts. Poppler teilt manche Zeilen, etwa an einem
-	// Leader, deshalb genügt die Reihenfolge allein nicht.
+	// Poppler supplies X, the area tree supplies text and baseline. Identical
+	// texts on a page are matched by height, at equal height from left to
+	// right. Poppler splits some lines, for example at a leader, so the order
+	// alone is not sufficient.
 	xs := map[key][]fopcompare.Line{}
 	if bb, err := os.ReadFile(filepath.Join(out, c.Name+".bbox.html")); err == nil {
 		if pl, _, err := fopcompare.ParseBBox(bb); err == nil {

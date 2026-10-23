@@ -7,7 +7,7 @@
 
   let st: PublishState = $state({ url: "", connected: false, id: "" });
   let url = $state("");
-  // Der Schlüssel lebt nur in diesem Feld und im Backend-Speicher.
+  // The key lives only in this field and in the backend storage.
   let key = $state("");
   let id = $state("");
   let diff: PublishDiff | null = $state(null);
@@ -16,7 +16,7 @@
   let busy = $state(false);
   let ready = $state(false);
 
-  // Felder sind erst nach dem Laden der Vorbelegung bearbeitbar.
+  // Fields are editable only after the defaults have loaded.
   PublishAPI.State().then((s) => {
     st = s;
     url = s.url;
@@ -69,7 +69,7 @@
       diff = await PublishAPI.Compare(id);
     });
 
-  // Nur geänderte Zeilen mit je zwei Zeilen Umgebung.
+  // Only changed lines with two lines of context each.
   const lines = $derived.by(() => {
     const all = diff?.template ?? [];
     const keep = all.map(() => false);

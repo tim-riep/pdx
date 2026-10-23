@@ -1,14 +1,14 @@
-// Command last misst Durchsatz und Antwortzeiten von pdx-server mit fester
-// Parallelität. Es nutzt server.Client und keine weitere Abhängigkeit.
+// Command last measures throughput and response times of pdx-server with
+// fixed concurrency. It uses server.Client and no other dependency.
 //
 //	PDX_KEY=… go run ./deploy/last -url http://127.0.0.1:8080 -id rechnung \
 //	    -data testdata/templates/musterrechnung/samples/rechnung.xml \
 //	    -profile pdfa-3b -c 8 -d 30s
 //
-// Der Schlüssel kommt aus PDX_KEY, nie als Argument. Mit -p95 und -rate
-// scheitert der Lauf (Exit-Code 1), wenn die Zielwerte verfehlt werden.
-// Vereinbart sind für die Musterrechnung bei 8 parallelen Anfragen auf
-// 4 CPUs: p95 unter 300 ms und mindestens 30 PDFs pro Sekunde.
+// The key comes from PDX_KEY, never as an argument. With -p95 and -rate the
+// run fails (exit code 1) if the target values are missed. Agreed for the
+// sample invoice with 8 concurrent requests on 4 CPUs: p95 below 300 ms
+// and at least 30 PDFs per second.
 package main
 
 import (

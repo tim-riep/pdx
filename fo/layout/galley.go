@@ -8,12 +8,12 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// Die Galley ist die vertikale Folge eines Flusses im Box-Glue-Penalty-Modell:
-// Boxen (Zeilen, Ober- und Unterkanten von Blöcken, Anker absoluter
-// Container), Glue (Abstände, am Seitenanfang verworfen) und Penalties
-// (Umbruchstellen mit Kosten). Der Seitenumbruch wählt nur zwischen
-// Penalties. Zwei Boxen trennt immer eine Penalty, ein Glue folgt stets auf
-// eine Penalty, damit ein Umbruch den Abstand dahinter verwirft.
+// The galley is the vertical sequence of a flow in the box-glue-penalty model:
+// boxes (lines, top and bottom edges of blocks, anchors of absolute
+// containers), glue (spaces, discarded at the start of a page) and penalties
+// (break points with costs). The page break only chooses between
+// penalties. Two boxes are always separated by a penalty, a glue always
+// follows a penalty so that a break discards the space after it.
 
 type itemKind uint8
 
@@ -24,9 +24,9 @@ const (
 )
 
 const (
-	// penaltyForced erzwingt einen Umbruch.
+	// penaltyForced forces a break.
 	penaltyForced = -1 << 30
-	// penaltyInf verbietet einen Umbruch, solange es eine Alternative gibt.
+	// penaltyInf forbids a break as long as there is an alternative.
 	penaltyInf = 1 << 30
 )
 
@@ -38,144 +38,144 @@ const (
 	edgeBottom
 )
 
-// ordinal ist die Stelle einer Box im Fluss, unabhängig von der Breite:
-// major zählt Kanten, Anker und Absätze, minor ist bei Zeilen das erste
-// Stück des Absatzes in der Zeile.
+// ordinal is the position of a box in the flow, independent of the width:
+// major counts edges, anchors and paragraphs, minor is, for lines, the first
+// piece of the paragraph in the line.
 type ordinal struct {
 	major, minor int
 }
 
-// resumePoint ist die Stelle im Inhalt einer Zelle, an der eine umbrochene
-// Zeile nach einem Breitenwechsel weitergeht: das Ordinal der ersten Box in
-// der Galley der Zelle und, ist diese Box selbst eine Zeile, deren Stellen.
+// resumePoint is the position in the content of a cell at which a broken
+// row continues after a width change: the ordinal of the first box in
+// the galley of the cell and, if this box is itself a line, its positions.
 type resumePoint struct {
 	ord   ordinal
 	cells []resumePoint
 }
 
-// doneOrd steht für eine Zelle, deren Inhalt schon vollständig gesetzt ist.
+// doneOrd stands for a cell whose content has already been fully placed.
 var doneOrd = ordinal{major: 1 << 30}
 
 func (o ordinal) less(p ordinal) bool {
 	return o.major < p.major || o.major == p.major && o.minor < p.minor
 }
 
-// item ist ein Eintrag der Galley.
+// item is an entry of the galley.
 type item struct {
 	ord  ordinal
 	kind itemKind
 	h    areatree.Length
-	// keep ist bei Abständen der Anteil, der am Anfang einer Seite erhalten
-	// bleibt (Konditionalität retain).
+	// keep is, for spaces, the part that is retained at the start of a
+	// page (conditionality retain).
 	keep areatree.Length
-	// shrink ist bei Abständen, um wie viel sie bis zum Minimum gestaucht
-	// werden dürfen.
+	// shrink is, for spaces, how much they may be shrunk down to the
+	// minimum.
 	shrink  areatree.Length
 	penalty int
-	// path sind die umschließenden Blöcke von außen nach innen. Bei Kanten
-	// gehört der Block der Kante dazu.
+	// path holds the enclosing blocks from outside to inside. For edges
+	// the block of the edge is included.
 	path []*blockCtx
 	edge edgeKind
-	// brk ist bei erzwungenen Umbrüchen page, odd-page oder even-page.
+	// brk is page, odd-page or even-page for forced breaks.
 	brk string
-	// seq ist der Index der Box in der Galley.
+	// seq is the index of the box in the galley.
 	seq    int
 	line   *lineBox
 	anchor *absAnchor
-	// row und slice sind bei Scheiben von Tabellenzeilen und Listenpunkten
-	// gesetzt, resume bei Scheiben nach der ersten.
+	// row and slice are set for slices of table rows and list items,
+	// resume for slices after the first.
 	row    *rowLayout
 	slice  int
 	resume []resumePoint
 }
 
-// blockCtx beschreibt einen Block unabhängig von der Seite. x und w sind die
-// Padding-Box relativ zum linken Rand des Referenzbereichs.
+// blockCtx describes a block independent of the page. x and w are the
+// padding box relative to the left edge of the reference area.
 type blockCtx struct {
 	node *tree.Node
 	p    *props.Computed
 	x, w areatree.Length
-	// keep ist die Stärke von keep-together als Penalty.
+	// keep is the strength of keep-together as a penalty.
 	keep int
-	// markers sind die fo:marker des Blocks, first und last die Indizes
-	// seiner ersten und letzten Box in der Galley.
+	// markers are the fo:marker elements of the block, first and last the indices
+	// of its first and last box in the galley.
 	markers     markerSet
 	first, last int
-	// ids sind IDs leerer Inline-Elemente im Block. Sie gelten für die Seite,
-	// auf der der Block beginnt.
+	// ids are IDs of empty inline elements in the block. They apply to the page
+	// on which the block starts.
 	ids []string
 }
 
-// lineBox ist eine gesetzte Zeile. Die Bereiche haben x relativ zum linken
-// Rand des Referenzbereichs und y relativ zur Oberkante der Zeile.
+// lineBox is a laid out line. The areas have x relative to the left
+// edge of the reference area and y relative to the top edge of the line.
 type lineBox struct {
 	h        areatree.Length
 	w        areatree.Length
 	x        areatree.Length
 	areas    []areatree.Area
 	deferred []deferredRun
-	// ids sind die IDs von Inline-Elementen mit Inhalt in dieser Zeile.
+	// ids are the IDs of inline elements with content in this line.
 	ids []string
 }
 
-// deferredRun ist eine Seitenzahl im Fluss, die erst beim Platzieren der
-// Seite feststeht. index verweist auf den Glyph-Run in lineBox.areas.
+// deferredRun is a page number in the flow that is only known when the
+// page is placed. index refers to the glyph run in lineBox.areas.
 type deferredRun struct {
 	index    int
 	node     *tree.Node
 	st       *style
 	reserved areatree.Length
-	// ref ist bei Seitenverweisen die Ziel-ID, last wählt die letzte Seite.
+	// ref is the target ID for page citations, last selects the last page.
 	ref  string
 	last bool
 }
 
-// absAnchor trägt einen absolut positionierten Container durch die Galley.
-// Sein Inhalt wird erst auf der Seite gesetzt, auf der der Anker landet.
+// absAnchor carries an absolutely positioned container through the galley.
+// Its content is only laid out on the page on which the anchor lands.
 type absAnchor struct {
 	node *tree.Node
 	p    *props.Computed
-	// page ist im fo:static-content die Seite für fo:retrieve-marker.
+	// page is the page for fo:retrieve-marker in fo:static-content.
 	page *areatree.Page
 }
 
-// galley erzeugt die Einträge für einen Referenzbereich der Breite refW.
+// galley generates the entries for a reference area of width refW.
 type galley struct {
 	e    *engine
 	refW areatree.Length
-	// refX ist der Inhaltsanfang der Referenzfläche, refProps ihre
-	// Eigenschaften, solange ein fo:block-container im Fluss gesetzt wird.
+	// refX is the content start of the reference area, refProps its
+	// properties, while an fo:block-container in the flow is being laid out.
 	refX     areatree.Length
 	refProps *props.Computed
-	pageNo   int // 0, solange die Seite nicht feststeht (Fluss)
+	pageNo   int // 0 as long as the page is not known (flow)
 	items    []item
 	stack    []*blockCtx
-	// leadKeep ist ein keep-with-previous vor dem ersten Inhalt.
+	// leadKeep is a keep-with-previous before the first content.
 	leadKeep int
-	// spaces sind die Abstände der laufenden Folge (space-after und
-	// space-before aufeinanderfolgender Blöcke), aufgelöst nach XSL 1.1
-	// 4.3.1 beim nächsten Inhalt.
+	// spaces are the spaces of the current sequence (space-after and
+	// space-before of consecutive blocks), resolved according to XSL 1.1
+	// 4.3.1 at the next content.
 	spaces []spaceSpec
-	major  int     // Zähler für ordinal
-	skip   ordinal // Boxen davor entfallen (Neuaufbau nach Breitenwechsel)
-	// resume gibt beim Neuaufbau für die Zeile bei skip je Zelle die Stelle
-	// an, ab der ihr Inhalt neu gesetzt wird.
+	major  int     // counter for ordinal
+	skip   ordinal // boxes before it are dropped (rebuild after width change)
+	// resume gives, on rebuild for the row at skip, per cell the position
+	// from which its content is laid out again.
 	resume []resumePoint
 
-	// Für die nächste Penalty vorgemerkte Keeps und Umbrüche.
+	// Keeps and breaks pending for the next penalty.
 	keepNext int
 	keepPrev int
 	brk      string
-	lastPath []*blockCtx // Pfad der letzten Box
+	lastPath []*blockCtx // path of the last box
 
-	// page ist die Seite bei statischen Inhalten (für fo:retrieve-marker),
-	// tbl die Tabelle beim Neusetzen von Kopf und Fuß (fo:retrieve-table-marker).
+	// page is the page for static content (for fo:retrieve-marker),
+	// tbl the table when re-laying out header and footer (fo:retrieve-table-marker).
 	page *areatree.Page
 	tbl  *tableCtx
 }
 
-// push öffnet einen Block: keep-together, keep-with-previous und
-// break-before wirken ab hier.
+// push opens a block: keep-together, keep-with-previous and
+// break-before take effect from here.
 func (g *galley) push(ctx *blockCtx) {
 	n := ctx.node
 	ctx.keep = keepValue(n, "keep-together")
@@ -188,14 +188,14 @@ func (g *galley) push(ctx *blockCtx) {
 	g.stack = append(g.stack, ctx)
 }
 
-// pop schließt den innersten Block: keep-with-next und break-after wirken
-// auf die nächste Penalty.
+// pop closes the innermost block: keep-with-next and break-after act
+// on the next penalty.
 func (g *galley) pop() {
 	ctx := g.stack[len(g.stack)-1]
 	if noContent(ctx.node) {
-		// Ein Block ohne Inhalt erzeugt keine Box. Trägt er eine ID, Marker
-		// oder IDs leerer Inline-Elemente, hält eine Box der Höhe 0 seine
-		// Lage fest, damit Verweise auf ihn aufgelöst werden.
+		// A block without content produces no box. If it carries an ID, markers
+		// or IDs of empty inline elements, a box of height 0 records its
+		// position so that references to it are resolved.
 		if id, _ := ctx.node.Attr("id"); id != "" || len(ctx.markers) > 0 || len(ctx.ids) > 0 {
 			g.box(item{path: g.path(), ord: g.next()}, g.breakBefore(edgeNone))
 		}
@@ -207,8 +207,8 @@ func (g *galley) pop() {
 	}
 }
 
-// noContent meldet einen Block ohne Text und ohne Elemente außer leeren
-// Inline-Elementen und Markern. Er erzeugt keine Zeile.
+// noContent reports a block without text and without elements except empty
+// inline elements and markers. It produces no line.
 func noContent(n *tree.Node) bool {
 	for _, c := range n.Children {
 		switch {
@@ -228,8 +228,8 @@ func noContent(n *tree.Node) bool {
 	return true
 }
 
-// spaceBefore sammelt space-before eines Blocks. Der erhaltene Anteil gilt
-// auch am Anfang einer Seite.
+// spaceBefore collects space-before of a block. The retained part also
+// applies at the start of a page.
 func (g *galley) spaceBefore(p *props.Computed) {
 	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceBefore, min: p.SpaceBeforeMin, prec: p.SpaceBeforePrec, retain: p.SpaceBeforeRetain})
 }
@@ -239,17 +239,17 @@ func (g *galley) spaceAfter(p *props.Computed) {
 	g.spaces = append(g.spaces, spaceSpec{v: p.SpaceAfter, min: p.SpaceAfterMin, prec: p.SpaceAfterPrec})
 }
 
-// spaceSpec ist ein Abstand mit Priorität und Konditionalität.
+// spaceSpec is a space with precedence and conditionality.
 type spaceSpec struct {
 	v, min areatree.Length
 	prec   int
 	retain bool
 }
 
-// resolveSpaces löst eine Folge von Abständen nach XSL 1.1 4.3.1 auf:
-// Erzwingende Abstände (force) gelten alle und heben die übrigen auf, sonst
-// gewinnt die höchste Priorität und darunter das größte Optimum. keep ist
-// das Ergebnis am Anfang einer Seite, dort entfallen bedingte Abstände.
+// resolveSpaces resolves a sequence of spaces according to XSL 1.1 4.3.1:
+// forcing spaces (force) all apply and cancel the others, else the
+// highest precedence wins and below that the largest optimum. keep is
+// the result at the start of a page, where conditional spaces are dropped.
 func resolveSpaces(specs []spaceSpec) (h, min, keep areatree.Length) {
 	resolve := func(retainedOnly bool) (areatree.Length, areatree.Length) {
 		var forced, forcedMin areatree.Length
@@ -280,8 +280,8 @@ func resolveSpaces(specs []spaceSpec) (h, min, keep areatree.Length) {
 	return h, min, keep
 }
 
-// breakValue liest break-before oder break-after. column gilt wie page, weil
-// es in Phase 1 keine mehrspaltigen Regionen gibt.
+// breakValue reads break-before or break-after. column counts like page,
+// because there are no multi-column regions in phase 1.
 func breakValue(n *tree.Node, prop string) string {
 	switch v, _ := n.Attr(prop); v {
 	case "page", "column":
@@ -289,7 +289,7 @@ func breakValue(n *tree.Node, prop string) string {
 	case "odd-page", "even-page":
 		return v
 	}
-	// Kurzformen aus CSS2 (XSL 1.1 7.31.16 und 7.31.17).
+	// CSS2 shorthands (XSL 1.1 7.31.16 and 7.31.17).
 	short := map[string]string{"break-before": "page-break-before", "break-after": "page-break-after"}[prop]
 	switch v, _ := n.Attr(short); v {
 	case "always":
@@ -302,8 +302,8 @@ func breakValue(n *tree.Node, prop string) string {
 	return ""
 }
 
-// keepInside liefert die stärkste keep-together-Bindung der Blöcke, die die
-// vorige und die neue Box gemeinsam umschließen.
+// keepInside returns the strongest keep-together binding of the blocks that
+// jointly enclose the previous and the new box.
 func keepInside(a, b []*blockCtx) int {
 	k := 0
 	for i := 0; i < len(a) && i < len(b) && a[i] == b[i]; i++ {
@@ -316,14 +316,14 @@ func newGalley(e *engine, refW areatree.Length, pageNo int) *galley {
 	return &galley{e: e, refW: refW, pageNo: pageNo}
 }
 
-// contentX liefert den Inhaltsanfang eines Blocks. start-indent bezieht
-// sich auf die nächste umgebende Referenzfläche (XSL 1.1 5.3.2), deren
-// Inhaltsanfang refX ist.
+// contentX returns the content start of a block. start-indent refers
+// to the nearest enclosing reference area (XSL 1.1 5.3.2), whose
+// content start is refX.
 func (g *galley) contentX(p *props.Computed) areatree.Length { return g.refX + p.StartIndent }
 
-// percentBase liefert die Bezugsbreite für Prozentangaben eines Kindes: die
-// Inhaltsbreite des umgebenden Blocks, bei der Referenzfläche selbst deren
-// Breite.
+// percentBase returns the base width for percentages of a child: the
+// content width of the enclosing block, for the reference area itself its
+// width.
 func (g *galley) percentBase(parent *props.Computed) areatree.Length {
 	if parent == g.refProps {
 		return g.refW
@@ -338,10 +338,10 @@ func (g *galley) path() []*blockCtx {
 	return append([]*blockCtx(nil), g.stack...)
 }
 
-// box hängt eine Box an, davor eine Penalty und den angesammelten Abstand.
+// box appends a box, preceded by a penalty and the accumulated space.
 func (g *galley) box(it item, before int) {
-	// Ein break-after des letzten Kindes wirkt erst nach den Unterkanten der
-	// umschließenden Blöcke, deren Rahmen gehört noch auf die Seite.
+	// A break-after of the last child only takes effect after the bottom edges
+	// of the enclosing blocks, their border still belongs on the page.
 	if it.edge == edgeBottom && g.brk != "" {
 		held := g.brk
 		g.brk = ""
@@ -349,8 +349,8 @@ func (g *galley) box(it item, before int) {
 	}
 	pen := max(before, g.keepNext, g.keepPrev, keepInside(g.lastPath, it.path))
 	if len(g.items) == 0 {
-		// Keeps vor dem ersten Inhalt gelten für das umschließende Element,
-		// etwa die Zeile einer Tabelle.
+		// Keeps before the first content apply to the enclosing element,
+		// such as the row of a table.
 		g.leadKeep = max(g.leadKeep, g.keepPrev)
 	}
 	brk := g.brk
@@ -365,8 +365,8 @@ func (g *galley) box(it item, before int) {
 	if len(g.items) > 0 {
 		g.items = append(g.items, item{kind: itPenalty, penalty: pen, brk: brk})
 	} else if brk != "" {
-		// Ein Umbruch vor dem ersten Inhalt zählt nur bei odd-page und
-		// even-page, die Seitenfolge setzt dann eine Leerseite davor.
+		// A break before the first content only counts for odd-page and
+		// even-page, the page sequence then inserts a blank page before it.
 		g.items = append(g.items, item{kind: itPenalty, penalty: penaltyForced, brk: brk})
 	}
 	g.lastPath = it.path
@@ -385,9 +385,9 @@ func (g *galley) box(it item, before int) {
 	g.items = append(g.items, it)
 }
 
-// breakBefore liefert die Penalty vor einer neuen Box. Zwischen Oberkante
-// und erstem Inhalt sowie vor einer Unterkante wird nicht umbrochen, damit
-// Rahmen nicht allein auf einer Seite stehen.
+// breakBefore returns the penalty before a new box. There is no break
+// between the top edge and the first content or before a bottom edge, so
+// that borders do not stand alone on a page.
 func (g *galley) breakBefore(edge edgeKind) int {
 	if edge == edgeBottom {
 		return penaltyInf
@@ -412,7 +412,7 @@ func (g *galley) next() ordinal {
 	return ordinal{major: g.major}
 }
 
-// blocks erzeugt die Einträge der Blockkinder eines Elements.
+// blocks generates the entries of the block children of an element.
 func (g *galley) blocks(n *tree.Node, p *props.Computed) error {
 	for _, ch := range n.Children {
 		if ch.Kind != tree.Element || ch.IsFO("marker") {
@@ -436,8 +436,8 @@ func (g *galley) blocks(n *tree.Node, p *props.Computed) error {
 	return nil
 }
 
-// retrieve löst fo:retrieve-marker und fo:retrieve-table-marker auf. Der
-// zweite Rückgabewert meldet, ob n ein solches Element ist.
+// retrieve resolves fo:retrieve-marker and fo:retrieve-table-marker. The
+// second return value reports whether n is such an element.
 func (g *galley) retrieve(n *tree.Node) (*tree.Node, bool, error) {
 	switch {
 	case n.IsFO("retrieve-marker"):
@@ -451,9 +451,9 @@ func (g *galley) retrieve(n *tree.Node) (*tree.Node, bool, error) {
 			return nil, true, tree.Errorf(n, "fo:retrieve-table-marker ist nur in fo:table-header und fo:table-footer erlaubt")
 		}
 		if g.page == nil {
-			// Beim ersten Setzen steht die Seite noch nicht fest. Für die
-			// reservierte Höhe gilt ein Marker derselben Klasse aus der Tabelle,
-			// der echte Inhalt folgt beim Zeichnen.
+			// On the first layout the page is not known yet. For the
+			// reserved height a marker of the same class from the table applies,
+			// the real content follows when drawing.
 			cls, _ := n.Attr("retrieve-class-name")
 			return g.tbl.sample(cls), true, nil
 		}
@@ -470,7 +470,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	case n.IsFO("list-block"):
 		return g.list(n, parent)
 	}
-	// Prozentangaben beziehen sich auf den umgebenden Blockbereich.
+	// Percentages refer to the enclosing block area.
 	p, err := props.Compute(parent, n, g.percentBase(parent))
 	if err != nil {
 		return err
@@ -482,9 +482,9 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 			return nil
 		}
 		if p.Width != nil {
-			// Die Breite legt das Inhaltsrechteck fest, end-indent wird
-			// angepasst (Überbestimmung, XSL 1.1 5.3.4). Die Kinder erben den
-			// berechneten Wert der Eigenschaft, nicht die Anpassung.
+			// The width fixes the content rectangle, end-indent is
+			// adjusted (overconstraint, XSL 1.1 5.3.4). The children inherit the
+			// computed value of the property, not the adjustment.
 			inherited := *p
 			p.EndIndent = max(g.refW-p.StartIndent-*p.Width, 0)
 			childParent = &inherited
@@ -501,16 +501,16 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 		g.box(item{h: h, path: g.path(), edge: edgeTop, ord: g.next()}, g.breakBefore(edgeTop))
 	}
 
-	// Ein fo:block-container mit fester Höhe wird nicht umbrochen, fehlende
-	// Höhe füllt eine Box auf (block-progression-dimension, XSL 1.1 7.15.3).
+	// An fo:block-container with fixed height is not broken, missing
+	// height is filled by a box (block-progression-dimension, XSL 1.1 7.15.3).
 	fixedH := n.IsFO("block-container") && p.Height != nil
 	if fixedH {
 		ctx.keep = penaltyInf
 	}
 	start := len(g.items)
 	if n.IsFO("block-container") {
-		// fo:block-container ist eine Referenzfläche (XSL 1.1 6.5.3): Die
-		// Einzüge der Kinder zählen ab ihrem Inhaltsrechteck.
+		// fo:block-container is a reference area (XSL 1.1 6.5.3): the
+		// indents of the children count from its content rectangle.
 		saveX, saveW, saveP := g.refX, g.refW, g.refProps
 		g.refX, g.refW, g.refProps = g.contentX(p), g.contentW(p), childParent
 		err = g.blocks(n, childParent)
@@ -522,8 +522,8 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 		return err
 	}
 	if fixedH {
-		// Der Abstand vor dem ersten Inhalt gehört zum Abstand vor dem
-		// Container und zählt nicht zu seiner Höhe.
+		// The space before the first content belongs to the space before the
+		// container and does not count toward its height.
 		for start < len(g.items) && g.items[start].kind != itBox {
 			start++
 		}
@@ -533,7 +533,7 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 				used += it.h
 			}
 		}
-		// Zu viel Inhalt staucht zuerst die Abstände bis zu ihrem Minimum
+		// Too much content first shrinks the spaces down to their minimum
 		// (XSL 1.1 4.3).
 		if used > *p.Height {
 			var shrink areatree.Length
@@ -556,15 +556,15 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 				}
 			}
 		}
-		// Fehlende Höhe wird aufgefüllt, überschüssiger Inhalt läuft über
-		// (7.21.2), der folgende Inhalt beginnt nach der festen Höhe.
+		// Missing height is filled, excess content overflows
+		// (7.21.2), the following content starts after the fixed height.
 		if *p.Height != used {
 			g.box(item{h: *p.Height - used, path: g.path(), ord: g.next()}, g.breakBefore(edgeNone))
 		}
 	}
 
 	if edges {
-		// Der Abstand nach dem letzten Kind steht innerhalb des Paddings.
+		// The space after the last child lies inside the padding.
 		h := p.Padding[areatree.Bottom] + p.BorderWidth(areatree.Bottom)
 		g.box(item{h: h, path: g.path(), edge: edgeBottom, ord: g.next()}, g.breakBefore(edgeBottom))
 	}
@@ -573,8 +573,8 @@ func (g *galley) block(n *tree.Node, parent *props.Computed) error {
 	return nil
 }
 
-// mixed erzeugt die Einträge des gemischten Inhalts eines fo:block: Absätze
-// aus Text und Inlines, unterbrochen von Kindblöcken.
+// mixed generates the entries of the mixed content of an fo:block: paragraphs
+// of text and inlines, interrupted by child blocks.
 func (g *galley) mixed(n *tree.Node, p *props.Computed) error {
 	para := newParagraph(g, p, n)
 	first := true
@@ -626,7 +626,7 @@ func (g *galley) mixed(n *tree.Node, p *props.Computed) error {
 	return flush()
 }
 
-// hasBox meldet sichtbare Rahmen oder Padding.
+// hasBox reports visible borders or padding.
 func hasBox(p *props.Computed) bool {
 	for i := 0; i < 4; i++ {
 		if p.BorderWidth(i) > 0 || p.Padding[i] > 0 {

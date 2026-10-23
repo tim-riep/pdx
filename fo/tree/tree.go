@@ -1,10 +1,10 @@
-// Package tree liest XSL-FO in einen Knotenbaum mit Zeilen- und
-// Spaltenangaben. Er prüft, dass nur Elemente des unterstützten Teilumfangs
-// vorkommen, und meldet alles andere mit Position statt es still zu
-// übergehen.
+// Package tree reads XSL-FO into a node tree with line and
+// column information. It checks that only elements of the supported subset
+// occur and reports everything else with position instead of silently
+// skipping it.
 //
-// Elemente fremder Namespaces in fo:declarations werden übernommen, damit
-// das Layout die Erweiterungen von pdx (Namespace NSPDX) lesen kann. Andere fremde Elemente werden ignoriert, wie es XSL 1.1 erlaubt.
+// Elements of foreign namespaces in fo:declarations are kept so that
+// the layout can read the pdx extensions (namespace NSPDX). Other foreign elements are ignored, as XSL 1.1 allows.
 package tree
 
 import (
@@ -19,62 +19,62 @@ import (
 )
 
 const (
-	// NSFO ist der XSL-FO-Namespace.
+	// NSFO is the XSL-FO namespace.
 	NSFO = "http://www.w3.org/1999/XSL/Format"
-	// NSPDX ist der Erweiterungs-Namespace von pdx für XSL-FO.
+	// NSPDX is the pdx extension namespace for XSL-FO.
 	NSPDX = "https://github.com/tim-riep/pdx/ns/fo/1"
-	// NSPDXLegacy ist der Namespace bis pdx 0.1.0. Der Parser liest ihn als
+	// NSPDXLegacy is the namespace up to pdx 0.1.0. The parser reads it as
 	// NSPDX.
 	NSPDXLegacy = "https://pdx.example/ns/pdx/1.0"
-	// NSXML ist der XML-Namespace für xml:lang.
+	// NSXML is the XML namespace for xml:lang.
 	NSXML = "http://www.w3.org/XML/1998/namespace"
 )
 
-// Kind unterscheidet Elemente und Text.
+// Kind distinguishes elements and text.
 type Kind uint8
 
 const (
-	// Element ist ein Elementknoten.
+	// Element is an element node.
 	Element Kind = iota
-	// Text ist ein Textknoten.
+	// Text is a text node.
 	Text
 )
 
-// Node ist ein Knoten des FO-Baums.
+// Node is a node of the FO tree.
 type Node struct {
 	Kind Kind
-	// Space ist der Namespace, Name der lokale Name, etwa NSFO und "block".
+	// Space is the namespace, Name the local name, such as NSFO and "block".
 	Space, Name string
-	// Attrs enthält Attribute ohne Namespace unter ihrem Namen, xml:lang als
-	// "xml:lang" und Attribute fremder Namespaces als "{ns}name".
+	// Attrs holds attributes without namespace under their name, xml:lang as
+	// "xml:lang" and attributes of foreign namespaces as "{ns}name".
 	Attrs    map[string]string
 	Children []*Node
 	Parent   *Node
-	// Data ist der Inhalt eines Textknotens.
+	// Data is the content of a text node.
 	Data string
-	// Line und Col geben die Position im Quelltext an (ab 1).
+	// Line and Col give the position in the source (from 1).
 	Line, Col int
 }
 
-// Pos liefert die Position als "Zeile:Spalte".
+// Pos returns the position as "line:column".
 func (n *Node) Pos() string { return fmt.Sprintf("%d:%d", n.Line, n.Col) }
 
-// Is prüft Namespace und lokalen Namen.
+// Is checks namespace and local name.
 func (n *Node) Is(space, name string) bool {
 	return n.Kind == Element && n.Space == space && n.Name == name
 }
 
-// IsFO prüft auf ein FO-Element mit diesem Namen.
+// IsFO checks for an FO element with this name.
 func (n *Node) IsFO(name string) bool { return n.Is(NSFO, name) }
 
-// Attr liefert ein Attribut und ob es gesetzt ist.
+// Attr returns an attribute and whether it is set.
 func (n *Node) Attr(name string) (string, bool) {
 	v, ok := n.Attrs[name]
 	return v, ok
 }
 
-// TemplateID liefert die ID des Vorlagenelements (pdx:id) des Knotens oder
-// seines nächsten Vorfahren. Leer, wenn das FO nicht aus einer Vorlage stammt.
+// TemplateID returns the ID of the template element (pdx:id) of the node or
+// its nearest ancestor. Empty if the FO does not come from a template.
 func (n *Node) TemplateID() string {
 	for m := n; m != nil; m = m.Parent {
 		if m.Kind == Element {
@@ -86,7 +86,7 @@ func (n *Node) TemplateID() string {
 	return ""
 }
 
-// Label beschreibt den Knoten für Fehlermeldungen, etwa "fo:block@12:5".
+// Label describes the node for error messages, such as "fo:block@12:5".
 func (n *Node) Label() string {
 	prefix := "{" + n.Space + "}"
 	switch n.Space {
@@ -98,7 +98,7 @@ func (n *Node) Label() string {
 	return prefix + n.Name + "@" + n.Pos()
 }
 
-// Error ist ein Fehler mit Position im Quelltext.
+// Error is an error with position in the source.
 type Error struct {
 	Line, Col int
 	Msg       string
@@ -106,13 +106,13 @@ type Error struct {
 
 func (e *Error) Error() string { return fmt.Sprintf("%d:%d: %s", e.Line, e.Col, e.Msg) }
 
-// Errorf baut einen Fehler an der Position eines Knotens.
+// Errorf builds an error at the position of a node.
 func Errorf(n *Node, format string, args ...any) error {
 	return &Error{Line: n.Line, Col: n.Col, Msg: fmt.Sprintf(format, args...)}
 }
 
-// Elemente des unterstützten Teilumfangs und ihre erlaubten FO-Kinder. "#text"
-// erlaubt Text, "#block" alle Blockelemente, "#inline" alle Inlineelemente.
+// Elements of the supported subset and their allowed FO children. "#text"
+// allows text, "#block" all block elements, "#inline" all inline elements.
 var allowed = map[string][]string{
 	"root":                                {"layout-master-set", "declarations", "bookmark-tree", "page-sequence"},
 	"bookmark-tree":                       {"bookmark"},
@@ -164,17 +164,17 @@ var inlineLevel = map[string]bool{"inline": true, "external-graphic": true, "pag
 	"page-number-citation": true, "page-number-citation-last": true,
 	"retrieve-marker": true, "retrieve-table-marker": true, "leader": true, "basic-link": true, "instream-foreign-object": true}
 
-// markerParents dürfen fo:marker als Kinder haben.
+// markerParents may have fo:marker as children.
 var markerParents = map[string]bool{"block": true, "block-container": true, "inline": true, "table-row": true,
 	"table-cell": true, "list-item": true, "list-item-label": true, "list-item-body": true}
 
-// Limits schützen vor entarteten Eingaben.
+// Limits protect against degenerate input.
 const (
 	maxDepth = 256
 	maxNodes = 1_000_000
 )
 
-// Parse liest ein FO-Dokument.
+// Parse reads an FO document.
 func Parse(r io.Reader) (*Node, error) {
 	data, err := io.ReadAll(r)
 	if err != nil {
@@ -183,7 +183,7 @@ func Parse(r io.Reader) (*Node, error) {
 	return ParseBytes(data)
 }
 
-// ParseBytes liest ein FO-Dokument aus Bytes.
+// ParseBytes reads an FO document from bytes.
 func ParseBytes(data []byte) (*Node, error) {
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	dec.Strict = true
@@ -191,7 +191,7 @@ func ParseBytes(data []byte) (*Node, error) {
 	var root *Node
 	var stack []*Node
 	nodes := 0
-	// ignoreDepth > 0 bedeutet: innerhalb eines ignorierten fremden Elements.
+	// ignoreDepth > 0 means: inside an ignored foreign element.
 	ignoreDepth := 0
 	for {
 		line, col := dec.InputPos()
@@ -248,7 +248,7 @@ func ParseBytes(data []byte) (*Node, error) {
 				return nil, Errorf(n, "Verschachtelung tiefer als %d Ebenen", maxDepth)
 			}
 			if n.Space != NSFO {
-				// Fremde Elemente: in fo:declarations übernehmen, sonst ignorieren.
+				// Foreign elements: keep in fo:declarations, else ignore.
 				if parent.IsFO("declarations") || parent.IsFO("instream-foreign-object") || (parent.Space != NSFO && parent.Space != "") {
 					n.Parent = parent
 					parent.Children = append(parent.Children, n)
@@ -280,7 +280,7 @@ func ParseBytes(data []byte) (*Node, error) {
 			parent := stack[len(stack)-1]
 			s := string(t)
 			if parent.Space != NSFO {
-				// Text in Erweiterungselementen wird übernommen.
+				// Text in extension elements is kept.
 				parent.Children = append(parent.Children, &Node{Kind: Text, Data: s, Parent: parent, Line: line, Col: col})
 				continue
 			}
@@ -304,8 +304,8 @@ func ParseBytes(data []byte) (*Node, error) {
 	return root, nil
 }
 
-// charsetReader liest Dokumente in ISO-8859-1 und windows-1252. UTF-8 und
-// UTF-16 erkennt encoding/xml selbst, weitere Kodierungen verlangt XML nicht.
+// charsetReader reads documents in ISO-8859-1 and windows-1252. UTF-8 and
+// UTF-16 are detected by encoding/xml itself, XML requires no other encodings.
 func charsetReader(label string, in io.Reader) (io.Reader, error) {
 	switch strings.ToLower(label) {
 	case "iso-8859-1", "latin1", "iso_8859-1", "l1":
@@ -318,17 +318,17 @@ func charsetReader(label string, in io.Reader) (io.Reader, error) {
 	return nil, fmt.Errorf("Zeichenkodierung %q wird nicht unterstützt, erlaubt sind UTF-8, UTF-16, ISO-8859-1 und windows-1252", label)
 }
 
-// resolveInherit ersetzt den Wert inherit, der nach XSL 1.1 5.1.4 bei jeder
-// Eigenschaft erlaubt ist, durch den Wert desselben Attributs am nächsten
-// Vorfahren. Hat kein Vorfahr das Attribut, entfällt es und der Anfangswert
-// gilt.
+// resolveInherit replaces the value inherit, which XSL 1.1 5.1.4 allows for
+// every property, with the value of the same attribute on the nearest
+// ancestor. If no ancestor has the attribute, it is dropped and the initial
+// value applies.
 func resolveInherit(n *Node) {
 	for name, v := range n.Attrs {
 		if strings.TrimSpace(v) != "inherit" {
 			continue
 		}
-		// Ränder und Padding können Prozentangaben haben. inherit übernimmt
-		// dort den berechneten Wert, das löst fo/props auf.
+		// Margins and padding can have percentages. There inherit takes
+		// the computed value, fo/props resolves that.
 		if strings.HasPrefix(name, "margin") || strings.HasPrefix(name, "padding") {
 			continue
 		}
@@ -338,8 +338,8 @@ func resolveInherit(n *Node) {
 				n.Attrs[name] = pv
 				break
 			}
-			// Zusammengesetzte Eigenschaften wie space-after können am
-			// Vorfahren nur als Komponenten stehen (space-after.optimum).
+			// Compound properties such as space-after can only appear on the
+			// ancestor as components (space-after.optimum).
 			found := false
 			for pn, pv := range p.Attrs {
 				if strings.HasPrefix(pn, name+".") {

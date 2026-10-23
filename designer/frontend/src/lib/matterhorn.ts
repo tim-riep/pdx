@@ -1,8 +1,8 @@
-// Manuelle Prüfpunkte des Matterhorn Protocol 1.1 (© 2021 PDF Association,
-// PDF/UA TWG, Lizenz CC BY 4.0, https://pdfa.org/resource/the-matterhorn-protocol/).
-// Die Texte sind eigene deutsche Fassungen. Die offizielle Zählung nennt 47
-// menschliche Prüfungen, die Tabelle der Bedingungen enthält 48, alle sind
-// hier aufgeführt. na begründet, warum ein Punkt bei pdx entfällt.
+// Manual checkpoints of the Matterhorn Protocol 1.1 (© 2021 PDF Association,
+// PDF/UA TWG, license CC BY 4.0, https://pdfa.org/resource/the-matterhorn-protocol/).
+// The texts are our own German versions. The official count names 47
+// human checks, the table of conditions contains 48, all of them are
+// listed here. na gives the reason why an item does not apply to pdx.
 
 export interface Check {
   id: string;

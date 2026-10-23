@@ -23,10 +23,10 @@ func publishServer(t *testing.T) *httptest.Server {
 	return srv
 }
 
-// Veröffentlichen: verbinden, vergleichen gegen eine neue Vorlage, hochladen
-// mit Aktivieren, gleicher Inhalt bleibt dieselbe Version, eine Änderung
-// zeigt sich im Vergleich und wird Version 2. Der Schlüssel landet nicht
-// auf der Platte.
+// Publishing: connect, compare against a new template, upload
+// with activation, equal content stays the same version, a change
+// shows in the comparison and becomes version 2. The key does not end up
+// on disk.
 func TestPublish(t *testing.T) {
 	srv := publishServer(t)
 	dir := t.TempDir()
@@ -97,7 +97,7 @@ func TestPublish(t *testing.T) {
 	if _, err := ps.Compare("Böse ID"); err == nil {
 		t.Error("ungültige ID angenommen")
 	}
-	// Nur die Adresse ist gespeichert, nie der Schlüssel.
+	// Only the address is stored, never the key.
 	b, _ := os.ReadFile(filepath.Join(dir, "publish.json"))
 	if !strings.Contains(string(b), srv.URL) {
 		t.Error("Adresse nicht gespeichert")
@@ -118,8 +118,8 @@ func TestPublish(t *testing.T) {
 	}
 }
 
-// Eine fehlerhafte Vorlage wird mit Vorlagen-ID abgelehnt, noch bevor sie
-// den Server erreicht.
+// A faulty template is rejected with template ID, even before it
+// reaches the server.
 func TestPublishRejected(t *testing.T) {
 	srv := publishServer(t)
 	c := NewCore(nil, nil, t.TempDir())

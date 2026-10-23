@@ -1,5 +1,5 @@
-// Zustand des geöffneten Projekts als Lesecache. Änderungen laufen immer über
-// den ProjectService, der neue Zustand kommt als Ereignis zurück.
+// State of the open project as a read cache. Changes always go through
+// the ProjectService, the new state comes back as an event.
 
 import { EVENT, ProjectAPI, message, on, type ProjectState } from "./api";
 import { t } from "./i18n";
@@ -9,7 +9,7 @@ export const project: ProjectState = $state({ open: false, path: "", name: "", f
 export const ui = $state({
   error: "",
   notice: "",
-  // pathPrompt fragt im Browser nach einem Pfad, wenn es keine Dateidialoge gibt.
+  // pathPrompt asks for a path in the browser when there are no file dialogs.
   pathPrompt: null as null | { title: string; resolve: (path: string | null) => void },
   closeRequest: false,
 });
@@ -37,7 +37,7 @@ export function askPath(title: string): Promise<string | null> {
   return new Promise((resolve) => (ui.pathPrompt = { title, resolve }));
 }
 
-// Ohne native Dialoge (Server-Build im Browser) wird nach dem Pfad gefragt.
+// Without native dialogs (server build in the browser) the path is asked for.
 function noDialogs(e: unknown): boolean {
   return message(e).includes("nicht verfügbar");
 }

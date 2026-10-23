@@ -23,18 +23,18 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// TemplateOptions steuert das Setzen einer Vorlage.
+// TemplateOptions controls the typesetting of a template.
 type TemplateOptions struct {
 	Options
-	// Lang wählt Textressourcen und Formatmuster, leer bedeutet die Sprache
-	// der Vorlage.
+	// Lang selects text resources and format patterns, empty means the
+	// language of the template.
 	Lang string
-	// Strict prüft die Daten vor dem Setzen gegen das Daten-XSD des Pakets.
+	// Strict validates the data against the package's data XSD before typesetting.
 	Strict bool
 }
 
-// Template ist eine kompilierte Vorlage. Sie kann für viele Datensätze
-// verwendet werden, auch nebenläufig.
+// Template is a compiled template. It can be used for many data records,
+// also concurrently.
 type Template struct {
 	Package  *pkg.Package
 	Compiled *compile.Result
@@ -42,8 +42,8 @@ type Template struct {
 	fonts    []*font.Face
 }
 
-// CompileTemplate kompiliert die Vorlage eines Pakets für eine Sprache (leer
-// bedeutet die Sprache der Vorlage).
+// CompileTemplate compiles the template of a package for a language (empty
+// means the language of the template).
 func CompileTemplate(p *pkg.Package, lang string) (*Template, error) {
 	res, err := compile.Compile(p.Template, compileOptions(p, lang))
 	if err != nil {
@@ -56,14 +56,14 @@ func CompileTemplate(p *pkg.Package, lang string) (*Template, error) {
 	return &Template{Package: p, Compiled: res, lang: lang, fonts: fonts}, nil
 }
 
-// compileOptions stellt Sprache und die Facetten aus dem Daten-XSD für den
-// Compiler zusammen.
+// compileOptions assembles the language and the facets from the data XSD
+// for the compiler.
 func compileOptions(p *pkg.Package, lang string) compile.Options {
 	f := dataschema.PackageFacets(p)
 	return compile.Options{Lang: lang, Enums: f.Enums, MaxLengths: f.MaxLengths}
 }
 
-// packageFonts lädt die Schriften unter assets/ eines Pakets.
+// packageFonts loads the fonts under assets/ of a package.
 func packageFonts(p *pkg.Package) ([]*font.Face, error) {
 	var out []*font.Face
 	for _, name := range p.Names() {
@@ -81,8 +81,8 @@ func packageFonts(p *pkg.Package) ([]*font.Face, error) {
 	return out, nil
 }
 
-// RenderTemplate kompiliert die Vorlage und setzt die Daten. Für viele
-// Datensätze ist CompileTemplate mit Template.Render günstiger.
+// RenderTemplate compiles the template and typesets the data. For many
+// data records, CompileTemplate with Template.Render is cheaper.
 func RenderTemplate(p *pkg.Package, data []byte, opts TemplateOptions) (*Result, error) {
 	t, err := CompileTemplate(p, opts.Lang)
 	if err != nil {
@@ -91,8 +91,8 @@ func RenderTemplate(p *pkg.Package, data []byte, opts TemplateOptions) (*Result,
 	return t.Render(data, opts)
 }
 
-// Render setzt einen Datensatz. opts.Lang wird ignoriert, die Sprache steht
-// beim Kompilieren fest.
+// Render typesets a data record. opts.Lang is ignored, the language is
+// fixed at compile time.
 func (t *Template) Render(data []byte, opts TemplateOptions) (*Result, error) {
 	fo, o, err := t.prepare(data, opts, true)
 	if err != nil {
@@ -111,8 +111,8 @@ func (t *Template) Render(data []byte, opts TemplateOptions) (*Result, error) {
 	return res, nil
 }
 
-// checkEInvoice verlangt für eine E-Rechnung PDF/A-3. Factur-X und ZUGFeRD
-// beschreiben nur PDF/A-3 (Factur-X 1.0 Kapitel 6, ZUGFeRD 2 Teil A).
+// checkEInvoice requires PDF/A-3 for an e-invoice. Factur-X and ZUGFeRD
+// only describe PDF/A-3 (Factur-X 1.0 chapter 6, ZUGFeRD 2 part A).
 func (t *Template) checkEInvoice(spec string) error {
 	e := t.Compiled.EInvoice
 	if e == nil {
@@ -128,14 +128,14 @@ func (t *Template) checkEInvoice(spec string) error {
 	return nil
 }
 
-// Profile liefert die Profile der Vorlage (template/@profile), ohne Angabe
-// das Standardprofil.
+// Profile returns the profiles of the template (template/@profile), or the
+// default profile if none is specified.
 func (t *Template) Profile() string {
 	return t.Package.Template.Root.Get("profile", DefaultProfile)
 }
 
-// Layout setzt einen Datensatz und liefert nur den Area Tree, ohne PDF.
-// Profil und Erstellungsdatum werden nicht gebraucht.
+// Layout typesets a data record and returns only the area tree, without PDF.
+// Profile and creation date are not needed.
 func (t *Template) Layout(data []byte, opts TemplateOptions) (*areatree.Document, error) {
 	fo, o, err := t.prepare(data, opts, false)
 	if err != nil {
@@ -148,10 +148,10 @@ func (t *Template) Layout(data []byte, opts TemplateOptions) (*areatree.Document
 	return doc, nil
 }
 
-// prepare prüft die Daten auf Wunsch, transformiert sie und stellt die
-// Optionen für das Paket zusammen. pdf meldet, dass ein PDF entsteht: nur
-// dann wird eine E-Rechnung erkannt und eingebettet. Die Layout-Vorschau braucht das nicht und arbeitet auch
-// mit Platzhalterdaten.
+// prepare validates the data if requested, transforms it and assembles the
+// options for the package. pdf reports that a PDF is produced: only then is
+// an e-invoice detected and embedded. The layout preview does not need this
+// and also works with placeholder data.
 func (t *Template) prepare(data []byte, opts TemplateOptions, pdf bool) ([]byte, Options, error) {
 	if opts.Strict {
 		if err := t.Validate(data); err != nil {
@@ -163,8 +163,8 @@ func (t *Template) prepare(data []byte, opts TemplateOptions, pdf bool) ([]byte,
 			return nil, Options{}, err
 		}
 	}
-	// Eine E-Rechnung wird vor der Transformation erkannt, damit falsche
-	// Daten (etwa UBL) eine genaue Meldung bekommen.
+	// An e-invoice is detected before the transformation so that wrong
+	// data (for example UBL) gets a precise message.
 	var info *einvoice.Info
 	if e := t.Compiled.EInvoice; e != nil && pdf {
 		var err error
@@ -182,8 +182,8 @@ func (t *Template) prepare(data []byte, opts TemplateOptions, pdf bool) ([]byte,
 		o.XMP = append(o.XMP, info.XMP())
 	}
 	if len(t.fonts) > 0 {
-		// Schriften des Pakets haben Vorrang vor den eingebauten. Add
-		// registriert jede Schrift je Registry nur einmal.
+		// Fonts of the package take precedence over the built-in ones. Add
+		// registers each font only once per registry.
 		if o.Fonts == nil {
 			o.Fonts = font.NewRegistry()
 		}
@@ -202,8 +202,8 @@ func (t *Template) prepare(data []byte, opts TemplateOptions, pdf bool) ([]byte,
 	return fo, o, nil
 }
 
-// mapError übersetzt Fehler beim Setzen in Fehler mit Vorlagen-ID. Sie
-// beziehen sich auf eine Stelle im FO, das Element dort trägt die ID.
+// mapError translates typesetting errors into errors with a template ID.
+// They refer to a position in the FO, the element there carries the ID.
 func mapError(fo []byte, err error) error {
 	var ce render.CheckErrors
 	if errors.As(err, &ce) {
@@ -220,7 +220,7 @@ func mapError(fo []byte, err error) error {
 	return err
 }
 
-// Validate prüft Daten gegen das Daten-XSD des Pakets.
+// Validate validates data against the package's data XSD.
 func (t *Template) Validate(data []byte) error {
 	main, files := t.Package.Schemas()
 	if main == "" {
@@ -258,7 +258,7 @@ func (t *Template) Validate(data []byte) error {
 	return fmt.Errorf("Daten entsprechen nicht %s:\n%s", main, strings.Join(msgs, "\n"))
 }
 
-// packageResolver liest Bilder und Anhänge aus dem Vorlagenpaket.
+// packageResolver reads images and attachments from the template package.
 type packageResolver struct{ p *pkg.Package }
 
 func (r packageResolver) Read(uri string) ([]byte, error) {
@@ -269,8 +269,8 @@ func (r packageResolver) Read(uri string) ([]byte, error) {
 	return nil, fmt.Errorf("%s ist nicht im Vorlagenpaket", uri)
 }
 
-// foIDAt liefert pdx:id des FO-Elements, das an der Position beginnt oder
-// zuletzt davor begonnen hat.
+// foIDAt returns the pdx:id of the FO element that starts at the position
+// or that started most recently before it.
 func foIDAt(fo []byte, line, col int) string {
 	dec := xml.NewDecoder(bytes.NewReader(fo))
 	id := ""

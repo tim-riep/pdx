@@ -11,14 +11,14 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// LineDiff ist eine abweichende Zeile.
+// LineDiff is a differing line.
 type LineDiff struct {
 	Page     int
-	PDX, FOP string // Text, leer wenn die Zeile auf einer Seite fehlt
+	PDX, FOP string // text, empty if the line is missing on one side
 	DX, DY   float64
 }
 
-// BlockDiff ist ein Block mit abweichender Lage.
+// BlockDiff is a block with a differing position.
 type BlockDiff struct {
 	Page               int
 	FirstLine          string
@@ -26,13 +26,13 @@ type BlockDiff struct {
 	LinesPDX, LinesFOP int
 }
 
-// PageDiff ist das Ergebnis des Pixelvergleichs einer Seite.
+// PageDiff is the result of the pixel comparison of a page.
 type PageDiff struct {
 	Page  int
 	Ratio float64
 }
 
-// Report ist das Ergebnis eines Vergleichs.
+// Report is the result of a comparison.
 type Report struct {
 	Name               string
 	Tol                Tolerance
@@ -44,7 +44,7 @@ type Report struct {
 	Pixels             []PageDiff
 }
 
-// OK meldet, ob alle Vergleiche innerhalb der Toleranz liegen.
+// OK reports whether all comparisons lie within the tolerance.
 func (r *Report) OK() bool {
 	if r.PagesPDX != r.PagesFOP || len(r.Lines) > 0 || len(r.Blocks) > 0 {
 		return false
@@ -57,7 +57,7 @@ func (r *Report) OK() bool {
 	return true
 }
 
-// String fasst den Bericht zusammen.
+// String summarizes the report.
 func (r *Report) String() string {
 	var b strings.Builder
 	state := "innerhalb der Toleranz"
@@ -106,7 +106,7 @@ func short(s string) string {
 	return s
 }
 
-// Compare vergleicht die Ausgabe von pdx mit der von FOP.
+// Compare compares the output of pdx with that of FOP.
 func Compare(ctx context.Context, name string, pdxPDF []byte, pdxTree *areatree.Document, fop *FOPResult, tol Tolerance) (*Report, error) {
 	r := &Report{Name: name, Tol: tol}
 	pl, pn, err := Lines(ctx, pdxPDF)
@@ -122,10 +122,10 @@ func Compare(ctx context.Context, name string, pdxPDF []byte, pdxTree *areatree.
 	if err != nil {
 		return nil, fmt.Errorf("FOP-Area-Tree: %w", err)
 	}
-	// Text und senkrechte Lage (Grundlinie) kommen aus den Area Trees.
-	// Poppler leitet Zeilenoberkanten aus dem /Ascent des FontDescriptor ab,
-	// den beide Engines verschieden schreiben, und ordnet Zeilen nach eigener
-	// Lesereihenfolge. Waagerecht ist Poppler verlässlich und liefert X.
+	// Text and vertical position (baseline) come from the area trees.
+	// Poppler derives line top edges from the /Ascent of the FontDescriptor,
+	// which the two engines write differently, and orders lines by its own
+	// reading order. Horizontally Poppler is reliable and provides X.
 	compareLines(r, withX(PDXLines(pdxTree), pl), withX(fal, fl), tol)
 	compareBlocks(r, PDXBlocks(pdxTree), fb, tol)
 
@@ -143,8 +143,8 @@ func Compare(ctx context.Context, name string, pdxPDF []byte, pdxTree *areatree.
 	return r, nil
 }
 
-// cmpLine ist eine Zeile für den Vergleich. HasX ist gesetzt, wenn Poppler
-// eine textgleiche Zeile gefunden hat.
+// cmpLine is a line for the comparison. HasX is set if Poppler found a line
+// with the same text.
 type cmpLine struct {
 	Page int
 	Text string
@@ -152,12 +152,12 @@ type cmpLine struct {
 	HasX bool
 }
 
-// leaderDots erkennt Punktfolgen aus fo:leader. Ohne leader-alignment ist
-// die Zahl der Punkte Sache der Implementierung (XSL 1.1 7.21.1), verglichen
-// wird nur, dass eine Punktfolge dasteht.
+// leaderDots recognizes dot sequences from fo:leader. Without leader-alignment
+// the number of dots is up to the implementation (XSL 1.1 7.21.1), so the
+// comparison only checks that a dot sequence is present.
 var leaderDots = regexp.MustCompile(`\.{4,}`)
 
-// Norm vereinheitlicht einen Zeilentext für den Vergleich.
+// Norm normalizes a line text for the comparison.
 func Norm(s string) string { return norm(s) }
 
 func norm(s string) string {
@@ -165,10 +165,10 @@ func norm(s string) string {
 	return strings.Join(strings.Fields(strings.ReplaceAll(s, "\u00a0", " ")), " ")
 }
 
-// withX ergänzt Zeilen aus dem Area Tree um X aus Poppler, zugeordnet über
-// Seite, Text und Vorkommen.
-// Nearest liefert den Index der Zeile, deren Höhe die Grundlinie am besten
-// trifft. Bei gleichem Abstand gewinnt die frühere Zeile.
+// withX adds X from Poppler to lines from the area tree, matched by
+// page, text and occurrence.
+// Nearest returns the index of the line whose height best matches the
+// baseline. With equal distance the earlier line wins.
 func Nearest(q []Line, baseline float64) int {
 	best, bestD := 0, math.Inf(1)
 	for i, l := range q {
@@ -198,15 +198,15 @@ func withX(at []ATLine, pl []Line) []cmpLine {
 	}
 	var out []cmpLine
 	for _, l := range at {
-		// Zeilen ohne Text (etwa nur ein Bild) werden über ihre Blöcke und
-		// den Pixelvergleich geprüft.
+		// Lines without text (such as only an image) are checked through their
+		// blocks and the pixel comparison.
 		if norm(l.Text) == "" {
 			continue
 		}
 		k := key{l.Page, norm(l.Text)}
 		c := cmpLine{Page: l.Page, Text: norm(l.Text), Y: l.Baseline}
-		// Gleicher Text kann mehrmals auf einer Seite stehen, etwa im Fluss
-		// und im static-content.
+		// The same text can appear several times on a page, for example in the
+		// flow and in the static-content.
 		if q := xs[k]; len(q) > 0 {
 			best := Nearest(q, l.Baseline)
 			c.X, c.HasX = q[best].X, true
@@ -217,7 +217,7 @@ func withX(at []ATLine, pl []Line) []cmpLine {
 	return out
 }
 
-// PDXLines liest die Zeilen mit Grundlinie aus dem Area Tree von pdx.
+// PDXLines reads the lines with baseline from the area tree of pdx.
 func PDXLines(d *areatree.Document) []ATLine {
 	var out []ATLine
 	for pi, p := range d.Pages {
@@ -230,7 +230,7 @@ func PDXLines(d *areatree.Document) []ATLine {
 			base, x := -1.0, 0.0
 			areatree.Walk(c.Children, func(a areatree.Area) bool {
 				if g, ok := a.(*areatree.GlyphRun); ok && base < 0 {
-					// Der Anfang ist die erste sichtbare Glyphe, wie bei Poppler.
+					// The start is the first visible glyph, as with Poppler.
 					ox := g.Origin.X
 					for _, gl := range g.Glyphs {
 						if strings.TrimSpace(gl.Text) != "" || gl.Text == "" {
@@ -251,8 +251,8 @@ func PDXLines(d *areatree.Document) []ATLine {
 	return out
 }
 
-// compareLines ordnet die Zeilen je Seite über Text und Vorkommen zu und
-// vergleicht die Lage der Paare.
+// compareLines matches the lines per page by text and occurrence and
+// compares the positions of the pairs.
 func compareLines(r *Report, pdx, fop []cmpLine, tol Tolerance) {
 	type key struct {
 		page int
@@ -303,7 +303,7 @@ func onPage(ls []Line, p int) []Line {
 	return out
 }
 
-// lcs liefert die Indexpaare einer längsten gemeinsamen Teilfolge.
+// lcs returns the index pairs of a longest common subsequence.
 func lcs(n, m int, eq func(i, j int) bool) [][2]int {
 	t := make([][]int, n+1)
 	for i := range t {
@@ -334,7 +334,7 @@ func lcs(n, m int, eq func(i, j int) bool) [][2]int {
 	return out
 }
 
-// PDXBlocks liest die Blöcke mit eigenen Zeilen aus dem Area Tree von pdx.
+// PDXBlocks reads the blocks with their own lines from the area tree of pdx.
 func PDXBlocks(d *areatree.Document) []Block {
 	var out []Block
 	for pi, p := range d.Pages {
@@ -396,9 +396,9 @@ func compareBlocks(r *Report, pdx, fop []Block, tol Tolerance) {
 	}
 }
 
-// PixelDiff liefert den Anteil der Pixel, die in keinem Nachbarpixel im
-// Umkreis Shift einen Partner mit Grauwertabstand bis GrayDelta haben. Die
-// Prüfung läuft in beide Richtungen.
+// PixelDiff returns the share of pixels that have no partner with a gray
+// value distance up to GrayDelta in any neighboring pixel within radius
+// Shift. The check runs in both directions.
 func PixelDiff(a, b *image.Gray, tol Tolerance) float64 {
 	w := min(a.Bounds().Dx(), b.Bounds().Dx())
 	h := min(a.Bounds().Dy(), b.Bounds().Dy())

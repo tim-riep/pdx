@@ -1,6 +1,6 @@
-// Package hyph trennt Wörter nach dem Verfahren von Liang (1983) mit
-// TeX-Trennmustern aus hyph-utf8. Eingebettet sind Deutsch in reformierter
-// Rechtschreibung (de-1996) und amerikanisches Englisch (en-us), Lizenzen in
+// Package hyph hyphenates words with Liang's algorithm (1983) using
+// TeX hyphenation patterns from hyph-utf8. Embedded are German in reformed
+// spelling (de-1996) and American English (en-us), licenses in
 // patterns/README.md.
 package hyph
 
@@ -17,18 +17,18 @@ import (
 //go:embed patterns/*.txt
 var files embed.FS
 
-// Patterns ist ein geladener Satz Trennmuster.
+// Patterns is a loaded set of hyphenation patterns.
 type Patterns struct {
-	pats       map[string][]uint8 // Buchstabenfolge zu Werten zwischen den Buchstaben
+	pats       map[string][]uint8 // letter sequence to values between the letters
 	maxLen     int
 	exceptions map[string][]int
-	// LeftMin und RightMin sind die Mindestzahl Buchstaben vor und nach einer
-	// Trennstelle, wie in den Mustern vorgesehen.
+	// LeftMin and RightMin are the minimum number of letters before and after a
+	// hyphenation point, as specified by the patterns.
 	LeftMin, RightMin int
 }
 
-// Parse liest Muster im Textformat von hyph-utf8 (ein Muster je Zeile, etwa
-// "a1b2c") und optional Ausnahmen (ein Wort je Zeile mit Bindestrichen).
+// Parse reads patterns in the hyph-utf8 text format (one pattern per line,
+// such as "a1b2c") and optional exceptions (one word per line with hyphens).
 func Parse(pat, hyp []byte, left, right int) (*Patterns, error) {
 	p := &Patterns{pats: map[string][]uint8{}, exceptions: map[string][]int{}, LeftMin: left, RightMin: right}
 	sc := bufio.NewScanner(bytes.NewReader(pat))
@@ -80,11 +80,11 @@ func Parse(pat, hyp []byte, left, right int) (*Patterns, error) {
 	return p, sc.Err()
 }
 
-// Hyphenate liefert die Trennstellen eines Wortes als Anzahl der Zeichen vor
-// der Stelle. Berücksichtigt werden nur Buchstabenfolgen, Satzzeichen am
-// Anfang und Ende bleiben unberührt. left und right sind die Mindestzahl
-// Zeichen vor und nach einer Trennstelle (hyphenation-remain- und
-// -push-character-count), 0 übernimmt die Werte der Muster.
+// Hyphenate returns the hyphenation points of a word as the number of
+// characters before the point. Only letter sequences are considered,
+// punctuation at the start and end is left untouched. left and right are the
+// minimum number of characters before and after a hyphenation point
+// (hyphenation-remain- and -push-character-count), 0 uses the pattern values.
 func (p *Patterns) Hyphenate(word string, left, right int) []int {
 	runes := []rune(word)
 	start, end := 0, len(runes)
@@ -97,7 +97,7 @@ func (p *Patterns) Hyphenate(word string, left, right int) []int {
 	core := runes[start:end]
 	for _, r := range core {
 		if !unicode.IsLetter(r) {
-			return nil // zusammengesetzte Ausdrücke mit Ziffern oder Zeichen
+			return nil // compound expressions with digits or symbols
 		}
 	}
 	left = max(left, p.LeftMin, 1)
@@ -126,8 +126,8 @@ func (p *Patterns) Hyphenate(word string, left, right int) []int {
 				}
 			}
 		}
-		// vals[k] liegt vor w[k], w[0] ist der Punkt. Eine Stelle nach n
-		// Buchstaben des Wortes entspricht vals[n+1].
+		// vals[k] lies before w[k], w[0] is the dot. A point after n
+		// letters of the word corresponds to vals[n+1].
 		for n := 1; n < len(lower); n++ {
 			if vals[n+1]%2 == 1 {
 				cuts = append(cuts, n)
@@ -148,9 +148,9 @@ var (
 	cache = map[string]*Patterns{}
 )
 
-// languages ordnet Sprachkennungen den eingebetteten Mustern zu. Englische
-// Varianten nutzen die amerikanischen Muster, Deutsch in der Schweiz und in
-// Österreich die deutschen.
+// languages maps language codes to the embedded patterns. English
+// variants use the American patterns, German in Switzerland and in
+// Austria uses the German ones.
 var languages = map[string]struct {
 	file        string
 	left, right int
@@ -159,9 +159,9 @@ var languages = map[string]struct {
 	"en": {"en-us", 2, 3},
 }
 
-// ForLanguage liefert die Muster zu einer Sprache nach BCP 47 oder XSL
-// (language und country), etwa "de", "de-DE" oder "en-GB". ok ist false, wenn
-// keine Muster vorhanden sind.
+// ForLanguage returns the patterns for a language given as BCP 47 or XSL
+// (language and country), such as "de", "de-DE" or "en-GB". ok is false if
+// no patterns are available.
 func ForLanguage(lang string) (*Patterns, bool, error) {
 	l := strings.ToLower(strings.TrimSpace(lang))
 	if i := strings.IndexAny(l, "-_"); i > 0 {

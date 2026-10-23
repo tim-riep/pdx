@@ -9,7 +9,7 @@ import (
 
 const muster = "../../../testdata/templates/musterrechnung"
 
-// recorder merkt sich die Ereignisse an die Oberfläche.
+// recorder remembers the events sent to the UI.
 type recorder struct {
 	mu     sync.Mutex
 	events []string
@@ -26,7 +26,7 @@ func (r *recorder) Emit(name string, data any) {
 	r.mu.Unlock()
 }
 
-// wait wartet auf ein Ereignis, das cond erfüllt, und liefert seine Daten.
+// wait waits for an event that satisfies cond and returns its data.
 func (r *recorder) wait(t *testing.T, name string, cond func(any) bool) any {
 	t.Helper()
 	deadline := time.Now().Add(5 * time.Second)
@@ -55,7 +55,7 @@ func (r *recorder) count(name string) int {
 	return n
 }
 
-// change simuliert eine Änderung am Dokument, bis das Befehlsmodell steht.
+// change simulates a change to the document until the command model exists.
 func change(c *Core) {
 	c.mu.Lock()
 	c.changedLocked()
@@ -100,7 +100,7 @@ func TestOpenSave(t *testing.T) {
 	}
 }
 
-// TestAutosave prüft Sicherung und Wiederherstellung in einer neuen Sitzung.
+// TestAutosave checks backup and recovery in a new session.
 func TestAutosave(t *testing.T) {
 	data := t.TempDir()
 	c := NewCore(nil, nil, data)
@@ -121,7 +121,7 @@ func TestAutosave(t *testing.T) {
 		t.Errorf("eigene Sitzung als wiederherstellbar gelistet: %+v", got)
 	}
 
-	// Neue Sitzung nach einem Absturz.
+	// New session after a crash.
 	c2 := NewCore(nil, nil, data)
 	ps2 := NewProjectService(c2)
 	list := ps2.Recoverable()
@@ -143,7 +143,7 @@ func TestAutosave(t *testing.T) {
 	}
 }
 
-// TestSaveRemovesAutosave prüft, dass Speichern die Sicherung entfernt.
+// TestSaveRemovesAutosave checks that saving removes the backup.
 func TestSaveRemovesAutosave(t *testing.T) {
 	data := t.TempDir()
 	c := NewCore(nil, nil, data)

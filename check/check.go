@@ -1,6 +1,6 @@
-// Package check prüft ein Vorlagenpaket wie pdx check: Schema der Vorlage,
-// Verweise im Paket, Übersetzung, Bindungen gegen das Daten-XSD und die
-// Beispieldaten. CLI und Designer nutzen dieselben Prüfungen.
+// Package check validates a template package like pdx check: template
+// schema, references in the package, compilation, bindings against the data
+// XSD and the sample data. CLI and designer use the same checks.
 package check
 
 import (
@@ -15,8 +15,8 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// Path öffnet ein Paket (ZIP oder Verzeichnis) und prüft es. Fehler beim
-// Öffnen erscheinen als Befunde.
+// Path opens a package (ZIP or directory) and checks it. Errors while
+// opening appear as findings.
 func Path(path string) []dataschema.Finding {
 	p, err := pkg.Open(path)
 	if err != nil {
@@ -25,7 +25,7 @@ func Path(path string) []dataschema.Finding {
 	return Package(p)
 }
 
-// Package prüft ein geladenes Paket.
+// Package checks a loaded package.
 func Package(p *pkg.Package) []dataschema.Finding {
 	var findings []dataschema.Finding
 	facets := dataschema.PackageFacets(p)
@@ -45,8 +45,8 @@ func Package(p *pkg.Package) []dataschema.Finding {
 	return append(findings, Samples(p, main, files)...)
 }
 
-// FromError übersetzt Fehler aus Vorlage, Paket und Compiler in Befunde mit
-// Vorlagen-ID, soweit bekannt.
+// FromError translates errors from template, package and compiler into
+// findings with the template ID, where known.
 func FromError(err error) []dataschema.Finding {
 	var es template.Errors
 	var e *template.Error
@@ -64,7 +64,7 @@ func FromError(err error) []dataschema.Finding {
 	}
 }
 
-// Samples prüft die Beispieldaten unter samples/ gegen das Daten-XSD.
+// Samples checks the sample data under samples/ against the data XSD.
 func Samples(p *pkg.Package, main string, files map[string][]byte) []dataschema.Finding {
 	var out []dataschema.Finding
 	docs := []string{string(files[main])}

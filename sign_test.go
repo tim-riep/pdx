@@ -28,7 +28,7 @@ type testSignerInfo struct {
 	Unsigned    asn1.RawValue `asn1:"optional,tag:1"`
 }
 
-// sigDicts liefert alle Signaturdictionaries über die Felder.
+// sigDicts returns all signature dictionaries via the fields.
 func sigDicts(t *testing.T, f *reader.File) map[string]reader.Dict {
 	t.Helper()
 	out := map[string]reader.Dict{}
@@ -55,10 +55,10 @@ func sigDicts(t *testing.T, f *reader.File) map[string]reader.Dict {
 	return out
 }
 
-// checkSig prüft eine Signatur unabhängig vom Erzeuger: ByteRange deckt die
-// ganze Datei bis zu ihrem Ende außer Contents (ISO 32000-1 12.8.1), der
-// Inhalt ist ein CMS mit gültiger Signatur über die Bytes. Geliefert wird
-// das Ende der signierten Revision.
+// checkSig checks a signature independently of the producer: ByteRange covers
+// the whole file up to its end except Contents (ISO 32000-1 12.8.1), the
+// content is a CMS with a valid signature over the bytes. It returns
+// the end of the signed revision.
 func checkSig(t *testing.T, data []byte, d reader.Dict, cert *x509.Certificate) (int, testSignerInfo, *sign.SignedDataInfo) {
 	t.Helper()
 	br := d["ByteRange"].(reader.Array)
@@ -106,10 +106,10 @@ func checkSig(t *testing.T, data []byte, d reader.Dict, cert *x509.Certificate) 
 
 var oidTSToken = []byte{0x06, 0x0b, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x09, 0x10, 0x02, 0x0e}
 
-// TestSignPDF signiert die Musterrechnung in jeder Stufe mit unsichtbarem
-// Feld. Die alten Bytes bleiben, das Signaturdictionary folgt ETSI EN
-// 319 142-1 6.3, ab B-LT steht ein DSS im Katalog, B-LTA endet mit einem
-// Dokument-Zeitstempel. veraPDF besteht danach weiter.
+// TestSignPDF signs the sample invoice at every level with an invisible
+// field. The old bytes remain, the signature dictionary follows ETSI EN
+// 319 142-1 6.3, from B-LT on there is a DSS in the catalog, B-LTA ends with
+// a document timestamp. veraPDF still passes afterwards.
 func TestSignPDF(t *testing.T) {
 	pki := testpki.New(t)
 	p, data := loadMuster(t)
@@ -156,8 +156,8 @@ func TestSignPDF(t *testing.T) {
 					t.Fatalf("DSS vorhanden: %v", dss != nil)
 				}
 				if dss != nil {
-					// Signatur, Zwischen-CA, Wurzel, TSA. OCSP für Signatur,
-					// TSA und Zwischen-CA.
+					// Signature, intermediate CA, root, TSA. OCSP for signature,
+					// TSA and intermediate CA.
 					if c := len(f.Array(dss["Certs"])); c < 4 {
 						t.Errorf("%d Zertifikate im DSS", c)
 					}
@@ -197,10 +197,10 @@ func TestSignPDF(t *testing.T) {
 	}
 }
 
-// Das Signaturfeld aus der Vorlage wird signiert und zeigt danach
-// Unterzeichner, Datum und Grund, mit demselben Text in Contents. Das
-// Formular bleibt unter 3a mit UA-1 und unter 4 mit UA-2 konform. Ein
-// zweites Signieren desselben Felds scheitert.
+// The signature field from the template is signed and afterwards shows
+// signer, date and reason, with the same text in Contents. The
+// form stays conforming under 3a with UA-1 and under 4 with UA-2. Signing
+// the same field a second time fails.
 func TestSignFormField(t *testing.T) {
 	pki := testpki.New(t)
 	tpl, data := loadForm(t)
@@ -266,9 +266,9 @@ func TestSignFormField(t *testing.T) {
 	}
 }
 
-// Abgelaufene Zertifikate scheitern sofort, gesperrte spätestens beim
-// Einsammeln der Sperrinformation für B-LT. Ohne Zeitstempeldienst gibt es
-// kein B-T.
+// Expired certificates fail immediately, revoked ones at the latest when
+// collecting the revocation information for B-LT. Without a timestamp
+// service there is no B-T.
 func TestSignPDFRejects(t *testing.T) {
 	pki := testpki.New(t)
 	p, data := loadMuster(t)
@@ -300,10 +300,10 @@ func TestSignPDFRejects(t *testing.T) {
 	}
 }
 
-// TestSignDSS prüft jede Stufe mit dem EU DSS Validator (PDX_DSS=1, Image
-// aus dssval/build.sh). Vertrauensanker ist nur die Wurzel der Test-PKI.
-// Verlangt ist TOTAL_PASSED mit dem Format der Stufe, danach besteht auch
-// veraPDF.
+// TestSignDSS checks every level with the EU DSS Validator (PDX_DSS=1, image
+// from dssval/build.sh). The only trust anchor is the root of the test PKI.
+// TOTAL_PASSED with the format of the level is required, afterwards veraPDF
+// passes as well.
 func TestSignDSS(t *testing.T) {
 	if !dssval.Enabled() {
 		t.Skip("DSS-Prüfung nur mit " + dssval.EnvEnable + "=1")
@@ -352,8 +352,8 @@ func TestSignDSS(t *testing.T) {
 	}
 }
 
-// Ein unsichtbares Signaturfeld (Rect 0, ohne Fläche und ohne Inhalt für
-// Hilfstechnik) lässt Formulare unter UA-1 und UA-2 konform.
+// An invisible signature field (Rect 0, without area and without content for
+// assistive technology) keeps forms conforming under UA-1 and UA-2.
 func TestSignInvisibleUA(t *testing.T) {
 	pki := testpki.New(t)
 	tpl, data := loadForm(t)
@@ -374,8 +374,8 @@ func TestSignInvisibleUA(t *testing.T) {
 	}
 }
 
-// FuzzSignPDF signiert beliebige Bytes in B-B. Erlaubt ist ein Fehler,
-// verboten sind Absturz und eine Ausgabe, die die Eingabe verändert.
+// FuzzSignPDF signs arbitrary bytes in B-B. An error is allowed,
+// a crash and an output that alters the input are forbidden.
 func FuzzSignPDF(f *testing.F) {
 	p, data := loadMuster(f)
 	res, err := RenderTemplate(p, data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3b"}})

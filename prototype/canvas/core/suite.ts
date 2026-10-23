@@ -1,5 +1,5 @@
-// Führt alle Messungen nacheinander in einem iframe aus und zeigt eine
-// Übersicht. Für Browser, in denen nur abgelesen werden kann.
+// Runs all measurements one after another in an iframe and shows an
+// overview. For browsers in which results can only be read off.
 
 import type { BenchResult } from "./bench";
 

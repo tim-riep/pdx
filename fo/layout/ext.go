@@ -8,13 +8,13 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// declarations liest die pdx-Erweiterungen in fo:declarations.
+// declarations reads the pdx extensions in fo:declarations.
 //
 //	<pdx:attachment src="factur-x.xml" name="factur-x.xml" mime-type="text/xml"
-//	                relationship="Alternative" description="Rechnungsdaten"/>
+//	                relationship="Alternative" description="Invoice data"/>
 //	<pdx:metadata title="..." author="..." subject="..." keywords="..." creator="..."/>
 //
-// Apache FOP ignoriert Elemente fremder Namespaces in fo:declarations.
+// Apache FOP ignores elements of foreign namespaces in fo:declarations.
 func (e *engine) declarations(d *tree.Node) error {
 	for _, n := range d.Children {
 		if n.Kind != tree.Element || n.Space != tree.NSPDX {

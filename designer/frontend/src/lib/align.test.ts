@@ -23,7 +23,7 @@ describe("align", () => {
 describe("distribute", () => {
   it("verteilt mit gleichen Abständen", () => {
     const three = [b("a", 0, 0, 10, 5), b("c", 90, 0, 10, 5), b("b", 20, 0, 20, 5)];
-    // Spanne 100, Breiten 40, zwei Lücken zu je 30: b beginnt bei 40.
+    // Span 100, widths 40, two gaps of 30 each: b starts at 40.
     expect(distribute(three, "x")).toEqual([{ ref: "b", x: 40 }]);
     expect(distribute(three.slice(0, 2), "x")).toEqual([]);
   });

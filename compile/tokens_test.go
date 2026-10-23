@@ -43,7 +43,7 @@ func TestTokens(t *testing.T) {
 	if strings.Contains(x, "$") && strings.Contains(x, "$primaer") {
 		t.Error("Verweis nicht aufgelöst")
 	}
-	// Eigene Attribute schlagen das Schrift-Token des Stils: x ist normal.
+	// Own attributes override the font token of the style: x is normal.
 	i := strings.Index(x, `pdx:id="x"`)
 	if i < 0 || !strings.Contains(x[i:i+400], `font-style="normal"`) {
 		t.Errorf("fontStyle des Elements geht vor font des Stils: %s", x[max(0, i):min(len(x), i+400)])
@@ -89,7 +89,7 @@ func TestTokenAttrsFromSchema(t *testing.T) {
 }
 
 func TestTokensSchema(t *testing.T) {
-	// Verweise sind nur dort gültig, wo das XSD sie zulässt.
+	// References are only valid where the XSD allows them.
 	if _, err := template.Parse([]byte(`<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="t" lang="de-DE" version="1"><pageSet id="ps"><pageMaster id="pm"/></pageSet><body id="b"><text id="x" textAlign="$a">a</text></body></template>`)); err == nil {
 		t.Fatal("Verweis in textAlign angenommen")
 	}

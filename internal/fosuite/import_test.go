@@ -12,8 +12,8 @@ const disabledHeader = `Deaktivierte Fälle der FO-Testsuiten mit Begründung, e
 Zeilen mit den Gründen des Imports und der Referenz schreiben die Werkzeuge
 neu (siehe internal/fosuite), alle anderen bleiben stehen.`
 
-// TestImportFOP importiert die Testfälle aus einem FOP-Quellbaum:
-// PDX_SUITE_IMPORT_FOP=<pfad>/fop-2.11/fop/test/layoutengine.
+// TestImportFOP imports the test cases from a FOP source tree:
+// PDX_SUITE_IMPORT_FOP=<path>/fop-2.11/fop/test/layoutengine.
 func TestImportFOP(t *testing.T) {
 	src := os.Getenv("PDX_SUITE_IMPORT_FOP")
 	if src == "" {
@@ -38,8 +38,8 @@ func TestImportFOP(t *testing.T) {
 	t.Logf("%d Fälle importiert, %d deaktiviert", n, len(disabled))
 }
 
-// TestImportW3C lädt die W3C XSL Test Suite und legt die Fälle als FO ab
-// (PDX_W3C=1, braucht Netzzugang beim ersten Lauf).
+// TestImportW3C downloads the W3C XSL Test Suite and stores the cases as FO
+// (PDX_W3C=1, needs network access on the first run).
 func TestImportW3C(t *testing.T) {
 	if os.Getenv("PDX_W3C") != "1" {
 		t.Skip("PDX_W3C=1 setzen, um die W3C-Suite zu laden")

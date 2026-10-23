@@ -23,8 +23,8 @@ func loadFormular(t *testing.T) (*pkg.Package, Model) {
 	return p, m
 }
 
-// Das Formular ist sauber, Bindings liefert die Enumerationen für die
-// Auswahlfelder.
+// The form is clean, Bindings returns the enumerations for the choice
+// fields.
 func TestFormularBindings(t *testing.T) {
 	p, m := loadFormular(t)
 	if fs := Check(p.Template, m); len(fs) > 0 {
@@ -39,7 +39,7 @@ func TestFormularBindings(t *testing.T) {
 	}
 }
 
-// Fehler an Formularfeldern, alle auf einmal mit Vorlagen-ID.
+// Errors on form fields, all at once with template ID.
 func TestFormularBroken(t *testing.T) {
 	p, m := loadFormular(t)
 	src := string(template.Write(p.Template))
@@ -76,7 +76,7 @@ func TestFormularBroken(t *testing.T) {
 	}
 }
 
-// Die Höchstlänge kommt aus der Facette maxLength des Daten-XSD.
+// The maximum length comes from the facet maxLength of the data XSD.
 func TestFormularMaxLength(t *testing.T) {
 	p, m := loadFormular(t)
 	if d := Bindings(p.Template, m)["name"]; d == nil || d.MaxLength != 40 {
@@ -85,7 +85,7 @@ func TestFormularMaxLength(t *testing.T) {
 	if f := PackageFacets(p); f.MaxLengths["name"] != 40 || f.MaxLengths["email"] != 0 {
 		t.Errorf("Facetten %v", f.MaxLengths)
 	}
-	// Eine größere Länge in der Vorlage als im XSD ist ein Hinweis.
+	// A greater length in the template than in the XSD is a notice.
 	src := strings.Replace(string(template.Write(p.Template)), `maxLength="40"`, `maxLength="60"`, 1)
 	tpl, err := template.Parse([]byte(src))
 	if err != nil {

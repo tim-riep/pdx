@@ -2,15 +2,15 @@ package layout
 
 import "github.com/tim-riep/pdx/areatree"
 
-// breakPage wählt das Ende der Seite, die bei start beginnt. Es liefert den
-// Index der gewählten Penalty oder len(items), wenn der Rest passt.
+// breakPage chooses the end of the page that starts at start. It returns the
+// index of the chosen penalty or len(items) if the rest fits.
 //
-// Unter allen Penalties, bis zu denen der Inhalt in avail passt, gewinnt die
-// mit den geringsten Kosten, bei Gleichstand die späteste. Keeps mit
-// ganzzahliger Stärke werden so in aufsteigender Stärke gelockert (XSL 1.1
-// 4.8). Gibt es nur verbotene Stellen, läuft der Inhalt über die Seite
-// hinaus, ein Keep mit always wird nie gebrochen. Passt schon die erste Box
-// nicht, bricht die Seite an der ersten erlaubten Stelle danach.
+// Among all penalties up to which the content fits in avail, the one with
+// the lowest cost wins, on a tie the latest. Keeps with integer
+// strength are thus relaxed in ascending strength (XSL 1.1
+// 4.8). If there are only forbidden points, the content overflows the
+// page, a keep with always is never broken. If even the first box does
+// not fit, the page breaks at the first allowed point after it.
 func breakPage(items []item, start int, avail areatree.Length) int {
 	var h areatree.Length
 	seenBox := false
@@ -21,8 +21,8 @@ func breakPage(items []item, start int, avail areatree.Length) int {
 		switch it.kind {
 		case itBox:
 			if !seenBox {
-				// Beginnt die Seite im Rumpf einer Tabelle, steht der
-				// wiederholte Kopf darüber.
+				// If the page starts in the body of a table, the
+				// repeated header stands above it.
 				if r := it.row; r != nil && r.tbl != nil && r.sec == secBody && !r.tbl.omitHeader &&
 					!(r == r.tbl.firstBody && it.slice == 0) {
 					h += r.tbl.headerH
@@ -47,17 +47,17 @@ func breakPage(items []item, start int, avail areatree.Length) int {
 			if it.penalty <= penaltyForced {
 				return i
 			}
-			// Passt der Inhalt nicht, wird an der nächsten erlaubten Stelle
-			// umbrochen. Ein Keep mit always bleibt erhalten, der Inhalt läuft
-			// dann über die Seite hinaus (XSL 1.1 4.8: Keeps müssen erfüllt
-			// werden, solange kein Umbruch oder stärkerer Keep dagegen steht).
+			// If the content does not fit, the break is made at the next allowed
+			// point. A keep with always is preserved, the content then
+			// overflows the page (XSL 1.1 4.8: keeps must be satisfied
+			// as long as no break or stronger keep conflicts with them).
 			if h > avail && it.penalty < penaltyInf {
 				return i
 			}
 			if h > avail {
 				continue
 			}
-			// Bricht die Seite im Rumpf einer Tabelle, steht der Fuß darunter.
+			// If the page breaks in the body of a table, the footer stands below it.
 			var reserve areatree.Length
 			if last != nil && last.row != nil {
 				if t := last.row.tbl; t != nil && last.row.sec == secBody && !t.omitFooter && t.continuesAfter(last.row, last.slice) {
@@ -68,7 +68,7 @@ func breakPage(items []item, start int, avail areatree.Length) int {
 				continue
 			}
 			if it.penalty >= penaltyInf {
-				continue // verbotene Stelle
+				continue // forbidden point
 			}
 			if best < 0 || it.penalty <= bestPen {
 				best, bestPen = i, it.penalty

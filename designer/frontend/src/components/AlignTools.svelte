@@ -10,7 +10,7 @@
 
   let { n }: { n: ViewNode } = $props();
 
-  // Erster Bereich eines Elements im Satz, in Punkt.
+  // First area of an element in the layout, in points.
   function area(ref: string): number[] | null {
     for (const p of render.pages) {
       const a = p.els.find((e) => e.id === ref);
@@ -19,7 +19,7 @@
     return null;
   }
 
-  // boxOf liest Lage aus der Vorlage und Größe aus der Vorlage oder dem Satz.
+  // boxOf reads the position from the template and the size from the template or the layout.
   function boxOf(ref: string): Box | null {
     const x = node(ref);
     if (!x) return null;

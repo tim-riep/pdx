@@ -12,10 +12,10 @@ import (
 	"github.com/tim-riep/pdx/internal/fopcompare"
 )
 
-// TestFOConformance setzt alle aktiven Fälle mit pdx, vergleicht sie mit den
-// Erwartungen aus FOP und schreibt den Bericht nach out/fo-conformance.md.
-// Er schlägt fehl, wenn ein Fall abweicht, der nicht in deviating.txt steht,
-// oder ein aktiver Fall keine Erwartung hat.
+// TestFOConformance typesets all active cases with pdx, compares them with
+// the expectations from FOP and writes the report to out/fo-conformance.md.
+// It fails if a case deviates that is not listed in deviating.txt, or if an
+// active case has no expectation.
 func TestFOConformance(t *testing.T) {
 	if os.Getenv("PDX_FO_CONFORMANCE") != "1" {
 		t.Skip("PDX_FO_CONFORMANCE=1 setzen oder make fo-conformance aufrufen")
@@ -82,7 +82,7 @@ func TestFOConformance(t *testing.T) {
 			failures = append(failures, fmt.Sprintf("%s: %s", c.ID(), diffs[0]))
 		}
 	}
-	// Deaktivierte Fälle außerhalb des Teilumfangs liegen nicht als Datei vor.
+	// Disabled cases outside the supported subset do not exist as files.
 	for id := range disabled {
 		if seen[id] {
 			continue
@@ -140,7 +140,7 @@ func TestFOConformance(t *testing.T) {
 			}
 		}
 	}
-	// Alle Abweichungen je Fall für die Analyse.
+	// All deviations per case for the analysis.
 	var det strings.Builder
 	for _, id := range sortedDiffKeys(details) {
 		for _, d := range details[id] {
@@ -154,9 +154,9 @@ func TestFOConformance(t *testing.T) {
 	os.WriteFile(filepath.Join(root, "out", "fo-conformance.md"), []byte(report), 0o644)
 	t.Log("\n" + report[:strings.Index(report+"\n## ", "\n## ")])
 	if os.Getenv("PDX_SUITE_RECORD") == "1" {
-		// Neue Abweichungen als offen vermerken, behobene austragen.
-		// Offene Einträge zeigen die aktuelle erste Abweichung, begründete
-		// bleiben unverändert.
+		// Record new deviations as open, remove fixed ones.
+		// Open entries show the current first deviation, entries with a
+		// reason stay unchanged.
 		for id, diffs := range details {
 			if why, ok := deviating[id]; !ok || strings.HasPrefix(why, ReasonOpen) {
 				deviating[id] = ReasonOpen + oneLine(stripPaths(string(diffs[0]), root))
@@ -182,8 +182,8 @@ func TestFOConformance(t *testing.T) {
 	}
 }
 
-// ReasonOpen kennzeichnet Abweichungen, die noch nicht untersucht sind. Sie
-// sind Arbeit für die Engine, keine begründeten Abweichungen.
+// ReasonOpen marks deviations that have not been investigated yet. They are
+// work for the engine, not justified deviations.
 const ReasonOpen = "offen, erste Abweichung: "
 
 const deviatingHeader = `Bekannte Abweichungen von FOP, eine Zeile je Fall. Ein Fall hier zählt im
@@ -192,7 +192,7 @@ scheitern. Begründete Abweichungen verweisen auf DEVIATIONS.md. Zeilen mit
 "offen" sind noch nicht untersucht und Arbeit für die Engine.
 PDX_SUITE_RECORD=1 trägt neue Abweichungen als offen ein und behobene aus.`
 
-// stripPaths entfernt den Pfad des Repositorys aus Meldungen.
+// stripPaths removes the repository path from messages.
 func stripPaths(s, root string) string {
 	return strings.ReplaceAll(s, root+string(filepath.Separator), "")
 }

@@ -4,7 +4,7 @@ import { openMuster } from "./helpers";
 test("Canvas zeigt die Seiten aus der Engine", async ({ page }) => {
   await openMuster(page, true);
   await expect(page.getByTestId("render-info")).toContainText("3 Seiten");
-  // Die erste Seite ist gezeichnet: das Canvas hat Pixel ungleich Weiß.
+  // The first page is drawn: the canvas has pixels other than white.
   const inked = await page.locator('[data-page="1"] canvas').evaluate((c: HTMLCanvasElement) => {
     const d = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
     let n = 0;
@@ -13,7 +13,7 @@ test("Canvas zeigt die Seiten aus der Engine", async ({ page }) => {
   });
   expect(inked).toBeGreaterThan(1000);
 
-  // Der Entwurf zeigt Platzhalter mit drei Positionen, also eine Seite.
+  // The draft shows placeholders with three line items, so one page.
   await page.getByRole("tab", { name: "Entwurf" }).click();
   await expect(page.locator("[data-page]")).toHaveCount(1);
   const before = await page.getByTestId("zoom").textContent();

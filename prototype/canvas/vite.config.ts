@@ -3,7 +3,7 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 import react from "@vitejs/plugin-react";
 import { resolve } from "node:path";
 
-// Ein Build mit beiden Prototypen als eigene Seiten.
+// One build with both prototypes as separate pages.
 export default defineConfig({
   base: "./",
   plugins: [svelte(), react()],

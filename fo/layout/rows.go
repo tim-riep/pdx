@@ -5,15 +5,15 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// rowFrag ist der auf einer Seite liegende Teil einer Zeile: die Scheiben
-// s0 bis s1 (ausschließlich), oben bei y.
+// rowFrag is the part of a row lying on a page: the slices
+// s0 to s1 (exclusive), top at y.
 type rowFrag struct {
 	r      *rowLayout
 	s0, s1 int
 	y      areatree.Length
 }
 
-// flushRow zeichnet das offene Zeilenfragment.
+// flushRow draws the open row fragment.
 func (pl *placer) flushRow() error {
 	if pl.curRow == nil {
 		return nil
@@ -32,12 +32,12 @@ func (pl *placer) flushRow() error {
 		}
 		r = nr
 	}
-	// Der Abstand am Anfang der ersten Scheibe steht als Glue davor.
+	// The space at the start of the first slice stands before it as glue.
 	return pl.drawRow(r, r.slices[f.s0]+r.skip[f.s0], r.slices[f.s1], f.y, rowRef{key: f.r})
 }
 
-// drawRows zeichnet ganze Zeilen ab der aktuellen Position: wiederholte
-// Tabellenköpfe und -füße auf Folgeseiten.
+// drawRows draws whole rows from the current position: repeated
+// table headers and footers on following pages.
 func (pl *placer) drawRows(rows []*rowLayout) error {
 	for _, r := range rows {
 		if t := r.tbl; t != nil && t.dynamic {
@@ -64,12 +64,12 @@ func (pl *placer) drawRows(rows []*rowLayout) error {
 	return nil
 }
 
-// drawRow zeichnet den Bereich [a, b) einer Zeile mit Oberkante y.
+// drawRow draws the range [a, b) of a row with top edge y.
 func (pl *placer) drawRow(r *rowLayout, a, b, y areatree.Length, ref rowRef) error {
 	return pl.drawRowIn(pl.parent(), r, a, b, y, ref)
 }
 
-// drawRowIn zeichnet in einen bestimmten Container.
+// drawRowIn draws into a specific container.
 func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y areatree.Length, ref rowRef) error {
 	whole := a == 0 && b == r.h
 	pl.rowIDs(r, a, y)
@@ -173,9 +173,9 @@ func (pl *placer) drawRowIn(parent *areatree.Container, r *rowLayout, a, b, y ar
 	return nil
 }
 
-// rowIDs vermerkt die IDs einer Zeile für jedes Fragment ab a: Zeile oder
-// Listenpunkt, die Zellen (auch Label und Rumpf eines Listenpunkts) und die
-// Abschnitte der Tabelle bis zur Tabelle selbst.
+// rowIDs records the IDs of a row for each fragment from a: row or
+// list item, the cells (also label and body of a list item) and the
+// sections of the table up to the table itself.
 func (pl *placer) rowIDs(r *rowLayout, a, y areatree.Length) {
 	folio := formatNumber(pl.page.Number, pl.e.format)
 	mark := func(n *tree.Node, x areatree.Length) {
@@ -187,8 +187,8 @@ func (pl *placer) rowIDs(r *rowLayout, a, y areatree.Length) {
 	for n := r.node; n != nil && !n.IsFO("table") && !n.IsFO("list-block"); n = n.Parent {
 		mark(n, r.x)
 	}
-	// Eine Zelle zählt auf jeder Seite, auf der Inhalt von ihr liegt, damit
-	// page-number-citation-last die letzte Seite findet.
+	// A cell counts on every page on which content of it lies, so that
+	// page-number-citation-last finds the last page.
 	for _, c := range r.cells {
 		if a == 0 || a-r.sepV-c.inset[areatree.Top] < c.contentH {
 			mark(c.node, c.x)

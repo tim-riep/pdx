@@ -7,7 +7,7 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// dest liefert ein explizites Ziel /XYZ für eine ID.
+// dest returns an explicit destination /XYZ for an ID.
 func (r *renderer) dest(id string) (pdf.Array, error) {
 	d, ok := r.doc.Dests[id]
 	if !ok || d.Page < 0 || d.Page >= len(r.pageRefs) {
@@ -17,15 +17,15 @@ func (r *renderer) dest(id string) (pdf.Array, error) {
 	return pdf.Array{r.pageRefs[d.Page], pdf.Name("XYZ"), pdf.Real(d.At.X.Pt()), pdf.Real(h - d.At.Y.Pt()), pdf.Null{}}, nil
 }
 
-// target ist der Eintrag für ein internes Ziel: /Dest oder /A.
+// target is the entry for an internal destination: /Dest or /A.
 type target struct {
 	key pdf.Name
 	val pdf.Object
 }
 
-// goTo liefert das Ziel einer ID. In Tagged PDF 2.0 ist es eine
-// GoTo-Aktion mit Strukturziel /SD neben /D (ISO 32000-2 12.3.2.3), wie
-// PDF/UA-2 es verlangt (ISO 14289-2 8.8).
+// goTo returns the destination of an ID. In Tagged PDF 2.0 it is a
+// GoTo action with structure destination /SD next to /D (ISO 32000-2 12.3.2.3),
+// as PDF/UA-2 requires (ISO 14289-2 8.8).
 func (r *renderer) goTo(id string) (target, error) {
 	d, err := r.dest(id)
 	if err != nil {
@@ -40,8 +40,8 @@ func (r *renderer) goTo(id string) (target, error) {
 	return target{"Dest", d}, nil
 }
 
-// link legt eine Link-Annotation an. PDF/A verlangt das Druckflag (/F 4),
-// Link-Annotationen brauchen kein Erscheinungsbild (ISO 19005-3 6.3.3).
+// link creates a link annotation. PDF/A requires the print flag (/F 4),
+// link annotations need no appearance (ISO 19005-3 6.3.3).
 func (pc *pageCtx) link(l *areatree.Link) error {
 	a := pdf.D(
 		"Type", pdf.Name("Annot"),
@@ -71,7 +71,7 @@ func (pc *pageCtx) link(l *areatree.Link) error {
 	return nil
 }
 
-// outlines schreibt die Lesezeichen als Gliederung (ISO 32000-1 12.3.3).
+// outlines writes the bookmarks as an outline (ISO 32000-1 12.3.3).
 func (r *renderer) outlines() (pdf.Ref, error) {
 	root := r.d.Reserve()
 	first, last, count, err := r.outlineItems(r.doc.Bookmarks, root)
@@ -82,8 +82,8 @@ func (r *renderer) outlines() (pdf.Ref, error) {
 	return root, nil
 }
 
-// outlineItems schreibt eine Ebene und liefert erstes und letztes Element
-// sowie die Zahl der sichtbaren Nachfahren.
+// outlineItems writes one level and returns the first and last element
+// and the number of visible descendants.
 func (r *renderer) outlineItems(bms []areatree.Bookmark, parent pdf.Ref) (pdf.Ref, pdf.Ref, int, error) {
 	refs := make([]pdf.Ref, len(bms))
 	for i := range bms {

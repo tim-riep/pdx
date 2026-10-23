@@ -20,10 +20,10 @@ import (
 	"github.com/tim-riep/pdx/verapdf"
 )
 
-// EventConformance meldet den Stand der Konformitätsprüfung.
+// EventConformance reports the state of the conformance check.
 const EventConformance = "conformance:changed"
 
-// Zustände der Konformitätsprüfung.
+// States of the conformance check.
 const (
 	ConformanceIdle    = "idle"
 	ConformanceRunning = "running"
@@ -31,19 +31,19 @@ const (
 	ConformanceError   = "error"
 )
 
-// ConformanceItem ist eine fehlgeschlagene Einzelprüfung von veraPDF.
+// ConformanceItem is a failed single check of veraPDF.
 type ConformanceItem struct {
-	// Ref ist das Vorlagenelement, wenn sich der Kontext zuordnen lässt.
+	// Ref is the template element, if the context can be mapped.
 	Ref string `json:"ref"`
-	// Page ist die Seite ab 1, 0 ohne Seitenbezug.
+	// Page is the page starting at 1, 0 without page reference.
 	Page    int    `json:"page"`
 	Context string `json:"context"`
 	Message string `json:"message"`
 }
 
-// ConformanceFinding ist eine verletzte Regel mit ihren Einzelprüfungen.
+// ConformanceFinding is a violated rule with its single checks.
 type ConformanceFinding struct {
-	// Specification ist die Norm der Regel, etwa "ISO 14289-1:2014".
+	// Specification is the standard of the rule, for example "ISO 14289-1:2014".
 	Specification string            `json:"specification"`
 	Clause        string            `json:"clause"`
 	Test          string            `json:"test"`
@@ -52,46 +52,46 @@ type ConformanceFinding struct {
 	Items         []ConformanceItem `json:"items"`
 }
 
-// Conformance ist der Stand der Prüfung.
+// Conformance is the state of the check.
 type Conformance struct {
 	State string `json:"state"`
-	// Rev ist die geprüfte Revision. Weicht sie vom Dokument ab, ist das
-	// Ergebnis veraltet.
+	// Rev is the checked revision. If it differs from the document, the
+	// result is outdated.
 	Rev     uint64 `json:"rev"`
-	Sample  string `json:"sample"` // leer für Platzhalterdaten
+	Sample  string `json:"sample"` // empty for placeholder data
 	Runner  string `json:"runner"`
 	Profile string `json:"profile"`
-	// Compliant gilt nur im Zustand done.
+	// Compliant is only valid in the state done.
 	Compliant bool                 `json:"compliant"`
 	Findings  []ConformanceFinding `json:"findings"`
-	// Problems sind Fehler beim Erzeugen des PDF.
+	// Problems are errors while generating the PDF.
 	Problems []pipeline.Problem `json:"problems"`
 	Notes    []string           `json:"notes"`
 	Error    string             `json:"error"`
 	Millis   int64              `json:"millis"`
 }
 
-// maxItems begrenzt die Einzelprüfungen je Regel.
+// maxItems limits the single checks per rule.
 const maxItems = 50
 
 type conformance struct {
 	state  Conformance
 	gen    int
 	cancel context.CancelFunc
-	// detect wählt den Runner, in Tests eine Attrappe.
+	// detect chooses the runner, a fake in tests.
 	detect func(ctx context.Context, warn func(string)) (verapdf.Runner, error)
-	// now liefert das Erstellungsdatum des geprüften PDF.
+	// now returns the creation date of the checked PDF.
 	now func() time.Time
 }
 
-// ConformanceService prüft das erzeugte PDF mit veraPDF gegen jeden Standard,
-// den das Profil der Vorlage beansprucht.
+// ConformanceService checks the generated PDF with veraPDF against every
+// standard that the profile of the template claims.
 type ConformanceService struct{ c *Core }
 
-// NewConformanceService liefert die Sicht auf den gemeinsamen Zustand.
+// NewConformanceService returns the view on the shared state.
 func NewConformanceService(c *Core) *ConformanceService { return &ConformanceService{c} }
 
-// State liefert den letzten Stand.
+// State returns the latest state.
 func (s *ConformanceService) State() Conformance {
 	s.c.mu.Lock()
 	defer s.c.mu.Unlock()
@@ -115,8 +115,8 @@ func (c *conformance) stateCopy() Conformance {
 	return st
 }
 
-// Check startet die Prüfung des aktuellen Stands im Hintergrund. Eine
-// laufende Prüfung wird abgebrochen. Das Ergebnis meldet EventConformance.
+// Check starts the check of the current state in the background. A
+// running check is canceled. EventConformance reports the result.
 func (s *ConformanceService) Check() (Conformance, error) {
 	c := s.c
 	c.mu.Lock()
@@ -142,16 +142,16 @@ func (s *ConformanceService) Check() (Conformance, error) {
 	return st, nil
 }
 
-// VeraPDFSetup beschreibt, welches veraPDF der Designer nutzt.
+// VeraPDFSetup describes which veraPDF the designer uses.
 type VeraPDFSetup struct {
-	// Path ist der gewählte Pfad, leer bedeutet automatisch.
+	// Path is the chosen path, empty means automatic.
 	Path string `json:"path"`
-	// Runner beschreibt die gefundene Variante, Error warum keine gefunden
-	// wurde, Notes Hinweise wie eine abweichende Version.
+	// Runner describes the variant found, Error why none was found,
+	// Notes hints such as a different version.
 	Runner string   `json:"runner"`
 	Error  string   `json:"error"`
 	Notes  []string `json:"notes"`
-	// Version ist die verlangte Version.
+	// Version is the required version.
 	Version string `json:"version"`
 }
 
@@ -161,7 +161,7 @@ type verapdfSettings struct {
 
 func (c *Core) verapdfSettingsPath() string { return filepath.Join(c.dataDir, "verapdf.json") }
 
-// verapdfPath liest den gewählten Pfad aus den Einstellungen.
+// verapdfPath reads the chosen path from the settings.
 func (c *Core) verapdfPath() string {
 	var st verapdfSettings
 	if b, err := os.ReadFile(c.verapdfSettingsPath()); err == nil {
@@ -170,9 +170,9 @@ func (c *Core) verapdfPath() string {
 	return st.Path
 }
 
-// VeraPDF zeigt, welches veraPDF gefunden wird: zuerst der gewählte Pfad,
-// dann PDX_VERAPDF, sonst die Suche im PATH und in den üblichen Ordnern,
-// zuletzt Docker.
+// VeraPDF shows which veraPDF is found: first the chosen path,
+// then PDX_VERAPDF, otherwise the search in PATH and the usual folders,
+// finally Docker.
 func (s *ConformanceService) VeraPDF() VeraPDFSetup {
 	path := s.c.verapdfPath()
 	setup := VeraPDFSetup{Path: path, Version: verapdf.Version, Notes: []string{}}
@@ -187,8 +187,8 @@ func (s *ConformanceService) VeraPDF() VeraPDFSetup {
 	return setup
 }
 
-// SetVeraPDF speichert einen Pfad zur veraPDF-CLI, leer schaltet auf die
-// automatische Suche zurück. Ein Pfad muss auf eine lauffähige CLI zeigen.
+// SetVeraPDF stores a path to the veraPDF CLI, empty switches back to
+// the automatic search. A path must point to a working CLI.
 func (s *ConformanceService) SetVeraPDF(path string) (VeraPDFSetup, error) {
 	path = strings.TrimSpace(path)
 	if path != "" {
@@ -206,7 +206,7 @@ func (s *ConformanceService) SetVeraPDF(path string) (VeraPDFSetup, error) {
 	return s.VeraPDF(), nil
 }
 
-// Cancel bricht eine laufende Prüfung ab.
+// Cancel cancels a running check.
 func (s *ConformanceService) Cancel() {
 	c := s.c
 	c.mu.Lock()
@@ -222,11 +222,11 @@ func (s *ConformanceService) Cancel() {
 	}
 }
 
-// previewDataLocked liefert die Daten wie die Vorschau: Beispieldaten, sonst
-// Platzhalter aus dem XSD.
+// previewDataLocked returns the data like the preview: sample data,
+// otherwise placeholders from the XSD.
 func (c *Core) previewDataLocked() ([]byte, string) {
 	p := c.doc.Pkg
-	// Die Auswahl gilt, solange es die Datei gibt, sonst die erste.
+	// The selection applies as long as the file exists, otherwise the first.
 	if b, ok := p.Files[c.r.sample]; ok && c.r.sample != "" {
 		return b, c.r.sample
 	}
@@ -236,9 +236,9 @@ func (c *Core) previewDataLocked() ([]byte, string) {
 	return c.placeholderLocked(), ""
 }
 
-// placeholderLocked liefert Platzhalterdaten: aus dem Daten-XSD, sonst ein
-// leeres Wurzelelement nach template/@dataRoot mit seinem Namespace, damit
-// die Transformation die erwartete Wurzel findet.
+// placeholderLocked returns placeholder data: from the data XSD, otherwise an
+// empty root element after template/@dataRoot with its namespace, so that
+// the transformation finds the expected root.
 func (c *Core) placeholderLocked() []byte {
 	if sc, err := c.schemaLocked(); err == nil && sc != nil {
 		return sc.Placeholder()
@@ -274,7 +274,7 @@ func (c *Core) runConformance(ctx context.Context, gen int, in pipeline.Input, s
 		c.mu.Lock()
 		defer c.mu.Unlock()
 		if c.conf.gen != gen {
-			return // abgebrochen oder ersetzt
+			return // canceled or replaced
 		}
 		c.conf.state, c.conf.cancel = st, nil
 		c.emit.Emit(EventConformance, c.conf.stateCopy())
@@ -333,7 +333,7 @@ func (c *Core) runConformance(ctx context.Context, gen int, in pipeline.Input, s
 		fail(err)
 		return
 	}
-	// veraPDF prüft einen Flavour je Lauf, eine Kombination braucht mehrere.
+	// veraPDF checks one flavour per run, a combination needs several.
 	compliant := true
 	var findings []ConformanceFinding
 	for _, flavour := range flavours {
@@ -359,13 +359,13 @@ func (c *Core) runConformance(ctx context.Context, gen int, in pipeline.Input, s
 
 var (
 	rePage = regexp.MustCompile(`/pages\[(\d+)\]`)
-	// Nur Operatoren im Inhaltsstrom der Seite, nicht in Form-XObjects.
+	// Only operators in the content stream of the page, not in form XObjects.
 	reOp = regexp.MustCompile(`/pages\[\d+\][^/]*/contentStream\[0\][^/]*/operators\[(\d+)\]`)
 )
 
-// mapFindings ordnet die Kontexte der Einzelprüfungen über Seite und
-// Operator den Vorlagenelementen zu. Kontexte ohne Seite (etwa Metadaten)
-// gehören zum Dokument.
+// mapFindings maps the contexts of the single checks to the template
+// elements via page and operator. Contexts without a page (such as metadata)
+// belong to the document.
 func mapFindings(rep *verapdf.Report, trace *render.Trace) []ConformanceFinding {
 	out := []ConformanceFinding{}
 	for _, f := range rep.Findings {

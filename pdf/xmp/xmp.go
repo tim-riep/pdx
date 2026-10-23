@@ -1,8 +1,8 @@
-// Package xmp erzeugt XMP-Metadatenpakete für PDF und PDF/A.
+// Package xmp generates XMP metadata packets for PDF and PDF/A.
 //
-// Das Paket schreibt deterministisch und ohne die im xpacket-Kopf unter
-// PDF/A verbotenen Attribute bytes und encoding. Eigene Namespaces werden
-// unter PDF/A durch ein pdfaExtension-Schema beschrieben.
+// The package writes deterministically and without the attributes bytes and
+// encoding in the xpacket header, which PDF/A forbids. Custom namespaces are
+// described under PDF/A by a pdfaExtension schema.
 package xmp
 
 import (
@@ -16,29 +16,29 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// Packet beschreibt den Inhalt eines XMP-Pakets.
+// Packet describes the content of an XMP packet.
 type Packet struct {
-	// PDFAPart und PDFAConformance setzen pdfaid, etwa 3 und "B". Part 0
-	// lässt pdfaid weg.
+	// PDFAPart and PDFAConformance set pdfaid, for example 3 and "B". Part 0
+	// omits pdfaid.
 	PDFAPart        int
 	PDFAConformance string
-	// UAPart setzt pdfuaid:part (ISO 14289-1 5), 0 lässt es weg.
+	// UAPart sets pdfuaid:part (ISO 14289-1 5), 0 omits it.
 	UAPart int
-	// PDFARev und UARev setzen pdfaid:rev und pdfuaid:rev, leer lässt sie
-	// weg. PDF/A-4 und PDF/UA-2 verlangen sie.
+	// PDFARev and UARev set pdfaid:rev and pdfuaid:rev, empty omits
+	// them. PDF/A-4 and PDF/UA-2 require them.
 	PDFARev, UARev string
 
 	Title, Author, Subject, Keywords, Creator, Producer string
 	Created, Modified                                   time.Time
 
-	// Schemas sind eigene Schemata mit Werten.
+	// Schemas are custom schemas with values.
 	Schemas []areatree.XMPSchema
-	// Extension schreibt pdfaExtension-Beschreibungen für Schemas.
+	// Extension writes pdfaExtension descriptions for Schemas.
 	Extension bool
 }
 
-// Namespaces der vordefinierten Schemata. Eigene Schemata dürfen sie nicht
-// überschreiben.
+// Namespaces of the predefined schemas. Custom schemas must not
+// overwrite them.
 var builtin = map[string]string{
 	"dc":            "http://purl.org/dc/elements/1.1/",
 	"pdf":           "http://ns.adobe.com/pdf/1.3/",
@@ -55,7 +55,7 @@ var builtin = map[string]string{
 
 var reName = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_.-]*$`)
 
-// Date formatiert einen Zeitpunkt im XMP-Format mit Zeitzone.
+// Date formats a point in time in XMP format with time zone.
 func Date(t time.Time) string { return t.Format("2006-01-02T15:04:05-07:00") }
 
 func esc(s string) string {
@@ -64,7 +64,7 @@ func esc(s string) string {
 	return b.String()
 }
 
-// Bytes liefert das Paket als UTF-8.
+// Bytes returns the packet as UTF-8.
 func (p *Packet) Bytes() ([]byte, error) {
 	for _, s := range p.Schemas {
 		if !reName.MatchString(s.Prefix) {
@@ -152,8 +152,8 @@ func (p *Packet) Bytes() ([]byte, error) {
 			}
 		})
 	}
-	// pdfuaid ist in PDF/A nicht vordefiniert und braucht unter PDF/A eine
-	// Beschreibung im pdfaExtension-Schema (ISO 19005-3 6.6.2.3.3).
+	// pdfuaid is not predefined in PDF/A and needs a description in the
+	// pdfaExtension schema under PDF/A (ISO 19005-3 6.6.2.3.3).
 	ext := p.Schemas
 	if p.UAPart > 0 {
 		ext = append([]areatree.XMPSchema{{
@@ -185,7 +185,7 @@ func (p *Packet) Bytes() ([]byte, error) {
 		})
 	}
 	b.WriteString("</rdf:RDF>\n</x:xmpmeta>\n")
-	// Platz für nachträgliche Bearbeitung, wie von XMP empfohlen.
+	// Room for later editing, as recommended by XMP.
 	pad := strings.Repeat(strings.Repeat(" ", 99)+"\n", 20)
 	b.WriteString(pad)
 	b.WriteString(`<?xpacket end="w"?>`)

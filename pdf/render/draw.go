@@ -8,25 +8,25 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// pageCtx zeichnet die Bereiche einer Seite in einen Content Stream.
+// pageCtx draws the areas of a page into a content stream.
 type pageCtx struct {
 	r      *renderer
 	res    *pageRes
 	c      pdf.Content
-	h      float64 // Seitenhöhe in Punkt für die Umrechnung der y-Achse
+	h      float64 // page height in points for converting the y axis
 	annots pdf.Array
-	// trace und id sind gesetzt, wenn eine Spur verlangt ist: die Bereiche
-	// der Seite und die Vorlagen-ID des aktuellen Containers.
+	// trace and id are set when a trace is requested: the areas
+	// of the page and the template ID of the current container.
 	trace *PageTrace
 	id    string
-	// ox und oy verschieben den Ursprung, etwa für Erscheinungsbilder von
-	// Formularfeldern, die in Koordinaten ihres Widgets zeichnen. noTag
-	// schaltet das Markieren für Tagged PDF ab.
+	// ox and oy shift the origin, for example for appearances of
+	// form fields that draw in the coordinates of their widget. noTag
+	// switches off marking for Tagged PDF.
 	ox, oy areatree.Length
 	noTag  bool
 }
 
-// areaID liefert die Vorlagen-ID eines Bereichs oder die des Containers.
+// areaID returns the template ID of an area or that of the container.
 func (pc *pageCtx) areaID(a areatree.Area) string {
 	var id string
 	switch v := a.(type) {
@@ -48,12 +48,12 @@ func (pc *pageCtx) areaID(a areatree.Area) string {
 func (pc *pageCtx) x(l areatree.Length) float64 { return (l - pc.ox).Pt() }
 func (pc *pageCtx) y(l areatree.Length) float64 { return pc.h - (l - pc.oy).Pt() }
 
-// box rechnet ein Rechteck in ein PDF-Array [llx lly urx ury] um.
+// box converts a rectangle into a PDF array [llx lly urx ury].
 func (pc *pageCtx) box(r areatree.Rect) pdf.Array {
 	return pdf.Array{pdf.Real(pc.x(r.X)), pdf.Real(pc.y(r.Y + r.H)), pdf.Real(pc.x(r.X + r.W)), pdf.Real(pc.y(r.Y))}
 }
 
-// rect schreibt re für ein Rechteck des Area Tree.
+// rect writes re for a rectangle of the area tree.
 func (pc *pageCtx) rect(r areatree.Rect) {
 	pc.c.Rect(pc.x(r.X), pc.y(r.Y+r.H), r.W.Pt(), r.H.Pt())
 }
@@ -92,7 +92,7 @@ func (pc *pageCtx) area(a areatree.Area) error {
 	first := len(pc.trace.Ops)
 	start := pc.c.Ops()
 	if pc.id != "" {
-		// Platzhalter, damit der Bereich vor seinen Kindern steht.
+		// Placeholder so that the area comes before its children.
 		pc.trace.Ops = append(pc.trace.Ops, OpRange{First: start, ID: pc.id})
 	}
 	err := pc.draw(a)
@@ -107,9 +107,9 @@ func (pc *pageCtx) area(a areatree.Area) error {
 }
 
 func (pc *pageCtx) draw(a areatree.Area) error {
-	// Im Tagged PDF wird jeder Blattbereich als Inhalt oder Artefakt
-	// markiert. Container markieren nur Hintergrund und Rahmen selbst, Text
-	// markiert innerhalb des Textobjekts wegen der Trennstriche.
+	// In Tagged PDF every leaf area is marked as content or artifact.
+	// Containers only mark background and borders themselves, text
+	// marks within the text object because of the hyphens.
 	if t := pc.r.tag; t != nil && !pc.noTag {
 		switch a.(type) {
 		case *areatree.Container, *areatree.GlyphRun, *areatree.Link, *areatree.Widget:
@@ -140,7 +140,7 @@ func (pc *pageCtx) draw(a areatree.Area) error {
 	return fmt.Errorf("unbekannter Bereich %T", a)
 }
 
-// begin öffnet die markierte Inhaltsfolge eines Bereichs.
+// begin opens the marked-content sequence of an area.
 func (pc *pageCtx) begin(m mark) {
 	if m.artifact {
 		pc.c.BeginArtifact()
@@ -186,9 +186,9 @@ func (pc *pageCtx) container(c *areatree.Container) error {
 	return nil
 }
 
-// borders zeichnet die vier Kanten außerhalb des Rechtecks r. Durchgezogene
-// Kanten werden als gefüllte Trapeze gezeichnet, damit die Ecken sauber
-// aneinanderstoßen. Andere Stile laufen als Linie durch die Kantenmitte.
+// borders draws the four edges outside the rectangle r. Solid
+// edges are drawn as filled trapezoids so that the corners meet
+// cleanly. Other styles run as a line through the middle of the edge.
 func (pc *pageCtx) borders(r areatree.Rect, b [4]areatree.Border) error {
 	t, rt, bt, l := b[areatree.Top], b[areatree.Right], b[areatree.Bottom], b[areatree.Left]
 	w := func(e areatree.Border) areatree.Length {
@@ -197,7 +197,7 @@ func (pc *pageCtx) borders(r areatree.Rect, b [4]areatree.Border) error {
 		}
 		return 0
 	}
-	// Außen- und Innenecken oben links, oben rechts, unten rechts, unten links.
+	// Outer and inner corners top left, top right, bottom right, bottom left.
 	ox0, oy0 := r.X-w(l), r.Y-w(t)
 	ox1, oy1 := r.X+r.W+w(rt), r.Y+r.H+w(bt)
 	ix0, iy0 := r.X, r.Y
@@ -239,7 +239,7 @@ func (pc *pageCtx) borders(r areatree.Rect, b [4]areatree.Border) error {
 	return nil
 }
 
-// line zeichnet eine Linie im angegebenen Stil.
+// line draws a line in the given style.
 func (pc *pageCtx) line(from, to areatree.Point, b areatree.Border) error {
 	if !b.Visible() {
 		return nil
@@ -257,8 +257,8 @@ func (pc *pageCtx) line(from, to areatree.Point, b areatree.Border) error {
 		pc.c.Dash([]float64{0, 2 * wd}, 0)
 	}
 	if b.Style == areatree.Double {
-		// Zwei Linien mit je einem Drittel der Breite, Abstand ein Drittel.
-		dx, dy := to.Y-from.Y, from.X-to.X // Normale, nur Richtung relevant
+		// Two lines with one third of the width each, gap one third.
+		dx, dy := to.Y-from.Y, from.X-to.X // normal, only direction matters
 		n := normLen(dx, dy)
 		third := wd / 3
 		pc.c.LineWidth(third)
@@ -310,7 +310,7 @@ func (pc *pageCtx) boxArea(b *areatree.Box) error {
 	return nil
 }
 
-// path füllt alle Rechtecke eines Pfads in einem Zug.
+// path fills all rectangles of a path in one go.
 func (pc *pageCtx) path(p *areatree.Path) error {
 	if len(p.Rects) == 0 {
 		return nil

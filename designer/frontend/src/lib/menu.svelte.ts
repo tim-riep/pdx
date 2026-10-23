@@ -1,5 +1,5 @@
-// Kontextmenü für Vorlagenelemente in Hierarchie und Canvas. Das Menü ist
-// Ansicht, jede Aktion ist ein Befehl an das Backend.
+// Context menu for template elements in the hierarchy and the canvas. The menu is
+// view only, each action is a command to the backend.
 
 import { TemplateAPI, message, type Result } from "./api";
 import { label, t } from "./i18n";
@@ -11,7 +11,7 @@ export type MenuItem = { label: string; action: () => unknown; shortcut?: string
 
 export const menu = $state({ open: false, x: 0, y: 0, items: [] as MenuItem[] });
 
-// seq verwirft Menüs, deren Einträge erst nach dem Schließen eintreffen.
+// seq discards menus whose entries arrive only after closing.
 let seq = 0;
 
 export function closeMenu() {
@@ -45,7 +45,7 @@ const mac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
 const mod = mac ? "⌘" : "Strg+";
 const alt = mac ? "⌥" : "Alt+";
 
-// openElementMenu zeigt das Menü für ein Element an einer Bildschirmstelle.
+// openElementMenu shows the menu for an element at a screen position.
 export async function openElementMenu(ref: string, x: number, y: number) {
   const n = node(ref);
   if (!n) return;
@@ -54,8 +54,8 @@ export async function openElementMenu(ref: string, x: number, y: number) {
   try {
     insertable = (await TemplateAPI.Insertable(ref)) ?? [];
   } catch (e) {
-    // Etwa ein Element einer gerade ersetzten Vorlage: melden statt still
-    // „nichts einfügbar“ anzuzeigen.
+    // For example an element of a template that was just replaced: report it instead of
+    // silently showing "nothing insertable".
     if (s === seq) ui.error = message(e);
     insertable = [];
   }

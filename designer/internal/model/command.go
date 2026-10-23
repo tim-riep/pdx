@@ -11,20 +11,20 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// Command ist eine Änderung an der Vorlage. Die Oberfläche schickt Befehle
-// als JSON, das Backend wendet sie an und merkt sich das Inverse für Undo.
+// Command is a change to the template. The UI sends commands
+// as JSON, the backend applies them and remembers the inverse for Undo.
 //
-//	setAttr  Ref, Name, Value  Attribut setzen, leerer Value entfernt es
-//	insert   Parent, Index, XML  Elemente einfügen (XML im Vorlagenformat)
-//	remove   Ref               Element entfernen
-//	move     Ref, Parent, Index  Element verschieben
-//	content  Ref, XML          gemischten Inhalt (Text und Elemente) ersetzen
-//	batch    Cmds              mehrere Befehle als ein Schritt
-//	setFile  Name              Datei im Paket setzen oder entfernen (nur
-//	                           im Backend, die Daten trägt Data)
+//	setAttr  Ref, Name, Value  set attribute, empty Value removes it
+//	insert   Parent, Index, XML  insert elements (XML in the template format)
+//	remove   Ref               remove element
+//	move     Ref, Parent, Index  move element
+//	content  Ref, XML          replace mixed content (text and elements)
+//	batch    Cmds              several commands as one step
+//	setFile  Name              set or remove a file in the package (only
+//	                           in the backend, Data carries the data)
 //
-// Index zählt die Kinder des Elternelements, bei gemischtem Inhalt
-// einschließlich der Texte. -1 hängt an.
+// Index counts the children of the parent element, with mixed content
+// including the texts. -1 appends.
 type Command struct {
 	Op     string    `json:"op"`
 	Ref    string    `json:"ref,omitempty"`
@@ -35,22 +35,22 @@ type Command struct {
 	XML    string    `json:"xml,omitempty"`
 	Cmds   []Command `json:"cmds,omitempty"`
 
-	// nodes trägt bei Inversen von remove die entfernten Knoten selbst.
+	// nodes carries the removed nodes themselves for inverses of remove.
 	nodes []*template.Node
-	// Data ist der Inhalt bei setFile, nil entfernt die Datei. Er wird nicht
-	// als JSON übertragen.
+	// Data is the content for setFile, nil removes the file. It is not
+	// transferred as JSON.
 	Data []byte `json:"-"`
 }
 
-// entry ist ein Schritt der Historie.
+// entry is a step of the history.
 type entry struct {
 	label         string
 	do, undo      Command
-	before, after uint64 // Zustandskennungen
+	before, after uint64 // state IDs
 }
 
-// Apply wendet einen Befehl an. Ist die Vorlage danach ungültig, wird der
-// Befehl vollständig zurückgenommen und der Fehler geliefert.
+// Apply applies a command. If the template is invalid afterwards, the
+// command is fully reverted and the error is returned.
 func (d *Document) Apply(label string, c Command) error {
 	inv, err := d.apply(c)
 	if err != nil {
@@ -63,7 +63,7 @@ func (d *Document) Apply(label string, c Command) error {
 	return nil
 }
 
-// Undo nimmt den letzten Schritt zurück.
+// Undo takes back the last step.
 func (d *Document) Undo() (string, error) {
 	if len(d.undo) == 0 {
 		return "", errors.New("nichts zum Rückgängigmachen")
@@ -81,7 +81,7 @@ func (d *Document) Undo() (string, error) {
 	return e.label, nil
 }
 
-// Redo wiederholt den zuletzt zurückgenommenen Schritt.
+// Redo repeats the most recently undone step.
 func (d *Document) Redo() (string, error) {
 	if len(d.redo) == 0 {
 		return "", errors.New("nichts zum Wiederholen")
@@ -99,14 +99,14 @@ func (d *Document) Redo() (string, error) {
 	return e.label, nil
 }
 
-// History beschreibt Undo und Redo für Menü und Werkzeugleiste.
+// History describes Undo and Redo for the menu and the toolbar.
 type History struct {
 	Undo string  `json:"undo"`
 	Redo string  `json:"redo"`
 	Can  [2]bool `json:"can"`
 }
 
-// History liefert die Beschriftungen der nächsten Schritte.
+// History returns the labels of the next steps.
 func (d *Document) History() History {
 	var h History
 	if n := len(d.undo); n > 0 {
@@ -118,8 +118,8 @@ func (d *Document) History() History {
 	return h
 }
 
-// apply wendet c an, prüft die Vorlage und liefert das Inverse. Bei einem
-// Fehler ist die Vorlage unverändert.
+// apply applies c, checks the template and returns the inverse. On an
+// error the template is unchanged.
 func (d *Document) apply(c Command) (Command, error) {
 	t := d.Pkg.Template
 	inv, err := exec(t, d.Pkg.Files, c)
@@ -129,8 +129,8 @@ func (d *Document) apply(c Command) (Command, error) {
 	t.Reindex()
 	err = t.Validate()
 	if err == nil {
-		// Verweise auf Dateien im Paket (Schema, Bilder, Anhänge) prüfen,
-		// sonst ließe sich das gespeicherte Paket nicht mehr öffnen.
+		// Check references to files in the package (schema, images, attachments),
+		// otherwise the saved package could no longer be opened.
 		_, err = pkg.New(t, d.Pkg.Files)
 	}
 	if err != nil {
@@ -143,7 +143,7 @@ func (d *Document) apply(c Command) (Command, error) {
 	return inv, nil
 }
 
-// exec führt einen Befehl ohne Prüfung aus und liefert das Inverse.
+// exec executes a command without checking and returns the inverse.
 func exec(t *template.Template, files map[string][]byte, c Command) (Command, error) {
 	switch c.Op {
 	case "setFile":
@@ -214,8 +214,8 @@ func exec(t *template.Template, files map[string][]byte, c Command) (Command, er
 		for k, n := range nodes {
 			parent.InsertChild(i+k, n)
 		}
-		// Das Inverse entfernt die Knoten in umgekehrter Folge, damit die
-		// Pfade ohne ID gültig bleiben.
+		// The inverse removes the nodes in reverse order, so that the
+		// paths without ID stay valid.
 		for k := len(nodes) - 1; k >= 0; k-- {
 			inv = append(inv, Command{Op: "remove", Ref: Ref(nodes[k])})
 		}
@@ -262,7 +262,7 @@ func exec(t *template.Template, files map[string][]byte, c Command) (Command, er
 		target.InsertChild(i, n)
 		return Command{Op: "move", Ref: Ref(n), Parent: refAfterMove(from, fromRef, target, n), Index: oldIndex}, nil
 	case "content":
-		// Gemischten Inhalt ersetzen: Text und eingebettete Elemente.
+		// Replace mixed content: text and embedded elements.
 		n, err := Resolve(t, c.Ref)
 		if err != nil {
 			return Command{}, err
@@ -298,7 +298,7 @@ func exec(t *template.Template, files map[string][]byte, c Command) (Command, er
 	return Command{}, fmt.Errorf("Befehl %q unbekannt", c.Op)
 }
 
-// refAfter liefert die Kennung eines Elements nach dem Umbenennen der ID.
+// refAfter returns the ID of an element after its ID was renamed.
 func refAfter(n *template.Node, id string) string {
 	if id != "" {
 		return id
@@ -306,8 +306,8 @@ func refAfter(n *template.Node, id string) string {
 	return Ref(n)
 }
 
-// refAfterMove liefert die Kennung des alten Elternelements nach dem
-// Verschieben. Hat es eine ID, bleibt sie, sonst wird der Pfad neu bestimmt.
+// refAfterMove returns the ID of the old parent element after the
+// move. If it has an ID, it stays, otherwise the path is determined anew.
 func refAfterMove(from *template.Node, fromRef string, _ *template.Node, _ *template.Node) string {
 	if from.ID() != "" {
 		return fromRef
@@ -315,9 +315,9 @@ func refAfterMove(from *template.Node, fromRef string, _ *template.Node, _ *temp
 	return Ref(from)
 }
 
-// parseFragment liest Elemente im Vorlagenformat ohne Wurzel.
-// parseContent liest gemischten Inhalt. Die innere Hülle ist text, damit
-// der Parser Leerraum und Text so behält, wie er steht.
+// parseFragment reads elements in the template format without a root.
+// parseContent reads mixed content. The inner wrapper is text, so that
+// the parser keeps whitespace and text exactly as they are.
 func parseContent(xml string) ([]*template.Node, error) {
 	t, err := template.ParseTree([]byte(`<template xmlns="` + template.NS + `"><text>` + xml + `</text></template>`))
 	if err != nil {
@@ -331,8 +331,8 @@ func parseContent(xml string) ([]*template.Node, error) {
 	return out, nil
 }
 
-// contentXML schreibt den Inhalt eines Elements als Fragment, so wie
-// parseContent ihn liest.
+// contentXML writes the content of an element as a fragment, the way
+// parseContent reads it.
 func contentXML(n *template.Node) string {
 	wrap := template.NewElement("text")
 	for _, c := range n.Children {
@@ -345,7 +345,7 @@ func contentXML(n *template.Node) string {
 	}
 	open := out[start:]
 	if strings.HasPrefix(open[strings.Index(open, ">")-1:], "/>") {
-		return "" // leer
+		return "" // empty
 	}
 	body := open[strings.Index(open, ">")+1:]
 	return body[:strings.LastIndex(body, "</text>")]

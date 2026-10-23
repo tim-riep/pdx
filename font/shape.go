@@ -10,15 +10,15 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// ShapeOptions steuert das Shaping.
+// ShapeOptions controls shaping.
 type ShapeOptions struct {
-	// Features schaltet OpenType-Features, etwa "-liga" oder "smcp".
-	// Ohne Angabe gelten die Vorgaben von textshape (kern, liga und andere).
+	// Features toggles OpenType features, such as "-liga" or "smcp".
+	// If not given, the textshape defaults apply (kern, liga and others).
 	Features []string
 }
 
-// MissingGlyphError meldet Zeichen, die die Schrift nicht enthält. PDF/A
-// verbietet die Verwendung der .notdef-Glyphe, deshalb ist das ein Fehler.
+// MissingGlyphError reports characters the font does not contain. PDF/A
+// forbids the use of the .notdef glyph, so this is an error.
 type MissingGlyphError struct {
 	Font  string
 	Runes []rune
@@ -32,9 +32,9 @@ func (e *MissingGlyphError) Error() string {
 	return fmt.Sprintf("Schrift %s enthält die Zeichen %s nicht", e.Font, strings.Join(parts, ", "))
 }
 
-// Shape formt Text in einer Schriftgröße zu positionierten Glyphen. Die erste
-// Glyphe eines Clusters trägt den Text des Clusters, Folgeglyphen bleiben leer.
-// Text in Phase 0 läuft immer von links nach rechts.
+// Shape shapes text at a font size into positioned glyphs. The first
+// glyph of a cluster carries the text of the cluster, subsequent glyphs stay empty.
+// Text in phase 0 always runs left to right.
 func (f *Face) Shape(text string, size areatree.Length, opts ShapeOptions) (glyphs []areatree.Glyph, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -74,7 +74,7 @@ func (f *Face) Shape(text string, size areatree.Length, opts ShapeOptions) (glyp
 	sh.Shape(buf, feats)
 	f.shapers.Put(sh)
 
-	// Clustergrenzen bestimmen, damit jede Glyphe ihren Text erhält.
+	// Determine cluster boundaries so that every glyph gets its text.
 	starts := make([]int, 0, len(buf.Info))
 	seen := map[int]bool{}
 	for _, gi := range buf.Info {
@@ -105,7 +105,7 @@ func (f *Face) Shape(text string, size areatree.Length, opts ShapeOptions) (glyp
 			ID:      uint16(gi.GlyphID),
 			Advance: areatree.Length(math.Round(float64(p.XAdvance) * scale)),
 			XOffset: areatree.Length(math.Round(float64(p.XOffset) * scale)),
-			YOffset: areatree.Length(math.Round(-float64(p.YOffset) * scale)), // Area Tree: y nach unten
+			YOffset: areatree.Length(math.Round(-float64(p.YOffset) * scale)), // area tree: y downward
 		}
 		if !done[gi.Cluster] {
 			done[gi.Cluster] = true
@@ -116,8 +116,8 @@ func (f *Face) Shape(text string, size areatree.Length, opts ShapeOptions) (glyp
 	return out, nil
 }
 
-// Metrics liefert Ascent, Descent (positiv) und Zeilenabstand der Schrift in
-// einer Größe.
+// Metrics returns ascent, descent (positive) and line spacing of the font at
+// a given size.
 func (f *Face) Metrics(size areatree.Length) (ascent, descent, lineGap areatree.Length) {
 	s := float64(size) / f.upem
 	return areatree.Length(math.Round(float64(f.Ascender) * s)),

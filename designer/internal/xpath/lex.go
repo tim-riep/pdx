@@ -1,32 +1,32 @@
-// Package xpath unterstützt den XPath-Editor des Designers: Prüfung der
-// Pfade gegen das Daten-XSD, Auswertung mit Beispieldaten und
-// Vervollständigung. Die Syntax prüft go-xslt beim Übersetzen, dieses Paket
-// zerlegt Ausdrücke nur so weit, wie es für Pfade nötig ist.
+// Package xpath supports the XPath editor of the designer: checking the
+// paths against the data XSD, evaluation with sample data and
+// completion. go-xslt checks the syntax when compiling, this package
+// splits expressions only as far as needed for paths.
 package xpath
 
 import "strings"
 
-// kind ist die Art eines Tokens.
+// kind is the kind of a token.
 type kind int
 
 const (
-	tName   kind = iota // Name mit oder ohne Präfix
-	tString             // Zeichenkette in Anführungszeichen
+	tName   kind = iota // name with or without prefix
+	tString             // string in quotation marks
 	tNumber
 	tVar    // $name
-	tSym    // / // @ . .. * [ ] ( ) , :: und Operatoren
-	tBroken // nicht geschlossene Zeichenkette
+	tSym    // / // @ . .. * [ ] ( ) , :: and operators
+	tBroken // unterminated string
 )
 
 type token struct {
 	kind kind
 	text string
-	pos  int // Byte-Position im Ausdruck
+	pos  int // byte position in the expression
 }
 
 func (t token) is(s string) bool { return t.kind == tSym && t.text == s }
 
-// lex zerlegt einen Ausdruck in Tokens. Leerraum und Kommentare entfallen.
+// lex splits an expression into tokens. Whitespace and comments are dropped.
 func lex(s string) []token {
 	var out []token
 	i := 0
@@ -36,7 +36,7 @@ func lex(s string) []token {
 		case c == ' ' || c == '\t' || c == '\n' || c == '\r':
 			i++
 		case c == '(' && i+1 < len(s) && s[i+1] == ':':
-			// Kommentar (: … :), verschachtelt
+			// comment (: … :), nested
 			depth, j := 1, i+2
 			for j < len(s) && depth > 0 {
 				switch {
@@ -59,7 +59,7 @@ func lex(s string) []token {
 					return out
 				}
 				if s[j] == c {
-					// verdoppeltes Anführungszeichen steht für sich selbst
+					// a doubled quotation mark stands for itself
 					if j+1 < len(s) && s[j+1] == c {
 						j += 2
 						continue
@@ -89,7 +89,7 @@ func lex(s string) []token {
 			for j < len(s) && nameChar(s[j]) {
 				j++
 			}
-			// Präfix: Name, Doppelpunkt, Name ohne Leerraum dazwischen
+			// prefix: name, colon, name without whitespace in between
 			if j+1 < len(s) && s[j] == ':' && nameStart(s[j+1]) {
 				j++
 				for j < len(s) && nameChar(s[j]) {
@@ -122,7 +122,7 @@ func nameChar(c byte) bool {
 	return nameStart(c) || c >= '0' && c <= '9' || c == '-' || c == '.'
 }
 
-// operators sind Namen, die nach einem Operanden als Operator gelten.
+// operators are names that count as operators after an operand.
 var operators = map[string]bool{
 	"and": true, "or": true, "div": true, "idiv": true, "mod": true, "eq": true, "ne": true,
 	"lt": true, "le": true, "gt": true, "ge": true, "is": true, "to": true, "union": true,
@@ -131,6 +131,6 @@ var operators = map[string]bool{
 	"as": true, "of": true,
 }
 
-// keywords leiten Ausdrücke ein, wenn ein Operand erwartet wird und kein
-// Pfad folgt.
+// keywords start expressions when an operand is expected and no
+// path follows.
 var keywords = map[string]bool{"if": true, "for": true, "let": true, "some": true, "every": true}

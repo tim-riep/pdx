@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 export const muster = resolve(here, "../../../testdata/templates/musterrechnung");
 
-// openPath öffnet ein Paket über die Pfadabfrage des Browsers.
+// openPath opens a package via the path prompt of the browser.
 export async function openPath(page: Page, path: string) {
   await page.getByRole("button", { name: "Öffnen", exact: true }).first().click();
   const box = page.getByRole("dialog").getByRole("textbox");
@@ -13,8 +13,8 @@ export async function openPath(page: Page, path: string) {
   await box.press("Enter");
 }
 
-// openMuster öffnet die Musterrechnung. preview wählt die Vorschau mit den
-// Beispieldaten (drei Seiten), sonst gilt der Entwurf mit Platzhaltern.
+// openMuster opens the sample invoice. preview selects the preview with the
+// sample data (three pages), otherwise the draft with placeholders applies.
 export async function openMuster(page: Page, preview = false) {
   await page.goto("/");
   await openPath(page, muster);
@@ -27,9 +27,9 @@ export async function openMuster(page: Page, preview = false) {
   await expect(page.locator('[data-page="1"] canvas')).toBeVisible();
 }
 
-// dragData zieht ein Element mit HTML5-Drag-and-drop auf einen Punkt eines
-// Ziels. Die Ereignisse werden mit einem gemeinsamen DataTransfer selbst
-// geschickt, weil nicht jeder Browser von Playwright sie auslöst.
+// dragData drags an element with HTML5 drag and drop onto a point of a
+// target. The events are sent manually with a shared DataTransfer,
+// because not every Playwright browser fires them.
 export async function dragData(page: Page, source: Locator, target: Locator, pos: { x: number; y: number }) {
   const s = await source.elementHandle();
   const t = await target.elementHandle();
@@ -48,15 +48,15 @@ export async function dragData(page: Page, source: Locator, target: Locator, pos
   );
 }
 
-// selectInTree klappt die Hierarchie bis zu einem Element auf und wählt es.
-// ids sind die Vorfahren von oben nach unten, das letzte wird gewählt.
+// selectInTree expands the hierarchy down to an element and selects it.
+// ids are the ancestors from top to bottom, the last one is selected.
 export async function selectInTree(page: Page, ids: string[]) {
   await page.getByRole("tab", { name: "Hierarchie" }).click();
   const tree = page.getByTestId("hierarchy");
   const row = (id: string) => tree.getByRole("treeitem").filter({ has: page.locator(".id", { hasText: new RegExp(`^${id}$`) }) });
-  // Erst auf die Zeile warten, dann nach aria-expanded aufklappen. Eine
-  // Prüfung auf den Knopf vor dem Zeichnen des Baums übersprang sonst das
-  // Aufklappen.
+  // Wait for the row first, then expand by aria-expanded. A
+  // check for the button before the tree was drawn otherwise skipped the
+  // expansion.
   for (const id of ids.slice(0, -1)) {
     const r = row(id);
     await expect(r).toBeVisible();

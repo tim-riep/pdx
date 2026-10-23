@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-// spec ist die geladene Spezifikation, generisch als JSON.
+// spec is the loaded specification, generic as JSON.
 var spec = sync.OnceValue(func() map[string]any {
 	var m map[string]any
 	if err := json.Unmarshal(openAPI, &m); err != nil {
@@ -24,7 +24,7 @@ var spec = sync.OnceValue(func() map[string]any {
 	return m
 })
 
-// resolve folgt $ref innerhalb der Spezifikation.
+// resolve follows $ref within the specification.
 func resolve(v any) map[string]any {
 	m, _ := v.(map[string]any)
 	for m != nil {
@@ -41,9 +41,9 @@ func resolve(v any) map[string]any {
 	return m
 }
 
-// validate prüft einen JSON-Wert gegen eine Teilmenge von JSON Schema:
-// type, properties, required, items, enum, pattern und $ref. Alle
-// Abweichungen auf einmal.
+// validate checks a JSON value against a subset of JSON Schema:
+// type, properties, required, items, enum, pattern and $ref. All
+// deviations at once.
 func validate(schema map[string]any, v any, path string) []string {
 	schema = resolve(schema)
 	if schema == nil {
@@ -101,13 +101,13 @@ func validate(schema map[string]any, v any, path string) []string {
 	return errs
 }
 
-// operation liefert die Operation zu einem Muster wie "POST /v1/render/{id}".
+// operation returns the operation for a pattern like "POST /v1/render/{id}".
 func operation(pattern string) map[string]any {
 	method, path, _ := strings.Cut(pattern, " ")
 	return resolve(resolve(spec()["paths"].(map[string]any)[path])[strings.ToLower(method)])
 }
 
-// checkResponse prüft eine Antwort gegen die Spezifikation.
+// checkResponse checks a response against the specification.
 func checkResponse(pattern string, status int, header http.Header, body []byte) []string {
 	op := operation(pattern)
 	if op == nil {
@@ -140,8 +140,8 @@ func checkResponse(pattern string, status int, header http.Header, body []byte) 
 	return errs
 }
 
-// specHandler prüft jede Antwort des Dienstes in Tests gegen die
-// Spezifikation. Alle Tests mit newTest laufen darüber.
+// specHandler checks every response of the service in tests against the
+// specification. All tests using newTest go through it.
 func specHandler(t *testing.T, s *Server) http.Handler {
 	h := s.Handler()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -160,7 +160,7 @@ func specHandler(t *testing.T, s *Server) http.Handler {
 	})
 }
 
-// Jede Route ist beschrieben und jede beschriebene Operation gibt es.
+// Every route is described and every described operation exists.
 func TestOpenAPIRoutes(t *testing.T) {
 	s, _ := New(testConfig(), &MemStore{}, nil)
 	var code, doc []string
@@ -180,7 +180,7 @@ func TestOpenAPIRoutes(t *testing.T) {
 	if spec()["openapi"] != "3.1.0" {
 		t.Error("keine OpenAPI 3.1")
 	}
-	// Jeder $ref zeigt auf etwas.
+	// Every $ref points to something.
 	var walk func(v any)
 	walk = func(v any) {
 		switch x := v.(type) {
@@ -200,7 +200,7 @@ func TestOpenAPIRoutes(t *testing.T) {
 	walk(spec())
 }
 
-// Der Validator selbst erkennt Abweichungen.
+// The validator itself detects deviations.
 func TestOpenAPIValidator(t *testing.T) {
 	errs := checkResponse("POST /v1/templates/{id}", 201, http.Header{"Content-Type": {"application/json"}},
 		[]byte(`{"version":1,"sha256":"x","size":1.5,"created":"t","active":"ja","extra":true}`))

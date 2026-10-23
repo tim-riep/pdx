@@ -39,8 +39,8 @@ type attribute struct {
 	Values asn1.RawValue `asn1:"set"`
 }
 
-// verify prüft die Signatur eines SignerInfo unabhängig vom Erzeuger und
-// liefert die signierten Attribute nach Typ.
+// verify checks the signature of a SignerInfo independently of the producer and
+// returns the signed attributes by type.
 func verify(t *testing.T, si []byte, cert *x509.Certificate, content []byte) (map[string][]byte, signerInfo) {
 	t.Helper()
 	var s signerInfo
@@ -48,7 +48,7 @@ func verify(t *testing.T, si []byte, cert *x509.Certificate, content []byte) (ma
 		t.Fatal(err)
 	}
 	attrs := append([]byte(nil), s.SignedAttrs.FullBytes...)
-	attrs[0] = 0x31 // signiert wird die Kodierung als SET
+	attrs[0] = 0x31 // the encoding as SET is signed
 	sum := sha256.Sum256(attrs)
 	if !ecdsa.VerifyASN1(cert.PublicKey.(*ecdsa.PublicKey), sum[:], s.Signature) {
 		t.Fatal("Signatur ungültig")
@@ -70,9 +70,9 @@ func verify(t *testing.T, si []byte, cert *x509.Certificate, content []byte) (ma
 	return out, s
 }
 
-// SignedData trägt die von PAdES verlangten Attribute, kein signing-time,
-// und ist mit dem Zertifikat prüfbar. Mit Zeitstempel als unsigniertes
-// Attribut entsteht B-T.
+// SignedData carries the attributes required by PAdES, no signing-time,
+// and can be verified with the certificate. With a timestamp as unsigned
+// attribute, B-T results.
 func TestSignedDataPAdES(t *testing.T) {
 	pki := testpki.New(t)
 	s := pki.KeySigner(t, pki.Signer)
@@ -110,8 +110,8 @@ func TestSignedDataPAdES(t *testing.T) {
 	}
 }
 
-// Der Zeitstempeldienst der Test-PKI liefert Tokens mit Abdruck, Zeit und
-// Zertifikat, OCSP und CRL kennen das gesperrte Zertifikat.
+// The timestamp service of the test PKI returns tokens with imprint, time and
+// certificate, OCSP and CRL know the revoked certificate.
 func TestTestPKI(t *testing.T) {
 	pki := testpki.New(t)
 	tok, err := (&sign.TSA{URL: pki.TSAURL()}).Timestamp(context.Background(), []byte("x"))
@@ -163,8 +163,8 @@ func TestTestPKI(t *testing.T) {
 	}
 }
 
-// LoadPKCS12 liest Schlüssel und Kette, die Wurzel fällt weg, ein falsches
-// Passwort scheitert. Die Datei entsteht im Test.
+// LoadPKCS12 reads key and chain, the root is dropped, a wrong
+// password fails. The file is created in the test.
 func TestLoadPKCS12(t *testing.T) {
 	pki := testpki.New(t)
 	p12, err := pkcs12.Modern.Encode(pki.Signer.Key, pki.Signer.Cert, []*x509.Certificate{pki.Inter.Cert, pki.Root.Cert}, "geheim")
@@ -184,7 +184,7 @@ func TestLoadPKCS12(t *testing.T) {
 	}
 }
 
-// remoteService ist ein Signaturdienst nach dem Protokoll von RemoteSigner.
+// remoteService is a signing service following the protocol of RemoteSigner.
 func remoteService(t *testing.T, pki *testpki.PKI, token string, bad bool) *httptest.Server {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "Bearer "+token {
@@ -212,8 +212,8 @@ func remoteService(t *testing.T, pki *testpki.PKI, token string, bad bool) *http
 	return srv
 }
 
-// RemoteSigner holt Kette und Signatur vom Dienst, prüft die Signatur und
-// nennt den Token in keiner Meldung.
+// RemoteSigner fetches chain and signature from the service, checks the signature and
+// names the token in no message.
 func TestRemoteSigner(t *testing.T) {
 	pki := testpki.New(t)
 	ctx := context.Background()

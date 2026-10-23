@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-// TestEditHelpers prüft Einfügen, Entfernen, Klonen und Attribute an der
-// Musterrechnung. Nach dem Rückgängigmachen ist die Vorlage unverändert.
+// TestEditHelpers checks inserting, removing, cloning and attributes on the
+// sample invoice. After undoing, the template is unchanged.
 func TestEditHelpers(t *testing.T) {
 	src, err := os.ReadFile(sample)
 	if err != nil {
@@ -61,7 +61,7 @@ func TestEditHelpers(t *testing.T) {
 	}
 }
 
-// TestParseTree liest eine wohlgeformte, aber ungültige Vorlage.
+// TestParseTree reads a well-formed but invalid template.
 func TestParseTree(t *testing.T) {
 	src := []byte(`<template xmlns="https://github.com/tim-riep/pdx/ns/template/1" id="t" version="1"><body id="b"><text/></body></template>`)
 	if _, err := Parse(src); err == nil {

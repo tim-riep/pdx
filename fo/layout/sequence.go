@@ -8,7 +8,7 @@ import (
 	"github.com/tim-riep/pdx/fo/tree"
 )
 
-// sequence ist der Zustand einer fo:page-sequence.
+// sequence is the state of an fo:page-sequence.
 type sequence struct {
 	e       *engine
 	node    *tree.Node
@@ -18,7 +18,7 @@ type sequence struct {
 	flow    *tree.Node
 	page    *areatree.Page
 	m       *master
-	count   int // Seiten dieser Folge
+	count   int // pages of this sequence
 }
 
 func (e *engine) pageSequence(ps *tree.Node, rootProps *props.Computed) error {
@@ -75,9 +75,9 @@ func (e *engine) pageSequence(ps *tree.Node, rootProps *props.Computed) error {
 	return s.forcePageCount()
 }
 
-// galleyFor erzeugt die Galley für eine Body-Breite. skip lässt alle Boxen
-// vor dieser Stelle aus, damit nach einem Wechsel der Breite ab dem Umbruch
-// neu gesetzt werden kann.
+// galleyFor generates the galley for a body width. skip omits all boxes
+// before this position so that after a width change the content can be
+// laid out again from the break.
 func (s *sequence) galleyFor(m *master, skip ordinal, resume []resumePoint) ([]item, error) {
 	if name, _ := s.flow.Attr("flow-name"); name != m.bodyName {
 		return nil, tree.Errorf(s.flow, "flow-name %q passt nicht zur Region %q", name, m.bodyName)
@@ -94,7 +94,7 @@ func (s *sequence) galleyFor(m *master, skip ordinal, resume []resumePoint) ([]i
 	return g.items, nil
 }
 
-// nextBox liefert die erste Box ab pos.
+// nextBox returns the first box from pos.
 func nextBox(items []item, pos int) (*item, bool) {
 	for i := pos; i < len(items); i++ {
 		if items[i].kind == itBox {
@@ -104,9 +104,9 @@ func nextBox(items []item, pos int) (*item, bool) {
 	return nil, false
 }
 
-// paginate verteilt den Fluss auf Seiten. Je Seite wird die Vorlage gewählt.
-// Passt der ganze Rest auf eine Seite mit der Vorlage für die letzte Seite,
-// wird sie genommen (page-position="last" und "only").
+// paginate distributes the flow over pages. The master is chosen per page.
+// If the whole rest fits on one page with the master for the last page,
+// that one is taken (page-position="last" and "only").
 func (s *sequence) paginate() error {
 	var items []item
 	var width areatree.Length = -1
@@ -120,10 +120,10 @@ func (s *sequence) paginate() error {
 		if err != nil {
 			return err
 		}
-		// In eine Region ohne Fläche passt kein Inhalt, ebenso wenig in eine
-		// Seite ohne Region mit dem Namen des Flusses (XSL 1.1 7.27.5). Die
-		// Seite bleibt leer, der Inhalt läuft auf der nächsten weiter. Nach
-		// einigen leeren Seiten in Folge wird gesetzt, damit die Folge endet.
+		// No content fits into a region without area, nor into a
+		// page without a region with the name of the flow (XSL 1.1 7.27.5). The
+		// page stays empty, the content continues on the next one. After
+		// some empty pages in a row the content is placed so that the sequence ends.
 		name, _ := s.flow.Attr("flow-name")
 		unmapped := name != m.bodyName
 		if (m.body.H <= 0 || m.body.W <= 0 || unmapped) && empty < maxEmptyPages {
@@ -143,8 +143,8 @@ func (s *sequence) paginate() error {
 		if items, pos, err = s.adapt(m, items, pos, &width); err != nil {
 			return err
 		}
-		// break-before="odd-page" oder "even-page" am ersten Inhalt der
-		// Folge: notfalls eine Leerseite davor.
+		// break-before="odd-page" or "even-page" on the first content of the
+		// sequence: if needed a blank page before it.
 		if s.count == 0 && pos < len(items) && items[pos].kind == itPenalty {
 			if brk := items[pos].brk; brk == "odd-page" || brk == "even-page" {
 				if next := s.e.pageNo + 1; (brk == "odd-page") != (next%2 == 1) {
@@ -162,8 +162,8 @@ func (s *sequence) paginate() error {
 			return err
 		}
 		last := false
-		// Folgt wegen force-page-count noch eine Leerseite, ist diese Seite
-		// nicht die letzte der Folge.
+		// If another blank page follows because of force-page-count, this page is
+		// not the last of the sequence.
 		blankFollows, err := s.needsBlank(s.count+1, cond.number)
 		if err != nil {
 			return err
@@ -189,9 +189,9 @@ func (s *sequence) paginate() error {
 			return err
 		}
 		end := breakPage(items, pos, m.body.H)
-		// Läuft die Seite über, weil ein Keep nicht gebrochen werden darf, und
-		// hat die nächste Seite mehr Platz, bleibt diese Seite leer. So erfüllt
-		// der Keep ohne Überlauf (XSL 1.1 4.8 lässt beides zu).
+		// If the page overflows because a keep must not be broken, and
+		// the next page has more space, this page stays empty. This way the keep
+		// is satisfied without overflow (XSL 1.1 4.8 allows both).
 		if empty < maxEmptyPages && overflows(items, pos, end, m.body.H) && !last {
 			next := pageCond{number: s.e.pageNo + 2}
 			if nm, err := s.sel.pick(next, false); err == nil && nm != nil && nm.body.H > m.body.H {
@@ -214,7 +214,7 @@ func (s *sequence) paginate() error {
 		if end >= len(items) {
 			return nil
 		}
-		// odd-page und even-page erzwingen notfalls eine Leerseite.
+		// odd-page and even-page force a blank page if needed.
 		if brk := items[end].brk; brk == "odd-page" || brk == "even-page" {
 			if next := s.e.pageNo + 1; (brk == "odd-page") != (next%2 == 1) {
 				if err := s.blankPage(false); err != nil {
@@ -226,7 +226,7 @@ func (s *sequence) paginate() error {
 	}
 }
 
-// overflows meldet, ob der Inhalt items[pos:end] höher ist als avail.
+// overflows reports whether the content items[pos:end] is taller than avail.
 func overflows(items []item, pos, end int, avail areatree.Length) bool {
 	var h areatree.Length
 	seen := false
@@ -246,11 +246,11 @@ func overflows(items []item, pos, end int, avail areatree.Length) bool {
 	return h > avail
 }
 
-// maxEmptyPages begrenzt leere Seiten in Folge bei Regionen ohne Fläche.
+// maxEmptyPages limits empty pages in a row for regions without area.
 const maxEmptyPages = 8
 
-// adapt liefert die Galley für die Breite der Vorlage. Ändert sich die
-// Breite, wird ab der aktuellen Stelle neu erzeugt.
+// adapt returns the galley for the width of the master. If the
+// width changes, it is regenerated from the current position.
 func (s *sequence) adapt(m *master, items []item, pos int, width *areatree.Length) ([]item, int, error) {
 	if m.body.W == *width {
 		return items, pos, nil
@@ -273,15 +273,15 @@ func (s *sequence) adapt(m *master, items []item, pos int, width *areatree.Lengt
 	return ni, 0, nil
 }
 
-// newPage beginnt eine neue Seite und liefert den Container der Region body.
+// newPage starts a new page and returns the container of the region body.
 func (s *sequence) newPage(m *master) *areatree.Container {
 	s.e.pageNo++
 	s.count++
 	s.m = m
 	s.page = &areatree.Page{Number: s.e.pageNo, Width: m.width, Height: m.height}
 	s.e.doc.Pages = append(s.e.doc.Pages, s.page)
-	// Die Seiten gehören zur Seitenfolge und zu ihren Vorfahren bis fo:root,
-	// die nach XSL 1.1 6.4.2 ebenfalls eine id tragen dürfen.
+	// The pages belong to the page sequence and to its ancestors up to fo:root,
+	// which per XSL 1.1 6.4.2 may also carry an id.
 	for n := s.node; n != nil; n = n.Parent {
 		if id, ok := n.Attr("id"); ok && id != "" {
 			s.e.recordID(id, formatNumber(s.page.Number, s.e.format))
@@ -293,7 +293,7 @@ func (s *sequence) newPage(m *master) *areatree.Container {
 	return region
 }
 
-// finishPage setzt die statischen Inhalte der aktuellen Seite.
+// finishPage lays out the static content of the current page.
 func (s *sequence) finishPage() error {
 	for _, r := range s.m.regions {
 		sc, ok := s.statics[r.name]
@@ -318,7 +318,7 @@ func (s *sequence) finishPage() error {
 	return nil
 }
 
-// blankPage fügt eine Leerseite an, etwa für force-page-count.
+// blankPage appends a blank page, for example for force-page-count.
 func (s *sequence) blankPage(last bool) error {
 	cond := pageCond{number: s.e.pageNo + 1, first: s.count == 0, last: last, blank: true}
 	m, err := s.sel.pick(cond, true)
@@ -329,9 +329,9 @@ func (s *sequence) blankPage(last bool) error {
 	return s.finishPage()
 }
 
-// forcePageCount ergänzt nach XSL 1.1 7.27.6 eine Leerseite, falls die
-// Bedingung nicht erfüllt ist. Bei "auto" entscheidet eine feste
-// initial-page-number der nächsten Seitenfolge.
+// forcePageCount adds a blank page per XSL 1.1 7.27.6 if the
+// condition is not met. For "auto" a fixed initial-page-number of the
+// next page sequence decides.
 func (s *sequence) forcePageCount() error {
 	need, err := s.needsBlank(s.count, s.e.pageNo)
 	if err != nil {
@@ -343,9 +343,9 @@ func (s *sequence) forcePageCount() error {
 	return nil
 }
 
-// needsBlank meldet, ob nach count Seiten mit der letzten Seitenzahl last
-// eine Leerseite folgen muss. Die Leerseite ist dann die letzte Seite der
-// Folge, nicht die Seite davor.
+// needsBlank reports whether after count pages with the last page number last
+// a blank page must follow. The blank page is then the last page of the
+// sequence, not the page before it.
 func (s *sequence) needsBlank(count, last int) (bool, error) {
 	switch v := attrOr(s.node, "force-page-count", "auto"); v {
 	case "even":
@@ -358,8 +358,8 @@ func (s *sequence) needsBlank(count, last int) (bool, error) {
 		return last%2 == 0, nil
 	case "auto":
 		if n := s.nextInitial(); n > 0 {
-			// Die letzte Seite soll ungerade sein, wenn die nächste Folge
-			// gerade beginnt, und umgekehrt.
+			// The last page should be odd if the next sequence
+			// starts even, and vice versa.
 			return (last%2 == 0) == (n%2 == 0), nil
 		}
 		return false, nil
@@ -370,9 +370,9 @@ func (s *sequence) needsBlank(count, last int) (bool, error) {
 	}
 }
 
-// nextInitial liefert eine feste initial-page-number der nächsten
-// fo:page-sequence oder 0. Bei auto-odd und auto-even ist es 1 oder 2, es
-// zählt nur die Parität.
+// nextInitial returns a fixed initial-page-number of the next
+// fo:page-sequence or 0. For auto-odd and auto-even it is 1 or 2, only
+// the parity counts.
 func (s *sequence) nextInitial() int {
 	sib := s.node.Parent.Children
 	for i, c := range sib {
@@ -381,7 +381,7 @@ func (s *sequence) nextInitial() int {
 		}
 		for _, n := range sib[i+1:] {
 			if n.IsFO("page-sequence") {
-				// Bei auto-odd und auto-even steht die Parität fest (7.27.7).
+				// For auto-odd and auto-even the parity is fixed (7.27.7).
 				switch v := attrOr(n, "initial-page-number", ""); v {
 				case "auto-odd":
 					return 1

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// --attach nimmt optional eine Beschreibung als vierten Teil.
+// --attach optionally takes a description as the fourth part.
 func TestParseAttach(t *testing.T) {
 	dir := t.TempDir()
 	f := filepath.Join(dir, "daten.xml")

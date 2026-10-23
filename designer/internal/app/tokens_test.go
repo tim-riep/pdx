@@ -19,7 +19,7 @@ func TestTokens(t *testing.T) {
 		t.Fatal("Musterrechnung hat schon Tokens")
 	}
 
-	// Erstes Token legt tokens nach styles an.
+	// The first token creates tokens after styles.
 	res, err := ts.Tokens(TokenOp{Op: "add", Kind: "color"})
 	if err != nil {
 		t.Fatal(err)
@@ -38,7 +38,7 @@ func TestTokens(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Verwenden: Farbe und Länge in Stil und Element, auch doppelt.
+	// Use: color and length in style and element, also twice.
 	for _, cmd := range []model.Command{
 		{Op: "setAttr", Ref: "st-titel", Name: "color", Value: "$farbe"},
 		{Op: "setAttr", Ref: "titel", Name: "padding", Value: "$abstand-m $abstand-m"},
@@ -54,12 +54,12 @@ func TestTokens(t *testing.T) {
 		t.Fatalf("Verwendung %v (XPath zählt nicht)", use)
 	}
 
-	// Entfernen geht nicht, solange verwendet.
+	// Removing is not possible while in use.
 	if _, err := ts.Tokens(TokenOp{Op: "remove", ID: "farbe"}); err == nil || !strings.Contains(err.Error(), "2 Stellen") {
 		t.Fatalf("Entfernen trotz Verwendung: %v", err)
 	}
 
-	// Umbenennen zieht alle Verweise mit, XPath bleibt, als ein Schritt.
+	// Renaming updates all references, XPath stays, as one step.
 	if _, err := ts.Tokens(TokenOp{Op: "rename", ID: "farbe", NewID: "primaer"}); err != nil {
 		t.Fatal(err)
 	}
@@ -88,7 +88,7 @@ func TestTokens(t *testing.T) {
 		t.Fatalf("Undo: %q", v)
 	}
 
-	// Ohne Verweise lässt sich entfernen, das letzte nimmt tokens mit.
+	// Without references it can be removed, the last one takes tokens with it.
 	for _, cmd := range []model.Command{
 		{Op: "setAttr", Ref: "st-titel", Name: "color", Value: ""},
 		{Op: "setAttr", Ref: "titel", Name: "padding", Value: ""},
@@ -127,7 +127,7 @@ func TestTokensRender(t *testing.T) {
 			t.Fatalf("Fehler mit Schrift-Token: %+v", p)
 		}
 	}
-	// Unbekanntes Token: der Compiler meldet es am Element.
+	// Unknown token: the compiler reports it on the element.
 	if _, err := ts.Apply("Farbe", model.Command{Op: "setAttr", Ref: "titel", Name: "color", Value: "$fehlt"}); err != nil {
 		t.Fatal(err)
 	}

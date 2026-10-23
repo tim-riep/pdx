@@ -10,7 +10,7 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// Bausteine der Leiste über dem Canvas.
+// Building blocks of the bar above the canvas.
 const (
 	KindText       = "text"
 	KindPositioned = "positioned"
@@ -21,7 +21,7 @@ const (
 	KindBarcode    = "barcode"
 	KindPageNumber = "pageNumber"
 	KindTable      = "table"
-	// Formularfelder.
+	// Form fields.
 	KindTextField      = "textField"
 	KindCheckBox       = "checkBox"
 	KindRadioGroup     = "radioGroup"
@@ -30,18 +30,18 @@ const (
 	KindSignatureField = "signatureField"
 )
 
-// Insert beschreibt das Einfügen eines Bausteins.
+// Insert describes the insertion of a building block.
 type Insert struct {
 	Kind   string  `json:"kind"`
 	Parent string  `json:"parent"`
 	Index  int     `json:"index"`
-	X      float64 `json:"x"` // mm, nur bei positionierten Eltern
+	X      float64 `json:"x"` // mm, only for positioned parents
 	Y      float64 `json:"y"`
-	// File ist bei Bildern der Pfad der Bilddatei.
+	// File is the path of the image file for images.
 	File string `json:"file"`
 }
 
-// InsertElement fügt einen Baustein ein und wählt ihn aus.
+// InsertElement inserts a building block and selects it.
 func (s *TemplateService) InsertElement(in Insert) (Result, error) {
 	return s.change(func(d *model.Document) (string, error) {
 		t := d.Pkg.Template
@@ -68,8 +68,8 @@ func (s *TemplateService) InsertElement(in Insert) (Result, error) {
 		}
 		top := el
 		if positioned(parent) {
-			// Elemente ohne Lageattribute (etwa Tabellen) stehen in einem
-			// fließenden Teilformular mit Lage.
+			// Elements without placement attributes (such as tables) are placed in a
+			// flowing subform with placement.
 			if !hasPlacement(el) {
 				top = template.NewElement("subform", template.Attr{Name: "id", Value: b.id(el.ID() + "-bereich")},
 					template.Attr{Name: "layout", Value: "flowed"}, template.Attr{Name: "w", Value: "120mm"})
@@ -97,10 +97,10 @@ var elementLabels = map[string]string{
 	KindComboBox: "Kombinationsfeld", KindListBox: "Auswahlliste", KindSignatureField: "Signaturfeld",
 }
 
-// fieldBorder ist der Rahmen neuer Formularfelder.
+// fieldBorder is the border of new form fields.
 const fieldBorder = "0.5pt solid #555555"
 
-// element baut den Baustein mit sinnvollen Vorgaben.
+// element builds the building block with sensible defaults.
 func (b *builder) element(in Insert, parent *template.Node) (*template.Node, error) {
 	inPositioned := positioned(parent)
 	attr := func(n, v string) template.Attr { return template.Attr{Name: n, Value: v} }
@@ -186,7 +186,7 @@ func (b *builder) element(in Insert, parent *template.Node) (*template.Node, err
 	return el, nil
 }
 
-// hasPlacement meldet, ob ein Element Lageattribute (x, y) hat.
+// hasPlacement reports whether an element has placement attributes (x, y).
 func hasPlacement(n *template.Node) bool {
 	cat, err := model.LoadCatalog()
 	if err != nil {

@@ -41,8 +41,8 @@ func widgets(doc *areatree.Document) []*areatree.Widget {
 	return out
 }
 
-// TestFormLayout setzt das Formular: je Feld ein Widget mit Wert, Optionen,
-// Kontextpfad und den Glyphen des Erscheinungsbilds.
+// TestFormLayout lays out the form: one widget per field with value, options,
+// context path and the glyphs of the appearance.
 func TestFormLayout(t *testing.T) {
 	tpl, data := loadForm(t)
 	doc, err := tpl.Layout(data, TemplateOptions{})
@@ -87,13 +87,13 @@ func runText(r *areatree.GlyphRun) string {
 	return b.String()
 }
 
-// formProfiles sind die Profile ohne Barrierefreiheit, in denen das
-// Formular gelten muss. PDF/A-4f verlangt einen Anhang und fehlt deshalb.
+// formProfiles are the profiles without accessibility in which the form
+// must be valid. PDF/A-4f requires an attachment and is therefore missing.
 var formProfiles = []string{"pdfa-3b", "pdfa-2b", "pdfa-2u", "pdfa-3u", "pdfa-4", "pdf-1.7"}
 
-// TestFormRender schreibt das Formular in jedem Profil: AcroForm mit allen
-// Feldern, je Widget ein Erscheinungsbild, nie NeedAppearances. Mit
-// PDX_CONFORMANCE=1 prüft veraPDF jede Datei.
+// TestFormRender writes the form in every profile: AcroForm with all
+// fields, one appearance per widget, never NeedAppearances. With
+// PDX_CONFORMANCE=1 veraPDF checks every file.
 func TestFormRender(t *testing.T) {
 	tpl, data := loadForm(t)
 	for _, prof := range formProfiles {
@@ -114,8 +114,8 @@ func TestFormRender(t *testing.T) {
 				t.Fatalf("AcroForm %v", acro)
 			}
 			fields := f.Array(acro["Fields"])
-			// anrede (Gruppe), name, email, land, tarif, newsletter,
-			// bemerkung, zweimal vorname, unterschrift
+			// anrede (group), name, email, land, tarif, newsletter,
+			// bemerkung, vorname twice, unterschrift
 			if len(fields) != 10 {
 				t.Errorf("%d Felder, erwartet 10", len(fields))
 			}
@@ -154,16 +154,16 @@ func TestFormRender(t *testing.T) {
 			}
 		})
 	}
-	// PDF/A-4f ohne Anhang wird abgelehnt.
+	// PDF/A-4f without an attachment is rejected.
 	if _, err := tpl.Render(data, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-4f"}}); err == nil {
 		t.Error("PDF/A-4f ohne Anhang angenommen")
 	}
 }
 
-// TestFormAccessible schreibt das Formular barrierefrei als PDF/A-3a mit
-// PDF/UA-1 und als PDF/A-4f mit PDF/UA-2: je Widget ein Form-Element mit
-// Objektreferenz, Tab-Reihenfolge nach Struktur. Fehlt eine Bezeichnung,
-// nennt die Vorprüfung alle betroffenen Felder.
+// TestFormAccessible writes the form accessibly as PDF/A-3a with
+// PDF/UA-1 and as PDF/A-4f with PDF/UA-2: one Form element per widget with
+// object reference, tab order by structure. If a label is missing, the
+// pre-check names all affected fields.
 func TestFormAccessible(t *testing.T) {
 	tpl, data := loadForm(t)
 	att := areatree.Attachment{Name: "antrag.xml", MIMEType: "text/xml", Relationship: areatree.Data, Description: "Antragsdaten", Data: data}
@@ -186,7 +186,7 @@ func TestFormAccessible(t *testing.T) {
 		})
 	}
 
-	// Ohne Bezeichnungen meldet die Vorprüfung jedes Feld.
+	// Without labels the pre-check reports every field.
 	src := string(template.Write(tpl.Package.Template))
 	for _, l := range []string{` label="Name"`, ` label="E-Mail-Adresse"`, ` label="Unterschrift"`} {
 		src = strings.Replace(src, l, "", 1)
@@ -215,8 +215,8 @@ func TestFormAccessible(t *testing.T) {
 	}
 }
 
-// TestExtractData liest ein ausgefülltes Formular zurück: Werte aus den
-// Feldern, alles andere aus den Grunddaten, Reihenfolge nach Daten-XSD.
+// TestExtractData reads a filled-in form back: values from the fields,
+// everything else from the base data, order according to the data XSD.
 func TestExtractData(t *testing.T) {
 	tpl, base := loadForm(t)
 	filled := strings.NewReplacer(
@@ -226,7 +226,7 @@ func TestExtractData(t *testing.T) {
 		"<newsletter>false</newsletter>", "<newsletter>true</newsletter>",
 		"<vorname>Max</vorname>", "<vorname>Moritz</vorname>",
 	).Replace(string(base))
-	// Neue Werte für Felder, deren Knoten in den Grunddaten fehlen.
+	// New values for fields whose nodes are missing in the base data.
 	filled = strings.Replace(filled, "<land>DE</land>", "<email>alex@beispiel.example</email>\n  <land>AT</land>", 1)
 	res, err := tpl.Render([]byte(filled), TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3a,pdfua-1"}})
 	if err != nil {
@@ -245,7 +245,7 @@ func TestExtractData(t *testing.T) {
 			t.Errorf("%q fehlt in\n%s", want, out)
 		}
 	}
-	// email steht nach dem XSD vor land, auch wenn es neu angelegt wurde.
+	// email comes before land according to the XSD, even if it was newly created.
 	if strings.Index(string(out), "<email>") > strings.Index(string(out), "<land>") {
 		t.Errorf("Reihenfolge nach XSD verletzt:\n%s", out)
 	}
@@ -253,14 +253,14 @@ func TestExtractData(t *testing.T) {
 		t.Errorf("ungültig: %v", err)
 	}
 
-	// Ohne Grunddaten entsteht das Dokument aus den Feldern.
+	// Without base data the document is built from the fields.
 	out, err = tpl.ExtractData(res.PDF, nil)
 	if err != nil || !strings.Contains(string(out), "<a:name>Alex Beispiel</a:name>") || !strings.Contains(string(out), "<a:vorname>Moritz</a:vorname>") {
 		t.Errorf("ohne Grunddaten: %v\n%s", err, out)
 	}
 
-	// Werte außerhalb der Enumeration und zu lange Namen meldet die Prüfung
-	// gegen das XSD auf einmal, die Daten liegen trotzdem vor.
+	// Values outside the enumeration and names that are too long are reported
+	// at once by the check against the XSD, the data is still present.
 	bad := strings.Replace(string(base), "<land>DE</land>", "<land>FR</land>", 1)
 	bad = strings.Replace(bad, "<name>Erika Musterfrau</name>", "<name>"+strings.Repeat("x", 45)+"</name>", 1)
 	res, err = tpl.Render([]byte(bad), TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3b"}})
@@ -274,8 +274,8 @@ func TestExtractData(t *testing.T) {
 	}
 }
 
-// FuzzExtractData verlangt, dass beliebige Eingaben weder abstürzen noch
-// hängen. Startwerte sind ein gerendertes Formular und Bruchstücke davon.
+// FuzzExtractData requires that arbitrary inputs neither crash nor
+// hang. Seeds are a rendered form and fragments of it.
 func FuzzExtractData(f *testing.F) {
 	tpl, base := loadForm(f)
 	res, err := tpl.Render(base, TemplateOptions{Options: Options{CreationDate: templateDate, Profile: "pdfa-3b"}})
@@ -290,9 +290,9 @@ func FuzzExtractData(f *testing.F) {
 	})
 }
 
-// TestFlatten flacht ein ausgefülltes Formular ab: kein AcroForm mehr, die
-// Werte als Inhalt mit Ersatztext, konform in den barrierefreien Profilen.
-// Ungültige Eingaben werden nicht abgeflacht.
+// TestFlatten flattens a filled-in form: no AcroForm anymore, the
+// values as content with replacement text, conforming in the accessible
+// profiles. Invalid inputs are not flattened.
 func TestFlatten(t *testing.T) {
 	tpl, base := loadForm(t)
 	filled := strings.Replace(string(base), "<newsletter>false</newsletter>", "<newsletter>true</newsletter>", 1)
@@ -330,8 +330,8 @@ func TestFlatten(t *testing.T) {
 	}
 }
 
-// Ohne maxLength in der Vorlage nimmt das Textfeld die Höchstlänge aus dem
-// Daten-XSD.
+// Without maxLength in the template the text field takes the maximum length
+// from the data XSD.
 func TestFormMaxLengthFromXSD(t *testing.T) {
 	p, err := pkg.ReadDir(formDir)
 	if err != nil {

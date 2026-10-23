@@ -1,6 +1,6 @@
-# Gemeinsame Vorlagenablage aller Instanzen. Braucht eine StorageClass mit
-# ReadWriteMany (etwa NFS oder CephFS). Versionen werden exklusiv angelegt,
-# active atomar ersetzt, mehrere Instanzen schreiben sicher.
+# Shared template store of all instances. Needs a StorageClass with
+# ReadWriteMany (such as NFS or CephFS). Versions are created exclusively,
+# active is replaced atomically, so multiple instances write safely.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

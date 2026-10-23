@@ -1,7 +1,7 @@
-// Package app enthält die Services des Designers. Sie kennen Wails nicht,
-// sondern sprechen die Oberfläche nur über Emitter und Dialogs an. So laufen
-// alle Tests ohne cgo, und dieselben Services dienen der nativen App und dem
-// Server-Build für die Ende-zu-Ende-Tests.
+// Package app contains the services of the designer. They do not know Wails
+// and talk to the UI only through Emitter and Dialogs. This way all tests
+// run without cgo, and the same services serve the native app and the
+// server build for the end-to-end tests.
 package app
 
 import (
@@ -17,61 +17,61 @@ import (
 	"github.com/tim-riep/pdx/designer/notices"
 )
 
-// Emitter schickt Ereignisse an die Oberfläche.
+// Emitter sends events to the UI.
 type Emitter interface {
 	Emit(name string, data any)
 }
 
-// Filter beschränkt einen Dateidialog, etwa auf "*.zip".
+// Filter restricts a file dialog, for example to "*.zip".
 type Filter struct {
 	Name    string
 	Pattern string
 }
 
-// ErrNoDialogs meldet, dass es keine nativen Dateidialoge gibt, etwa im
-// Server-Build. Die Oberfläche fragt dann selbst nach dem Pfad.
+// ErrNoDialogs reports that there are no native file dialogs, for example in
+// the server build. The UI then asks for the path itself.
 var ErrNoDialogs = errors.New("Dateidialoge sind hier nicht verfügbar")
 
-// Dialogs öffnet native Dateidialoge. Im Server-Build gibt es keine, dann
-// liefern die Methoden einen Fehler.
+// Dialogs opens native file dialogs. The server build has none, then the
+// methods return an error.
 type Dialogs interface {
 	OpenFile(title string, filters []Filter, dirs bool) (string, error)
 	SaveFile(title, name string, filters []Filter) (string, error)
-	// Show öffnet eine Datei mit dem Programm des Systems, etwa ein PDF.
+	// Show opens a file with the system's default program, for example a PDF.
 	Show(path string) error
 }
 
-// Ereignisse an die Oberfläche.
+// Events sent to the UI.
 const (
 	EventTemplateChanged = "template:changed"
 	EventRenderPages     = "render:pages"
 	EventProblems        = "problems:changed"
 	EventProject         = "project:changed"
-	// EventCloseRequest fragt die Oberfläche, ob ungespeicherte Änderungen
-	// gesichert werden sollen, bevor das Fenster schließt.
+	// EventCloseRequest asks the UI whether unsaved changes should be
+	// saved before the window closes.
 	EventCloseRequest = "app:close-request"
 )
 
-// Info beschreibt die Anwendung für Titelleiste und „Über“.
+// Info describes the application for the title bar and "About".
 type Info struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
 	Engine  string `json:"engine"`
 }
 
-// AppService liefert allgemeine Angaben zur Anwendung und steuert das
-// Beenden.
+// AppService returns general information about the application and controls
+// quitting.
 type AppService struct {
 	c *Core
-	// Close schließt das Fenster ohne weitere Rückfrage. Gesetzt von main.
+	// Close closes the window without asking again. Set by main.
 	Close func()
 }
 
-// NewAppService liefert den Service. close darf nil sein.
+// NewAppService returns the service. close may be nil.
 func NewAppService(c *Core, close func()) *AppService { return &AppService{c: c, Close: close} }
 
-// ConfirmClose schließt das Fenster nach der Rückfrage der Oberfläche,
-// auch mit ungespeicherten Änderungen.
+// ConfirmClose closes the window after the UI has asked the user,
+// even with unsaved changes.
 func (a *AppService) ConfirmClose() {
 	a.c.mu.Lock()
 	a.c.closing = true
@@ -81,8 +81,8 @@ func (a *AppService) ConfirmClose() {
 	}
 }
 
-// PickFile fragt nach einer Datei, etwa einem Bild für den Baustein Bild.
-// pattern ist ein Filter wie "*.png;*.jpg".
+// PickFile asks for a file, for example an image for the Image building block.
+// pattern is a filter such as "*.png;*.jpg".
 func (a *AppService) PickFile(title, name, pattern string) (string, error) {
 	if a.c.dialogs == nil {
 		return "", ErrNoDialogs
@@ -90,23 +90,23 @@ func (a *AppService) PickFile(title, name, pattern string) (string, error) {
 	return a.c.dialogs.OpenFile(title, []Filter{{Name: name, Pattern: pattern}}, false)
 }
 
-// Notices liefert die Drittanbieterhinweise mit allen Lizenztexten.
+// Notices returns the third-party notices with all license texts.
 func (*AppService) Notices() string { return notices.Text }
 
-// Licenses beschreibt die Lizenzen der App für den Dialog Lizenzen.
+// Licenses describes the licenses of the app for the Licenses dialog.
 type Licenses struct {
-	// Name und License gelten für den Designer selbst (Apache License 2.0).
+	// Name and License apply to the designer itself (Apache License 2.0).
 	Name    string `json:"name"`
 	License string `json:"license"`
 	Notice  string `json:"notice"`
-	// Components sind alle enthaltenen Fremdbestandteile mit Lizenztext.
+	// Components are all included third-party components with license text.
 	Components []pdx.Component `json:"components"`
-	// Full sind alle Hinweise als ein Text, zum Kopieren oder Sichern.
+	// Full is all notices as one text, for copying or saving.
 	Full string `json:"full"`
 }
 
-// Licenses liefert die Lizenz des Designers und aller enthaltenen
-// Fremdbestandteile.
+// Licenses returns the license of the designer and of all included
+// third-party components.
 func (*AppService) Licenses() Licenses {
 	return Licenses{
 		Name:       "pdx Designer",
@@ -117,17 +117,17 @@ func (*AppService) Licenses() Licenses {
 	}
 }
 
-// Info liefert Name und Versionen.
+// Info returns the name and versions.
 func (*AppService) Info() Info {
 	return Info{Name: "pdx Designer", Version: Version, Engine: pdx.Version}
 }
 
-// Version ist die Version des Designers.
+// Version is the version of the designer.
 const Version = "0.3.1"
 
-// Core hält den gemeinsamen Zustand aller Services: das geöffnete Projekt und
-// die Anbindung an die Oberfläche. Die Services sind Sichten darauf, damit
-// jede Methode der Bindungen beim richtigen Service liegt.
+// Core holds the shared state of all services: the open project and the
+// connection to the UI. The services are views on it, so that every
+// method of the bindings belongs to the right service.
 type Core struct {
 	mu      sync.Mutex
 	emit    Emitter
@@ -135,22 +135,22 @@ type Core struct {
 	dataDir string
 
 	doc     *model.Document
-	session string // Kennung der automatischen Sicherung des Dokuments
+	session string // ID of the document's automatic backup
 	saver   *time.Timer
-	closing bool // Rückfrage beim Schließen ist beantwortet
+	closing bool // question on closing has been answered
 	r       renderer
-	// view ist die zuletzt gemeldete Projektion, Grundlage der Patches.
+	// view is the last reported projection, the basis of the patches.
 	view   model.Snapshot
 	schema schemaCache
 	v      validator
 	conf   conformance
-	// AutosaveDelay ist die Wartezeit nach einer Änderung bis zur
-	// automatischen Sicherung.
+	// AutosaveDelay is the wait time after a change until the
+	// automatic backup.
 	AutosaveDelay time.Duration
 }
 
-// NewCore legt den Zustand an. dataDir nimmt Einstellungen und automatische
-// Sicherungen auf. emit und dialogs dürfen nil sein (Tests).
+// NewCore creates the state. dataDir holds settings and automatic
+// backups. emit and dialogs may be nil (tests).
 func NewCore(emit Emitter, dialogs Dialogs, dataDir string) *Core {
 	if emit == nil {
 		emit = nopEmitter{}
@@ -159,8 +159,8 @@ func NewCore(emit Emitter, dialogs Dialogs, dataDir string) *Core {
 		r: renderer{pipe: pipeline.New(), view: ViewDesign}}
 }
 
-// MayClose meldet, ob das Fenster ohne Rückfrage schließen darf. Sonst
-// schickt es die Rückfrage an die Oberfläche.
+// MayClose reports whether the window may close without asking. Otherwise
+// it sends the question to the UI.
 func (c *Core) MayClose() bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -171,7 +171,7 @@ func (c *Core) MayClose() bool {
 	return false
 }
 
-// DefaultDataDir ist das Verzeichnis für Einstellungen im Benutzerprofil.
+// DefaultDataDir is the directory for settings in the user profile.
 func DefaultDataDir() string {
 	dir, err := os.UserConfigDir()
 	if err != nil {

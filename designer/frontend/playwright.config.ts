@@ -4,27 +4,27 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
-// Ende-zu-Ende gegen den Server-Build des Designers (Wails mit -tags server):
-// dieselben Services, Bindungen über HTTP, Ereignisse über WebSocket.
+// End-to-end against the server build of the designer (Wails with -tags server):
+// the same services, bindings over HTTP, events over WebSocket.
 const port = Number(process.env.PDX_E2E_PORT ?? 8799);
-// Eigenes Datenverzeichnis, damit Tests das Benutzerprofil nicht berühren.
+// Own data directory, so tests do not touch the user profile.
 const data = process.env.PDX_DESIGNER_DATA ?? mkdtempSync(join(tmpdir(), "pdx-e2e-"));
 process.env.PDX_E2E_DATA = data;
-// Absolute Pfade und Umgebung über env statt Shell-Syntax: Playwright
-// startet die Befehle unter Windows mit cmd.exe.
+// Absolute paths and environment via env instead of shell syntax: Playwright
+// starts the commands on Windows with cmd.exe.
 const exe = process.platform === "win32" ? ".exe" : "";
 const designerDir = resolve(import.meta.dirname, "..");
 const rootDir = resolve(designerDir, "..");
 const bin = resolve(rootDir, "out", `designer-server${exe}`);
-// veraPDF ersetzt eine Attrappe mit festem Bericht, damit die Tests schnell
-// und ohne Docker laufen, unter Windows über eine .cmd-Datei.
-// Mit PDX_E2E_REAL_VERAPDF=1 prüft das echte veraPDF (lokal oder Docker).
+// A stand-in with a fixed report replaces veraPDF, so the tests run fast
+// and without Docker, on Windows via a .cmd file.
+// With PDX_E2E_REAL_VERAPDF=1 the real veraPDF checks (local or Docker).
 const stub = process.env.PDX_E2E_REAL_VERAPDF ? "" : join(import.meta.dirname, "e2e", "fixtures", `verapdf-attrappe${process.platform === "win32" ? ".cmd" : ""}`);
 const verapdf = process.env.PDX_VERAPDF ?? stub;
 process.env.PDX_E2E_VERAPDF = verapdf;
 
-// Ein echter pdx-server für das Veröffentlichen, mit Testschlüssel und
-// leerer Ablage im Datenverzeichnis der Tests.
+// A real pdx-server for publishing, with a test key and
+// empty storage in the data directory of the tests.
 const serverPort = Number(process.env.PDX_E2E_SERVER_PORT ?? 8798);
 export const e2eServerKey = "e2e-testschluessel-nur-fuer-playwright";
 process.env.PDX_E2E_SERVER = `http://127.0.0.1:${serverPort}`;
@@ -40,7 +40,7 @@ const serverBin = resolve(rootDir, "out", `pdx-server-e2e${exe}`);
 export default defineConfig({
   testDir: "e2e",
   timeout: 30_000,
-  workers: 1, // ein Backend mit einem Dokument für alle Tests
+  workers: 1, // one backend with one document for all tests
   reporter: [["list"]],
   use: { baseURL: `http://localhost:${port}`, trace: "retain-on-failure" },
   projects: [

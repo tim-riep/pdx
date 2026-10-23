@@ -35,8 +35,8 @@ func deflate(b []byte) []byte {
 	return buf.Bytes()
 }
 
-// TestXrefStream liest eine Datei mit Xref-Stream (PNG-Prädiktor Up) und
-// Objektstream, wie sie andere Werkzeuge schreiben.
+// TestXrefStream reads a file with an xref stream (PNG predictor Up) and
+// object stream, as other tools write them.
 func TestXrefStream(t *testing.T) {
 	var b bytes.Buffer
 	b.WriteString("%PDF-1.7\n")
@@ -51,15 +51,15 @@ func TestXrefStream(t *testing.T) {
 		}
 		b.WriteString("\nendobj\n")
 	}
-	// Objekt 2 (Katalog) und 3 (Seiten) liegen im Objektstream 4.
+	// Object 2 (catalog) and 3 (pages) are in object stream 4.
 	objs := "<< /Type /Catalog /Pages 3 0 R >> << /Type /Pages /Kids [] /Count 0 >>"
 	head := fmt.Sprintf("2 0 3 %d ", len("<< /Type /Catalog /Pages 3 0 R >> "))
 	body := deflate([]byte(head + objs))
 	obj(4, fmt.Sprintf("<< /Type /ObjStm /N 2 /First %d /Filter /FlateDecode /Length %d >>", len(head), len(body)), body)
-	// Xref-Stream: W [1 2 1], Zeilen mit Prädiktor Up.
+	// Xref stream: W [1 2 1], rows with predictor Up.
 	rows := [][4]byte{
 		{0, 0, 0, 0},
-		{2, 0, 4, 0}, // 1 frei (Platzhalter, Typ 2 auf Stream 4 Index 0)
+		{2, 0, 4, 0}, // 1 free (placeholder, type 2 on stream 4 index 0)
 		{2, 0, 4, 0},
 		{2, 0, 4, 1},
 		{1, byte(offs[4] >> 8), byte(offs[4]), 0},
@@ -94,8 +94,8 @@ func TestXrefStream(t *testing.T) {
 	}
 }
 
-// TestStructureProblems erkennt unmarkierten Inhalt, fehlende MCIDs und
-// Inhalt ohne Element.
+// TestStructureProblems detects unmarked content, missing MCIDs and
+// content without an element.
 func TestStructureProblems(t *testing.T) {
 	content := "/P <</MCID 0>> BDC 0 0 1 1 re f EMC 0 0 1 1 re f /P <</MCID 1>> BDC EMC"
 	pdf := minimal(content, "<< /Type /StructElem /S /P /P 5 0 R /Pg 3 0 R /K [0 7] >>")
@@ -117,8 +117,8 @@ func TestStructureProblems(t *testing.T) {
 	}
 }
 
-// minimal baut eine einseitige Datei mit Xref-Tabelle und einem
-// Strukturelement unter Document.
+// minimal builds a one-page file with an xref table and one
+// structure element below Document.
 func minimal(content, elem string) []byte {
 	var b bytes.Buffer
 	b.WriteString("%PDF-1.7\n")
@@ -145,7 +145,7 @@ func minimal(content, elem string) []byte {
 	return b.Bytes()
 }
 
-// Zyklische Verweise führen zu einem Fehler statt zu endloser Rekursion.
+// Cyclic references lead to an error instead of endless recursion.
 func TestCyclicLength(t *testing.T) {
 	var b bytes.Buffer
 	b.WriteString("%PDF-1.7\n")

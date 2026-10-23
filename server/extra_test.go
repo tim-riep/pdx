@@ -35,8 +35,8 @@ func zipOf(t *testing.T, files map[string][]byte, order []string) []byte {
 	return buf.Bytes()
 }
 
-// Ein Stapel liefert die PDFs in Eingabereihenfolge, fehlerhafte
-// Datensätze mit Befunden in ergebnis.json.
+// A batch returns the PDFs in input order, faulty records with
+// findings in ergebnis.json.
 func TestBatch(t *testing.T) {
 	cfg := allRightsConfig()
 	cfg.MaxConcurrent = 2
@@ -142,8 +142,8 @@ func TestVerify(t *testing.T) {
 	problem(t, resp, b, 400)
 }
 
-// /v1/sign signiert mit dem Signer des Dienstes, Fehler wie ein
-// abgelaufenes Zertifikat kommen als Befund.
+// /v1/sign signs with the signer of the service, errors such as an
+// expired certificate come back as findings.
 func TestSignEndpoint(t *testing.T) {
 	pki := testpki.New(t)
 	p, data := muster(t)
@@ -171,7 +171,7 @@ func TestSignEndpoint(t *testing.T) {
 	}
 }
 
-// /metrics zählt je Route und Status, ohne IDs oder Nutzdaten.
+// /metrics counts per route and status, without IDs or payload data.
 func TestMetrics(t *testing.T) {
 	srv, data := newTest(t, testConfig(), nil)
 	post(t, srv.URL+"/v1/render/rechnung", keyRender, data)
@@ -202,8 +202,8 @@ func TestMetrics(t *testing.T) {
 	}
 }
 
-// Mit PDX_CONFORMANCE=1 prüft /v1/verify ein gerendertes PDF mit dem
-// echten veraPDF.
+// With PDX_CONFORMANCE=1, /v1/verify checks a rendered PDF with the
+// real veraPDF.
 func TestVerifyVeraPDF(t *testing.T) {
 	if !testutil.ConformanceEnabled() {
 		t.Skip("nur mit PDX_CONFORMANCE=1")

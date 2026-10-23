@@ -76,7 +76,7 @@ describe("XPathInput", () => {
     input.value = "inv:betrag";
     await fireEvent.input(input);
     await waitFor(() => expect(screen.getByRole("status").textContent).toContain("inv:betrag gibt es unter inv:invoice nicht"));
-    // Das erste Escape schließt die Vorschläge, das zweite verwirft.
+    // The first Escape closes the suggestions, the second discards.
     await screen.findByRole("listbox");
     await fireEvent.keyDown(input, { key: "Escape" });
     expect(screen.queryByRole("listbox")).toBeNull();

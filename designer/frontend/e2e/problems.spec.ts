@@ -8,7 +8,7 @@ test("Problemliste meldet Fehler und führt zum Element", async ({ page }) => {
   const entry = panel.locator('button[data-ref="z-betrag-f"]');
   await expect(entry).toHaveCount(0);
 
-  // Falsche Bindung eintragen.
+  // Enter a wrong binding.
   await selectInTree(page, ["inhalt", "positionen", "positionen-zeilen", "position", "z-betrag", "z-betrag-f"]);
   const bind = page.getByTestId("inspector").locator('[data-prop="bind"] input');
   await bind.fill("inv:betrag ");
@@ -17,15 +17,15 @@ test("Problemliste meldet Fehler und führt zum Element", async ({ page }) => {
   await expect(entry.first()).toContainText("Feld");
   await expect(page.getByRole("tab", { name: /^Probleme \(\d+\)$/ })).toBeVisible();
 
-  // Anderes Element wählen, Klick auf den Befund führt zurück.
+  // Select another element, a click on the finding leads back.
   await selectInTree(page, ["inhalt", "titel"]);
   await expect(page.getByTestId("inspector").locator("header code")).toHaveText("titel");
   await entry.first().click();
   await expect(page.getByTestId("inspector").locator("header code")).toHaveText("z-betrag-f");
-  // Ohne passende Daten setzt das Feld nichts, die Hierarchie zeigt es trotzdem.
+  // Without matching data the field sets nothing, the hierarchy still shows it.
   await expect(page.getByTestId("hierarchy").locator('[aria-selected="true"] .id')).toHaveText("z-betrag-f");
 
-  // Rückgängig: der Befund verschwindet.
+  // Undo: the finding disappears.
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
   await expect(entry).toHaveCount(0);
 });

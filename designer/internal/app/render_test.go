@@ -50,7 +50,7 @@ func TestRender(t *testing.T) {
 		}
 	}
 
-	// Eine Änderung setzt neu mit der neuen Revision.
+	// A change typesets again with the new revision.
 	change(c)
 	m2 := rec.wait(t, EventRenderPages, func(d any) bool { return d.(Manifest).Rev > m.Rev }).(Manifest)
 	if len(m2.Pages) != 3 || m2.Compiled {
@@ -93,7 +93,7 @@ func TestServePDF(t *testing.T) {
 	if w.Code != http.StatusOK || w.Header().Get("Content-Type") != "application/pdf" || !strings.HasPrefix(w.Body.String(), "%PDF-") {
 		t.Fatalf("PDF: %d %s", w.Code, w.Header().Get("Content-Type"))
 	}
-	// Fehler beim Erzeugen kommen als Text mit Vorlagen-ID.
+	// Errors during generation come as text with template ID.
 	if _, err := NewTemplateService(c).Apply("Stil", model.Command{Op: "setAttr", Ref: "titel", Name: "style", Value: "st-basis"}); err != nil {
 		t.Fatal(err)
 	}
@@ -107,7 +107,7 @@ func TestServePDF(t *testing.T) {
 	}
 }
 
-// fakeDialogs antwortet mit festen Pfaden und merkt sich Geöffnetes.
+// fakeDialogs answers with fixed paths and remembers what was opened.
 type fakeDialogs struct {
 	save  string
 	shown []string
@@ -140,7 +140,7 @@ func TestExportAndOpenPDF(t *testing.T) {
 	if err := rs.OpenPDF(); err != nil || len(fd.shown) != 1 || !strings.HasSuffix(fd.shown[0], "vorschau.pdf") {
 		t.Fatalf("Öffnen: %v %v", err, fd.shown)
 	}
-	// Ohne Dialoge (Servermodus) gibt es eine verständliche Meldung.
+	// Without dialogs (server mode) there is an understandable message.
 	if err := NewRenderService(NewCore(nil, nil, dir)).OpenPDF(); !errors.Is(err, ErrNoDialogs) {
 		t.Fatalf("ohne Dialoge: %v", err)
 	}

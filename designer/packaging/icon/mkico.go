@@ -1,8 +1,8 @@
 //go:build ignore
 
-// mkico schreibt eine ICO-Datei mit PNG-Einträgen (Windows Vista und neuer).
+// mkico writes an ICO file with PNG entries (Windows Vista and newer).
 //
-//	go run mkico.go ausgabe.ico 16.png 32.png 256.png
+//	go run mkico.go output.ico 16.png 32.png 256.png
 package main
 
 import (
@@ -36,12 +36,12 @@ func main() {
 		dims = append(dims, [2]int{cfg.Width, cfg.Height})
 	}
 	var out bytes.Buffer
-	// ICONDIR: reserviert, Typ 1 (Icon), Anzahl.
+	// ICONDIR: reserved, type 1 (icon), count.
 	binary.Write(&out, binary.LittleEndian, [3]uint16{0, 1, uint16(len(images))})
 	offset := 6 + 16*len(images)
 	for i, img := range images {
 		w, h := dims[i][0], dims[i][1]
-		// 256 wird als 0 eingetragen.
+		// 256 is entered as 0.
 		entry := struct {
 			W, H, Colors, Reserved uint8
 			Planes, Bits           uint16

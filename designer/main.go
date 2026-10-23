@@ -1,8 +1,8 @@
-// Befehl designer startet den pdx Designer. Nur diese Datei kennt Wails. Die
-// Services liegen in internal/app und laufen ohne cgo.
+// Command designer starts the pdx Designer. Only this file knows Wails. The
+// services live in internal/app and run without cgo.
 //
-// Mit dem Build-Tag server läuft der Designer als HTTP-Server ohne Fenster
-// (Wails-Servermodus), etwa für die Ende-zu-Ende-Tests im Browser.
+// With the build tag server the designer runs as an HTTP server without a window
+// (Wails server mode), for example for the end-to-end tests in the browser.
 package main
 
 import (
@@ -22,13 +22,13 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-// icon ist das Fenster- und Taskleisten-Icon (Linux, Windows), erzeugt mit
+// icon is the window and taskbar icon (Linux, Windows), generated with
 // packaging/icon/render.mjs.
 //
 //go:embed packaging/icon/png/256.png
 var icon []byte
 
-// Ereignisse mit ihren Datentypen, damit die Bindungen sie typisiert kennen.
+// Events with their data types, so that the bindings know them typed.
 func init() {
 	application.RegisterEvent[app.ProjectState](app.EventProject)
 	application.RegisterEvent[app.ProjectState](app.EventCloseRequest)
@@ -45,10 +45,10 @@ func main() {
 	started := time.Now()
 
 	var wails *application.App
-	// Im Smoke-Test meldet der Emitter die erste gesetzte Seite.
+	// In the smoke test the emitter reports the first typeset page.
 	firstPage := make(chan app.Manifest, 1)
 	emit := emitter{app: func() *application.App { return wails }, pages: firstPage}
-	// PDX_DESIGNER_DATA ersetzt das Datenverzeichnis, etwa in Tests.
+	// PDX_DESIGNER_DATA replaces the data directory, for example in tests.
 	dataDir := os.Getenv("PDX_DESIGNER_DATA")
 	if dataDir == "" {
 		dataDir = app.DefaultDataDir()
@@ -75,12 +75,12 @@ func main() {
 			application.NewService(app.NewConformanceService(core)),
 			application.NewService(app.NewSampleDataService(core)),
 			application.NewService(app.NewPublishService(core)),
-			// Seiten, Schriften und Bilder des Canvas über HTTP.
+			// Pages, fonts and images of the canvas over HTTP.
 			application.NewServiceWithOptions(app.NewAssets(core), application.ServiceOptions{Route: "/pdx"}),
 		},
 		Assets: application.AssetOptions{Handler: application.AssetFileServerFS(assets)},
 		Mac:    application.MacOptions{ApplicationShouldTerminateAfterLastWindowClosed: true},
-		// Vor dem Beenden die anstehende automatische Sicherung schreiben.
+		// Before quitting, write the pending automatic backup.
 		OnShutdown: core.Flush,
 	})
 	window = wails.Window.NewWithOptions(application.WebviewWindowOptions{
@@ -92,14 +92,14 @@ func main() {
 		URL:       "/",
 	})
 	if window != nil {
-		// Ungespeicherte Änderungen: erst die Oberfläche fragen.
+		// Unsaved changes: ask the UI first.
 		window.RegisterHook(events.Common.WindowClosing, func(e *application.WindowEvent) {
 			if !core.MayClose() {
 				e.Cancel()
 			}
 		})
 	}
-	// Quit wirkt erst, wenn die Anwendung läuft.
+	// Quit only takes effect once the application is running.
 	running := make(chan struct{})
 	wails.Event.OnApplicationEvent(events.Common.ApplicationStarted, func(*application.ApplicationEvent) { close(running) })
 	if *open != "" {
@@ -107,7 +107,7 @@ func main() {
 			if _, err := app.NewProjectService(core).Open(*open); err != nil {
 				log.Println("Öffnen:", err)
 				if *smoke {
-					os.Exit(1) // Quit beendet mit Code 0
+					os.Exit(1) // Quit exits with code 0
 				}
 			}
 		}()
@@ -116,7 +116,7 @@ func main() {
 		go func() {
 			<-running
 			if *open == "" {
-				time.Sleep(3 * time.Second) // nur Start und Ende
+				time.Sleep(3 * time.Second) // only start and end
 				wails.Quit()
 				return
 			}
@@ -132,7 +132,7 @@ func main() {
 				log.Println("smoke: keine Seite nach 60 s")
 				os.Exit(1)
 			}
-			time.Sleep(500 * time.Millisecond) // Fenster einmal zeigen
+			time.Sleep(500 * time.Millisecond) // show the window once
 			wails.Quit()
 		}()
 	}
@@ -142,8 +142,8 @@ func main() {
 	}
 }
 
-// emitter leitet Ereignisse der Services an Wails weiter. pages erhält
-// das erste Manifest mit Seiten oder Befunden (Smoke-Test).
+// emitter forwards events of the services to Wails. pages receives
+// the first manifest with pages or findings (smoke test).
 type emitter struct {
 	app   func() *application.App
 	pages chan app.Manifest
@@ -161,10 +161,10 @@ func (e emitter) Emit(name string, data any) {
 	}
 }
 
-// dialogs öffnet native Dateidialoge über Wails.
+// dialogs opens native file dialogs via Wails.
 type dialogs struct{ app func() *application.App }
 
-// noDialogs übersetzt den Fehler fehlender Dialoge (Servermodus).
+// noDialogs translates the error of missing dialogs (server mode).
 func noDialogs(path string, err error) (string, error) {
 	if err != nil && strings.Contains(err.Error(), "not available") {
 		return "", app.ErrNoDialogs
@@ -180,7 +180,7 @@ func (d dialogs) OpenFile(title string, filters []app.Filter, dirs bool) (string
 	return noDialogs(dlg.PromptForSingleSelection())
 }
 
-// Show öffnet eine Datei mit dem Programm des Systems.
+// Show opens a file with the system's default program.
 func (d dialogs) Show(path string) error { return d.app().Browser.OpenFile(path) }
 
 func (d dialogs) SaveFile(title, name string, filters []app.Filter) (string, error) {

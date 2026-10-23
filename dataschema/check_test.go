@@ -31,8 +31,8 @@ func TestMusterrechnungClean(t *testing.T) {
 	}
 }
 
-// TestBroken ändert die Musterrechnung gezielt und erwartet je einen Fehler
-// mit der ID des geänderten Elements.
+// TestBroken modifies the sample invoice selectively and expects one error
+// each with the ID of the modified element.
 func TestBroken(t *testing.T) {
 	p, m := load(t)
 	src := template.Write(p.Template)

@@ -16,18 +16,18 @@ import (
 	"time"
 )
 
-// RemoteSigner signiert über einen Signaturdienst, der Schlüssel bleibt
-// beim Dienst (etwa vor einem HSM). Das Protokoll ist bewusst klein, JSON
-// über HTTPS mit Bearer-Token:
+// RemoteSigner signs via a signing service, the key stays with the
+// service (for example in front of an HSM). The protocol is deliberately
+// small, JSON over HTTPS with a bearer token:
 //
 //	GET  {URL}/certificates  → {"certificates": [DER base64, ...]}
-//	                            Signaturzertifikat zuerst, ohne Wurzel
+//	                            signing certificate first, without root
 //	POST {URL}/sign          ← {"hash": "SHA-256", "digest": base64}
 //	                         → {"signature": base64}
 //
-// RSA liefert PKCS#1 v1.5, ECDSA die ASN.1-Signatur. Der Token kommt vom
-// Aufrufer, die CLI liest ihn aus einer Umgebungsvariable. Er steht in
-// keiner Fehlermeldung.
+// RSA returns PKCS#1 v1.5, ECDSA the ASN.1 signature. The token comes from
+// the caller, the CLI reads it from an environment variable. It appears in
+// no error message.
 type RemoteSigner struct {
 	URL    string
 	Token  string
@@ -35,13 +35,13 @@ type RemoteSigner struct {
 	chain  []*x509.Certificate
 }
 
-// maxRemoteResponse begrenzt Antworten des Signaturdienstes.
+// maxRemoteResponse limits responses of the signing service.
 const maxRemoteResponse = 1 << 20
 
 var hashNames = map[crypto.Hash]string{crypto.SHA256: "SHA-256", crypto.SHA384: "SHA-384", crypto.SHA512: "SHA-512"}
 
-// NewRemoteSigner holt die Zertifikate des Dienstes. Unverschlüsseltes
-// HTTP ist nur für localhost erlaubt.
+// NewRemoteSigner fetches the certificates of the service. Unencrypted
+// HTTP is only allowed for localhost.
 func NewRemoteSigner(ctx context.Context, url, token string, client *http.Client) (*RemoteSigner, error) {
 	url = strings.TrimSuffix(url, "/")
 	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://127.0.0.1") && !strings.HasPrefix(url, "http://localhost") {
@@ -70,11 +70,11 @@ func NewRemoteSigner(ctx context.Context, url, token string, client *http.Client
 	return r, nil
 }
 
-// Certificates liefert das Signaturzertifikat und seine Kette.
+// Certificates returns the signing certificate and its chain.
 func (r *RemoteSigner) Certificates() []*x509.Certificate { return r.chain }
 
-// SignDigest lässt den Hashwert beim Dienst signieren und prüft die
-// Signatur gegen das Zertifikat, bevor sie ins PDF geht.
+// SignDigest has the service sign the hash value and checks the
+// signature against the certificate before it goes into the PDF.
 func (r *RemoteSigner) SignDigest(ctx context.Context, hash crypto.Hash, digest []byte) ([]byte, error) {
 	name, ok := hashNames[hash]
 	if !ok {
@@ -136,5 +136,5 @@ func (r *RemoteSigner) call(ctx context.Context, method, path string, in, out an
 	return nil
 }
 
-// String verrät den Token nicht.
+// String does not reveal the token.
 func (r *RemoteSigner) String() string { return "RemoteSigner(" + r.URL + ")" }

@@ -14,37 +14,37 @@ import (
 	"github.com/tim-riep/pdx/template/pkg"
 )
 
-// SchemaChange ist eine Änderung zwischen altem und neuem Daten-XSD.
+// SchemaChange is a change between the old and the new data XSD.
 type SchemaChange struct {
-	// Kind ist removed, added, changed oder renamed.
+	// Kind is removed, added, changed or renamed.
 	Kind string `json:"kind"`
 	Path string `json:"path"`
-	// To ist bei renamed der neue Pfad.
+	// To is the new path for renamed.
 	To string `json:"to"`
-	// Detail beschreibt changed, etwa „Typ decimal statt string“.
+	// Detail describes changed, for example "Typ decimal statt string".
 	Detail string `json:"detail"`
-	// Required meldet bei added einen Pflichtknoten.
+	// Required reports a required node for added.
 	Required bool `json:"required"`
-	// Refs sind die Vorlagenelemente, die den Knoten oder etwas darunter
-	// verwenden.
+	// Refs are the template elements that use the node or something below
+	// it.
 	Refs []string `json:"refs"`
 }
 
-// SchemaDiff vergleicht das Daten-XSD der Vorlage mit einem neuen.
+// SchemaDiff compares the data XSD of the template with a new one.
 type SchemaDiff struct {
 	Main    string         `json:"main"`
 	Changes []SchemaChange `json:"changes"`
 }
 
-// Rename stellt Bindungen von einem Datenknoten auf einen anderen um.
+// Rename switches bindings from one data node to another.
 type Rename struct {
 	From string `json:"from"`
 	To   string `json:"to"`
 }
 
-// Diff liest ein neues Daten-XSD und vergleicht es mit dem der Vorlage,
-// ohne etwas zu ändern. Für entfernte Knoten schlägt es Umbenennungen vor,
-// wenn genau ein neuer Knoten gleicher Art passt.
+// Diff reads a new data XSD and compares it with the one of the template,
+// without changing anything. For removed nodes it suggests renames
+// if exactly one new node of the same kind fits.
 func (s *SchemaService) Diff(path string) (SchemaDiff, error) {
 	s.c.mu.Lock()
 	if s.c.doc == nil {
@@ -81,9 +81,9 @@ func (s *SchemaService) Diff(path string) (SchemaDiff, error) {
 	return SchemaDiff{Main: x.main, Changes: compareSchemas(oldSc, newSc, usage(cat, tc, oldSc))}, nil
 }
 
-// Replace lädt ein neues Daten-XSD, entfernt alte XSD-Dateien und stellt
-// einfache Bindungen auf umbenannte Knoten um, alles als ein Schritt.
-// Ausdrücke, die mehr als ein Pfad sind, bleiben für die Aufgabenliste.
+// Replace loads a new data XSD, removes old XSD files and switches
+// simple bindings to renamed nodes, all as one step.
+// Expressions that are more than a path remain for the task list.
 func (s *SchemaService) Replace(path string, renames []Rename) (Result, error) {
 	s.c.mu.Lock()
 	if s.c.doc == nil {
@@ -126,7 +126,7 @@ func rootLocal(t *template.Template) string {
 	return r[strings.LastIndex(r, ":")+1:]
 }
 
-// schemaFor baut den Datenbaum, den die Vorlage mit dem neuen XSD hätte.
+// schemaFor builds the data tree that the template would have with the new XSD.
 func (x *xsdImport) schemaFor(t *template.Template, files map[string][]byte) (*schema.Schema, error) {
 	f := map[string][]byte{}
 	for name, b := range files {
@@ -150,8 +150,8 @@ func (x *xsdImport) schemaFor(t *template.Template, files map[string][]byte) (*s
 	return schema.Load(&pkg.Package{Template: t, Files: f})
 }
 
-// eachXPath ruft f für jedes XPath-Attribut mit dem Datenkontext seines
-// Elements, in Dokumentreihenfolge.
+// eachXPath calls f for every XPath attribute with the data context of its
+// element, in document order.
 func eachXPath(cat model.Catalog, t *template.Template, f func(n *template.Node, attr, expr, ctx string)) {
 	var walk func(n *template.Node)
 	walk = func(n *template.Node) {
@@ -174,7 +174,7 @@ func eachXPath(cat model.Catalog, t *template.Template, f func(n *template.Node,
 	walk(t.Root)
 }
 
-// usage ordnet Datenknoten die Vorlagenelemente zu, die sie verwenden.
+// usage maps data nodes to the template elements that use them.
 func usage(cat model.Catalog, t *template.Template, sc *schema.Schema) map[string][]string {
 	out := map[string][]string{}
 	eachXPath(cat, t, func(n *template.Node, _, expr, ctx string) {
@@ -200,8 +200,8 @@ func localName(p string) string {
 	return p[strings.LastIndex(p, ":")+1:]
 }
 
-// compareSchemas vergleicht zwei Datenbäume. Entfernte und neue Teilbäume
-// erscheinen nur mit ihrer Wurzel.
+// compareSchemas compares two data trees. Removed and new subtrees
+// appear only with their root.
 func compareSchemas(oldSc, newSc *schema.Schema, used map[string][]string) []SchemaChange {
 	oldIdx, newIdx := map[string]*schema.Node{}, map[string]*schema.Node{}
 	var oldOrder, newOrder []string
@@ -260,8 +260,8 @@ func compareSchemas(oldSc, newSc *schema.Schema, used map[string][]string) []Sch
 			}
 		}
 	}
-	// Umbenennungen: genau ein neuer Knoten gleicher Art unter demselben
-	// Eltern oder mit demselben Namen woanders.
+	// Renames: exactly one new node of the same kind under the same
+	// parent or with the same name elsewhere.
 	claimed := map[string]bool{}
 	var out []SchemaChange
 	for _, r := range removed {
@@ -299,8 +299,8 @@ func typeName(t string) string {
 	return t
 }
 
-// rewriteBindings stellt einfache Pfade auf umbenannte Knoten um und passt
-// relative Pfade an, deren Kontext sich dadurch ändert.
+// rewriteBindings switches simple paths to renamed nodes and adjusts
+// relative paths whose context changes as a result.
 func rewriteBindings(cat model.Catalog, t *template.Template, oldSc *schema.Schema, newRoot string, renames []Rename) []model.Command {
 	mapPath := func(p string) string {
 		for _, r := range renames {
@@ -310,8 +310,8 @@ func rewriteBindings(cat model.Catalog, t *template.Template, oldSc *schema.Sche
 		}
 		return p
 	}
-	// Neue Bindungen von Teilformularen und Tabellen bestimmen den neuen
-	// Kontext der Elemente darin.
+	// New bindings of subforms and tables determine the new
+	// context of the elements inside them.
 	newBind := map[*template.Node]string{}
 	newCtx := func(n *template.Node) string {
 		var chain []*template.Node
@@ -338,7 +338,7 @@ func rewriteBindings(cat model.Catalog, t *template.Template, oldSc *schema.Sche
 	eachXPath(cat, t, func(n *template.Node, attr, expr, ctx string) {
 		_, target := xpath.Paths(oldSc, ctx, expr)
 		if target == "" {
-			return // kein einfacher Pfad: bleibt für die Aufgabenliste
+			return // not a simple path: remains for the task list
 		}
 		nc := newCtx(n)
 		mapped := mapPath(target)

@@ -2,21 +2,21 @@ package compile
 
 import "strconv"
 
-// Formularfelder werden zu pdx:form-field in einem fo:instream-foreign-object.
-// Das Layout setzt daraus Widgets, der Renderer schreibt AcroForm-Felder.
-// Jedes Feld trägt den Pfad seines Kontextknotens in den Daten (path(.)),
-// damit pdx extract-data die Eingabe relativ dazu über die Bindung der
-// Vorlage zurückschreiben kann, auch wenn der Datenknoten noch fehlt.
+// Form fields become pdx:form-field in an fo:instream-foreign-object.
+// The layout turns them into widgets, the renderer writes AcroForm fields.
+// Every field carries the path of its context node in the data (path(.)),
+// so that pdx extract-data can write the input back relative to it via the
+// template's binding, even if the data node is still missing.
 
 var fieldTypes = map[string]string{
 	"textField": "text", "checkBox": "checkbox", "radioGroup": "radio",
 	"listBox": "list", "comboBox": "combo", "signatureField": "signature",
 }
 
-// formField übersetzt Textfeld, Kontrollkästchen, Listen und Signaturfeld.
+// formField translates text field, check box, lists and signature field.
 func (c *compiler) formField(n *node) {
-	// Schrift und Farbe erbt das Feld vom Block, Rahmen, Hintergrund und
-	// Innenabstand gehören zum Feld selbst.
+	// The field inherits font and color from the block, border, background
+	// and padding belong to the field itself.
 	inh, non := c.styleSplit(n)
 	c.start("fo:block", n, append([]string{"pdx:id", n.ID()}, inh...)...)
 	c.w.start("fo:instream-foreign-object", append([]string{"pdx:id", n.ID(), "content-width", n.Get("w", ""), "content-height", n.Get("h", "")}, non...)...)
@@ -27,13 +27,13 @@ func (c *compiler) formField(n *node) {
 	c.w.end()
 }
 
-// fieldElem öffnet pdx:form-field mit allen Angaben und den berechneten
-// Attributen value und context. export ist der Wert einer Option bei
-// Optionsfeldern. Der Aufrufer schließt das Element.
+// fieldElem opens pdx:form-field with all properties and the computed
+// attributes value and context. export is the value of an option for
+// radio buttons. The caller closes the element.
 func (c *compiler) fieldElem(n *node, typ, export string) {
 	maxLen := n.Get("maxLength", "")
 	if l := c.maxLens[n.ID()]; maxLen == "" && l > 0 && typ == "text" {
-		maxLen = strconv.Itoa(l) // Höchstlänge aus dem Daten-XSD
+		maxLen = strconv.Itoa(l) // maximum length from the data XSD
 	}
 	attrs := []string{"type", typ, "name", n.ID(), "label", avtLiteral(n.Get("label", "")),
 		"multiline", n.Get("multiline", ""), "max-length", maxLen,
@@ -49,15 +49,15 @@ func (c *compiler) fieldElem(n *node, typ, export string) {
 	}
 }
 
-// options schreibt die Auswahlwerte: option-Elemente der Vorlage, sonst die
-// Enumeration aus dem Daten-XSD.
+// options writes the choice values: option elements of the template,
+// otherwise the enumeration from the data XSD.
 func (c *compiler) options(n *node) {
 	for _, o := range c.choices(n) {
 		c.w.empty("pdx:option", "value", avtLiteral(o[0]), "label", avtLiteral(o[1]))
 	}
 }
 
-// choices liefert Wert und Text je Auswahl.
+// choices returns value and text per choice.
 func (c *compiler) choices(n *node) [][2]string {
 	var out [][2]string
 	for _, o := range n.Elements("option") {
@@ -72,8 +72,8 @@ func (c *compiler) choices(n *node) [][2]string {
 	return out
 }
 
-// radioGroup schreibt je Option eine Zeile mit Optionsfeld und Text. Alle
-// Optionsfelder gehören zu einem Feld mit dem Namen der Gruppe.
+// radioGroup writes one row with radio button and text per option. All
+// radio buttons belong to one field with the name of the group.
 func (c *compiler) radioGroup(n *node) {
 	c.start("fo:block", n, append([]string{"pdx:id", n.ID()}, c.blockAttrs(n)...)...)
 	opts := c.choices(n)

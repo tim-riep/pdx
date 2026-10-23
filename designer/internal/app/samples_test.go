@@ -20,8 +20,8 @@ func TestSamples(t *testing.T) {
 		t.Fatalf("Liste %+v %v", l, err)
 	}
 
-	// Randfälle erzeugen: Datei im Paket, gewählt, rückgängig machbar.
-	// Feste Reihenfolge: Undo unten nimmt den letzten zurück.
+	// Generate edge cases: file in the package, selected, undoable.
+	// Fixed order: Undo below takes back the last one.
 	for _, kw := range [][2]string{{"minimal", "samples/rand-minimal.xml"}, {"maximal", "samples/rand-maximal.xml"}, {"lang", "samples/rand-lange-texte.xml"}} {
 		kind, want := kw[0], kw[1]
 		if _, err := ss.Generate(kind); err != nil {
@@ -48,7 +48,7 @@ func TestSamples(t *testing.T) {
 	if !strings.Contains(string(files["samples/rand-lange-texte.xml"]), "Donaudampfschifffahrt") {
 		t.Fatal("lange Texte fehlen")
 	}
-	// Die Randfälle setzen ohne Fehler.
+	// The edge cases typeset without errors.
 	for _, p := range runChecks(template.Write(c.doc.Pkg.Template), files) {
 		if p.Level == "Fehler" && p.Source != "beispiel" {
 			t.Errorf("Befund %+v", p)
@@ -61,7 +61,7 @@ func TestSamples(t *testing.T) {
 		t.Fatal("Undo entfernt den Randfall nicht")
 	}
 
-	// Import und Auswahl.
+	// Import and selection.
 	src := filepath.Join(t.TempDir(), "Kunde März.xml")
 	os.WriteFile(src, files["samples/rechnung.xml"], 0o644)
 	if _, err := ss.Import(src); err != nil {

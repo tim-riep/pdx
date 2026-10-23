@@ -23,35 +23,35 @@ const (
 	pSpace
 	pGraphic
 	pBreak
-	// pNoBreak verbietet den Umbruch am folgenden Leerraum (U+00A0).
+	// pNoBreak forbids the break at the following space (U+00A0).
 	pNoBreak
-	// pHyphen ist eine Trennstelle in einem Wort.
+	// pHyphen is a hyphenation point in a word.
 	pHyphen
-	// pBreakAfter ist eine Umbruchstelle nach einem vorhandenen Bindestrich.
-	// Beim Umbruch wird kein Zeichen eingefügt.
+	// pBreakAfter is a break point after an existing hyphen.
+	// No character is inserted at the break.
 	pBreakAfter
-	// pEdge ist Rahmen plus Padding am Anfang oder Ende eines Inline-Elements.
+	// pEdge is border plus padding at the start or end of an inline element.
 	pEdge
-	// pLeader ist ein fo:leader, ein dehnbarer Glue ohne Umbruchstelle.
+	// pLeader is an fo:leader, a stretchable glue without a break point.
 	pLeader
 )
 
-// leaderSpec beschreibt das Muster eines fo:leader.
+// leaderSpec describes the pattern of an fo:leader.
 type leaderSpec struct {
 	pattern   string // space, rule, dots
 	thickness areatree.Length
 	style     areatree.BorderStyle
-	patternW  areatree.Length // 0 bei use-font-metrics
+	patternW  areatree.Length // 0 for use-font-metrics
 	min, max  areatree.Length
 }
 
-// linkRef ist das Ziel eines fo:basic-link.
+// linkRef is the target of an fo:basic-link.
 type linkRef struct {
 	dest, uri string
-	key       string // Quelle des fo:basic-link, verbindet Text und Bereich
+	key       string // source of the fo:basic-link, connects text and area
 }
 
-// linkKey liefert den Schlüssel eines Verweises, leer ohne Verweis.
+// linkKey returns the key of a link, empty without a link.
 func linkKey(l *linkRef) string {
 	if l == nil {
 		return ""
@@ -59,11 +59,11 @@ func linkKey(l *linkRef) string {
 	return l.key
 }
 
-// hyphenPenalty ist der Strafwert einer Trennstelle wie bei Apache FOP
+// hyphenPenalty is the penalty value of a hyphenation point as in Apache FOP
 // (KnuthPenalty.FLAGGED_PENALTY).
 const hyphenPenalty = 50
 
-// style ist ein Textstil mit aufgelöster Schrift.
+// style is a text style with resolved font.
 type style struct {
 	face     *font.Face
 	fontID   areatree.FontID
@@ -74,11 +74,11 @@ type style struct {
 	hasSpace bool
 	nbsp     areatree.Glyph
 	hasNbsp  bool
-	hyphen   *areatree.Glyph // Trennstrich, nil solange nicht gebraucht
+	hyphen   *areatree.Glyph // hyphen, nil as long as not needed
 }
 
-// hyphenGlyph liefert den Trennstrich des Stils. hyphenation-character ist
-// nach XSL 1.1 7.10.3 anfangs U+2010, fehlt die Glyphe, gilt U+002D.
+// hyphenGlyph returns the hyphen of the style. hyphenation-character is
+// initially U+2010 per XSL 1.1 7.10.3, if the glyph is missing, U+002D applies.
 func (s *style) hyphenGlyph() (areatree.Glyph, bool) {
 	if s.hyphen != nil {
 		return *s.hyphen, true
@@ -93,8 +93,8 @@ func (s *style) hyphenGlyph() (areatree.Glyph, bool) {
 	return areatree.Glyph{}, false
 }
 
-// above und below liefern die Ausdehnung über und unter der Grundlinie
-// einschließlich halbem Durchschuss (half-leading).
+// above and below return the extent above and below the baseline
+// including half the leading (half-leading).
 func (s *style) above() areatree.Length {
 	return s.asc + (s.p.LineHeight-s.asc-s.desc)/2
 }
@@ -107,8 +107,8 @@ func (s *style) below() areatree.Length {
 	return s.desc + (s.p.LineHeight-s.asc-s.desc+1)/2
 }
 
-// piece ist ein Stück eines Absatzes: ein Wort, ein Leerraum, ein Bild oder
-// ein erzwungener Umbruch.
+// piece is a piece of a paragraph: a word, a space, an image or
+// a forced break.
 type piece struct {
 	kind   pieceKind
 	st     *style
@@ -116,44 +116,44 @@ type piece struct {
 	width  areatree.Length
 	img    areatree.ImageID
 	height areatree.Length
-	// glyph ist bei Leerräumen die Glyphe (Leerzeichen oder U+00A0).
+	// glyph is, for spaces, the glyph (space or U+00A0).
 	glyph areatree.Glyph
-	// deferred ist bei Seitenzahlen im Fluss gesetzt, deren Wert erst beim
-	// Platzieren feststeht.
+	// deferred is set for page numbers in the flow whose value is only known
+	// at placement.
 	deferred *tree.Node
-	// ids sind IDs von Inline-Elementen, deren Inhalt mit diesem Stück beginnt.
+	// ids are IDs of inline elements whose content starts with this piece.
 	ids []string
-	// tid ist die Vorlagen-ID des innersten Elements mit pdx:id, in dem das
-	// Stück liegt.
+	// tid is the template ID of the innermost element with pdx:id that
+	// contains the piece.
 	tid string
-	// link ist bei Inhalt eines fo:basic-link gesetzt.
+	// link is set for content of an fo:basic-link.
 	link *linkRef
-	// leader beschreibt einen fo:leader.
+	// leader describes an fo:leader.
 	leader *leaderSpec
-	// code ist bei Barcodes gesetzt (pGraphic ohne Bild).
+	// code is set for barcodes (pGraphic without image).
 	code *codeArt
-	// widget ist bei Formularfeldern gesetzt.
+	// widget is set for form fields.
 	widget *widgetArt
-	// decos sind die Inline-Elemente mit Hintergrund, Rahmen oder Padding,
-	// in denen das Stück liegt, von außen nach innen. Bei pEdge ist decos[0]
-	// das Element der Kante und start gibt an, ob es die Anfangskante ist.
+	// decos are the inline elements with background, border or padding
+	// that contain the piece, from outside to inside. For pEdge decos[0] is
+	// the element of the edge and start tells whether it is the start edge.
 	decos []*inlineDeco
 	start bool
-	// box ist bei Bildern mit Rahmen, Padding oder Hintergrund gesetzt.
+	// box is set for images with border, padding or background.
 	box *graphicBox
-	// nbsp ist bei U+00A0 gesetzt. Es ist kein XML-Leerraum und wird weder
-	// am Absatzrand entfernt noch macht es einen Absatz leer (7.16.12).
+	// nbsp is set for U+00A0. It is not XML whitespace and is neither
+	// removed at the paragraph edge nor does it make a paragraph empty (7.16.12).
 	nbsp bool
 }
 
-// inlineDeco ist ein Inline-Element mit Hintergrund, Rahmen oder Padding.
+// inlineDeco is an inline element with background, border or padding.
 type inlineDeco struct {
 	p  *props.Computed
 	st *style
 	n  *tree.Node
 }
 
-// hasDeco meldet Hintergrund, sichtbaren Rahmen oder Padding.
+// hasDeco reports background, visible border or padding.
 func hasDeco(p *props.Computed) bool {
 	if p.Background != nil {
 		return true
@@ -166,7 +166,7 @@ func hasDeco(p *props.Computed) bool {
 	return false
 }
 
-// edgeWidth liefert Rahmen plus Padding einer Seite.
+// edgeWidth returns border plus padding of a side.
 func edgeWidth(p *props.Computed, side int) areatree.Length {
 	w := p.Padding[side]
 	if p.Border[side].Visible() {
@@ -175,9 +175,9 @@ func edgeWidth(p *props.Computed, side int) areatree.Length {
 	return w
 }
 
-// decorate umgibt die Stücke ab before mit den Kanten eines Inline-Elements.
-// Bei einem Umbruch innerhalb des Elements entfallen Rahmen und Padding an
-// der Umbruchstelle (Konditionalität discard, XSL 1.1 7.8.31 bis 7.8.34).
+// decorate surrounds the pieces from before with the edges of an inline element.
+// On a break inside the element, border and padding are dropped at the
+// break point (conditionality discard, XSL 1.1 7.8.31 to 7.8.34).
 func (pa *paragraph) decorate(n *tree.Node, ip *props.Computed, before int) error {
 	if !hasDeco(ip) {
 		return nil
@@ -201,7 +201,7 @@ func (pa *paragraph) decorate(n *tree.Node, ip *props.Computed, before int) erro
 	return nil
 }
 
-// paragraph sammelt die Stücke eines Absatzes.
+// paragraph collects the pieces of a paragraph.
 type paragraph struct {
 	g      *galley
 	p      *props.Computed
@@ -251,9 +251,9 @@ func (pa *paragraph) style(n *tree.Node, p *props.Computed, f *font.Face) (*styl
 	return s, nil
 }
 
-// add nimmt einen Text- oder Inlineknoten auf.
-// add hängt die Stücke eines Knotens an. Trägt der Knoten eine Vorlagen-ID,
-// erhalten seine Stücke sie, soweit kein inneres Element eine eigene hat.
+// add takes a text or inline node.
+// add appends the pieces of a node. If the node carries a template ID,
+// its pieces get it, unless an inner element has its own.
 func (pa *paragraph) add(n *tree.Node, p *props.Computed) error {
 	before := len(pa.pieces)
 	err := pa.addNode(n, p)
@@ -365,9 +365,9 @@ func (pa *paragraph) addNode(n *tree.Node, p *props.Computed) error {
 	return tree.Errorf(n, "%s wird im Absatz nicht unterstützt", n.Label())
 }
 
-// leader nimmt ein fo:leader auf (XSL 1.1 6.6.9). leader-length gibt
-// Mindest-, Wunsch- und Höchstlänge an (anfangs 0, 12pt und 100 % der
-// Zeile). Gedehnt wird über den Blocksatz der Zeile.
+// leader takes an fo:leader (XSL 1.1 6.6.9). leader-length gives
+// minimum, optimum and maximum length (initially 0, 12pt and 100 % of the
+// line). It is stretched via the justification of the line.
 func (pa *paragraph) leader(n *tree.Node, parent *props.Computed) error {
 	avail := pa.g.contentW(pa.p)
 	p, err := props.Compute(parent, n, avail)
@@ -419,21 +419,21 @@ func (pa *paragraph) leader(n *tree.Node, parent *props.Computed) error {
 	switch spec.pattern {
 	case "space", "rule", "dots":
 	case "use-content":
-		spec.pattern = "space" // Inhalt als Muster folgt später, Leerraum als Rückfall
+		spec.pattern = "space" // content as pattern follows later, space as fallback
 	default:
 		return tree.Errorf(n, "leader-pattern %q ist ungültig", spec.pattern)
 	}
 	opt = min(max(opt, spec.min), spec.max)
-	// Die Box der Breite 0 hält den Leader am Zeilenanfang fest: Er ist ein
-	// Inline-Bereich (XSL 1.1 6.6.9), kein Leerraum, der dort entfällt.
+	// The box of width 0 holds the leader at the start of the line: it is an
+	// inline area (XSL 1.1 6.6.9), not a space that is dropped there.
 	pa.pieces = append(pa.pieces, piece{kind: pEdge, st: st}, piece{kind: pNoBreak, st: st},
 		piece{kind: pLeader, st: st, width: opt, leader: spec})
 	return nil
 }
 
-// markID hängt die ID eines Inline-Elements an das erste und das letzte
-// Stück mit Inhalt. So kennt page-number-citation-last auch die letzte Seite
-// eines umbrochenen Inline-Elements.
+// markID attaches the ID of an inline element to the first and the last
+// piece with content. This way page-number-citation-last also knows the last
+// page of a broken inline element.
 func (pa *paragraph) markID(n *tree.Node, from int) {
 	id, ok := n.Attr("id")
 	if !ok || id == "" {
@@ -455,16 +455,16 @@ func (pa *paragraph) markID(n *tree.Node, from int) {
 			return
 		}
 	}
-	// Ein leeres Inline-Element hat kein Stück. Seine ID gilt dann für den
-	// umschließenden Block.
+	// An empty inline element has no piece. Its ID then applies to the
+	// enclosing block.
 	if st := pa.g.stack; len(st) > 0 {
 		st[len(st)-1].ids = append(st[len(st)-1].ids, id)
 	}
 }
 
-// text zerlegt Text in Wörter und Leerräume. Leerraum wird nach den
-// Vorgaben von XSL (white-space-collapse) zusammengefasst, Zeilenumbrüche
-// werden mit linefeed-treatment="preserve" zu erzwungenen Umbrüchen.
+// text splits text into words and spaces. Whitespace is collapsed according
+// to the XSL rules (white-space-collapse), line feeds
+// become forced breaks with linefeed-treatment="preserve".
 func (pa *paragraph) text(n *tree.Node, p *props.Computed, s string, collapse bool) error {
 	st, err := pa.style(n, p, nil)
 	if err != nil {
@@ -488,12 +488,12 @@ func (pa *paragraph) text(n *tree.Node, p *props.Computed, s string, collapse bo
 			pa.trimSpace()
 			pa.pieces = append(pa.pieces, piece{kind: pBreak, st: st})
 		case r == 0x00a0 && st.hasNbsp:
-			// U+00A0 ist nach XSL 1.1 7.17.7 ein Wortzwischenraum und wird im
-			// Blocksatz gedehnt, an ihm darf aber nicht umbrochen werden.
+			// U+00A0 is a word space per XSL 1.1 7.17.7 and is stretched in
+			// justified text, but no break is allowed at it.
 			if err := flushWord(); err != nil {
 				return err
 			}
-			// Am Absatzanfang hält eine Box der Breite 0 das Zeichen fest.
+			// At the paragraph start a box of width 0 holds the character.
 			if len(pa.pieces) == 0 {
 				pa.pieces = append(pa.pieces, piece{kind: pEdge, st: st})
 			}
@@ -536,8 +536,8 @@ func (pa *paragraph) addSpace(n *tree.Node, st *style) {
 	pa.pieces = append(pa.pieces, piece{kind: pSpace, st: st, width: st.space.Advance, glyph: st.space})
 }
 
-// word formt ein Wort. Fehlen der Schrift Zeichen, werden die eingebetteten
-// Liberation-Schriften als Ersatz versucht.
+// word shapes a word. If the font lacks characters, the embedded
+// Liberation fonts are tried as a substitute.
 func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) error {
 	gs, err := st.face.Shape(w, p.FontSize, font.ShapeOptions{})
 	var miss *font.MissingGlyphError
@@ -560,8 +560,8 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 	if err != nil {
 		return tree.Errorf(n, "%v", err)
 	}
-	// Umbruchstellen: nach vorhandenen Bindestrichen immer, Trennstellen
-	// aus den Mustern nur mit hyphenate="true".
+	// Break points: always after existing hyphens, hyphenation points
+	// from the patterns only with hyphenate="true".
 	explicit := explicitBreaks(w)
 	cuts := append([]int(nil), explicit...)
 	if p.Hyphenate && p.Lang != "" {
@@ -597,18 +597,18 @@ func (pa *paragraph) word(n *tree.Node, p *props.Computed, st *style, w string) 
 	return nil
 }
 
-// splitGlyphs teilt die Glyphen eines Wortes an Trennstellen (Zeichen vor
-// der Stelle). Stellen innerhalb eines Clusters, etwa einer Ligatur, entfallen.
-// explicitBreaks liefert die Zeichenpositionen nach Bindestrichen, an denen
-// umbrochen werden darf: nach U+002D, U+2010 und U+2013 zwischen einem
-// Buchstaben und einem Zeichen, das keine Ziffer ist, mit mindestens zwei
-// Zeichen davor und danach (wie die Klassen HY und
-// BA in UAX #14). XSL 1.1 legt den Umbruchalgorithmus nicht fest (1.1.2).
+// splitGlyphs splits the glyphs of a word at hyphenation points (characters
+// before the point). Points inside a cluster, such as a ligature, are dropped.
+// explicitBreaks returns the character positions after hyphens at which
+// a break is allowed: after U+002D, U+2010 and U+2013 between a
+// letter and a character that is not a digit, with at least two
+// characters before and after (like the classes HY and
+// BA in UAX #14). XSL 1.1 does not specify the line breaking algorithm (1.1.2).
 func explicitBreaks(w string) []int {
 	rs := []rune(w)
 	var out []int
-	// Wie bei hyphenation-remain- und -push-character-count bleiben
-	// mindestens zwei Zeichen auf jeder Seite.
+	// As with hyphenation-remain- and -push-character-count, at least
+	// two characters remain on each side.
 	for i := 2; i+2 < len(rs); i++ {
 		switch rs[i] {
 		case '-', '\u2010', '\u2013':
@@ -620,7 +620,7 @@ func explicitBreaks(w string) []int {
 	return out
 }
 
-// nearBreak meldet eine Trennstelle direkt an einem Bindestrich.
+// nearBreak reports a hyphenation point directly at a hyphen.
 func nearBreak(c int, explicit []int) bool {
 	for _, e := range explicit {
 		if c >= e-1 && c <= e+1 {
@@ -639,8 +639,8 @@ func containsInt(v []int, x int) bool {
 	return false
 }
 
-// splitGlyphsAt teilt wie splitGlyphs und liefert zu jeder Grenze die
-// Zeichenposition, an der geteilt wurde.
+// splitGlyphsAt splits like splitGlyphs and returns for each boundary the
+// character position at which it was split.
 func splitGlyphsAt(gs []areatree.Glyph, cuts []int) ([][]areatree.Glyph, []int) {
 	starts := map[int]int{}
 	pos := 0
@@ -667,7 +667,7 @@ func splitGlyphs(gs []areatree.Glyph, cuts []int) [][]areatree.Glyph {
 	if len(cuts) == 0 {
 		return [][]areatree.Glyph{gs}
 	}
-	starts := map[int]int{} // Zeichenposition zu Glyphenindex am Clusteranfang
+	starts := map[int]int{} // character position to glyph index at cluster start
 	pos := 0
 	for i, g := range gs {
 		if g.Text != "" {
@@ -686,11 +686,11 @@ func splitGlyphs(gs []areatree.Glyph, cuts []int) [][]areatree.Glyph {
 	return append(out, gs[last:])
 }
 
-// items übersetzt die Stücke in das Box-Glue-Penalty-Modell. Im Blocksatz
-// darf ein Wortzwischenraum um die Hälfte wachsen und um ein Drittel
-// schrumpfen. Im Flattersatz erhält wie bei Apache FOP nur die Zeile, die an
-// einem Zwischenraum endet, die Dehnbarkeit RaggedStretch:
-// Glue(0, +R), Penalty(0), Glue(w, −R). Hilfselemente tragen Payload −1.
+// items translates the pieces into the box-glue-penalty model. In justified
+// text a word space may grow by half and shrink by a third. In ragged
+// text, as in Apache FOP, only the line that ends at a space gets the
+// stretchability RaggedStretch:
+// Glue(0, +R), Penalty(0), Glue(w, −R). Helper items carry payload −1.
 func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 	items := make([]linebreak.Item, 0, len(pa.pieces))
 	R := linebreak.RaggedStretch
@@ -718,10 +718,10 @@ func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 		case pNoBreak:
 			items = append(items, linebreak.Item{Kind: linebreak.Penalty, Penalty: linebreak.Forbidden, Payload: i})
 		case pHyphen, pBreakAfter:
-			// Trennstelle mit Trennstrich (markiert, Strafwert 50) oder
-			// Umbruchstelle nach einem vorhandenen Bindestrich (ohne Strafwert,
-			// schon im ersten Durchgang). Im Flattersatz braucht die Zeile, die
-			// hier endet, dieselbe Dehnung wie an einem Wortzwischenraum.
+			// Hyphenation point with hyphen (flagged, penalty 50) or
+			// break point after an existing hyphen (without penalty,
+			// already in the first pass). In ragged text the line that
+			// ends here needs the same stretch as at a word space.
 			pen := linebreak.Item{Kind: linebreak.Penalty, Payload: i}
 			if pc.kind == pHyphen {
 				pen.Penalty, pen.Flagged, pen.Width = hyphenPenalty, true, pc.width
@@ -743,11 +743,11 @@ func (pa *paragraph) items(from int, justify bool) []linebreak.Item {
 	return items
 }
 
-// setParagraph bricht den Absatz um und setzt die Zeilen.
+// setParagraph breaks the paragraph and lays out the lines.
 func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	pa.trimSpace()
-	// Ein erhaltener Zeilenwechsel am Absatzende beendet die letzte Zeile,
-	// er eröffnet keine leere Zeile mehr.
+	// A preserved line feed at the paragraph end ends the last line,
+	// it no longer opens an empty line.
 	if n := len(pa.pieces); n > 1 && pa.pieces[n-1].kind == pBreak {
 		pa.pieces = pa.pieces[:n-1]
 		pa.trimSpace()
@@ -765,14 +765,14 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	}
 	from := 0
 	if ord.major == g.skip.major {
-		// Neuaufbau nach Breitenwechsel: der Absatz wird ab dem ersten Stück
-		// der neuen Seite umbrochen, ohne Einzug der ersten Zeile.
+		// Rebuild after width change: the paragraph is broken from the first piece
+		// of the new page, without the indent of the first line.
 		from, indent = g.skip.minor, 0
 	}
 	items := pa.items(from, p.TextAlign == "justify")
-	// last-line-end-indent verkürzt die letzte Zeile, negative Werte
-	// verlängern sie (XSL 1.1 7.16.3). Die unsichtbare Box am Absatzende
-	// wirkt im Umbruch und in der Ausrichtung.
+	// last-line-end-indent shortens the last line, negative values
+	// lengthen it (XSL 1.1 7.16.3). The invisible box at the paragraph end
+	// takes effect in line breaking and in alignment.
 	if l := p.LastLineEndIndent; l != 0 && len(items) > 0 {
 		items = append(items, linebreak.Item{Kind: linebreak.Box, Width: l, Payload: -1})
 	}
@@ -792,7 +792,7 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 	start := 0
 	for li, br := range breaks {
 		end := br.Index
-		// Glue und Penalties am Zeilenanfang und Glue am Zeilenende entfallen.
+		// Glue and penalties at the line start and glue at the line end are dropped.
 		s := start
 		for s < end && items[s].Kind != linebreak.Box {
 			s++
@@ -812,9 +812,9 @@ func (g *galley) setParagraph(pa *paragraph, first bool) error {
 		if s < len(items) {
 			lo.minor = items[s].Payload
 		}
-		// Witwen und Waisen (XSL 1.1 7.20.6 und 7.20.4): Vor Zeile li darf
-		// nur umbrochen werden, wenn davor mindestens orphans und danach
-		// mindestens widows Zeilen stehen.
+		// Widows and orphans (XSL 1.1 7.20.6 and 7.20.4): a break before line li
+		// is only allowed if at least orphans lines stand before it and at least
+		// widows lines after it.
 		pen := 0
 		if li > 0 && (li < p.Orphans || len(breaks)-li < p.Widows) {
 			pen = penaltyInf
@@ -842,9 +842,9 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			align = "start"
 		}
 	}
-	// Für die Ausrichtung zählen nur echte Dehnungen. Die Hilfsdehnung des
-	// Flattersatzes (+R am Hilfselement, −R am Leerraum) dient nur der
-	// Umbruchwahl und gleicht sich in der Zeile aus.
+	// Only real stretches count for alignment. The helper stretch of
+	// ragged text (+R at the helper item, −R at the space) only serves the
+	// break choice and cancels out within the line.
 	real := func(it linebreak.Item) bool { return it.Payload >= 0 && it.Stretch >= 0 }
 	var natural, stretch, shrink areatree.Length
 	for _, it := range seg {
@@ -887,10 +887,10 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 		x += avail - width
 	}
 
-	// Vertikale Maße nach line-stacking-strategy="max-height" (XSL 1.1 4.5):
-	// Die Zeile umschließt das Rechteck des Blocks und die Zuordnungsrechtecke
-	// aller Inline-Bereiche, davor und danach steht der halbe Durchschuss des
-	// Blocks.
+	// Vertical measures per line-stacking-strategy="max-height" (XSL 1.1 4.5):
+	// the line encloses the rectangle of the block and the allocation rectangles
+	// of all inline areas, before and after it stands half the leading of the
+	// block.
 	above, below := strut.asc, strut.desc
 	for _, it := range seg {
 		if it.Payload < 0 {
@@ -910,8 +910,8 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	baseline := above
 	line := &lineBox{h: h, w: avail, x: x0}
 
-	// Runs tragen eine eigene Vorlagen-ID nur, wenn sie von der des Absatzes
-	// abweicht, etwa bei einem Feld in einem Text.
+	// Runs carry their own template ID only if it differs from that of the
+	// paragraph, for example for a field in a text.
 	blockID := pa.node.TemplateID()
 	runID := func(tid string) string {
 		if tid == blockID {
@@ -952,7 +952,7 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 			}
 			x += adjust(it)
 			if pc.deferred != nil {
-				run = nil // nach der Seitenzahl beginnt ein neuer Run
+				run = nil // a new run starts after the page number
 			}
 		case pLeader:
 			run = nil
@@ -1000,7 +1000,7 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	line.areas = append(frags.areas(baseline), line.areas...)
 	line.areas = append(line.areas, linkAreas(pa, seg, x0, align, avail, width, adjust, h)...)
 	if hy != nil {
-		// Trennstrich am Zeilenende, im Stil des getrennten Wortes.
+		// Hyphen at the line end, in the style of the hyphenated word.
 		if run == nil || runStyle != hy.st {
 			run = &areatree.GlyphRun{Origin: areatree.Point{X: x, Y: baseline}, Font: hy.st.fontID,
 				Size: hy.st.p.FontSize, Color: hy.st.p.Color, Ascent: hy.st.asc, Descent: hy.st.desc}
@@ -1019,7 +1019,7 @@ func (g *galley) setLine(pa *paragraph, seg []linebreak.Item, strut *style, x0, 
 	return nil
 }
 
-// drawLeader zeichnet einen fo:leader der Breite w ab x.
+// drawLeader draws an fo:leader of width w from x.
 func drawLeader(pc piece, x, w, baseline areatree.Length) []areatree.Area {
 	l := pc.leader
 	switch l.pattern {
@@ -1033,14 +1033,14 @@ func drawLeader(pc piece, x, w, baseline areatree.Length) []areatree.Area {
 			return nil
 		}
 		dot := gs[0]
-		// Die Musterbreite ist Glyphe plus Leerraum (XSL 1.1 7.22.3), sie ist
-		// daher mindestens so breit wie der Punkt.
+		// The pattern width is glyph plus space (XSL 1.1 7.22.3), it is
+		// therefore at least as wide as the dot.
 		pw := max(l.patternW, dot.Advance)
 		if pw <= 0 {
 			return nil
 		}
-		// Punkte auf ein Raster relativ zum Zeilenanfang, damit sie in
-		// aufeinanderfolgenden Zeilen untereinander stehen.
+		// Dots on a grid relative to the line start so that they line up
+		// vertically in consecutive lines.
 		start := ((x + pw - 1) / pw) * pw
 		run := &areatree.GlyphRun{Origin: areatree.Point{X: start, Y: baseline}, Font: pc.st.fontID,
 			Size: pc.st.p.FontSize, Color: pc.st.p.Color, Ascent: pc.st.asc, Descent: pc.st.desc, Decor: true}
@@ -1057,8 +1057,8 @@ func drawLeader(pc piece, x, w, baseline areatree.Length) []areatree.Area {
 	return nil
 }
 
-// linkAreas legt über zusammenhängende Stücke desselben fo:basic-link je
-// einen Link-Bereich in Zeilenhöhe.
+// linkAreas places one link area of line height over each run of
+// consecutive pieces of the same fo:basic-link.
 func linkAreas(pa *paragraph, seg []linebreak.Item, x0 areatree.Length, align string, avail, width areatree.Length,
 	adjust func(linebreak.Item) areatree.Length, h areatree.Length) []areatree.Area {
 	x := x0
@@ -1079,7 +1079,7 @@ func linkAreas(pa *paragraph, seg []linebreak.Item, x0 areatree.Length, align st
 	}
 	for _, it := range seg {
 		if it.Payload < 0 {
-			// Hilfselemente des Flattersatzes unterbrechen keinen Link.
+			// Helper items of ragged text do not interrupt a link.
 			x += adjust(it)
 			continue
 		}
@@ -1096,8 +1096,8 @@ func linkAreas(pa *paragraph, seg []linebreak.Item, x0 areatree.Length, align st
 	return out
 }
 
-// decoFrags sammelt je Inline-Element mit Hintergrund oder Rahmen den Teil
-// in einer Zeile.
+// decoFrags collects, per inline element with background or border, the part
+// in one line.
 type decoFrags struct {
 	order []*inlineDeco
 	frag  map[*inlineDeco]*decoFrag
@@ -1130,9 +1130,9 @@ func (f *decoFrags) add(pc piece, x0, x1 areatree.Length) {
 	}
 }
 
-// areas liefert die Hintergründe und Rahmen, äußere Elemente zuerst. Höhe
-// ist der Inhaltsbereich der Schrift (Ober- und Unterlänge) plus Padding und
-// Rahmen davor und danach. Die Zeilenhöhe ändern sie nicht.
+// areas returns the backgrounds and borders, outer elements first. The height
+// is the content area of the font (ascender and descender) plus padding and
+// border before and after. They do not change the line height.
 func (f *decoFrags) areas(baseline areatree.Length) []areatree.Area {
 	var out []areatree.Area
 	for _, d := range f.order {

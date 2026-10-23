@@ -7,23 +7,23 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// Page ist eine Seite im kompakten Format für den Canvas. Alle Maße in Punkt,
-// Ursprung oben links. Jeder Eintrag trägt die Vorlagen-ID, damit Klick und
-// Hover auf das Vorlagenelement zurückführen.
+// Page is a page in the compact format for the canvas. All sizes in points,
+// origin top left. Every entry carries the template ID, so that click and
+// hover lead back to the template element.
 type Page struct {
 	N    int     `json:"n"`
 	W    float64 `json:"w"`
 	H    float64 `json:"h"`
 	Draw []any   `json:"draw"`
-	// Els sind die Bereiche mit Vorlagen-ID in Zeichenreihenfolge, für
-	// Treffertest, Auswahl und Hilfslinien. Wiederholte Elemente kommen
-	// mehrfach vor.
+	// Els are the areas with template ID in drawing order, for
+	// hit testing, selection and guides. Repeated elements occur
+	// several times.
 	Els []El `json:"els"`
-	// Fields sind die Formularfelder der Seite für die ausfüllbare Vorschau.
+	// Fields are the form fields of the page for the fillable preview.
 	Fields []FieldEl `json:"fields"`
 }
 
-// FieldEl ist ein Formularfeld für die Vorschau.
+// FieldEl is a form field for the preview.
 type FieldEl struct {
 	ID        string     `json:"id"`
 	Name      string     `json:"name"`
@@ -39,14 +39,14 @@ type FieldEl struct {
 	Options   []Option   `json:"options,omitempty"`
 }
 
-// Option ist ein Auswahlwert eines Felds.
+// Option is a choice value of a field.
 type Option struct {
 	Value string `json:"value"`
 	Label string `json:"label"`
 }
 
-// widgetItem zeichnet Kontrollkästchen und Optionsfelder: T ist checkbox
-// oder radio, On der Zustand.
+// widgetItem draws checkboxes and radio buttons: T is checkbox
+// or radio, On the state.
 type widgetItem struct {
 	K  string     `json:"k"`
 	ID string     `json:"id,omitempty"`
@@ -56,11 +56,11 @@ type widgetItem struct {
 	C  string     `json:"c"`
 }
 
-// El ist ein Bereich eines Vorlagenelements.
+// El is an area of a template element.
 type El struct {
 	ID   string     `json:"id"`
 	Rect [4]float64 `json:"r"`
-	// Kind ist block, inline, text, image oder code.
+	// Kind is block, inline, text, image or code.
 	Kind string `json:"k"`
 }
 
@@ -69,8 +69,8 @@ type rectItem struct {
 	ID string     `json:"id,omitempty"`
 	R  [4]float64 `json:"r"`
 	Bg string     `json:"bg,omitempty"`
-	// B sind die Rahmen oben, rechts, unten, links als [Breite, Farbe, Stil]
-	// oder 0. Sie liegen außerhalb des Rechtecks.
+	// B are the borders top, right, bottom, left as [width, color, style]
+	// or 0. They lie outside the rectangle.
 	B []any `json:"b,omitempty"`
 }
 
@@ -79,7 +79,7 @@ type textItem struct {
 	ID string    `json:"id,omitempty"`
 	X  float64   `json:"x"`
 	Y  float64   `json:"y"`
-	F  string    `json:"f"` // Schlüssel der Schrift
+	F  string    `json:"f"` // key of the font
 	S  float64   `json:"s"`
 	C  string    `json:"c"`
 	T  []string  `json:"t"`
@@ -106,7 +106,7 @@ type imageItem struct {
 	K  string     `json:"k"`
 	ID string     `json:"id,omitempty"`
 	R  [4]float64 `json:"r"`
-	I  string     `json:"i"` // Schlüssel des Bildes
+	I  string     `json:"i"` // key of the image
 }
 
 func pt(l areatree.Length) float64 { return math.Round(float64(l)/10) / 100 }
@@ -127,7 +127,7 @@ func color(c areatree.Color) string {
 	return fmt.Sprintf("#%02x%02x%02x", int(math.Round(r*255)), int(math.Round(g*255)), int(math.Round(b*255)))
 }
 
-// styleName liefert den Stil einer Linie, leer bei durchgezogen.
+// styleName returns the style of a line, empty for solid.
 func styleName(s areatree.BorderStyle) string {
 	if s == areatree.Solid {
 		return ""
@@ -135,8 +135,8 @@ func styleName(s areatree.BorderStyle) string {
 	return s.String()
 }
 
-// convert übersetzt eine Seite. fontKey und imageKey liefern die Schlüssel
-// der Schriften und Bilder des Dokuments.
+// convert translates a page. fontKey and imageKey return the keys
+// of the fonts and images of the document.
 func convert(pg *areatree.Page, fontKey func(areatree.FontID) string, imageKey func(areatree.ImageID) string) Page {
 	out := Page{N: pg.Number, W: pt(pg.Width), H: pt(pg.Height), Draw: []any{}, Els: []El{}, Fields: []FieldEl{}}
 	seen := map[El]bool{}
@@ -233,8 +233,8 @@ func convert(pg *areatree.Page, fontKey func(areatree.FontID) string, imageKey f
 					b = areatree.Border{Width: 750, Style: areatree.Solid, Color: areatree.GrayColor(0.4)}
 				}
 				if b.Visible() && f.Type != "radio" {
-					// Der Canvas zeichnet Rahmen außerhalb des Rechtecks, das
-					// Erscheinungsbild im PDF innerhalb.
+					// The canvas draws borders outside the rectangle, the
+					// appearance in the PDF inside.
 					bw := pt(b.Width)
 					it.R = [4]float64{r[0] + bw, r[1] + bw, r[2] - 2*bw, r[3] - 2*bw}
 					s := []any{bw, color(b.Color), styleName(b.Style)}
@@ -280,7 +280,7 @@ func convert(pg *areatree.Page, fontKey func(areatree.FontID) string, imageKey f
 	return out
 }
 
-// runsOf liefert die Glyph-Runs eines Widgets als Bereiche.
+// runsOf returns the glyph runs of a widget as areas.
 func runsOf(w *areatree.Widget) []areatree.Area {
 	out := make([]areatree.Area, len(w.Runs))
 	for i, r := range w.Runs {

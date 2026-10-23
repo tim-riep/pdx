@@ -12,16 +12,16 @@ import (
 	"time"
 )
 
-// Client spricht mit einem pdx-server, etwa aus dem Designer oder dem
-// Lasttest. Der Schlüssel bleibt im Speicher und steht in keiner Meldung.
+// Client talks to a pdx-server, for example from the designer or the
+// load test. The key stays in memory and appears in no message.
 type Client struct {
 	URL  string
 	key  string
 	HTTP *http.Client
 }
 
-// NewClient legt einen Client an. Unverschlüsseltes HTTP ist nur für
-// localhost erlaubt, sonst ginge der Schlüssel im Klartext über das Netz.
+// NewClient creates a client. Unencrypted HTTP is only allowed for
+// localhost, otherwise the key would travel over the network in plain text.
 func NewClient(base, key string) (*Client, error) {
 	base = strings.TrimSuffix(strings.TrimSpace(base), "/")
 	u, err := url.Parse(base)
@@ -35,7 +35,7 @@ func NewClient(base, key string) (*Client, error) {
 	return &Client{URL: base, key: key, HTTP: &http.Client{Timeout: 60 * time.Second}}, nil
 }
 
-// ProblemError ist eine Fehlerantwort des Dienstes mit allen Befunden.
+// ProblemError is an error response of the service with all findings.
 type ProblemError struct{ Problem Problem }
 
 func (e *ProblemError) Error() string {
@@ -92,13 +92,13 @@ func (c *Client) getJSON(ctx context.Context, path string, v any) error {
 	return json.Unmarshal(b, v)
 }
 
-// Templates listet die Vorlagen.
+// Templates lists the templates.
 func (c *Client) Templates(ctx context.Context) ([]TemplateInfo, error) {
 	var r struct{ Templates []TemplateInfo }
 	return r.Templates, c.getJSON(ctx, "/v1/templates", &r)
 }
 
-// Versions listet die Versionen einer Vorlage, ErrNotFound ohne Versionen.
+// Versions lists the versions of a template, ErrNotFound without versions.
 func (c *Client) Versions(ctx context.Context, id string) ([]Version, error) {
 	var r struct{ Versions []Version }
 	err := c.getJSON(ctx, "/v1/templates/"+url.PathEscape(id)+"/versions", &r)
@@ -108,14 +108,14 @@ func (c *Client) Versions(ctx context.Context, id string) ([]Version, error) {
 	return r.Versions, err
 }
 
-// Download holt das Paket einer Version.
+// Download fetches the package of a version.
 func (c *Client) Download(ctx context.Context, id, version string) ([]byte, error) {
 	b, _, err := c.do(ctx, http.MethodGet, "/v1/templates/"+url.PathEscape(id)+"/versions/"+url.PathEscape(version), "", nil)
 	return b, err
 }
 
-// Upload legt ein Paket als neue Version ab. created meldet, ob die
-// Version neu ist.
+// Upload stores a package as a new version. created reports whether the
+// version is new.
 func (c *Client) Upload(ctx context.Context, id string, zip []byte, activate bool) (Version, error) {
 	path := "/v1/templates/" + url.PathEscape(id)
 	if activate {
@@ -129,14 +129,14 @@ func (c *Client) Upload(ctx context.Context, id string, zip []byte, activate boo
 	return v, json.Unmarshal(b, &v)
 }
 
-// Activate macht eine Version aktiv.
+// Activate makes a version active.
 func (c *Client) Activate(ctx context.Context, id, version string) error {
 	body, _ := json.Marshal(map[string]string{"version": version})
 	_, _, err := c.do(ctx, http.MethodPut, "/v1/templates/"+url.PathEscape(id)+"/active", "application/json", body)
 	return err
 }
 
-// Render setzt einen Datensatz. query sind die Parameter wie profile.
+// Render typesets a record. query holds the parameters such as profile.
 func (c *Client) Render(ctx context.Context, id string, data []byte, query url.Values) ([]byte, error) {
 	path := "/v1/render/" + url.PathEscape(id)
 	if len(query) > 0 {
@@ -146,5 +146,5 @@ func (c *Client) Render(ctx context.Context, id string, data []byte, query url.V
 	return b, err
 }
 
-// String verrät den Schlüssel nicht.
+// String does not reveal the key.
 func (c *Client) String() string { return "Client(" + c.URL + ")" }

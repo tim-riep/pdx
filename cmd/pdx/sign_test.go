@@ -13,8 +13,8 @@ import (
 	"github.com/tim-riep/pdx/internal/testpki"
 )
 
-// pdx sign liest die PKCS#12-Datei mit Passwort aus der Umgebung und
-// signiert mit Zeitstempel. Das Passwort steht nie in der Ausgabe.
+// pdx sign reads the PKCS#12 file with the password from the environment
+// and signs with a timestamp. The password never appears in the output.
 func TestSignCLI(t *testing.T) {
 	pki := testpki.New(t)
 	dir := t.TempDir()

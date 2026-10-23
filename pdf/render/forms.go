@@ -11,14 +11,14 @@ import (
 	"github.com/tim-riep/pdx/pdf"
 )
 
-// Interaktive Formulare (ISO 32000-1 12.7). Jedes Widget wird ein Feld,
-// verschmolzen mit seinem Widget-Dictionary. Optionsfelder einer Gruppe
-// teilen ein Elternfeld. Jedes Widget bringt sein Erscheinungsbild mit, AP
-// enthält nur N (ISO 19005-2 6.3.3), Schaltflächen als Dictionary ihrer
-// Zustände. NeedAppearances setzt pdx nie, Aktionen an Feldern schreibt pdx
-// nicht (ISO 19005-2 6.4.1).
+// Interactive forms (ISO 32000-1 12.7). Every widget becomes a field,
+// merged with its widget dictionary. Radio buttons of a group
+// share a parent field. Every widget brings its own appearance, AP
+// contains only N (ISO 19005-2 6.3.3), buttons as a dictionary of their
+// states. pdx never sets NeedAppearances, pdx does not write actions on
+// fields (ISO 19005-2 6.4.1).
 
-// Feldflags (ISO 32000-1 Tabellen 221, 226, 228, 230).
+// Field flags (ISO 32000-1 Tables 221, 226, 228, 230).
 const (
 	ffReadOnly      = 1 << 0
 	ffRequired      = 1 << 1
@@ -29,10 +29,10 @@ const (
 	ffEdit          = 1 << 18
 )
 
-// stateOn ist der Zustand eines angehakten Kontrollkästchens.
+// stateOn is the state of a checked check box.
 const stateOn = pdf.Name("Yes")
 
-// formState sammelt die Felder eines Dokuments.
+// formState collects the fields of a document.
 type formState struct {
 	fields []pdf.Ref
 	names  map[string]int
@@ -41,7 +41,7 @@ type formState struct {
 	dr     map[areatree.FontID]*font.Simple
 }
 
-// radioGroup ist das Elternfeld einer Optionsfeldgruppe.
+// radioGroup is the parent field of a radio button group.
 type radioGroup struct {
 	ref  pdf.Ref
 	dict *pdf.Dict
@@ -55,8 +55,8 @@ func (r *renderer) forms() *formState {
 	return r.form
 }
 
-// fieldName liefert einen im Dokument eindeutigen Feldnamen. Wiederholte
-// Felder (etwa in Tabellenzeilen) bekommen eine laufende Nummer.
+// fieldName returns a field name that is unique in the document. Repeated
+// fields (for example in table rows) get a sequence number.
 func (fs *formState) fieldName(name string) string {
 	fs.names[name]++
 	if n := fs.names[name]; n > 1 {
@@ -65,8 +65,8 @@ func (fs *formState) fieldName(name string) string {
 	return name
 }
 
-// drFont bettet die Standardschrift eines Felds als einfache Schrift mit
-// WinAnsiEncoding ein, einmal je Schrift.
+// drFont embeds the default font of a field as a simple font with
+// WinAnsiEncoding, once per font.
 func (r *renderer) drFont(id areatree.FontID) (pdf.Name, error) {
 	fs := r.forms()
 	name := pdf.Name("F" + strconv.Itoa(int(id)))
@@ -85,8 +85,8 @@ func (r *renderer) drFont(id areatree.FontID) (pdf.Name, error) {
 	return name, nil
 }
 
-// widget schreibt ein Formularfeld mit Widget und Erscheinungsbild, beim
-// Abflachen nur das Erscheinungsbild als Seiteninhalt.
+// widget writes a form field with widget and appearance, when
+// flattening only the appearance as page content.
 func (pc *pageCtx) widget(w *areatree.Widget) error {
 	if pc.r.opts.Flatten {
 		return pc.flatWidget(w)
@@ -117,7 +117,7 @@ func (pc *pageCtx) widget(w *areatree.Widget) error {
 	if f.Required {
 		flags |= ffRequired
 	}
-	// Feldangaben: bei Optionsfeldern am Elternfeld, sonst am Widget.
+	// Field attributes: for radio buttons on the parent field, otherwise on the widget.
 	field := annot
 	switch f.Type {
 	case "radio":
@@ -229,9 +229,9 @@ func (pc *pageCtx) widget(w *areatree.Widget) error {
 	return nil
 }
 
-// fieldCommon setzt Name, zugänglichen Namen und Exportnamen eines Felds.
-// TM trägt Kontextpfad und Vorlagen-ID, über die pdx extract-data die
-// Eingabe zurückschreibt (ISO 32000-1 Tabelle 220: Name für den Export).
+// fieldCommon sets the name, accessible name and export name of a field.
+// TM carries the context path and template ID through which pdx extract-data
+// writes the input back (ISO 32000-1 Table 220: name for export).
 func (pc *pageCtx) fieldCommon(d *pdf.Dict, f areatree.Field) {
 	d.Set("T", pdf.TextString(pc.r.forms().fieldName(f.Name)))
 	if f.Label != "" {
@@ -242,7 +242,7 @@ func (pc *pageCtx) fieldCommon(d *pdf.Dict, f areatree.Field) {
 	}
 }
 
-// writeForm hängt AcroForm an den Katalog.
+// writeForm attaches AcroForm to the catalog.
 func (r *renderer) writeForm() {
 	fs := r.form
 	if fs == nil || len(fs.fields) == 0 {
@@ -277,8 +277,8 @@ func refs(rs []pdf.Ref) []pdf.Object {
 	return out
 }
 
-// appearanceChars liefert MK mit Rahmen- und Hintergrundfarbe, damit ein
-// Betrachter das Erscheinungsbild nach einer Eingabe gleich aufbaut.
+// appearanceChars returns MK with border and background color so that a
+// viewer builds the appearance the same way after an input.
 func appearanceChars(f areatree.Field) *pdf.Dict {
 	mk := pdf.NewDict()
 	if f.Border.Visible() {
@@ -314,7 +314,7 @@ func borderStyle(s areatree.BorderStyle) string {
 	return "S"
 }
 
-// states liefert das Zustands-Dictionary einer Schaltfläche: on und Off.
+// states returns the state dictionary of a button: on and Off.
 func (pc *pageCtx) states(w *areatree.Widget, on pdf.Name) (*pdf.Dict, error) {
 	if on == "" || on == "Off" {
 		return nil, fmt.Errorf("Feld %s: Exportwert %q ist als Zustand nicht erlaubt", w.Field.Name, on)
@@ -330,8 +330,8 @@ func (pc *pageCtx) states(w *areatree.Widget, on pdf.Name) (*pdf.Dict, error) {
 	return pdf.D(string(on), onRef, "Off", offRef), nil
 }
 
-// appearance zeichnet das Erscheinungsbild eines Widgets als Form XObject in
-// den Koordinaten des Widgets. state ist bei Schaltflächen on oder off.
+// appearance draws the appearance of a widget as a form XObject in
+// the coordinates of the widget. For buttons, state is on or off.
 func (pc *pageCtx) appearance(w *areatree.Widget, state string) (pdf.Ref, error) {
 	f := w.Field
 	ap := &pageCtx{r: pc.r, res: &pageRes{fonts: pdf.NewDict(), xobjects: pdf.NewDict(), gstates: pdf.NewDict()},
@@ -346,8 +346,8 @@ func (pc *pageCtx) appearance(w *areatree.Widget, state string) (pdf.Ref, error)
 		c.Fill()
 		c.Restore()
 	}
-	// Schaltflächen ohne Rahmenstil bekommen einen dünnen grauen Umriss,
-	// sonst wären sie im Zustand aus unsichtbar. Optionsfelder sind rund.
+	// Buttons without a border style get a thin gray outline,
+	// otherwise they would be invisible in the off state. Radio buttons are round.
 	border := f.Border
 	if !border.Visible() && (f.Type == "checkbox" || f.Type == "radio") {
 		border = areatree.Border{Width: 750, Style: areatree.Solid, Color: areatree.GrayColor(0.4)}
@@ -377,7 +377,7 @@ func (pc *pageCtx) appearance(w *areatree.Widget, state string) (pdf.Ref, error)
 	switch f.Type {
 	case "checkbox":
 		if state == "on" {
-			// Haken als Linienzug.
+			// Check mark as a polyline.
 			s := math.Min(wd, ht)
 			c.Save()
 			if err := ap.stroke(f.Color); err != nil {
@@ -392,7 +392,7 @@ func (pc *pageCtx) appearance(w *areatree.Widget, state string) (pdf.Ref, error)
 		}
 	case "radio":
 		if state == "on" {
-			// Gefüllter Kreis aus vier Bézierkurven.
+			// Filled circle from four Bézier curves.
 			rad := math.Min(wd, ht) * 0.25
 			cx, cy := wd/2, ht/2
 			c.Save()
@@ -404,7 +404,7 @@ func (pc *pageCtx) appearance(w *areatree.Widget, state string) (pdf.Ref, error)
 			c.Restore()
 		}
 	case "text", "combo", "list":
-		// Variabler Text steht in /Tx BMC (ISO 32000-1 12.7.3.3).
+		// Variable text is in /Tx BMC (ISO 32000-1 12.7.3.3).
 		c.BeginTag("Tx")
 		c.Save()
 		ap.rect(areatree.Rect{X: w.X + 1000, Y: w.Y + 1000, W: w.W - 2000, H: w.H - 2000})
@@ -436,7 +436,7 @@ func (pc *pageCtx) appearance(w *areatree.Widget, state string) (pdf.Ref, error)
 	), c.Bytes())), nil
 }
 
-// circle zeichnet einen Kreis aus vier Bézierkurven.
+// circle draws a circle from four Bézier curves.
 func circle(c *pdf.Content, cx, cy, r float64) {
 	k := r * 0.5523
 	c.MoveTo(cx+r, cy)
@@ -447,8 +447,8 @@ func circle(c *pdf.Content, cx, cy, r float64) {
 	c.ClosePath()
 }
 
-// flatWidget zeichnet das Erscheinungsbild eines Felds im aktuellen Zustand
-// als Form XObject in den Seiteninhalt, markiert wie geplant.
+// flatWidget draws the appearance of a field in its current state
+// as a form XObject into the page content, marked as planned.
 func (pc *pageCtx) flatWidget(w *areatree.Widget) error {
 	f := w.Field
 	state := ""

@@ -9,7 +9,7 @@ import (
 	"github.com/tim-riep/pdx/template"
 )
 
-// waitReport wartet auf einen Bericht zur Revision rev.
+// waitReport waits for a report for revision rev.
 func waitReport(t *testing.T, r *recorder, rev uint64) Report {
 	t.Helper()
 	return r.wait(t, EventProblems, func(d any) bool { rep, ok := d.(Report); return ok && rep.Rev == rev }).(Report)
@@ -28,7 +28,7 @@ func TestValidation(t *testing.T) {
 		}
 	}
 
-	// Falsche Bindung: Befund mit Vorlagen-ID.
+	// Wrong binding: finding with template ID.
 	ts := NewTemplateService(c)
 	res, err := ts.Apply("Bindung", model.Command{Op: "setAttr", Ref: "z-betrag-f", Name: "bind", Value: "inv:betrag"})
 	if err != nil {
@@ -48,7 +48,7 @@ func TestValidation(t *testing.T) {
 		t.Fatalf("Problems() %+v", got)
 	}
 
-	// Präsenz mit unbekanntem Knoten: Hinweis am Element.
+	// Presence with unknown node: hint on the element.
 	res, err = ts.Apply("Präsenz", model.Command{Op: "setAttr", Ref: "titel", Name: "presence", Value: "exists(inv:gibtsnicht)"})
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +67,7 @@ func TestValidation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Undo: der alte Stand ist wieder ohne Befund.
+	// Undo: the old state is again without findings.
 	res, err = ts.Undo()
 	if err != nil {
 		t.Fatal(err)
@@ -102,7 +102,7 @@ func TestProblemsOfSamples(t *testing.T) {
 	}
 }
 
-// runChecksFor prüft den aktuellen Stand eines Dokuments.
+// runChecksFor checks the current state of a document.
 func runChecksFor(c *Core) []Problem {
 	c.mu.Lock()
 	canon := template.Write(c.doc.Pkg.Template)

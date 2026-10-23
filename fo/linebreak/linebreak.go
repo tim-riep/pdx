@@ -1,7 +1,7 @@
-// Package linebreak bricht Absätze im Box-Glue-Penalty-Modell von Knuth und
-// Plass um. Phase 0 liefert einen Greedy-Algorithmus. Die Schnittstelle ist so
-// geschnitten, dass in Phase 1 Knuth-Plass und Silbentrennung (geflaggte
-// Penalties) ohne Änderung der Aufrufer hinzukommen.
+// Package linebreak breaks paragraphs in the box-glue-penalty model of Knuth
+// and Plass. Phase 0 provides a greedy algorithm. The interface is designed
+// so that in phase 1 Knuth-Plass and hyphenation (flagged
+// penalties) can be added without changing the callers.
 package linebreak
 
 import (
@@ -10,63 +10,63 @@ import (
 	"github.com/tim-riep/pdx/areatree"
 )
 
-// Kind ist die Art eines Elements.
+// Kind is the kind of an item.
 type Kind uint8
 
 const (
-	// Box ist unteilbarer Inhalt fester Breite.
+	// Box is indivisible content of fixed width.
 	Box Kind = iota
-	// Glue ist dehnbarer Zwischenraum und eine Umbruchstelle, wenn eine Box
-	// vorausgeht.
+	// Glue is stretchable space and a break point if a box
+	// precedes it.
 	Glue
-	// Penalty ist eine Umbruchstelle mit Kosten. Penalty <= ForcedBreak
-	// erzwingt den Umbruch, Penalty >= Forbidden verbietet ihn.
+	// Penalty is a break point with a cost. Penalty <= ForcedBreak
+	// forces the break, Penalty >= Forbidden forbids it.
 	Penalty
 )
 
 const (
-	// ForcedBreak erzwingt einen Umbruch.
+	// ForcedBreak forces a break.
 	ForcedBreak = -10000
-	// Forbidden verbietet einen Umbruch.
+	// Forbidden forbids a break.
 	Forbidden = 10000
 )
 
-// Item ist ein Element eines Absatzes.
+// Item is an item of a paragraph.
 type Item struct {
 	Kind    Kind
 	Width   areatree.Length
 	Stretch areatree.Length
 	Shrink  areatree.Length
 	Penalty int
-	// Flagged markiert Trennstellen mit Trennstrich (für Phase 1).
+	// Flagged marks hyphenation points with a hyphen (for phase 1).
 	Flagged bool
-	// Payload verweist auf den Inhalt beim Aufrufer.
+	// Payload refers to the content at the caller.
 	Payload int
 }
 
-// Break ist eine gewählte Umbruchstelle.
+// Break is a chosen break point.
 type Break struct {
-	// Index ist die Position des Glue oder Penalty, an der umbrochen wird.
-	// Der letzte Break eines Absatzes zeigt auf len(items).
+	// Index is the position of the glue or penalty at which the line breaks.
+	// The last break of a paragraph points to len(items).
 	Index int
-	// Ratio ist das Anpassungsverhältnis der Zeile: positiv dehnen, negativ
-	// stauchen, bezogen auf Stretch bzw. Shrink.
+	// Ratio is the adjustment ratio of the line: positive stretches, negative
+	// shrinks, relative to Stretch or Shrink.
 	Ratio float64
 }
 
-// LineWidth liefert die verfügbare Breite der Zeile line (ab 0).
+// LineWidth returns the available width of line line (from 0).
 type LineWidth func(line int) areatree.Length
 
-// Breaker wählt Umbruchstellen.
+// Breaker chooses break points.
 type Breaker interface {
 	Break(items []Item, width LineWidth) ([]Break, error)
 }
 
-// Greedy füllt jede Zeile so weit wie möglich. Eine Box, die allein breiter
-// als die Zeile ist, steht in einer eigenen, überlaufenden Zeile.
+// Greedy fills each line as far as possible. A box that alone is wider
+// than the line stands in its own overflowing line.
 type Greedy struct{}
 
-// Break wählt die Umbruchstellen.
+// Break chooses the break points.
 func (Greedy) Break(items []Item, width LineWidth) ([]Break, error) {
 	if width == nil {
 		return nil, errors.New("linebreak: keine Zeilenbreite")
@@ -82,7 +82,7 @@ func (Greedy) Break(items []Item, width LineWidth) ([]Break, error) {
 		avail := width(line)
 		var w, st, sh areatree.Length
 		lastBreak := -1
-		var lw, lst, lsh areatree.Length // Maße bis zur letzten Umbruchstelle
+		var lw, lst, lsh areatree.Length // measures up to the last break point
 		forced := false
 		i := start
 		for ; i < len(items); i++ {
@@ -92,14 +92,14 @@ func (Greedy) Break(items []Item, width LineWidth) ([]Break, error) {
 			if isBreak {
 				extra := areatree.Length(0)
 				if it.Kind == Penalty {
-					extra = it.Width // Trennstrich
+					extra = it.Width // hyphen
 				}
 				if w+extra-sh <= avail || lastBreak < 0 && it.Kind == Penalty && it.Penalty <= ForcedBreak {
 					lastBreak, lw, lst, lsh = i, w+extra, st, sh
 				} else if lastBreak >= 0 {
 					break
 				} else {
-					// Erste Umbruchstelle passt schon nicht: Überlauf hinnehmen.
+					// The first break point already does not fit: accept the overflow.
 					lastBreak, lw, lst, lsh = i, w+extra, st, sh
 					break
 				}
@@ -133,8 +133,8 @@ func (Greedy) Break(items []Item, width LineWidth) ([]Break, error) {
 	return breaks, nil
 }
 
-// ratio berechnet das Anpassungsverhältnis. Letzte Zeilen werden nicht
-// gedehnt, nur gestaucht, wenn nötig.
+// ratio computes the adjustment ratio. Last lines are not
+// stretched, only shrunk if needed.
 func ratio(avail, w, st, sh areatree.Length, last bool) float64 {
 	switch {
 	case w < avail && !last && st > 0:
@@ -145,7 +145,7 @@ func ratio(avail, w, st, sh areatree.Length, last bool) float64 {
 	return 0
 }
 
-// skipDiscardable überspringt Glue und Penalties am Zeilenanfang.
+// skipDiscardable skips glue and penalties at the start of a line.
 func skipDiscardable(items []Item, i int) int {
 	for i < len(items) && items[i].Kind != Box {
 		if items[i].Kind == Penalty && items[i].Penalty <= ForcedBreak {

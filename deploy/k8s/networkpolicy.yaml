@@ -1,6 +1,6 @@
-# Eingehend nur von Pods mit dem Label pdx-client=true (beliebiger
-# Namespace) und vom Monitoring, ausgehend nur DNS. Für /v1/sign ab B-T
-# zusätzlich den Zeitstempeldienst und für B-LT OCSP und CRL freigeben.
+# Ingress only from pods with the label pdx-client=true (any namespace)
+# and from monitoring, egress only DNS. For /v1/sign from B-T on, also
+# allow the timestamp service, and for B-LT also OCSP and CRL.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

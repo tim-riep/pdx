@@ -9,37 +9,37 @@ import (
 	"github.com/tim-riep/pdx/designer/internal/xpath"
 )
 
-// XPathQuery beschreibt einen Ausdruck an einem Vorlagenelement. Cursor ist
-// die Stelle in Zeichen (UTF-16 wie im Browser) für die Vervollständigung.
+// XPathQuery describes an expression on a template element. Cursor is
+// the position in characters (UTF-16 as in the browser) for completion.
 type XPathQuery struct {
 	Ref    string `json:"ref"`
 	Expr   string `json:"expr"`
 	Cursor int    `json:"cursor"`
 }
 
-// XPathInfo ist das Ergebnis der Prüfung eines Ausdrucks.
+// XPathInfo is the result of checking an expression.
 type XPathInfo struct {
-	// Context ist der Datenkontext des Elements, leer ohne Datenwurzel.
+	// Context is the data context of the element, empty without data root.
 	Context string `json:"context"`
-	// Data nennt die Daten der Auswertung: den Pfad der Beispieldaten oder
-	// leer für Platzhalter.
+	// Data names the data of the evaluation: the path of the sample data or
+	// empty for placeholders.
 	Data     string          `json:"data"`
 	Problems []xpath.Problem `json:"problems"`
-	// Target ist der Datenknoten eines einfachen Pfads.
+	// Target is the data node of a simple path.
 	Target *Field        `json:"target"`
 	Result *xpath.Result `json:"result"`
 }
 
-// Field ist ein Datenknoten, relativ zum Kontext eines Elements.
+// Field is a data node, relative to the context of an element.
 type Field struct {
-	Path     string `json:"path"` // relativer XPath
+	Path     string `json:"path"` // relative XPath
 	Type     string `json:"type"`
 	Repeated bool   `json:"repeated"`
 	Optional bool   `json:"optional"`
 }
 
-// xpathInput sammelt unter der Sperre, was Prüfung und Vervollständigung
-// brauchen.
+// xpathInput collects under the lock what check and completion
+// need.
 type xpathInput struct {
 	sc     *schema.Schema
 	ctx    string
@@ -73,13 +73,13 @@ func (s *TemplateService) xpathInput(ref string) (xpathInput, error) {
 			in.ns[p] = uri
 		}
 	}
-	// Beispieldaten wie in der Vorschau, sonst Platzhalter.
+	// Sample data as in the preview, otherwise placeholders.
 	in.data, in.sample = s.c.previewDataLocked()
 	return in, nil
 }
 
-// CheckXPath prüft einen Ausdruck: Pfade gegen das Daten-XSD, Syntax beim
-// Übersetzen und Wert mit Beispieldaten im ersten Vorkommen des Kontexts.
+// CheckXPath checks an expression: paths against the data XSD, syntax when
+// compiling and value with sample data in the first occurrence of the context.
 func (s *TemplateService) CheckXPath(q XPathQuery) (XPathInfo, error) {
 	in, err := s.xpathInput(q.Ref)
 	if err != nil {
@@ -106,7 +106,7 @@ func (s *TemplateService) CheckXPath(q XPathQuery) (XPathInfo, error) {
 	return info, nil
 }
 
-// CompleteXPath liefert Vorschläge für die Stelle Cursor.
+// CompleteXPath returns suggestions for the position Cursor.
 func (s *TemplateService) CompleteXPath(q XPathQuery) (xpath.Completion, error) {
 	in, err := s.xpathInput(q.Ref)
 	if err != nil {
@@ -117,8 +117,8 @@ func (s *TemplateService) CompleteXPath(q XPathQuery) (xpath.Completion, error) 
 	return c, nil
 }
 
-// XPathFields listet die Datenknoten unter dem Kontext eines Elements mit
-// relativem Pfad, etwa für die Auswahl bei Präsenzbedingungen.
+// XPathFields lists the data nodes under the context of an element with
+// relative path, for example for the selection in presence conditions.
 func (s *TemplateService) XPathFields(ref string) ([]Field, error) {
 	in, err := s.xpathInput(ref)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *TemplateService) XPathFields(ref string) ([]Field, error) {
 	walk = func(n *schema.Node, depth int) {
 		for _, k := range n.Children {
 			out = append(out, Field{Path: schema.Relative(in.ctx, k.Path), Type: k.Type, Repeated: k.Repeated(), Optional: k.Min == 0})
-			// Nicht in wiederholte Knoten hinein: dort ist der Pfad mehrdeutig.
+			// Not into repeated nodes: there the path is ambiguous.
 			if depth < 3 && !k.Repeated() {
 				walk(k, depth+1)
 			}
@@ -146,8 +146,8 @@ func (s *TemplateService) XPathFields(ref string) ([]Field, error) {
 	return out, nil
 }
 
-// utf16Index rechnet eine Byte-Position in eine Position in UTF-16-Einheiten
-// um, wie sie JavaScript zählt.
+// utf16Index converts a byte position into a position in UTF-16 units,
+// as JavaScript counts them.
 func utf16Index(s string, b int) int {
 	n := 0
 	for i, r := range s {
@@ -162,7 +162,7 @@ func utf16Index(s string, b int) int {
 	return n
 }
 
-// byteIndex ist die Umkehrung von utf16Index.
+// byteIndex is the inverse of utf16Index.
 func byteIndex(s string, u int) int {
 	n := 0
 	for i, r := range s {
@@ -177,9 +177,9 @@ func byteIndex(s string, u int) int {
 	return len(s)
 }
 
-// RelativeBind liefert den XPath zu einem Datenknoten (Pfad im Datenbaum)
-// relativ zum Kontext eines Elements, etwa für ein Feld, das in einen Text
-// gezogen wird.
+// RelativeBind returns the XPath to a data node (path in the data tree)
+// relative to the context of an element, for example for a field that is
+// dragged into a text.
 func (s *TemplateService) RelativeBind(ref, path string) (string, error) {
 	in, err := s.xpathInput(ref)
 	if err != nil {

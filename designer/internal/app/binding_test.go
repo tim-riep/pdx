@@ -17,7 +17,7 @@ func TestFragment(t *testing.T) {
 	}
 }
 
-// TestDrop prüft die Regeln für gezogene Datenknoten an der Musterrechnung.
+// TestDrop checks the rules for dragged data nodes on the sample invoice.
 func TestDrop(t *testing.T) {
 	c := NewCore(nil, nil, t.TempDir())
 	if _, err := NewProjectService(c).Open(muster); err != nil {
@@ -84,7 +84,7 @@ func TestDrop(t *testing.T) {
 			t.Errorf("%s: %s\n%s", tc.drop.Path, msg, fragment(n.Clone()))
 		}
 	}
-	// Die Vorlage bleibt gültig und die Bindungen passen zum Schema.
+	// The template stays valid and the bindings match the schema.
 	if err := d.Pkg.Template.Validate(); err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +113,7 @@ func TestImportSchema(t *testing.T) {
 	if err != nil || tree == nil || tree.Find("d:invoice/d:items/d:item") == nil {
 		t.Fatalf("Datenbaum nach Import: %v", err)
 	}
-	// Felder lassen sich danach ziehen.
+	// Fields can be dragged afterwards.
 	res, err := NewTemplateService(c).Drop(Drop{Path: "d:invoice/d:number", Parent: "inhalt", Index: -1})
 	if err != nil || c.doc.Pkg.Template.ByID(res.Select).Get("bind", "") != "d:number" {
 		t.Fatalf("Drop nach Import: %v", err)
@@ -143,7 +143,7 @@ func TestInsertElements(t *testing.T) {
 			}
 			n := c.doc.Pkg.Template.ByID(res.Select)
 			if n != nil && n.Parent.ID() != parent && n.Parent.Name == "subform" {
-				n = n.Parent // in einem Teilformular mit Lage
+				n = n.Parent // in a subform with placement
 			}
 			if n == nil || n.Parent.ID() != parent {
 				t.Fatalf("%s in %s: Element fehlt", kind, parent)

@@ -3,5 +3,5 @@ kind: Namespace
 metadata:
   name: pdx
   labels:
-    # Pods ohne Rechte über den Standard hinaus (Pod Security Standards).
+    # Pods without privileges beyond the default (Pod Security Standards).
     pod-security.kubernetes.io/enforce: restricted

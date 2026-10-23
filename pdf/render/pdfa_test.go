@@ -36,7 +36,7 @@ func pdfaDoc(t testing.TB) *areatree.Document {
 		Name: "factur-x.xml", MIMEType: "text/xml", Relationship: areatree.Alternative,
 		Description: "Rechnungsdaten", Data: []byte(facturX),
 	}}
-	// Formen mit Grau und RGB ergänzen.
+	// Add shapes with gray and RGB.
 	doc.Pages[0].Areas = append(doc.Pages[0].Areas, shapes().Pages[0].Areas...)
 	return doc
 }
@@ -86,7 +86,7 @@ func TestAttachmentValidation(t *testing.T) {
 	}
 }
 
-// denyAttach ist ein Profil, das keine Anhänge erlaubt, wie später PDF/A-2b.
+// denyAttach is a profile that allows no attachments, like PDF/A-2b later.
 type denyAttach struct{ profile.PDF17 }
 
 func (denyAttach) Name() string { return "ohne-anhang" }
@@ -116,8 +116,8 @@ func lookup(t testing.TB, spec string) profile.Profile {
 	return p
 }
 
-// PDF/A-2 erlaubt nur PDF/A-1- und PDF/A-2-Dokumente als Anhang
-// (ISO 19005-2 6.8). Alle unzulässigen Anhänge stehen in einer Meldung.
+// PDF/A-2 only allows PDF/A-1 and PDF/A-2 documents as attachments
+// (ISO 19005-2 6.8). All invalid attachments are in one message.
 func TestPDFA2Attachments(t *testing.T) {
 	inner, err := Render(shapes(), Options{Profile: lookup(t, "pdfa-2b"), CreationDate: testDate})
 	if err != nil {
@@ -149,14 +149,14 @@ func TestPDFA2Attachments(t *testing.T) {
 		t.Fatal(err)
 	}
 	testutil.Conform(t, "pdfa2b-anhang.pdf", b, "pdfa-2b")
-	// Unter PDF/A-3 ist jeder Anhang erlaubt.
+	// Under PDF/A-3 every attachment is allowed.
 	doc.Attachments = []areatree.Attachment{{Name: "daten.xml", MIMEType: "text/xml", Data: []byte(facturX)}}
 	if _, err := Render(doc, Options{Profile: lookup(t, "pdfa-3u"), CreationDate: testDate}); err != nil {
 		t.Fatal(err)
 	}
 }
 
-// Text mit zwei Schriften in den Stufen U.
+// Text with two fonts at the U levels.
 func TestPDFAUnicodeLevels(t *testing.T) {
 	for _, spec := range []string{"pdfa-2u", "pdfa-3u"} {
 		doc := textDoc(t)
@@ -173,9 +173,9 @@ func TestPDFAUnicodeLevels(t *testing.T) {
 	}
 }
 
-// PDF/A-4 beruht auf PDF 2.0: Kopf %PDF-2.0, kein Info-Dictionary,
-// pdfaid:rev 2020 und keine Stufe außer F. Anhänge sind unter 4 nur als
-// PDF/A-1, -2 oder -4 erlaubt, 4f verlangt mindestens einen.
+// PDF/A-4 is based on PDF 2.0: header %PDF-2.0, no info dictionary,
+// pdfaid:rev 2020 and no level except F. Under 4, attachments are only
+// allowed as PDF/A-1, -2 or -4, 4f requires at least one.
 func TestPDFA4(t *testing.T) {
 	doc := textDoc(t)
 	doc.Meta = areatree.Metadata{Title: "PDF/A-4", Lang: "de-DE"}
@@ -203,7 +203,7 @@ func TestPDFA4(t *testing.T) {
 	}
 	testutil.Conform(t, "pdfa-4.pdf", b, "pdfa-4")
 
-	// 4f ohne Anhang ist ein Fehler, mit Anhang konform.
+	// 4f without an attachment is an error, with an attachment conforming.
 	if _, err := Render(doc, Options{Profile: lookup(t, "pdfa-4f"), CreationDate: testDate}); err == nil ||
 		!strings.Contains(err.Error(), "ISO 19005-4 6.9") {
 		t.Errorf("4f ohne Anhang: %v", err)
@@ -218,7 +218,7 @@ func TestPDFA4(t *testing.T) {
 	}
 	testutil.Conform(t, "pdfa-4f.pdf", b, "pdfa-4f")
 
-	// Unter PDF/A-4 ohne Stufe nur PDF/A-Anhänge, PDF/A-3 gehört nicht dazu.
+	// Under PDF/A-4 without a level only PDF/A attachments, PDF/A-3 is not one of them.
 	inner, err := Render(shapes(), Options{Profile: pdfa3b(t), CreationDate: testDate})
 	if err != nil {
 		t.Fatal(err)

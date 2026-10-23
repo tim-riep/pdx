@@ -7,47 +7,47 @@ import (
 	"strings"
 )
 
-// Node ist ein Strukturelement mit dem Text seines markierten Inhalts.
+// Node is a structure element with the text of its marked content.
 type Node struct {
 	Type string
-	// Std ist der Standardtyp nach RoleMap, wenn er abweicht.
+	// Std is the standard type according to RoleMap, if it differs.
 	Std   string
 	Lang  string
 	Alt   string
 	Scope string
-	// ColSpan und RowSpan sind die Spannen einer Zelle, 0 ohne Angabe.
+	// ColSpan and RowSpan are the spans of a cell, 0 if not specified.
 	ColSpan, RowSpan int
-	// Text ist der Text der eigenen markierten Inhalte in Baumreihenfolge.
+	// Text is the text of its own marked content in tree order.
 	Text   string
 	Annots []string
 	Kids   []*Node
-	// Items ist der Inhalt in Reihenfolge von /K: Text, Kind oder
-	// Annotation.
+	// Items is the content in the order of /K: text, kid or
+	// annotation.
 	Items []Item
 }
 
-// Item ist ein Eintrag im Inhalt eines Elements.
+// Item is an entry in the content of an element.
 type Item struct {
 	Text  string
 	Kid   *Node
 	Annot string
 }
 
-// Structure ist der logische Strukturbaum einer Datei mit den Befunden der
-// Konsistenzprüfung.
+// Structure is the logical structure tree of a file with the findings of the
+// consistency check.
 type Structure struct {
 	Root      *Node
 	Marked    bool
 	Lang      string
 	Artifacts int
-	// Problems sind Widersprüche zwischen Baum, ParentTree und Inhalt.
+	// Problems are contradictions between tree, ParentTree and content.
 	Problems []string
 }
 
 type mcKey struct{ page, mcid int }
 
-// ReadStructure liest den Strukturbaum und prüft ihn gegen die Inhalte der
-// Seiten. Ohne StructTreeRoot ist Root nil.
+// ReadStructure reads the structure tree and checks it against the content of
+// the pages. Without StructTreeRoot, Root is nil.
 func (f *File) ReadStructure() (*Structure, error) {
 	root := f.Root()
 	st := &Structure{}
@@ -78,7 +78,7 @@ func (f *File) ReadStructure() (*Structure, error) {
 			}
 			content[k] = m
 		}
-		// Ungetaggte Dateien dürfen unmarkierten Inhalt haben.
+		// Untagged files may have unmarked content.
 		if pc.Unmarked > 0 && (st.Marked || root["StructTreeRoot"] != nil) {
 			st.problem("Seite %d: %d zeichnende Operatoren ohne Markierung", pi+1, pc.Unmarked)
 		}
@@ -98,7 +98,7 @@ func (f *File) ReadStructure() (*Structure, error) {
 	}
 	roleMap := f.Dict(str["RoleMap"])
 	parentTree := f.numberTree(str["ParentTree"])
-	// Erwartete Einträge im ParentTree: je Seite die Elemente je MCID.
+	// Expected entries in the ParentTree: per page the elements per MCID.
 	owner := map[mcKey]Ref{}
 	seen := map[Ref]bool{}
 	var walk func(o Object, pg int, depth int) *Node
@@ -279,7 +279,7 @@ func attrs(f *File, o Object) []Dict {
 	return out
 }
 
-// numberTree liest einen Zahlenbaum flach ein (ISO 32000-1 7.9.7).
+// numberTree reads a number tree flat (ISO 32000-1 7.9.7).
 func (f *File) numberTree(o Object) map[int]Object {
 	out := map[int]Object{}
 	var walk func(o Object, depth int)
@@ -302,17 +302,17 @@ func (f *File) numberTree(o Object) map[int]Object {
 	return out
 }
 
-// textString dekodiert eine Textzeichenkette, siehe TextString.
+// textString decodes a text string, see TextString.
 func textString(s String) string { return TextString(s) }
 
-// joinText fügt Textstücke zusammen, mit Leerzeichen dort, wo keines steht.
+// joinText joins text pieces, with spaces where there are none.
 func joinText(parts []string) string {
 	var b strings.Builder
 	for _, p := range parts {
 		if p == "" {
 			continue
 		}
-		// Ein weicher Trennstrich am Ende verbindet mit dem nächsten Stück.
+		// A soft hyphen at the end joins with the next piece.
 		cur := b.String()
 		if strings.HasSuffix(cur, "\u00ad") {
 			b.Reset()
@@ -325,7 +325,7 @@ func joinText(parts []string) string {
 	return strings.TrimSpace(strings.ReplaceAll(b.String(), "\u00ad", ""))
 }
 
-// Format schreibt den Baum eingerückt, ein Element je Zeile.
+// Format writes the tree indented, one element per line.
 func (s *Structure) Format(w io.Writer) error {
 	var b strings.Builder
 	if s.Root == nil {
@@ -354,8 +354,8 @@ func (s *Structure) Format(w io.Writer) error {
 			if n.Alt != "" {
 				fmt.Fprintf(&b, " alt=%q", n.Alt)
 			}
-			// Nur Text steht in der Zeile des Elements, gemischter Inhalt
-			// darunter in Reihenfolge.
+			// Only text goes on the line of the element, mixed content
+			// below it in order.
 			if len(n.Kids) == 0 && len(n.Annots) == 0 {
 				if n.Text != "" {
 					fmt.Fprintf(&b, " %q", n.Text)
