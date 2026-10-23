@@ -31,10 +31,13 @@ test("Text mit Feld-Chips bearbeiten: Inspektor, @ und Doppelklick", async ({ pa
   await expect(editor.locator(".chip")).toHaveCount(1);
   await expect(editor).not.toContainText("vom");
 
-  // Doppelklick im Canvas öffnet den Editor am Text, Escape verwirft.
-  const zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
-  const mm = 72 / 25.4;
-  await page.locator('[data-page="1"]').dblclick({ position: { x: 130 * mm * zoom, y: 52 * mm * zoom } });
+  // Doppelklick im Canvas öffnet den Editor am Text, Escape verwirft. Ziel
+  // ist die Mitte des Auswahlrahmens, nicht eine aus dem Zoom berechnete
+  // Stelle, der Zoom kann sich auf langsamen Rechnern noch ändern.
+  const frame = page.locator('[data-page="1"] [data-sel="rechnungsnummer"]');
+  await expect(frame).toBeVisible();
+  const box = (await frame.boundingBox())!;
+  await page.mouse.dblclick(box.x + box.width / 2, box.y + box.height / 2);
   const inline = page.getByTestId("inline-edit").getByTestId("content-editor");
   await expect(inline).toBeVisible();
   await expect(inline).toBeFocused();

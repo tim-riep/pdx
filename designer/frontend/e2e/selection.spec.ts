@@ -6,9 +6,13 @@ test("Klick im Canvas wählt das Vorlagenelement", async ({ page }) => {
   await expect(page.locator('[data-page="1"] canvas')).toBeVisible();
   // Das Adressfenster liegt bei 20 mm bis 105 mm waagerecht und 45 mm bis
   // 90 mm senkrecht. Ein Punkt darin ist 60 mm, 75 mm (170 pt, 213 pt).
-  const zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
-  await page.locator('[data-page="1"]').click({ position: { x: 170 * zoom, y: 213 * zoom } });
-  await expect(page.locator("[data-sel]")).toHaveAttribute("data-sel", /adressfenster|empfaenger/);
+  // Der Zoom kann sich nach dem Öffnen noch ändern, daher lesen und
+  // klicken, bis die Auswahl steht.
+  await expect(async () => {
+    const zoom = parseFloat((await page.getByTestId("zoom").textContent())!) / 100;
+    await page.locator('[data-page="1"]').click({ position: { x: 170 * zoom, y: 213 * zoom } });
+    await expect(page.locator("[data-sel]")).toHaveAttribute("data-sel", /adressfenster|empfaenger/, { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   const inspector = page.getByTestId("inspector");
   await expect(inspector.locator("code")).toHaveText(/adressfenster|empfaenger/);
   // Die Hierarchie zeigt die Auswahl.
