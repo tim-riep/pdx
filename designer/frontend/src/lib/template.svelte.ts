@@ -23,28 +23,40 @@ export const tpl = $state({
   history: { undo: "", redo: "", can: [false, false] } as History,
 });
 
-let loading = -1;
+// doc identifies the open document, snapDoc the document of the current
+// snapshot. A request remembers its document: a response that arrives after
+// a document change is stale and is dropped, otherwise the tree would show
+// the previous template. Requests are deduplicated per document and revision.
+let doc = "";
+let snapDoc = "";
+let loading = "";
 
 async function refresh(rev: number) {
-  if (tpl.snapshot?.rev === rev || loading === rev) return;
-  loading = rev;
+  const key = `${doc}:${rev}`;
+  if ((tpl.snapshot?.rev === rev && snapDoc === doc) || loading === key) return;
+  loading = key;
+  const forDoc = doc;
+  let snap: Snapshot | null;
   try {
-    tpl.snapshot = await TemplateAPI.Snapshot();
+    snap = await TemplateAPI.Snapshot();
   } catch {
-    tpl.snapshot = null;
+    snap = null;
   }
-  loading = -1;
+  if (loading === key) loading = "";
+  if (forDoc !== doc) return;
+  tpl.snapshot = snap;
+  snapDoc = forDoc;
 }
-
-let doc = "";
 
 on<ProjectState>(EVENT.project, (s) => {
   if (!s.open) {
     tpl.snapshot = null;
     doc = "";
+    snapDoc = "";
   } else if (s.doc !== doc || tpl.snapshot === null) {
     doc = s.doc;
     tpl.snapshot = null;
+    snapDoc = "";
     refresh(s.rev);
     TemplateAPI.History().then((h) => (tpl.history = h));
   }
