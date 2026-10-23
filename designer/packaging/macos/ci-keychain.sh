@@ -21,9 +21,23 @@ security import "$dir/cert.p12" -k "$keychain" -P "$MACOS_CERT_PASSWORD" \
   -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/bin/productsign
 rm -f "$dir/cert.p12"
 security set-key-partition-list -S apple-tool:,apple: -s -k "$pass" "$keychain" >/dev/null
+# Zwischenzertifikate von Apple, sonst gelten Developer-ID-Identitäten auf
+# dem Runner als ungültig (Developer ID G2 seit 2022, dazu die ältere).
+for ca in DeveloperIDG2CA DeveloperIDCA; do
+  if curl -fsSL "https://www.apple.com/certificateauthority/$ca.cer" -o "$dir/$ca.cer"; then
+    security import "$dir/$ca.cer" -k "$keychain" >/dev/null 2>&1 || true
+  fi
+done
 security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
 app=$(security find-identity -v -p codesigning "$keychain" | sed -n 's/.*\([0-9A-F]\{40\}\) "Developer ID Application.*/\1/p' | head -1)
 inst=$(security find-identity -v "$keychain" | sed -n 's/.*\([0-9A-F]\{40\}\) "Developer ID Installer.*/\1/p' | head -1)
+if [ -z "$app" ] || [ -z "$inst" ]; then
+  # Nur Namen und Gültigkeit, keine Schlüssel.
+  echo "ci-keychain: Zertifikate im .p12:" >&2
+  security find-certificate -a "$keychain" | sed -n 's/.*"labl"<blob>="\(.*\)"/  \1/p' >&2
+  echo "ci-keychain: Identitäten (auch ungültige):" >&2
+  security find-identity "$keychain" | sed -E 's/[0-9A-F]{40}/<sha1>/' >&2
+fi
 [ -n "$app" ] || { echo "ci-keychain: kein Zertifikat Developer ID Application im .p12" >&2; exit 1; }
 [ -n "$inst" ] || { echo "ci-keychain: kein Zertifikat Developer ID Installer im .p12" >&2; exit 1; }
 {
