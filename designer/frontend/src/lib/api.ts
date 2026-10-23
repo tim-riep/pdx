@@ -32,6 +32,7 @@ export type {
   ProjectState,
   RecentFile,
   Recovery,
+  VeraPDFSetup,
   PublishState,
   PublishDiff,
   PublishResult,

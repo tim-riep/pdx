@@ -649,5 +649,14 @@
   "licenses.unknown": "siehe Text",
   "licenses.copy": "Alle Hinweise kopieren",
   "licenses.copied": "Kopiert",
-  "licenses.close": "Schließen"
+  "licenses.close": "Schließen",
+  "verapdf.searching": "Suche veraPDF …",
+  "verapdf.uses": "Genutzt wird {runner}.",
+  "verapdf.help": "Verlangt ist veraPDF {version}. Ohne Pfad sucht der Designer im PATH, unter ~/verapdf, /usr/local/bin und Homebrew (unter Windows im Benutzerordner und unter Programme) und nutzt sonst Docker.",
+  "verapdf.path": "Pfad",
+  "verapdf.auto": "automatisch suchen",
+  "verapdf.choose": "Wählen …",
+  "verapdf.pick": "veraPDF-Programm wählen",
+  "verapdf.apply": "Übernehmen",
+  "verapdf.reset": "Automatisch"
 }

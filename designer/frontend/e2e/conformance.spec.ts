@@ -32,3 +32,24 @@ test("Konformität: Befunde nach Regeln, Klick führt zum Element", async ({ pag
   await expect(panel).toContainText("Veraltet, die Vorlage hat sich seitdem geändert.");
   await page.getByRole("button", { name: "Rückgängig", exact: true }).click();
 });
+
+// Die Einstellung veraPDF zeigt das gefundene Programm, übernimmt einen
+// gültigen Pfad, lehnt einen ungültigen mit Meldung ab und schaltet zurück.
+test("veraPDF-Pfad einstellen", async ({ page }) => {
+  test.skip(!process.env.PDX_E2E_VERAPDF, "nur mit Attrappe oder Pfad");
+  await openMuster(page);
+  await page.getByRole("tab", { name: "Konformität" }).click();
+  const box = page.getByTestId("verapdf-settings");
+  await box.locator("summary").click();
+  await expect(box.getByTestId("verapdf-status")).toContainText("veraPDF lokal");
+  const stub = process.env.PDX_E2E_VERAPDF!;
+  await box.getByTestId("verapdf-path").fill(stub);
+  await box.getByTestId("verapdf-apply").click();
+  await expect(box.getByTestId("verapdf-status")).toContainText(stub);
+  await box.getByTestId("verapdf-path").fill(stub + "-fehlt");
+  await box.getByTestId("verapdf-apply").click();
+  await expect(box.getByRole("alert")).toBeVisible();
+  await box.getByTestId("verapdf-auto").click();
+  await expect(box.getByTestId("verapdf-path")).toHaveValue("");
+  await expect(box.getByTestId("verapdf-status")).toContainText("veraPDF lokal");
+});

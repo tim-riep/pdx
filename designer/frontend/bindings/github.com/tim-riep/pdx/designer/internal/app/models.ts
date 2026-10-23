@@ -1416,6 +1416,62 @@ export class TokenOp {
 }
 
 /**
+ * VeraPDFSetup beschreibt, welches veraPDF der Designer nutzt.
+ */
+export class VeraPDFSetup {
+    /**
+     * Path ist der gewählte Pfad, leer bedeutet automatisch.
+     */
+    "path": string;
+
+    /**
+     * Runner beschreibt die gefundene Variante, Error warum keine gefunden
+     * wurde, Notes Hinweise wie eine abweichende Version.
+     */
+    "runner": string;
+    "error": string;
+    "notes": string[];
+
+    /**
+     * Version ist die verlangte Version.
+     */
+    "version": string;
+
+    /** Creates a new VeraPDFSetup instance. */
+    constructor($$source: Partial<VeraPDFSetup> = {}) {
+        if (!("path" in $$source)) {
+            this["path"] = "";
+        }
+        if (!("runner" in $$source)) {
+            this["runner"] = "";
+        }
+        if (!("error" in $$source)) {
+            this["error"] = "";
+        }
+        if (!("notes" in $$source)) {
+            this["notes"] = [];
+        }
+        if (!("version" in $$source)) {
+            this["version"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new VeraPDFSetup instance from a string or object.
+     */
+    static createFrom($$source: any = {}): VeraPDFSetup {
+        const $$createField3_0 = $$createType4;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("notes" in $$parsedSource) {
+            $$parsedSource["notes"] = $$createField3_0($$parsedSource["notes"]);
+        }
+        return new VeraPDFSetup($$parsedSource as Partial<VeraPDFSetup>);
+    }
+}
+
+/**
  * XPathInfo ist das Ergebnis der Prüfung eines Ausdrucks.
  */
 export class XPathInfo {

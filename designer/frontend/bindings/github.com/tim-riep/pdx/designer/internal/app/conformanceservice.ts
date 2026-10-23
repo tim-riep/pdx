@@ -33,6 +33,16 @@ export function Check(): $CancellablePromise<$models.Conformance> {
 }
 
 /**
+ * SetVeraPDF speichert einen Pfad zur veraPDF-CLI, leer schaltet auf die
+ * automatische Suche zurück. Ein Pfad muss auf eine lauffähige CLI zeigen.
+ */
+export function SetVeraPDF(path: string): $CancellablePromise<$models.VeraPDFSetup> {
+    return $Call.ByID(2171744514, path).then(($result: any) => {
+        return $$createType1($result);
+    });
+}
+
+/**
  * State liefert den letzten Stand.
  */
 export function State(): $CancellablePromise<$models.Conformance> {
@@ -41,5 +51,17 @@ export function State(): $CancellablePromise<$models.Conformance> {
     });
 }
 
+/**
+ * VeraPDF zeigt, welches veraPDF gefunden wird: zuerst der gewählte Pfad,
+ * dann PDX_VERAPDF, sonst die Suche im PATH und in den üblichen Ordnern,
+ * zuletzt Docker.
+ */
+export function VeraPDF(): $CancellablePromise<$models.VeraPDFSetup> {
+    return $Call.ByID(2183127826).then(($result: any) => {
+        return $$createType1($result);
+    });
+}
+
 // Private type creation functions
 const $$createType0 = $models.Conformance.createFrom;
+const $$createType1 = $models.VeraPDFSetup.createFrom;

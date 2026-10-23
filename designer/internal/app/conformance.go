@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"maps"
@@ -141,6 +142,70 @@ func (s *ConformanceService) Check() (Conformance, error) {
 	return st, nil
 }
 
+// VeraPDFSetup beschreibt, welches veraPDF der Designer nutzt.
+type VeraPDFSetup struct {
+	// Path ist der gewählte Pfad, leer bedeutet automatisch.
+	Path string `json:"path"`
+	// Runner beschreibt die gefundene Variante, Error warum keine gefunden
+	// wurde, Notes Hinweise wie eine abweichende Version.
+	Runner string   `json:"runner"`
+	Error  string   `json:"error"`
+	Notes  []string `json:"notes"`
+	// Version ist die verlangte Version.
+	Version string `json:"version"`
+}
+
+type verapdfSettings struct {
+	Path string `json:"path"`
+}
+
+func (c *Core) verapdfSettingsPath() string { return filepath.Join(c.dataDir, "verapdf.json") }
+
+// verapdfPath liest den gewählten Pfad aus den Einstellungen.
+func (c *Core) verapdfPath() string {
+	var st verapdfSettings
+	if b, err := os.ReadFile(c.verapdfSettingsPath()); err == nil {
+		json.Unmarshal(b, &st)
+	}
+	return st.Path
+}
+
+// VeraPDF zeigt, welches veraPDF gefunden wird: zuerst der gewählte Pfad,
+// dann PDX_VERAPDF, sonst die Suche im PATH und in den üblichen Ordnern,
+// zuletzt Docker.
+func (s *ConformanceService) VeraPDF() VeraPDFSetup {
+	path := s.c.verapdfPath()
+	setup := VeraPDFSetup{Path: path, Version: verapdf.Version, Notes: []string{}}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	r, err := verapdf.DetectWith(ctx, verapdf.Options{Path: path}, func(n string) { setup.Notes = append(setup.Notes, n) })
+	if err != nil {
+		setup.Error = err.Error()
+	} else {
+		setup.Runner = r.Name()
+	}
+	return setup
+}
+
+// SetVeraPDF speichert einen Pfad zur veraPDF-CLI, leer schaltet auf die
+// automatische Suche zurück. Ein Pfad muss auf eine lauffähige CLI zeigen.
+func (s *ConformanceService) SetVeraPDF(path string) (VeraPDFSetup, error) {
+	path = strings.TrimSpace(path)
+	if path != "" {
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		defer cancel()
+		if _, err := verapdf.DetectWith(ctx, verapdf.Options{Path: path}, nil); err != nil {
+			return s.VeraPDF(), err
+		}
+	}
+	b, _ := json.MarshalIndent(verapdfSettings{Path: path}, "", "  ")
+	os.MkdirAll(s.c.dataDir, 0o755)
+	if err := os.WriteFile(s.c.verapdfSettingsPath(), b, 0o600); err != nil {
+		return s.VeraPDF(), err
+	}
+	return s.VeraPDF(), nil
+}
+
 // Cancel bricht eine laufende Prüfung ab.
 func (s *ConformanceService) Cancel() {
 	c := s.c
@@ -241,7 +306,10 @@ func (c *Core) runConformance(ctx context.Context, gen int, in pipeline.Input, s
 
 	detect := c.conf.detect
 	if detect == nil {
-		detect = verapdf.Detect
+		opts := verapdf.Options{Path: c.verapdfPath()}
+		detect = func(ctx context.Context, warn func(string)) (verapdf.Runner, error) {
+			return verapdf.DetectWith(ctx, opts, warn)
+		}
 	}
 	runner, err := detect(ctx, func(s string) { st.Notes = append(st.Notes, s) })
 	if err != nil {

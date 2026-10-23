@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -100,5 +102,84 @@ func TestFlavours(t *testing.T) {
 	}
 	if _, err := Flavours(" , "); err == nil {
 		t.Fatal("leere Angabe angenommen")
+	}
+}
+
+// fakeCLI legt ein Skript an, das wie veraPDF eine Version meldet.
+func fakeCLI(t *testing.T, dir, name, version string) string {
+	t.Helper()
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	p := filepath.Join(dir, name)
+	if err := os.WriteFile(p, []byte("#!/bin/sh\necho \"veraPDF "+version+"\"\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	return p
+}
+
+// Ohne PATH findet Detect veraPDF in den üblichen Ordnern, überspringt eine
+// falsche Version, nutzt sonst Docker außerhalb des PATH. Ein ausdrücklicher
+// Pfad geht allem vor.
+func TestDetectSearchDirs(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Skripte mit Shebang")
+	}
+	root := t.TempDir()
+	old := searchDirs
+	t.Cleanup(func() { searchDirs = old })
+	dirs := map[string][]string{
+		"verapdf": {filepath.Join(root, "alt"), filepath.Join(root, "home", "verapdf")},
+		"docker":  {filepath.Join(root, "docker", "bin")},
+	}
+	searchDirs = func(prog string) []string { return dirs[prog] }
+	t.Setenv("PATH", filepath.Join(root, "leer"))
+	t.Setenv(EnvRunner, "")
+	ctx := context.Background()
+
+	if _, err := Detect(ctx, nil); err == nil {
+		t.Error("ohne veraPDF und Docker kein Fehler")
+	}
+	dockerBin := fakeCLI(t, filepath.Join(root, "docker", "bin"), "docker", "x")
+	r, err := Detect(ctx, nil)
+	if d, ok := r.(Docker); err != nil || !ok || d.Bin != dockerBin {
+		t.Fatalf("Docker außerhalb des PATH: %#v %v", r, err)
+	}
+	fakeCLI(t, filepath.Join(root, "alt"), "verapdf", "1.26.2")
+	good := fakeCLI(t, filepath.Join(root, "home", "verapdf"), "verapdf", Version)
+	var notes []string
+	r, err = Detect(ctx, func(s string) { notes = append(notes, s) })
+	if l, ok := r.(Local); err != nil || !ok || l.Path != good {
+		t.Fatalf("veraPDF unter ~/verapdf: %#v %v", r, err)
+	}
+	if len(notes) != 1 || !strings.Contains(notes[0], "1.26.2") {
+		t.Errorf("Hinweis auf falsche Version: %v", notes)
+	}
+	other := fakeCLI(t, filepath.Join(root, "eigen"), "verapdf", "1.28.1")
+	notes = nil
+	r, err = DetectWith(ctx, Options{Path: other}, func(s string) { notes = append(notes, s) })
+	if l, ok := r.(Local); err != nil || !ok || l.Path != other || len(notes) != 1 {
+		t.Errorf("ausdrücklicher Pfad: %#v %v %v", r, err, notes)
+	}
+	if _, err := DetectWith(ctx, Options{Path: filepath.Join(root, "fehlt")}, nil); err == nil {
+		t.Error("fehlender Pfad nicht gemeldet")
+	}
+	t.Setenv(EnvRunner, "docker")
+	if r, _ := Detect(ctx, nil); r.(Docker).Bin != dockerBin {
+		t.Error("PDX_VERAPDF=docker findet Docker außerhalb des PATH nicht")
+	}
+}
+
+func TestWithPath(t *testing.T) {
+	t.Setenv("PATH", "/a")
+	env := withPath("/neu")
+	found := false
+	for _, kv := range env {
+		if kv == "PATH=/neu"+string(os.PathListSeparator)+"/a" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("PATH nicht vorn ergänzt")
 	}
 }

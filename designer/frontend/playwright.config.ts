@@ -21,6 +21,7 @@ const bin = resolve(rootDir, "out", `designer-server${exe}`);
 // Mit PDX_E2E_REAL_VERAPDF=1 prüft das echte veraPDF (lokal oder Docker).
 const stub = process.env.PDX_E2E_REAL_VERAPDF ? "" : join(import.meta.dirname, "e2e", "fixtures", `verapdf-attrappe${process.platform === "win32" ? ".cmd" : ""}`);
 const verapdf = process.env.PDX_VERAPDF ?? stub;
+process.env.PDX_E2E_VERAPDF = verapdf;
 
 // Ein echter pdx-server für das Veröffentlichen, mit Testschlüssel und
 // leerer Ablage im Datenverzeichnis der Tests.

@@ -5,6 +5,7 @@
   import { select } from "../lib/selection.svelte";
   import { project, ui } from "../lib/project.svelte";
   import { cancelConformance, checkConformance, conf } from "../lib/conformance.svelte";
+  import VeraPDFSettings from "./VeraPDFSettings.svelte";
 
   const st = $derived(conf.state);
   const running = $derived(st?.state === "running");
@@ -36,6 +37,7 @@
       <button class="primary" disabled={!project.open} onclick={checkConformance}>{st && st.state !== "idle" ? t("conformance.again") : t("conformance.check")}</button>
       {#if !st || st.state === "idle"}<span class="muted">{t("conformance.idle")}</span>{/if}
     {/if}
+    <VeraPDFSettings />
   </div>
 
   {#if st && st.state === "done"}

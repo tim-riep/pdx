@@ -54,6 +54,7 @@ export {
     Segment,
     TableOp,
     TokenOp,
+    VeraPDFSetup,
     XPathInfo,
     XPathQuery
 } from "./models.js";

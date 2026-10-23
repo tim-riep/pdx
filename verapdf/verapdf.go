@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 )
 
@@ -105,6 +106,8 @@ func (l Local) Validate(ctx context.Context, file, flavour string) (*Report, err
 // Docker nutzt das gepinnte Docker-Image.
 type Docker struct {
 	Image, Platform string
+	// Bin ist der Pfad zur Docker-CLI, leer bedeutet docker aus dem PATH.
+	Bin string
 }
 
 // Name beschreibt den Runner.
@@ -120,10 +123,19 @@ func (d Docker) Validate(ctx context.Context, file, flavour string) (*Report, er
 	if _, err := os.Stat(abs); err != nil {
 		return nil, err
 	}
-	cmd := exec.CommandContext(ctx, "docker", "run", "--rm", "--network", "none",
+	bin := d.Bin
+	if bin == "" {
+		bin = "docker"
+	}
+	cmd := exec.CommandContext(ctx, bin, "run", "--rm", "--network", "none",
 		"--platform", d.Platform,
 		"-v", filepath.Dir(abs)+":/data:ro",
 		d.Image, "--format", "mrr", "--flavour", flavour, "/data/"+filepath.Base(abs))
+	if d.Bin != "" {
+		// Hilfsprogramme von Docker Desktop (Anmeldedaten) liegen neben der
+		// CLI und müssen im PATH stehen, auch wenn die CLI dort fehlt.
+		cmd.Env = withPath(filepath.Dir(d.Bin))
+	}
 	return run(ctx, cmd)
 }
 
@@ -149,44 +161,153 @@ func run(ctx context.Context, cmd *exec.Cmd) (*Report, error) {
 
 var reVersion = regexp.MustCompile(`veraPDF (\d+\.\d+\.\d+)`)
 
+// Options steuert DetectWith.
+type Options struct {
+	// Path ist ein ausdrücklich gewählter Pfad zur veraPDF-CLI, etwa aus den
+	// Einstellungen des Designers. Er geht EnvRunner vor.
+	Path string
+}
+
 // Detect wählt einen Runner nach EnvRunner, sonst lokale CLI der richtigen
 // Version, sonst Docker. warn erhält Hinweise, etwa auf eine abweichende
 // lokale Version, und darf nil sein.
 func Detect(ctx context.Context, warn func(string)) (Runner, error) {
+	return DetectWith(ctx, Options{}, warn)
+}
+
+// DetectWith wählt einen Runner: zuerst opts.Path, dann EnvRunner, sonst
+// automatisch. Automatisch sucht es veraPDF und Docker im PATH und in den
+// üblichen Installationsordnern, denn Programme aus Finder, Launchpad oder
+// dem Startmenü sehen den PATH der Shell nicht.
+func DetectWith(ctx context.Context, opts Options, warn func(string)) (Runner, error) {
 	if warn == nil {
 		warn = func(string) {}
 	}
-	docker := Docker{Image: DockerImage, Platform: DockerPlatform}
+	if opts.Path != "" {
+		return explicit(ctx, opts.Path, "Pfad zu veraPDF", warn)
+	}
 	switch v := os.Getenv(EnvRunner); v {
 	case "docker":
-		return docker, nil
+		bin, ok := findDocker()
+		if !ok {
+			return nil, fmt.Errorf("%s=docker, aber Docker ist nicht installiert", EnvRunner)
+		}
+		return Docker{Image: DockerImage, Platform: DockerPlatform, Bin: bin}, nil
 	case "", "local":
-		path, err := exec.LookPath("verapdf")
-		if err == nil {
-			if ver, verr := localVersion(ctx, path); verr == nil && ver == Version {
-				return Local{Path: path}, nil
-			} else if verr == nil {
-				warn(fmt.Sprintf("lokale veraPDF-Version %s weicht von %s ab, nutze Docker", ver, Version))
+		for _, path := range verapdfCandidates() {
+			ver, err := localVersion(ctx, path)
+			if err != nil {
+				continue
 			}
+			if ver == Version {
+				return Local{Path: path}, nil
+			}
+			warn(fmt.Sprintf("veraPDF unter %s hat Version %s statt %s, nicht genutzt", path, ver, Version))
 		}
 		if v == "local" {
 			return nil, fmt.Errorf("keine lokale veraPDF-CLI in Version %s gefunden", Version)
 		}
-		if _, err := exec.LookPath("docker"); err != nil {
+		bin, ok := findDocker()
+		if !ok {
 			return nil, errors.New("weder veraPDF " + Version + " noch Docker gefunden. " +
 				"Installation: https://verapdf.org/software/ oder Docker mit Image " + DockerImage)
 		}
-		return docker, nil
+		return Docker{Image: DockerImage, Platform: DockerPlatform, Bin: bin}, nil
 	default:
-		ver, err := localVersion(ctx, v)
-		if err != nil {
-			return nil, fmt.Errorf("%s=%s: %w", EnvRunner, v, err)
-		}
-		if ver != Version {
-			warn(fmt.Sprintf("veraPDF unter %s hat Version %s statt %s", v, ver, Version))
-		}
-		return Local{Path: v}, nil
+		return explicit(ctx, v, EnvRunner+"="+v, warn)
 	}
+}
+
+// explicit nutzt eine ausdrücklich genannte CLI, eine andere Version ergibt
+// nur einen Hinweis.
+func explicit(ctx context.Context, path, what string, warn func(string)) (Runner, error) {
+	ver, err := localVersion(ctx, path)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", what, err)
+	}
+	if ver != Version {
+		warn(fmt.Sprintf("veraPDF unter %s hat Version %s statt %s", path, ver, Version))
+	}
+	return Local{Path: path}, nil
+}
+
+// searchDirs liefert die Ordner, in denen Installationen außerhalb des PATH
+// liegen. In Tests ersetzbar.
+var searchDirs = func(prog string) []string {
+	home, _ := os.UserHomeDir()
+	if runtime.GOOS == "windows" {
+		pf := os.Getenv("ProgramFiles")
+		switch prog {
+		case "verapdf":
+			return []string{filepath.Join(home, "verapdf"), filepath.Join(os.Getenv("LOCALAPPDATA"), "verapdf"), filepath.Join(pf, "verapdf"), filepath.Join(pf, "veraPDF")}
+		case "docker":
+			return []string{filepath.Join(pf, "Docker", "Docker", "resources", "bin")}
+		}
+		return nil
+	}
+	switch prog {
+	case "verapdf":
+		// Der Installer von veraPDF legt die CLI unter ~/verapdf ab.
+		return []string{filepath.Join(home, "verapdf"), "/usr/local/bin", "/opt/homebrew/bin", "/usr/local/verapdf", "/opt/verapdf"}
+	case "docker":
+		return []string{"/usr/local/bin", "/opt/homebrew/bin", filepath.Join(home, ".docker", "bin"), "/Applications/Docker.app/Contents/Resources/bin", "/usr/bin"}
+	}
+	return nil
+}
+
+// candidates liefert ausführbare Dateien eines Programms: zuerst aus dem
+// PATH, dann aus searchDirs, ohne Doppelte.
+func candidates(prog string) []string {
+	names := []string{prog}
+	if runtime.GOOS == "windows" {
+		names = []string{prog + ".bat", prog + ".cmd", prog + ".exe"}
+	}
+	var out []string
+	seen := map[string]bool{}
+	add := func(p string) {
+		if abs, err := filepath.Abs(p); err == nil && !seen[abs] {
+			if st, err := os.Stat(abs); err == nil && !st.IsDir() && (runtime.GOOS == "windows" || st.Mode()&0o111 != 0) {
+				seen[abs] = true
+				out = append(out, abs)
+			}
+		}
+	}
+	for _, n := range names {
+		if p, err := exec.LookPath(n); err == nil {
+			add(p)
+		}
+	}
+	for _, dir := range searchDirs(prog) {
+		if dir == "" {
+			continue
+		}
+		for _, n := range names {
+			add(filepath.Join(dir, n))
+		}
+	}
+	return out
+}
+
+func verapdfCandidates() []string { return candidates("verapdf") }
+
+func findDocker() (string, bool) {
+	c := candidates("docker")
+	if len(c) == 0 {
+		return "", false
+	}
+	return c[0], true
+}
+
+// withPath liefert die Umgebung mit dir vorn im PATH.
+func withPath(dir string) []string {
+	env := os.Environ()
+	for i, kv := range env {
+		if k, v, ok := strings.Cut(kv, "="); ok && strings.EqualFold(k, "PATH") {
+			env[i] = k + "=" + dir + string(os.PathListSeparator) + v
+			return env
+		}
+	}
+	return append(env, "PATH="+dir)
 }
 
 func localVersion(ctx context.Context, path string) (string, error) {

@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"slices"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -162,5 +165,34 @@ func TestPlaceholderFromDataRoot(t *testing.T) {
 	want := `<rsm:CrossIndustryInvoice xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"/>`
 	if got != want {
 		t.Errorf("%s", got)
+	}
+}
+
+// Ein gewählter Pfad zu veraPDF wird geprüft, gespeichert und genutzt, ein
+// ungültiger nicht übernommen, leer schaltet auf die Suche zurück.
+func TestVeraPDFSetting(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Skript mit Shebang")
+	}
+	dir := t.TempDir()
+	cli := filepath.Join(dir, "verapdf")
+	os.WriteFile(cli, []byte("#!/bin/sh\necho \"veraPDF "+verapdf.Version+"\"\n"), 0o755)
+	c := NewCore(nil, nil, t.TempDir())
+	s := NewConformanceService(c)
+	st, err := s.SetVeraPDF(cli)
+	if err != nil || st.Path != cli || !strings.Contains(st.Runner, cli) || st.Error != "" {
+		t.Fatalf("gültiger Pfad: %+v %v", st, err)
+	}
+	if got := NewConformanceService(c).VeraPDF(); got.Path != cli {
+		t.Errorf("nicht gespeichert: %+v", got)
+	}
+	if _, err := s.SetVeraPDF(filepath.Join(dir, "fehlt")); err == nil {
+		t.Error("ungültiger Pfad angenommen")
+	}
+	if s.VeraPDF().Path != cli {
+		t.Error("ungültiger Pfad hat die Einstellung überschrieben")
+	}
+	if st, err := s.SetVeraPDF(""); err != nil || st.Path != "" {
+		t.Errorf("zurück auf automatisch: %+v %v", st, err)
 	}
 }
