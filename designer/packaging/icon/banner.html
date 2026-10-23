@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- Social-Media-Bild für GitHub, 1280 x 640, gerendert mit render.mjs. -->
+<style>
+  @font-face { font-family: "Liberation Sans"; font-weight: 400; src: url("../../../font/fonts/liberation/LiberationSans-Regular.ttf"); }
+  @font-face { font-family: "Liberation Sans"; font-weight: 700; src: url("../../../font/fonts/liberation/LiberationSans-Bold.ttf"); }
+  @font-face { font-family: "Liberation Mono"; font-weight: 400; src: url("../../../font/fonts/liberation/LiberationMono-Regular.ttf"); }
+  html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    font-family: "Liberation Sans", sans-serif;
+    color: #fff;
+    background:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px) 0 0 / 40px 40px,
+      radial-gradient(ellipse at 22% 40%, #2a5fd6 0%, rgba(42,95,214,0) 55%),
+      linear-gradient(135deg, #0d1a3a 0%, #13295e 55%, #0d1a3a 100%);
+    display: flex; align-items: center;
+  }
+  .icon { margin-left: 80px; flex: none; filter: drop-shadow(0 18px 36px rgba(0,0,0,0.35)); }
+  .text { margin-left: 56px; margin-right: 56px; }
+  h1 { font-size: 150px; line-height: 1; margin: 0 0 18px; letter-spacing: -4px; font-weight: 700; }
+  h1 span { color: #ff9f2e; }
+  .tag { font-size: 36px; line-height: 1.25; margin: 0 0 14px; font-weight: 700; }
+  .sub { font-size: 24px; line-height: 1.35; margin: 0 0 30px; color: #b9cdf6; }
+  .chips { display: flex; flex-wrap: nowrap; gap: 10px; white-space: nowrap; }
+  .chip { font-size: 18px; padding: 6px 13px; border-radius: 999px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.22); }
+  .url { position: absolute; right: 48px; bottom: 32px; font-family: "Liberation Mono", monospace; font-size: 20px; color: #8fa9de; }
+</style>
+</head>
+<body>
+  <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="340" height="340">
+  <!-- App-Icon von pdx Designer: Seite mit Eselsohr, Layoutblöcke und ein
+       Auswahlrahmen mit Griffen. Mit class="small" am svg-Element entfallen
+       die feinen Details für 16 bis 32 Pixel. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a8bf5"/>
+      <stop offset="1" stop-color="#1f4fc2"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0b2a73" flood-opacity="0.45"/>
+    </filter>
+    <filter id="bgshadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+    <style>
+      svg.small .detail { display: none; }
+      svg:not(.small) .simple { display: none; }
+    </style>
+  </defs>
+
+  <!-- Hintergrund im Raster von macOS: 824 von 1024, Ecken 185 -->
+  <g filter="url(#bgshadow)">
+    <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+  </g>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#shine)"/>
+
+  <!-- Seite mit Eselsohr -->
+  <g filter="url(#shadow)">
+    <path d="M318 214 H608 L726 332 V786 a28 28 0 0 1 -28 28 H318 a28 28 0 0 1 -28 -28 V242 a28 28 0 0 1 28 -28 Z" fill="#ffffff"/>
+  </g>
+  <path d="M608 214 V304 a28 28 0 0 0 28 28 H726 Z" fill="#c9d8f7"/>
+
+  <!-- Layout der Seite -->
+  <g class="detail">
+    <rect x="346" y="276" width="190" height="34" rx="10" fill="#2f6fe4"/>
+    <rect x="346" y="346" width="320" height="18" rx="9" fill="#c7cfdd"/>
+    <rect x="346" y="384" width="276" height="18" rx="9" fill="#c7cfdd"/>
+    <!-- Tabelle -->
+    <rect x="346" y="560" width="324" height="34" rx="8" fill="#dbe6fb"/>
+    <rect x="346" y="612" width="324" height="14" rx="7" fill="#d6dce7"/>
+    <rect x="346" y="644" width="324" height="14" rx="7" fill="#d6dce7"/>
+    <rect x="346" y="676" width="324" height="14" rx="7" fill="#d6dce7"/>
+    <rect x="530" y="730" width="140" height="24" rx="8" fill="#2f6fe4" opacity="0.85"/>
+  </g>
+  <g class="simple">
+    <rect x="346" y="290" width="200" height="56" rx="16" fill="#2f6fe4"/>
+    <rect x="346" y="610" width="324" height="44" rx="14" fill="#c7cfdd"/>
+    <rect x="346" y="690" width="324" height="44" rx="14" fill="#c7cfdd"/>
+  </g>
+
+  <!-- Gewählter Block mit Auswahlrahmen und Griffen -->
+  <g class="detail">
+    <rect x="346" y="440" width="240" height="78" rx="10" fill="#ffe2bd"/>
+    <rect x="366" y="462" width="150" height="14" rx="7" fill="#f2a24a"/>
+    <rect x="366" y="488" width="104" height="14" rx="7" fill="#f2a24a"/>
+    <rect x="330" y="424" width="272" height="110" rx="6" fill="none" stroke="#ff8a00" stroke-width="10"/>
+    <g fill="#ffffff" stroke="#ff8a00" stroke-width="8">
+      <rect x="314" y="408" width="32" height="32" rx="6"/>
+      <rect x="586" y="408" width="32" height="32" rx="6"/>
+      <rect x="314" y="518" width="32" height="32" rx="6"/>
+      <rect x="586" y="518" width="32" height="32" rx="6"/>
+    </g>
+  </g>
+  <g class="simple">
+    <rect x="322" y="414" width="300" height="140" rx="10" fill="#ffe2bd" stroke="#ff8a00" stroke-width="26"/>
+  </g>
+</svg>
+</div>
+  <div class="text">
+    <h1>pdx<span>.</span></h1>
+    <p class="tag">PDF/A, PDF/UA and e-invoices<br>from XSL-FO and templates</p>
+    <p class="sub">Layout engine, desktop designer and render service<br>in Go, without cgo</p>
+    <div class="chips">
+      <span class="chip">PDF/A-2 · 3 · 4</span>
+      <span class="chip">PDF/UA-1 · 2</span>
+      <span class="chip">ZUGFeRD · Factur-X</span>
+      <span class="chip">Forms</span>
+      <span class="chip">PAdES B-LTA</span>
+    </div>
+  </div>
+  <div class="url">github.com/tim-riep/pdx</div>
+</body>
+</html>

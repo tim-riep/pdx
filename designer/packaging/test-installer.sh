@@ -26,6 +26,7 @@ Linux)
   sudo apt-get install -y "$(realpath "$deb")"
   [ -x /usr/bin/pdx-designer ] || fail "/usr/bin/pdx-designer fehlt"
   [ -f /usr/share/applications/pdx-designer.desktop ] || fail "Menüeintrag fehlt"
+  [ -f /usr/share/icons/hicolor/256x256/apps/pdx-designer.png ] || fail "Icon fehlt"
   WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1 xvfb-run -a /usr/bin/pdx-designer --smoke --open ../testdata/templates/musterrechnung
   sudo apt-get remove -y pdx-designer
   [ ! -e /usr/bin/pdx-designer ] || fail "nach Deinstallation noch vorhanden"

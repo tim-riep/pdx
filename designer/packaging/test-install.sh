@@ -13,6 +13,7 @@ Darwin)
   app="$home/Applications/pdx Designer.app"
   [ -x "$app/Contents/MacOS/pdx-designer" ] || fail "App fehlt in ~/Applications"
   plutil -lint "$app/Contents/Info.plist" >/dev/null || fail "Info.plist ungültig"
+  [ -f "$app/Contents/Resources/AppIcon.icns" ] || fail "AppIcon.icns fehlt"
   HOME="$home" "$pkg/install.sh" --uninstall
   [ ! -e "$app" ] || fail "App nach Deinstallation noch vorhanden"
   ;;
@@ -22,6 +23,7 @@ Linux)
   [ -x "$home/.local/bin/pdx-designer" ] || fail "Binary fehlt in ~/.local/bin"
   grep -q "^Exec=\"$home/.local/bin/pdx-designer\"" "$home/.local/share/applications/pdx-designer.desktop" || fail "Menüeintrag falsch"
   [ -f "$home/.local/share/doc/pdx-designer/THIRD_PARTY_NOTICES.txt" ] || fail "Lizenzdateien fehlen"
+  [ -f "$home/.local/share/icons/hicolor/256x256/apps/pdx-designer.png" ] || fail "Icon fehlt"
   HOME="$home" "$pkg/install.sh" --uninstall
   [ ! -e "$home/.local/bin/pdx-designer" ] || fail "Binary nach Deinstallation noch vorhanden"
   ;;

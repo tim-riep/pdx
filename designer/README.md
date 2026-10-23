@@ -1,5 +1,7 @@
 # pdx Designer
 
+<img src="packaging/icon/png/256.png" width="128" height="128" alt="pdx Designer app icon">
+
 Desktop application for laying out documents against a data XSD without writing XML. It is built on the pdx engine (parent directory). It saves only in template format 1, lossless and with stable Git diffs. The result is a PDF in the profile of the template, by default PDF/A-3b with embedded data. The user interface is in German.
 
 The sample invoice can be rebuilt from scratch in the Designer and passes veraPDF 1.30.3 against PDF/A-3b (end-to-end test `e2e/rebuild.spec.ts`).
@@ -34,6 +36,8 @@ Everything lives in `packaging/`:
 | `windows/pdx-designer.iss` | Windows setup with Inno Setup 6 (per user, Start menu, WebView2 check) |
 | `build-deb.sh` | Debian package |
 | `test-install.sh`, `test-installer.sh` | CI: install, check and uninstall on all three systems |
+| `icon/` | app icon: `icon.svg` (master), PNG sizes, `pdx-designer.icns`, `pdx-designer.ico`, `banner.html` for the GitHub social preview. `node packaging/icon/render.mjs` regenerates everything with the Chromium from Playwright |
+| `windows/pdx-designer.exe.manifest` | Windows manifest, embedded with icon and version info by `make build` on Windows |
 
 `make package` assembles the archive content, `make installer` builds the setup program for the current system into `../out/installer` (on Windows with `ISCC=<path to ISCC.exe>`).
 

@@ -22,6 +22,12 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+// icon ist das Fenster- und Taskleisten-Icon (Linux, Windows), erzeugt mit
+// packaging/icon/render.mjs.
+//
+//go:embed packaging/icon/png/256.png
+var icon []byte
+
 // Ereignisse mit ihren Datentypen, damit die Bindungen sie typisiert kennen.
 func init() {
 	application.RegisterEvent[app.ProjectState](app.EventProject)
@@ -57,6 +63,7 @@ func main() {
 
 	wails = application.New(application.Options{
 		Name:        "pdx Designer",
+		Icon:        icon,
 		Description: "Dokumente gegen ein XSD gestalten",
 		Services: []application.Service{
 			application.NewService(appService),

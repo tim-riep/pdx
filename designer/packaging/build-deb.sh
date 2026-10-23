@@ -5,6 +5,7 @@
 #
 #   /usr/bin/pdx-designer
 #   /usr/share/applications/pdx-designer.desktop
+#   /usr/share/icons/hicolor/<n>x<n>/apps/pdx-designer.png
 #   /usr/share/doc/pdx-designer/
 #
 #   packaging/build-deb.sh <output.deb>
@@ -21,6 +22,11 @@ root="$work/pdx-designer_${version}_amd64"
 install -d "$root/DEBIAN" "$root/usr/bin" "$root/usr/share/applications" "$root/usr/share/doc/pdx-designer"
 install -m 0755 "$pkg/pdx-designer" "$root/usr/bin/pdx-designer"
 install -m 0644 "$pkg/README.md" "$pkg/THIRD_PARTY_NOTICES.txt" "$root/usr/share/doc/pdx-designer/"
+for png in "$pkg"/icons/*.png; do
+  n=$(basename "$png" .png)
+  install -d "$root/usr/share/icons/hicolor/${n}x${n}/apps"
+  install -m 0644 "$png" "$root/usr/share/icons/hicolor/${n}x${n}/apps/pdx-designer.png"
+done
 # Debian erwartet Lizenz und Hinweise in copyright.
 {
   echo "pdx Designer, https://github.com/tim-riep/pdx"
@@ -36,6 +42,7 @@ Type=Application
 Name=pdx Designer
 Comment=Design PDF templates against an XML schema
 Exec=/usr/bin/pdx-designer
+Icon=pdx-designer
 Terminal=false
 Categories=Office;Development;
 StartupNotify=true

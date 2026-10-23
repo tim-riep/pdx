@@ -4,3 +4,6 @@
 *.prof
 testdata/fuzz/**/corpus-tmp
 .DS_Store
+
+# Windows-Ressource, erzeugt von make build.
+designer/*.syso

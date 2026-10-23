@@ -42,6 +42,7 @@ UninstallDisplayIcon={app}\pdx-designer.exe
 OutputDir={#Out}
 OutputBaseFilename=pdx-designer-{#Tag}-windows-amd64-setup
 WizardStyle=modern
+SetupIconFile=..\icon\pdx-designer.ico
 Compression=lzma2/max
 SolidCompression=yes
 CloseApplications=yes

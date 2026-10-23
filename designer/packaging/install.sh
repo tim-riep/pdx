@@ -3,8 +3,9 @@
 #
 #   macOS: ~/Applications/pdx Designer.app
 #   Linux: ~/.local/bin/pdx-designer, menu entry in
-#          ~/.local/share/applications/pdx-designer.desktop,
-#          license files in ~/.local/share/doc/pdx-designer
+#          ~/.local/share/applications/pdx-designer.desktop, icons in
+#          ~/.local/share/icons/hicolor, license files in
+#          ~/.local/share/doc/pdx-designer
 #
 # Settings and autosaves are kept in the user configuration directory
 # (macOS ~/Library/Application Support/pdx-designer, Linux
@@ -51,6 +52,7 @@ Linux)
   doc="$data/doc/pdx-designer"
   if [ "$mode" = uninstall ]; then
     rm -f "$bin/pdx-designer" "$desktop"
+    rm -f "$data"/icons/hicolor/*/apps/pdx-designer.png
     rm -rf "$doc"
     command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$data/applications" 2>/dev/null || true
     echo "removed $bin/pdx-designer and $desktop"
@@ -65,17 +67,25 @@ Linux)
   for f in LICENSE NOTICE THIRD_PARTY_NOTICES.txt README.md; do
     [ -f "$here/$f" ] && install -m 0644 "$here/$f" "$doc/$f"
   done
+  for png in "$here"/icons/*.png; do
+    [ -f "$png" ] || continue
+    n=$(basename "$png" .png)
+    install -d "$data/icons/hicolor/${n}x${n}/apps"
+    install -m 0644 "$png" "$data/icons/hicolor/${n}x${n}/apps/pdx-designer.png"
+  done
   cat > "$desktop" <<DESKTOP
 [Desktop Entry]
 Type=Application
 Name=pdx Designer
 Comment=Design PDF templates against an XML schema
 Exec="$bin/pdx-designer"
+Icon=pdx-designer
 Terminal=false
 Categories=Office;Development;
 StartupNotify=true
 DESKTOP
   command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$data/applications" 2>/dev/null || true
+  command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q -t "$data/icons/hicolor" 2>/dev/null || true
   echo "installed $bin/pdx-designer"
   case ":$PATH:" in
     *":$bin:"*) ;;

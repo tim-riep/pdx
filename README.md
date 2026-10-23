@@ -1,5 +1,7 @@
 # pdx
 
+![pdx: PDF/A, PDF/UA and e-invoices from XSL-FO and templates](docs/assets/social-preview.png)
+
 pdx creates PDF files from XSL-FO and templates: PDF/A-2, PDF/A-3 and PDF/A-4, accessible PDF/UA-1 and PDF/UA-2, and hybrid e-invoices after ZUGFeRD and Factur-X. It is written entirely in Go without cgo. An XSD describes the data interface, the desktop Designer lays out the document, and the engine typesets it. veraPDF is the reference validator for conformance.
 
 The repository contains:

@@ -34,7 +34,16 @@ notices: frontend
 notices-check: notices
 	git diff --exit-code -- notices/THIRD_PARTY_NOTICES.txt frontend/bundled-packages.json
 
-build: frontend
+# Windows: Icon, Manifest und Versionsinfo als Ressource im Binary.
+ifeq ($(OS),Windows_NT)
+SYSO := pdx-designer_windows_amd64.syso
+$(SYSO): packaging/icon/pdx-designer.ico packaging/windows/pdx-designer.exe.manifest internal/app/app.go
+	mkdir -p $(OUT)
+	printf '{"fixed":{"file_version":"%s"},"info":{"0000":{"ProductVersion":"%s","CompanyName":"Tim Riep","FileDescription":"pdx Designer","LegalCopyright":"Copyright 2026 Tim Riep, Apache License 2.0","ProductName":"pdx Designer","OriginalFilename":"pdx-designer.exe"}}}' $(VERSION) $(VERSION) > $(OUT)/pdx-designer-info.json
+	$(WAILS) generate syso -arch amd64 -icon packaging/icon/pdx-designer.ico -manifest packaging/windows/pdx-designer.exe.manifest -info $(OUT)/pdx-designer-info.json -out $@
+endif
+
+build: frontend $(SYSO)
 	$(GO) build -o $(OUT)/pdx-designer$(EXE) .
 
 VERSION := $(shell sed -n 's/^const Version = "\(.*\)"/\1/p' internal/app/app.go)
@@ -49,6 +58,7 @@ bundle: build
 	sed 's/@VERSION@/$(VERSION)/g' packaging/Info.plist.in > "$(APP)/Contents/Info.plist"
 	printf 'APPL????' > "$(APP)/Contents/PkgInfo"
 	cp ../LICENSE ../NOTICE notices/THIRD_PARTY_NOTICES.txt "$(APP)/Contents/Resources/"
+	cp packaging/icon/pdx-designer.icns "$(APP)/Contents/Resources/AppIcon.icns"
 
 # Inhalt des Release-Archivs für dieses System mit Installationsskript nach
 # der Konvention pro Benutzer (siehe README).
@@ -62,8 +72,9 @@ package: bundle
 	cp -R "$(APP)" packaging/install.sh "$(PKG)/"
 else
 package: build
-	rm -rf "$(PKG)" && mkdir -p "$(PKG)"
+	rm -rf "$(PKG)" && mkdir -p "$(PKG)/icons"
 	cp $(OUT)/pdx-designer packaging/install.sh "$(PKG)/"
+	cp packaging/icon/png/*.png "$(PKG)/icons/"
 endif
 	cp ../LICENSE ../NOTICE notices/THIRD_PARTY_NOTICES.txt README.md "$(PKG)/"
 
@@ -104,4 +115,4 @@ smoke: build
 	$(OUT)/pdx-designer$(EXE) --smoke --open ../testdata/templates/musterrechnung
 
 clean:
-	rm -rf frontend/dist $(OUT)/pdx-designer$(EXE) $(OUT)/designer-server$(EXE) "$(APP)" $(OUT)/package $(OUT)/installer
+	rm -rf frontend/dist pdx-designer_windows_amd64.syso $(OUT)/pdx-designer$(EXE) $(OUT)/designer-server$(EXE) "$(APP)" $(OUT)/package $(OUT)/installer
