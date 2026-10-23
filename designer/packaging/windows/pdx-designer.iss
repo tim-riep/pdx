@@ -3,7 +3,7 @@
 ; %LOCALAPPDATA%\Programs\pdx, Startmenüeintrag für den Benutzer,
 ; Deinstallation über Einstellungen, Apps.
 ;
-;   ISCC /DVersion=0.3.0 /DTag=v0.3.0 /DSrc=..\..\..\out\package\pdx-designer /DOut=..\..\..\dist pdx-designer.iss
+;   ISCC -DVersion=0.3.0 -DTag=v0.3.0 pdx-designer.iss
 
 #ifndef Version
   #define Version "0.0.0"

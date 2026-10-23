@@ -75,7 +75,7 @@ ifeq ($(OS),Windows_NT)
 ISCC ?= ISCC.exe
 installer: package
 	mkdir -p $(INST)
-	"$(ISCC)" -Q /DVersion=$(VERSION) /DTag=v$(VERSION) /DOut=../../$(INST) packaging/windows/pdx-designer.iss
+	"$(ISCC)" -Q -DVersion=$(VERSION) -DTag=v$(VERSION) -DOut=../../$(INST) packaging/windows/pdx-designer.iss
 else ifeq ($(shell uname -s),Darwin)
 installer: package
 	mkdir -p $(INST)
