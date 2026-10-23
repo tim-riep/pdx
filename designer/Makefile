@@ -39,7 +39,7 @@ ifeq ($(OS),Windows_NT)
 SYSO := pdx-designer_windows_amd64.syso
 $(SYSO): packaging/icon/pdx-designer.ico packaging/windows/pdx-designer.exe.manifest internal/app/app.go
 	mkdir -p $(OUT)
-	printf '{"fixed":{"file_version":"%s"},"info":{"0000":{"ProductVersion":"%s","CompanyName":"Tim Riep","FileDescription":"pdx Designer","LegalCopyright":"Copyright 2026 Tim Riep, Apache License 2.0","ProductName":"pdx Designer","OriginalFilename":"pdx-designer.exe"}}}' $(VERSION) $(VERSION) > $(OUT)/pdx-designer-info.json
+	@printf '{"fixed":{"file_version":"%s"},"info":{"0000":{"ProductVersion":"%s","CompanyName":"Tim Riep","FileDescription":"pdx Designer","LegalCopyright":"Copyright 2026 Tim Riep, Apache License 2.0","ProductName":"pdx Designer","OriginalFilename":"pdx-designer.exe"}}}' $(VERSION) $(VERSION) > $(OUT)/pdx-designer-info.json
 	$(WAILS) generate syso -arch amd64 -icon packaging/icon/pdx-designer.ico -manifest packaging/windows/pdx-designer.exe.manifest -info $(OUT)/pdx-designer-info.json -out $@
 endif
 
