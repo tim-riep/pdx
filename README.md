@@ -14,12 +14,16 @@ The repository contains:
 Release archives for Linux, macOS and Windows are on the [releases page](https://github.com/tim-riep/pdx/releases), each with `SHA256SUMS`.
 
 * `pdx-<version>-<os>-<arch>` contains the command line tool `pdx` and the render service `pdx-server`. Both are single static binaries, put them anywhere on your `PATH`.
-* `pdx-designer-<version>-<os>` contains the Designer and an install script.
+* The Designer comes as a setup program and as an archive with an install script:
+  * macOS: `pdx-designer-<version>-darwin-arm64.pkg`, installs per user into `~/Applications` without administrator rights
+  * Windows: `pdx-designer-<version>-windows-amd64-setup.exe`, installs per user into `%LOCALAPPDATA%\Programs\pdx` without administrator rights, with a Start menu entry and uninstall through Settings, Apps
+  * Linux: `pdx-designer-<version>-linux-amd64.deb` for Debian and Ubuntu, installs system-wide into `/usr/bin` and pulls in GTK 4 and WebKitGTK 6 (`sudo apt install ./pdx-designer-….deb`)
+  * `pdx-designer-<version>-<os>` archives contain the Designer and the per-user install script described below
 * The render service is also available as a container image: `docker pull ghcr.io/tim-riep/pdx-server:<version>`.
 
 ### Where pdx Designer is installed
 
-pdx Designer is installed per user, without administrator rights. The install script in the archive copies it to the following places, running it again updates the installation.
+pdx Designer is installed per user, without administrator rights. The macOS and Windows setup programs and the install script in the archives use the following places, installing again updates the installation. The Debian package is the exception, it installs system-wide as Debian packages do.
 
 | System | Program | Menu entry | Settings and autosaves |
 |---|---|---|---|
@@ -37,7 +41,9 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 `./install.sh --uninstall` or `install.ps1 -Uninstall` removes the program and the menu entry. Settings and autosaves stay in place. On Linux the license files go to `~/.local/share/doc/pdx-designer`, on macOS they are inside the app bundle, on Windows next to the program. `PDX_DESIGNER_DATA` replaces the settings directory, for example for tests.
 
-The Designer needs GTK 4 and WebKitGTK 6 on Linux and the WebView2 runtime on Windows (included in Windows 11). The binaries are not signed or notarized. The macOS install script removes the quarantine flag of the download, without the script open the app once with right click and Open.
+The Designer needs GTK 4 and WebKitGTK 6 on Linux and the WebView2 runtime on Windows (included in Windows 11, the Windows setup points to it if missing). The programs and setup programs are not signed or notarized. On macOS open the `.pkg` with right click and Open the first time, on Windows confirm the SmartScreen notice with More info and Run anyway. The macOS install script removes the quarantine flag of the download.
+
+The Designer finds veraPDF on its own, also when started from Finder, Launchpad or the Start menu: it searches the `PATH`, `~/verapdf` (where the veraPDF installer puts it), `/usr/local/bin` and Homebrew, on Windows the user folder and Program Files, and uses Docker otherwise. A different location can be set in the conformance panel (Konformität, veraPDF).
 
 ## Usage
 
@@ -353,7 +359,7 @@ Fonts are always embedded as subsets. `Helvetica`, `Arial` and `sans-serif` map 
 
 ## veraPDF
 
-Version 1.30.3, configured only in `verapdf`. A local CLI is used when its version matches, otherwise the Docker image `docker.io/verapdf/cli:v1.30.3` (pinned by digest). ghcr.io only has development builds of 1.31, the release is on Docker Hub. `PDX_VERAPDF=local|docker|<path>` forces a variant.
+Version 1.30.3, configured only in `verapdf`. A local CLI is used when its version matches, searched in the `PATH` and in the usual install folders (`~/verapdf`, `/usr/local/bin`, Homebrew, on Windows the user folder and Program Files), otherwise the Docker image `docker.io/verapdf/cli:v1.30.3` (pinned by digest), with Docker also found outside the `PATH`. ghcr.io only has development builds of 1.31, the release is on Docker Hub. `PDX_VERAPDF=local|docker|<path>` forces a variant.
 
 ## Tests
 

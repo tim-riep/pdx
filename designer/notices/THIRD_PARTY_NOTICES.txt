@@ -43,6 +43,9 @@ Abhängigkeiten:
 * golang.org/x/text (BSD-3-Clause)
 * software.sslmate.com/src/go-pkcs12 (BSD-3-Clause)
 
+Das Windows-Setup des Designers wird mit Inno Setup erstellt
+(Copyright Jordan Russell und Martijn Laan, Inno Setup License).
+
 Nur im Repository für Tests, nicht Teil der Programme:
 
 * Testfälle aus Apache FOP 2.11 (testdata/suites/fop)

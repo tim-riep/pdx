@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>pdx Designer @VERSION@</title>
+    <welcome file="welcome.html" mime-type="text/html"/>
+    <license file="LICENSE.txt" mime-type="text/plain"/>
+    <!-- Nur für den angemeldeten Benutzer, ohne Administratorrechte. -->
+    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"/>
+    <options customize="never" require-scripts="false" hostArchitectures="arm64"/>
+    <os-version min="11.0"/>
+    <choices-outline>
+        <line choice="default"/>
+    </choices-outline>
+    <choice id="default" title="pdx Designer">
+        <pkg-ref id="com.github.tim-riep.pdx.designer"/>
+    </choice>
+    <pkg-ref id="com.github.tim-riep.pdx.designer" version="@VERSION@" onConclusion="none">pdx-designer.pkg</pkg-ref>
+</installer-gui-script>

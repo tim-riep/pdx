@@ -12,7 +12,7 @@ export CGO_CFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 export CGO_LDFLAGS ?= -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 endif
 
-.PHONY: all deps bindings frontend build bundle package server test check e2e smoke clean notices notices-check
+.PHONY: all deps bindings frontend build bundle package installer server test check e2e smoke clean notices notices-check
 
 all: build
 
@@ -67,6 +67,25 @@ package: build
 endif
 	cp ../LICENSE ../NOTICE notices/THIRD_PARTY_NOTICES.txt README.md "$(PKG)/"
 
+# Setup-Programm für dieses System nach ../out/installer: macOS .pkg (pro
+# Benutzer), Linux .deb (systemweit), Windows Setup mit Inno Setup 6
+# (pro Benutzer, ISCC=Pfad zu ISCC.exe, Vorgabe aus dem PATH).
+INST := $(OUT)/installer
+ifeq ($(OS),Windows_NT)
+ISCC ?= ISCC.exe
+installer: package
+	mkdir -p $(INST)
+	"$(ISCC)" -Q /DVersion=$(VERSION) /DTag=v$(VERSION) /DOut=../../$(INST) packaging/windows/pdx-designer.iss
+else ifeq ($(shell uname -s),Darwin)
+installer: package
+	mkdir -p $(INST)
+	packaging/build-pkg.sh $(INST)/pdx-designer-v$(VERSION)-darwin-arm64.pkg
+else
+installer: package
+	mkdir -p $(INST)
+	packaging/build-deb.sh $(INST)/pdx-designer-v$(VERSION)-linux-amd64.deb
+endif
+
 server: frontend
 	CGO_ENABLED=0 $(GO) build -tags server -o $(OUT)/designer-server$(EXE) .
 
@@ -85,4 +104,4 @@ smoke: build
 	$(OUT)/pdx-designer$(EXE) --smoke --open ../testdata/templates/musterrechnung
 
 clean:
-	rm -rf frontend/dist $(OUT)/pdx-designer$(EXE) $(OUT)/designer-server$(EXE) "$(APP)" $(OUT)/package
+	rm -rf frontend/dist $(OUT)/pdx-designer$(EXE) $(OUT)/designer-server$(EXE) "$(APP)" $(OUT)/package $(OUT)/installer

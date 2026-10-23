@@ -6,7 +6,7 @@ The sample invoice can be rebuilt from scratch in the Designer and passes veraPD
 
 ## Installation
 
-Release archives contain the Designer and an install script. pdx Designer is installed per user, without administrator rights:
+Releases contain setup programs (macOS `.pkg`, Windows setup `.exe`, Linux `.deb`) and archives with an install script. pdx Designer is installed per user, without administrator rights. Only the Debian package installs system-wide (`/usr/bin/pdx-designer`) and pulls in GTK 4 and WebKitGTK 6.
 
 | System | Program | Menu entry | Settings and autosaves |
 |---|---|---|---|
@@ -22,7 +22,22 @@ Release archives contain the Designer and an install script. pdx Designer is ins
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-Running the script again updates the installation, `--uninstall` (`-Uninstall` on Windows) removes program and menu entry and keeps settings and autosaves. The scripts live in `packaging/`, `make package` assembles the archive content for the current system, `packaging/test-install.sh` checks install and uninstall in CI.
+Running the script again updates the installation, `--uninstall` (`-Uninstall` on Windows) removes program and menu entry and keeps settings and autosaves. The Windows setup uninstalls through Settings, Apps, on macOS move the app to the trash.
+
+Everything lives in `packaging/`:
+
+| File | Purpose |
+| --- | --- |
+| `Info.plist.in` | metadata of the macOS app bundle |
+| `install.sh`, `install.ps1` | per-user install scripts of the archives |
+| `build-pkg.sh`, `macos/` | macOS installer package (per user, domain currentUserHome, no administrator rights) |
+| `windows/pdx-designer.iss` | Windows setup with Inno Setup 6 (per user, Start menu, WebView2 check) |
+| `build-deb.sh` | Debian package |
+| `test-install.sh`, `test-installer.sh` | CI: install, check and uninstall on all three systems |
+
+`make package` assembles the archive content, `make installer` builds the setup program for the current system into `../out/installer` (on Windows with `ISCC=<path to ISCC.exe>`).
+
+veraPDF: the conformance panel shows under veraPDF which program the Designer uses. Without a path it searches the `PATH`, `~/verapdf`, `/usr/local/bin`, Homebrew and on Windows the user folder and Program Files, then Docker. A path set there is saved in `verapdf.json` in the settings directory and takes precedence over `PDX_VERAPDF`.
 
 ## Concept
 
@@ -141,6 +156,7 @@ make build
 | `make build` | build the frontend, native binary to `../out/pdx-designer` |
 | `make bundle` | macOS: app bundle `../out/pdx Designer.app` |
 | `make package` | archive content for this system with install script in `../out/package/pdx-designer` |
+| `make installer` | setup program for this system in `../out/installer` (`.pkg`, `.deb`, Inno Setup `.exe`) |
 | `make server` | server build without window and without cgo (for Playwright) |
 | `make test` | Go tests of the services (`CGO_ENABLED=0`) and Vitest |
 | `make check` | `go vet` and svelte-check |

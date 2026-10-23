@@ -3,3 +3,4 @@
 *.test
 *.prof
 testdata/fuzz/**/corpus-tmp
+.DS_Store

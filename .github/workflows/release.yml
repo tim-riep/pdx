@@ -98,12 +98,23 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev libwebkitgtk-6.0-dev xvfb
       - run: npm ci --ignore-scripts
         working-directory: designer/frontend
-      - name: Bauen, Smoke-Test, Paket und Installationstest
+      - name: Inno Setup
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup --version=6.4.3 -y --no-progress }
+      - name: Bauen, Smoke-Test, Paket, Setup-Programm und Installationstests
         run: |
           make build
           ./smoke.sh
           make package
           packaging/test-install.sh
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            make installer ISCC="C:/Program Files (x86)/Inno Setup 6/ISCC.exe"
+          else
+            make installer
+          fi
+          packaging/test-installer.sh
       - name: Archiv
         run: |
           set -eu
@@ -115,6 +126,7 @@ jobs:
           else
             tar -C ../out/package -czf "../dist/$name.tar.gz" "$name"
           fi
+          cp ../out/installer/* ../dist/
       - uses: actions/upload-artifact@v4
         with:
           name: designer-${{ matrix.name }}

@@ -62,6 +62,19 @@ jobs:
         run: |
           make package
           packaging/test-install.sh
+      - name: Inno Setup
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup --version=6.4.3 -y --no-progress }
+      - name: Setup-Programm bauen und testen
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            make installer ISCC="C:/Program Files (x86)/Inno Setup 6/ISCC.exe"
+          else
+            make installer
+          fi
+          packaging/test-installer.sh
       - name: Playwright-Browser
         run: npx playwright install --with-deps chromium webkit
         working-directory: designer/frontend
