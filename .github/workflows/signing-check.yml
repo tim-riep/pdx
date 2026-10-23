@@ -1,0 +1,40 @@
+# Manuelle Prüfung der Secrets für das Signieren unter macOS, ohne etwas zu
+# veröffentlichen: Zertifikate laden, beide Identitäten finden, mit dem
+# API-Schlüssel beim Notardienst anmelden.
+#   gh workflow run signing-check.yml
+name: Signing check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Zertifikate laden
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+        run: designer/packaging/macos/ci-keychain.sh
+      - name: Identitäten
+        run: |
+          security find-identity -v "$MACOS_KEYCHAIN" | sed -E 's/[0-9A-F]{40}/<sha1>/'
+      - name: Anmeldung beim Notardienst
+        env:
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          if ! printf '%s' "$NOTARY_ISSUER_ID" | grep -Eq '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'; then
+            echo "::error::NOTARY_ISSUER_ID ist keine UUID (Issuer ID über der Schlüsseltabelle in App Store Connect)"
+            exit 1
+          fi
+          xcrun notarytool history --key "$NOTARY_KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID" | head -5
+          echo "Anmeldung beim Notardienst erfolgreich"
+      - name: Schlüsselbund entfernen
+        if: always()
+        run: if [ -n "${MACOS_KEYCHAIN:-}" ]; then security delete-keychain "$MACOS_KEYCHAIN"; fi
