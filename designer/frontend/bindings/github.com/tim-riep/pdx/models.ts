@@ -6,17 +6,17 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 /**
- * Component ist ein Abschnitt der Drittanbieterhinweise.
+ * Component is a section of the third-party notices.
  */
 export class Component {
     /**
-     * Name ist die Überschrift, etwa "golang.org/x/text v0.43.0".
+     * Name is the heading, for example "golang.org/x/text v0.43.0".
      */
     "name": string;
 
     /**
-     * License ist die erkannte Lizenz in Kurzform, etwa "MIT", leer wenn
-     * unbekannt.
+     * License is the detected license in short form, for example "MIT", empty
+     * if unknown.
      */
     "license": string;
     "text": string;

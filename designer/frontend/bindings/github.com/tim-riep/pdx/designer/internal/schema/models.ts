@@ -6,28 +6,28 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 /**
- * Node ist ein Knoten des Datenbaums.
+ * Node is a node of the data tree.
  */
 export class Node {
     /**
-     * Path sind die Schritte von der Wurzel, etwa inv:invoice/inv:items.
+     * Path is the steps from the root, for example inv:invoice/inv:items.
      */
     "path": string;
 
     /**
-     * mit Präfix, Attribute mit @
+     * with prefix, attributes with @
      */
     "name": string;
 
     /**
-     * Type ist der eingebaute Basistyp (string, decimal, date ...), leer bei
-     * Elementen ohne Textinhalt.
+     * Type is the built-in base type (string, decimal, date ...), empty for
+     * elements without text content.
      */
     "type": string;
     "min": number;
 
     /**
-     * -1 für beliebig viele
+     * -1 for any number
      */
     "max": number;
     "attr": boolean;
@@ -36,13 +36,13 @@ export class Node {
     "children": (Node | null)[];
 
     /**
-     * Recursive markiert einen Knoten, dessen Inhalt sich wiederholt (der
-     * Baum endet dort).
+     * Recursive marks a node whose content repeats itself (the
+     * tree ends there).
      */
     "recursive"?: boolean;
 
     /**
-     * Open meldet xs:any, dort ist der Inhalt unbekannt.
+     * Open reports xs:any, where the content is unknown.
      */
     "open"?: boolean;
 
@@ -91,19 +91,19 @@ export class Node {
 }
 
 /**
- * Schema ist das aufbereitete Daten-XSD.
+ * Schema is the prepared data XSD.
  */
 export class Schema {
     "main": string;
     "roots": (Node | null)[];
 
     /**
-     * Prefixes ordnet Namespaces Präfixen zu, aus der Vorlage oder neu.
+     * Prefixes maps namespaces to prefixes, from the template or new.
      */
     "prefixes": { [_ in string]?: string };
 
     /**
-     * Missing sind Namespaces, die in der Vorlage noch nicht deklariert sind.
+     * Missing are namespaces that are not declared in the template yet.
      */
     "missing": { [_ in string]?: string };
 

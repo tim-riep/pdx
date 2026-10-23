@@ -19,20 +19,20 @@ import * as pipeline$0 from "../pipeline/models.js";
 import * as xpath$0 from "../xpath/models.js";
 
 /**
- * ChildInsert beschreibt das Einfügen eines beliebigen erlaubten Kindes,
- * etwa aus dem Kontextmenü der Hierarchie.
+ * ChildInsert describes the insertion of any allowed child,
+ * for example from the context menu of the hierarchy.
  */
 export class ChildInsert {
     "parent": string;
 
     /**
-     * Key ist der Schlüssel des Elementtyps im Katalog (etwa formats/locale).
+     * Key is the key of the element type in the catalog (for example formats/locale).
      */
     "key": string;
 
     /**
-     * Index ist die Stelle unter den Kindern, -1 wählt die Stelle nach der
-     * Reihenfolge des XSD.
+     * Index is the position among the children, -1 chooses the position by the
+     * order of the XSD.
      */
     "index": number;
 
@@ -61,32 +61,32 @@ export class ChildInsert {
 }
 
 /**
- * Conformance ist der Stand der Prüfung.
+ * Conformance is the state of the check.
  */
 export class Conformance {
     "state": string;
 
     /**
-     * Rev ist die geprüfte Revision. Weicht sie vom Dokument ab, ist das
-     * Ergebnis veraltet.
+     * Rev is the checked revision. If it differs from the document, the
+     * result is outdated.
      */
     "rev": number;
 
     /**
-     * leer für Platzhalterdaten
+     * empty for placeholder data
      */
     "sample": string;
     "runner": string;
     "profile": string;
 
     /**
-     * Compliant gilt nur im Zustand done.
+     * Compliant is only valid in the state done.
      */
     "compliant": boolean;
     "findings": ConformanceFinding[];
 
     /**
-     * Problems sind Fehler beim Erzeugen des PDF.
+     * Problems are errors while generating the PDF.
      */
     "problems": pipeline$0.Problem[];
     "notes": string[];
@@ -154,11 +154,11 @@ export class Conformance {
 }
 
 /**
- * ConformanceFinding ist eine verletzte Regel mit ihren Einzelprüfungen.
+ * ConformanceFinding is a violated rule with its single checks.
  */
 export class ConformanceFinding {
     /**
-     * Specification ist die Norm der Regel, etwa "ISO 14289-1:2014".
+     * Specification is the standard of the rule, for example "ISO 14289-1:2014".
      */
     "specification": string;
     "clause": string;
@@ -205,16 +205,16 @@ export class ConformanceFinding {
 }
 
 /**
- * ConformanceItem ist eine fehlgeschlagene Einzelprüfung von veraPDF.
+ * ConformanceItem is a failed single check of veraPDF.
  */
 export class ConformanceItem {
     /**
-     * Ref ist das Vorlagenelement, wenn sich der Kontext zuordnen lässt.
+     * Ref is the template element, if the context can be mapped.
      */
     "ref": string;
 
     /**
-     * Page ist die Seite ab 1, 0 ohne Seitenbezug.
+     * Page is the page starting at 1, 0 without page reference.
      */
     "page": number;
     "context": string;
@@ -248,7 +248,7 @@ export class ConformanceItem {
 }
 
 /**
- * ContentEdit ersetzt den Inhalt eines Elements mit gemischtem Inhalt.
+ * ContentEdit replaces the content of an element with mixed content.
  */
 export class ContentEdit {
     "ref": string;
@@ -280,11 +280,11 @@ export class ContentEdit {
 }
 
 /**
- * DiffLine ist eine Zeile im Vergleich von template.xml.
+ * DiffLine is a line in the comparison of template.xml.
  */
 export class DiffLine {
     /**
-     * Op ist " " (gleich), "+" (neu) oder "-" (entfernt).
+     * Op is " " (equal), "+" (new) or "-" (removed).
      */
     "op": string;
     "text": string;
@@ -311,27 +311,27 @@ export class DiffLine {
 }
 
 /**
- * Drop beschreibt, wohin ein Datenknoten gezogen wurde.
+ * Drop describes where a data node was dragged to.
  */
 export class Drop {
     /**
-     * Path ist der Pfad des Datenknotens im Datenbaum.
+     * Path is the path of the data node in the data tree.
      */
     "path": string;
 
     /**
-     * Parent ist das Vorlagenelement, das den neuen Inhalt aufnimmt.
+     * Parent is the template element that receives the new content.
      */
     "parent": string;
 
     /**
-     * Index ist die Position unter den Kindern, -1 hängt an.
+     * Index is the position among the children, -1 appends.
      */
     "index": number;
 
     /**
-     * X und Y sind bei positionierten Eltern die Lage in Millimetern relativ
-     * zum Elternelement.
+     * X and Y are the position in millimeters relative to the parent element
+     * when the parent is positioned.
      */
     "x": number;
     "y": number;
@@ -367,8 +367,8 @@ export class Drop {
 }
 
 /**
- * EInvoice beschreibt die E-Rechnung einer Vorlage mit den Daten der
- * Vorschau: erkannte Stufe, Dateiname, Beziehung und ob das Profil passt.
+ * EInvoice describes the e-invoice of a template with the preview
+ * data: detected level, file name, relationship and whether the profile fits.
  */
 export class EInvoice {
     "present": boolean;
@@ -378,14 +378,14 @@ export class EInvoice {
     "relationship": string;
 
     /**
-     * Overridden meldet, dass die Vorlage die Beziehung vorgibt.
+     * Overridden reports that the template sets the relationship.
      */
     "overridden": boolean;
     "sample": string;
     "error": string;
 
     /**
-     * ProfileError ist gesetzt, wenn das Ausgabeprofil nicht PDF/A-3 ist.
+     * ProfileError is set if the output profile is not PDF/A-3.
      */
     "profileError": string;
 
@@ -432,11 +432,11 @@ export class EInvoice {
 }
 
 /**
- * Field ist ein Datenknoten, relativ zum Kontext eines Elements.
+ * Field is a data node, relative to the context of an element.
  */
 export class Field {
     /**
-     * relativer XPath
+     * relative XPath
      */
     "path": string;
     "type": string;
@@ -471,13 +471,13 @@ export class Field {
 }
 
 /**
- * FileChange ist eine Datei, die sich gegenüber der aktiven Version ändert.
+ * FileChange is a file that changes compared to the active version.
  */
 export class FileChange {
     "name": string;
 
     /**
-     * Kind ist added, removed oder changed.
+     * Kind is added, removed or changed.
      */
     "kind": string;
 
@@ -503,7 +503,7 @@ export class FileChange {
 }
 
 /**
- * Info beschreibt die Anwendung für Titelleiste und „Über“.
+ * Info describes the application for the title bar and "About".
  */
 export class Info {
     "name": string;
@@ -535,7 +535,7 @@ export class Info {
 }
 
 /**
- * Insert beschreibt das Einfügen eines Bausteins.
+ * Insert describes the insertion of a building block.
  */
 export class Insert {
     "kind": string;
@@ -543,13 +543,13 @@ export class Insert {
     "index": number;
 
     /**
-     * mm, nur bei positionierten Eltern
+     * mm, only for positioned parents
      */
     "x": number;
     "y": number;
 
     /**
-     * File ist bei Bildern der Pfad der Bilddatei.
+     * File is the path of the image file for images.
      */
     "file": string;
 
@@ -587,23 +587,23 @@ export class Insert {
 }
 
 /**
- * Licenses beschreibt die Lizenzen der App für den Dialog Lizenzen.
+ * Licenses describes the licenses of the app for the Licenses dialog.
  */
 export class Licenses {
     /**
-     * Name und License gelten für den Designer selbst (Apache License 2.0).
+     * Name and License apply to the designer itself (Apache License 2.0).
      */
     "name": string;
     "license": string;
     "notice": string;
 
     /**
-     * Components sind alle enthaltenen Fremdbestandteile mit Lizenztext.
+     * Components are all included third-party components with license text.
      */
     "components": pdx$0.Component[];
 
     /**
-     * Full sind alle Hinweise als ein Text, zum Kopieren oder Sichern.
+     * Full is all notices as one text, for copying or saving.
      */
     "full": string;
 
@@ -642,8 +642,8 @@ export class Licenses {
 }
 
 /**
- * Manifest beschreibt die gesetzten Seiten eines Stands. Die Seiten selbst
- * holt die Oberfläche über /pdx/page/<hash>, nur geänderte Hashes sind neu.
+ * Manifest describes the typeset pages of a state. The UI fetches the pages
+ * themselves via /pdx/page/<hash>, only changed hashes are new.
  */
 export class Manifest {
     "view": string;
@@ -654,7 +654,7 @@ export class Manifest {
     "problems": pipeline$0.Problem[];
 
     /**
-     * Millis ist die Dauer des Laufs, Compiled meldet, ob kompiliert wurde.
+     * Millis is the duration of the run, Compiled reports whether it compiled.
      */
     "millis": number;
     "compiled": boolean;
@@ -711,27 +711,27 @@ export class Manifest {
 }
 
 /**
- * Problem ist ein Befund der laufenden Prüfung.
+ * Problem is a finding of the running check.
  */
 export class Problem {
     /**
-     * Level ist Fehler oder Hinweis.
+     * Level is error or hint.
      */
     "level": string;
 
     /**
-     * Source ist vorlage (Vorlage, Verweise, Übersetzung, Bindungen) oder
-     * beispiel (Beispieldaten gegen das Daten-XSD).
+     * Source is vorlage (template, references, compilation, bindings) or
+     * beispiel (sample data against the data XSD).
      */
     "source": string;
 
     /**
-     * Ref ist das Vorlagenelement, leer bei Befunden ohne Bezug.
+     * Ref is the template element, empty for findings without reference.
      */
     "ref": string;
 
     /**
-     * File ist bei Beispieldaten die Datei im Paket.
+     * File is the file in the package for sample data.
      */
     "file": string;
     "msg": string;
@@ -767,7 +767,7 @@ export class Problem {
 }
 
 /**
- * ProjectState beschreibt das geöffnete Projekt für die Oberfläche.
+ * ProjectState describes the open project for the UI.
  */
 export class ProjectState {
     "open": boolean;
@@ -778,8 +778,8 @@ export class ProjectState {
     "rev": number;
 
     /**
-     * Doc kennzeichnet das geöffnete Dokument. Wechselt es, ist jeder
-     * Lesecache der Oberfläche veraltet.
+     * Doc identifies the open document. When it changes, every
+     * read cache of the UI is outdated.
      */
     "doc": string;
 
@@ -820,14 +820,14 @@ export class ProjectState {
 }
 
 /**
- * PublishDiff vergleicht die Vorlage mit der aktiven Version auf dem Server.
+ * PublishDiff compares the template with the active version on the server.
  */
 export class PublishDiff {
     "id": string;
 
     /**
-     * Active ist die aktive Version, leer, wenn es die Vorlage noch nicht
-     * gibt oder keine Version aktiv ist.
+     * Active is the active version, empty if the template does not exist
+     * yet or no version is active.
      */
     "active": string;
     "versions": number;
@@ -877,7 +877,7 @@ export class PublishDiff {
 }
 
 /**
- * PublishResult ist das Ergebnis des Hochladens.
+ * PublishResult is the result of the upload.
  */
 export class PublishResult {
     "version": string;
@@ -909,14 +909,14 @@ export class PublishResult {
 }
 
 /**
- * PublishState ist der Stand der Verbindung für die Oberfläche.
+ * PublishState is the state of the connection for the UI.
  */
 export class PublishState {
     "url": string;
     "connected": boolean;
 
     /**
-     * ID ist der Vorschlag für die Vorlagen-ID auf dem Server.
+     * ID is the suggestion for the template ID on the server.
      */
     "id": string;
 
@@ -945,7 +945,7 @@ export class PublishState {
 }
 
 /**
- * RecentFile ist ein zuletzt geöffnetes Paket.
+ * RecentFile is a recently opened package.
  */
 export class RecentFile {
     "path": string;
@@ -977,8 +977,8 @@ export class RecentFile {
 }
 
 /**
- * Recovery ist eine automatische Sicherung, die nach einem Absturz übrig
- * geblieben ist.
+ * Recovery is an automatic backup that was left over after a
+ * crash.
  */
 export class Recovery {
     "id": string;
@@ -1014,7 +1014,7 @@ export class Recovery {
 }
 
 /**
- * Rename stellt Bindungen von einem Datenknoten auf einen anderen um.
+ * Rename switches bindings from one data node to another.
  */
 export class Rename {
     "from": string;
@@ -1042,7 +1042,7 @@ export class Rename {
 }
 
 /**
- * Report sind die Befunde zu einer Revision.
+ * Report is the findings for a revision.
  */
 export class Report {
     "rev": number;
@@ -1078,8 +1078,8 @@ export class Report {
 }
 
 /**
- * Result ist die Antwort auf einen Befehl. Select schlägt das Element vor,
- * das die Oberfläche danach auswählt, etwa ein eingefügtes.
+ * Result is the response to a command. Select suggests the element
+ * that the UI selects afterwards, for example an inserted one.
  */
 export class Result {
     "rev": number;
@@ -1115,7 +1115,7 @@ export class Result {
 }
 
 /**
- * Sample ist ein Datensatz im Paket.
+ * Sample is a data set in the package.
  */
 export class Sample {
     /**
@@ -1126,7 +1126,7 @@ export class Sample {
     "size": number;
 
     /**
-     * Selected markiert den Datensatz der Vorschau.
+     * Selected marks the data set of the preview.
      */
     "selected": boolean;
 
@@ -1158,14 +1158,14 @@ export class Sample {
 }
 
 /**
- * Samples sind die Datensätze und die Auswahl.
+ * Samples are the data sets and the selection.
  */
 export class Samples {
     "items": Sample[];
 
     /**
-     * Placeholder meldet, dass die Vorschau Platzhalter zeigt, weil es keine
-     * Beispieldaten gibt.
+     * Placeholder reports that the preview shows placeholders because there
+     * is no sample data.
      */
     "placeholder": boolean;
 
@@ -1195,33 +1195,33 @@ export class Samples {
 }
 
 /**
- * SchemaChange ist eine Änderung zwischen altem und neuem Daten-XSD.
+ * SchemaChange is a change between the old and the new data XSD.
  */
 export class SchemaChange {
     /**
-     * Kind ist removed, added, changed oder renamed.
+     * Kind is removed, added, changed or renamed.
      */
     "kind": string;
     "path": string;
 
     /**
-     * To ist bei renamed der neue Pfad.
+     * To is the new path for renamed.
      */
     "to": string;
 
     /**
-     * Detail beschreibt changed, etwa „Typ decimal statt string“.
+     * Detail describes changed, for example "Typ decimal statt string".
      */
     "detail": string;
 
     /**
-     * Required meldet bei added einen Pflichtknoten.
+     * Required reports a required node for added.
      */
     "required": boolean;
 
     /**
-     * Refs sind die Vorlagenelemente, die den Knoten oder etwas darunter
-     * verwenden.
+     * Refs are the template elements that use the node or something below
+     * it.
      */
     "refs": string[];
 
@@ -1263,7 +1263,7 @@ export class SchemaChange {
 }
 
 /**
- * SchemaDiff vergleicht das Daten-XSD der Vorlage mit einem neuen.
+ * SchemaDiff compares the data XSD of the template with a new one.
  */
 export class SchemaDiff {
     "main": string;
@@ -1295,9 +1295,9 @@ export class SchemaDiff {
 }
 
 /**
- * Segment ist ein Stück gemischten Inhalts: Text (ein Zeilenumbruch wird zu
- * br), ein vorhandenes eingebettetes Element (Ref) oder ein neues Feld
- * (Bind, relativ zum Kontext des Elements).
+ * Segment is a piece of mixed content: text (a line break becomes
+ * br), an existing embedded element (Ref) or a new field
+ * (Bind, relative to the context of the element).
  */
 export class Segment {
     "text": string;
@@ -1329,14 +1329,14 @@ export class Segment {
 }
 
 /**
- * TableOp ist eine Änderung an der Struktur einer Tabelle.
+ * TableOp is a change to the structure of a table.
  * 
- * 	addColumn     Ref (Tabelle oder Zelle), Index  Spalte einfügen, -1 hängt an
- * 	removeColumn  Ref (Tabelle oder Zelle), Index  Spalte entfernen
- * 	addRow        Ref (Abschnitt oder Zeile), Index  Zeile einfügen
- * 	addSection    Ref (Tabelle), Kind header oder footer
- * 	span          Ref (Zelle), Count  Zelle über Count Spalten
- * 	sum           Ref (Zelle), Kind subtotal, carryOver oder total
+ * 	addColumn     Ref (table or cell), Index  insert column, -1 appends
+ * 	removeColumn  Ref (table or cell), Index  remove column
+ * 	addRow        Ref (section or row), Index  insert row
+ * 	addSection    Ref (table), Kind header or footer
+ * 	span          Ref (cell), Count  cell spans Count columns
+ * 	sum           Ref (cell), Kind subtotal, carryOver or total
  */
 export class TableOp {
     "op": string;
@@ -1376,11 +1376,11 @@ export class TableOp {
 }
 
 /**
- * TokenOp ist eine Änderung an den Design-Tokens.
+ * TokenOp is a change to the design tokens.
  * 
- * 	add     Kind color, length oder font, ID als Vorschlag (leer: nach Art)
- * 	rename  ID, NewID  Verweise in der Vorlage ziehen mit
- * 	remove  ID         nur ohne Verweise
+ * 	add     Kind color, length or font, ID as suggestion (empty: by kind)
+ * 	rename  ID, NewID  references in the template follow along
+ * 	remove  ID         only without references
  */
 export class TokenOp {
     "op": string;
@@ -1416,24 +1416,24 @@ export class TokenOp {
 }
 
 /**
- * VeraPDFSetup beschreibt, welches veraPDF der Designer nutzt.
+ * VeraPDFSetup describes which veraPDF the designer uses.
  */
 export class VeraPDFSetup {
     /**
-     * Path ist der gewählte Pfad, leer bedeutet automatisch.
+     * Path is the chosen path, empty means automatic.
      */
     "path": string;
 
     /**
-     * Runner beschreibt die gefundene Variante, Error warum keine gefunden
-     * wurde, Notes Hinweise wie eine abweichende Version.
+     * Runner describes the variant found, Error why none was found,
+     * Notes hints such as a different version.
      */
     "runner": string;
     "error": string;
     "notes": string[];
 
     /**
-     * Version ist die verlangte Version.
+     * Version is the required version.
      */
     "version": string;
 
@@ -1472,23 +1472,23 @@ export class VeraPDFSetup {
 }
 
 /**
- * XPathInfo ist das Ergebnis der Prüfung eines Ausdrucks.
+ * XPathInfo is the result of checking an expression.
  */
 export class XPathInfo {
     /**
-     * Context ist der Datenkontext des Elements, leer ohne Datenwurzel.
+     * Context is the data context of the element, empty without data root.
      */
     "context": string;
 
     /**
-     * Data nennt die Daten der Auswertung: den Pfad der Beispieldaten oder
-     * leer für Platzhalter.
+     * Data names the data of the evaluation: the path of the sample data or
+     * empty for placeholders.
      */
     "data": string;
     "problems": xpath$0.Problem[];
 
     /**
-     * Target ist der Datenknoten eines einfachen Pfads.
+     * Target is the data node of a simple path.
      */
     "target": Field | null;
     "result": xpath$0.Result | null;
@@ -1536,8 +1536,8 @@ export class XPathInfo {
 }
 
 /**
- * XPathQuery beschreibt einen Ausdruck an einem Vorlagenelement. Cursor ist
- * die Stelle in Zeichen (UTF-16 wie im Browser) für die Vervollständigung.
+ * XPathQuery describes an expression on a template element. Cursor is
+ * the position in characters (UTF-16 as in the browser) for completion.
  */
 export class XPathQuery {
     "ref": string;

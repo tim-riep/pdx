@@ -6,13 +6,13 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 /**
- * Catalog sind alle Elementtypen. Schlüssel ist bei globalen Elementen der
- * Name, bei lokalen "eltern/name" (etwa table/header).
+ * Catalog is all element types. The key is the name for global elements,
+ * "parent/name" for local ones (for example table/header).
  */
 export type Catalog = { [_ in string]?: ElementType | null };
 
 /**
- * Child ist ein erlaubtes Kindelement.
+ * Child is an allowed child element.
  */
 export class Child {
     "name": string;
@@ -20,7 +20,7 @@ export class Child {
     "min": number;
 
     /**
-     * -1 für beliebig viele
+     * -1 for any number
      */
     "max": number;
 
@@ -52,20 +52,20 @@ export class Child {
 }
 
 /**
- * Command ist eine Änderung an der Vorlage. Die Oberfläche schickt Befehle
- * als JSON, das Backend wendet sie an und merkt sich das Inverse für Undo.
+ * Command is a change to the template. The UI sends commands
+ * as JSON, the backend applies them and remembers the inverse for Undo.
  * 
- * 	setAttr  Ref, Name, Value  Attribut setzen, leerer Value entfernt es
- * 	insert   Parent, Index, XML  Elemente einfügen (XML im Vorlagenformat)
- * 	remove   Ref               Element entfernen
- * 	move     Ref, Parent, Index  Element verschieben
- * 	content  Ref, XML          gemischten Inhalt (Text und Elemente) ersetzen
- * 	batch    Cmds              mehrere Befehle als ein Schritt
- * 	setFile  Name              Datei im Paket setzen oder entfernen (nur
- * 	                           im Backend, die Daten trägt Data)
+ * 	setAttr  Ref, Name, Value  set attribute, empty Value removes it
+ * 	insert   Parent, Index, XML  insert elements (XML in the template format)
+ * 	remove   Ref               remove element
+ * 	move     Ref, Parent, Index  move element
+ * 	content  Ref, XML          replace mixed content (text and elements)
+ * 	batch    Cmds              several commands as one step
+ * 	setFile  Name              set or remove a file in the package (only
+ * 	                           in the backend, Data carries the data)
  * 
- * Index zählt die Kinder des Elternelements, bei gemischtem Inhalt
- * einschließlich der Texte. -1 hängt an.
+ * Index counts the children of the parent element, with mixed content
+ * including the texts. -1 appends.
  */
 export class Command {
     "op": string;
@@ -100,7 +100,7 @@ export class Command {
 }
 
 /**
- * ElementType beschreibt ein Element des Vorlagenformats.
+ * ElementType describes an element of the template format.
  */
 export class ElementType {
     "key": string;
@@ -110,7 +110,7 @@ export class ElementType {
     "mixed": boolean;
 
     /**
-     * Text meldet Textinhalt: gemischt oder nur Text (etwa string).
+     * Text reports text content: mixed or text only (such as string).
      */
     "text": boolean;
 
@@ -156,7 +156,7 @@ export class ElementType {
 }
 
 /**
- * History beschreibt Undo und Redo für Menü und Werkzeugleiste.
+ * History describes Undo and Redo for the menu and the toolbar.
  */
 export class History {
     "undo": string;
@@ -188,8 +188,8 @@ export class History {
 }
 
 /**
- * Item ist ein Kind in der Projektion: ein Element (Ref) oder bei gemischtem
- * Inhalt ein Text.
+ * Item is a child in the projection: an element (Ref) or, with mixed
+ * content, a text.
  */
 export class Item {
     "ref"?: string;
@@ -211,7 +211,7 @@ export class Item {
 }
 
 /**
- * Patch sind die Änderungen der Projektion von einer Revision zur nächsten.
+ * Patch is the changes of the projection from one revision to the next.
  */
 export class Patch {
     "from": number;
@@ -259,23 +259,23 @@ export class Patch {
 }
 
 /**
- * Property ist ein Attribut eines Vorlagenelements, abgeleitet aus dem XSD
- * des Vorlagenformats.
+ * Property is an attribute of a template element, derived from the XSD
+ * of the template format.
  */
 export class Property {
     "name": string;
 
     /**
-     * Group ordnet die Eigenschaft im Inspektor ein: general, access
-     * (Barrierefreiheit), form (Formularfeld), position, text, border,
-     * spacing, breaks, binding oder other.
+     * Group places the property in the inspector: general, access
+     * (accessibility), form (form field), position, text, border,
+     * spacing, breaks, binding or other.
      */
     "group": string;
 
     /**
-     * Kind wählt den Editor: id, ref, length, lengths, color, font (Verweis
-     * auf ein Schrift-Token), xpath, enum, bool, number, profile
-     * (Konformitätsprofile) oder text.
+     * Kind chooses the editor: id, ref, length, lengths, color, font (reference
+     * to a font token), xpath, enum, bool, number, profile
+     * (conformance profiles) or text.
      */
     "kind": string;
     "enum"?: string[];
@@ -311,7 +311,7 @@ export class Property {
 }
 
 /**
- * Snapshot ist die vollständige Projektion einer Revision.
+ * Snapshot is the complete projection of a revision.
  */
 export class Snapshot {
     "rev": number;
@@ -347,8 +347,8 @@ export class Snapshot {
 }
 
 /**
- * ViewNode ist ein Element der Vorlage, wie die Oberfläche es sieht. Die
- * Oberfläche ändert es nie selbst, sie schickt Befehle.
+ * ViewNode is an element of the template as the UI sees it. The
+ * UI never changes it itself, it sends commands.
  */
 export class ViewNode {
     "ref": string;

@@ -10,25 +10,25 @@ import { Create as $Create } from "@wailsio/runtime";
 import * as render$0 from "../../../pdf/render/models.js";
 
 /**
- * Access ist die Analyse der Barrierefreiheit eines Stands.
+ * Access is the accessibility analysis of a state.
  */
 export class Access {
     /**
-     * Profile ist das geprüfte Profil. Assumed meldet, dass das Profil der
-     * Vorlage keine Barrierefreiheit verlangt und ersatzweise nach
-     * AccessProfile geprüft wurde.
+     * Profile is the checked profile. Assumed reports that the profile of the
+     * template does not require accessibility and the check fell back to
+     * AccessProfile.
      */
     "profile": string;
     "assumed": boolean;
 
     /**
-     * Tree ist der Strukturbaum in Lesereihenfolge, nil, wenn das Setzen
-     * scheiterte.
+     * Tree is the structure tree in reading order, nil if typesetting
+     * failed.
      */
     "tree": render$0.StructNode | null;
 
     /**
-     * Findings sind die Befunde der Vorprüfung, Problems Fehler beim Setzen.
+     * Findings are the findings of the pre-check, Problems errors during typesetting.
      */
     "findings": Problem[];
     "problems": Problem[];
@@ -76,7 +76,7 @@ export class Access {
 }
 
 /**
- * FontRef ist eine Schrift für den Canvas.
+ * FontRef is a font for the canvas.
  */
 export class FontRef {
     "key": string;
@@ -104,7 +104,7 @@ export class FontRef {
 }
 
 /**
- * PageRef verweist auf eine Seite über den Hash ihres Inhalts.
+ * PageRef refers to a page via the hash of its content.
  */
 export class PageRef {
     "n": number;
@@ -140,7 +140,7 @@ export class PageRef {
 }
 
 /**
- * Problem ist ein Befund beim Setzen mit Vorlagen-ID, soweit bekannt.
+ * Problem is a finding during typesetting with template ID, as far as known.
  */
 export class Problem {
     "level": string;

@@ -6,8 +6,8 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 /**
- * StructNode ist ein Strukturelement für Werkzeuge wie den Designer: Typ,
- * Vorlagen-ID, eigener Text (gekürzt) und Kinder in Lesereihenfolge.
+ * StructNode is a structure element for tools like the designer: type,
+ * template ID, own text (truncated) and kids in reading order.
  */
 export class StructNode {
     "type": string;
@@ -17,7 +17,7 @@ export class StructNode {
     "lang": string;
 
     /**
-     * ab 1, 0 ohne Lage
+     * from 1, 0 without position
      */
     "page": number;
     "kids": (StructNode | null)[];

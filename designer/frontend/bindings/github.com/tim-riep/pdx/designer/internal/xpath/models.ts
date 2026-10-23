@@ -6,7 +6,7 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 /**
- * Completion sind die Vorschläge für die Stelle cursor.
+ * Completion is the suggestions for the position cursor.
  */
 export class Completion {
     "from": number;
@@ -14,7 +14,7 @@ export class Completion {
     "items": Item[];
 
     /**
-     * Context ist der Knoten, dessen Kinder vorgeschlagen werden.
+     * Context is the node whose children are suggested.
      */
     "context": string;
 
@@ -50,28 +50,28 @@ export class Completion {
 }
 
 /**
- * Item ist ein Vorschlag der Vervollständigung.
+ * Item is a suggestion of the completion.
  */
 export class Item {
     "label": string;
 
     /**
-     * Insert ersetzt den Bereich From bis To der Vervollständigung.
+     * Insert replaces the range From to To of the completion.
      */
     "insert": string;
 
     /**
-     * Kind ist element, attribute, function oder step.
+     * Kind is element, attribute, function or step.
      */
     "kind": string;
 
     /**
-     * Type ist der Datentyp eines Knotens oder die Signatur einer Funktion.
+     * Type is the data type of a node or the signature of a function.
      */
     "type": string;
 
     /**
-     * Repeated markiert wiederholte Knoten.
+     * Repeated marks repeated nodes.
      */
     "repeated"?: boolean;
     "optional"?: boolean;
@@ -105,11 +105,11 @@ export class Item {
 }
 
 /**
- * Problem ist ein Befund zu einem Teil des Ausdrucks.
+ * Problem is a finding for a part of the expression.
  */
 export class Problem {
     /**
-     * Byte-Bereich im Ausdruck
+     * byte range in the expression
      */
     "pos": number;
     "end": number;
@@ -140,38 +140,38 @@ export class Problem {
 }
 
 /**
- * Result ist das Ergebnis eines Ausdrucks mit Beispieldaten im ersten
- * Vorkommen des Kontexts.
+ * Result is the result of an expression with sample data in the first
+ * occurrence of the context.
  */
 export class Result {
     /**
-     * Error ist der Fehler beim Übersetzen oder Auswerten, sonst leer.
+     * Error is the error during compiling or evaluating, otherwise empty.
      */
     "error": string;
 
     /**
-     * Count ist die Zahl der Einträge der Ergebnisfolge.
+     * Count is the number of items of the result sequence.
      */
     "count": number;
 
     /**
-     * Kind ist nodes, boolean, number, string oder empty.
+     * Kind is nodes, boolean, number, string or empty.
      */
     "kind": string;
 
     /**
-     * Values sind die ersten Werte als Text.
+     * Values are the first values as text.
      */
     "values": string[];
 
     /**
-     * Truth ist der Wahrheitswert, wenn er sich bilden lässt (true, false
-     * oder leer).
+     * Truth is the truth value, if it can be formed (true, false
+     * or empty).
      */
     "truth": string;
 
     /**
-     * NoContext meldet, dass der Kontext in den Daten fehlt.
+     * NoContext reports that the context is missing in the data.
      */
     "noContext": boolean;
 
