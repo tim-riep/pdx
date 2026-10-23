@@ -19,6 +19,8 @@ codesign_path() {
   codesign --force --options runtime --timestamp --sign "$MACOS_SIGN_IDENTITY" "$1"
 }
 
+# Variablen der Funktionen beginnen mit _n_, die Skripte, die diese Datei
+# einbinden, teilen sich sonst Namen wie out mit ihnen.
 notary_args() {
   if [ -n "${NOTARY_KEY_PATH:-}" ] && [ -n "${NOTARY_KEY_ID:-}" ] && [ -n "${NOTARY_ISSUER_ID:-}" ]; then
     printf '%s\n' --key "$NOTARY_KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID"
@@ -30,8 +32,8 @@ notary_args() {
 # notarize submits a .zip, .pkg or .dmg to the notary service and waits.
 # Returns 1 without credentials, unless notarization is required.
 notarize() {
-  args=$(notary_args)
-  if [ -z "$args" ]; then
+  _n_args=$(notary_args)
+  if [ -z "$_n_args" ]; then
     if [ "${MACOS_REQUIRE_NOTARIZATION:-}" = 1 ]; then
       echo "notarize: keine Zugangsdaten für die Notarisierung" >&2
       exit 1
@@ -40,14 +42,14 @@ notarize() {
     return 1
   fi
   # shellcheck disable=SC2086
-  out=$(xcrun notarytool submit "$1" --wait --output-format json $args)
-  echo "$out"
-  case "$out" in
+  _n_result=$(xcrun notarytool submit "$1" --wait --output-format json $_n_args)
+  echo "$_n_result"
+  case "$_n_result" in
     *'"status":"Accepted"'*) return 0 ;;
   esac
-  id=$(printf '%s' "$out" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')
+  _n_id=$(printf '%s' "$_n_result" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')
   # shellcheck disable=SC2086
-  [ -n "$id" ] && xcrun notarytool log "$id" $args >&2
+  [ -n "$_n_id" ] && xcrun notarytool log "$_n_id" $_n_args >&2
   echo "notarize: $1 abgelehnt" >&2
   exit 1
 }
