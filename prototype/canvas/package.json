@@ -2,6 +2,9 @@
   "name": "pdx-canvas-prototyp",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0"
+  },
   "scripts": {
     "export": "cd ../.. && go run ./prototype/canvas/export",
     "build": "vite build",
