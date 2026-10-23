@@ -31,6 +31,17 @@ done
 security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
 app=$(security find-identity -v -p codesigning "$keychain" | sed -n 's/.*\([0-9A-F]\{40\}\) "Developer ID Application.*/\1/p' | head -1)
 inst=$(security find-identity -v "$keychain" | sed -n 's/.*\([0-9A-F]\{40\}\) "Developer ID Installer.*/\1/p' | head -1)
+# Name, Team-ID und Fingerabdrücke aus allen weiteren Logs heraushalten
+# (codesign, spctl, pkgutil und notarytool geben die Zertifikate aus).
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  security find-identity "$keychain" | sed -n 's/.*"Developer ID [A-Za-z]*: \(.*\) (\([A-Z0-9]*\))"/\1\
+\2/p' | sort -u | while IFS= read -r v; do
+    [ -n "$v" ] && echo "::add-mask::$v"
+  done
+  for h in $(security find-identity "$keychain" | grep -o '[0-9A-F]\{40\}' | sort -u); do
+    echo "::add-mask::$h"
+  done
+fi
 if [ -z "$app" ] || [ -z "$inst" ]; then
   # Nur Namen und Gültigkeit, keine Schlüssel.
   echo "ci-keychain: Zertifikate im .p12:" >&2

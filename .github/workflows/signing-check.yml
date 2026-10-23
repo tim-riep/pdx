@@ -23,7 +23,9 @@ jobs:
         run: designer/packaging/macos/ci-keychain.sh
       - name: Identitäten
         run: |
-          security find-identity -v "$MACOS_KEYCHAIN" | sed -E 's/[0-9A-F]{40}/<sha1>/'
+          # Nur die Art der Zertifikate, keine Namen oder Team-IDs.
+          security find-identity -v "$MACOS_KEYCHAIN" | sed -n 's/.*"\(Developer ID [A-Za-z]*\): .*/\1 gefunden/p'
+          security find-identity -v "$MACOS_KEYCHAIN" | tail -1
       - name: Anmeldung beim Notardienst
         env:
           NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
