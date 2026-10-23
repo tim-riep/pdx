@@ -41,12 +41,12 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: pdx und pdx-server für alle Systeme
+      - name: pdx und pdx-server für Linux und Windows
         run: |
           set -eu
           export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
           mkdir -p dist
-          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64; do
+          for target in linux/amd64 linux/arm64 windows/amd64 windows/arm64; do
             os=${target%/*}; arch=${target#*/}
             ext=""; [ "$os" = windows ] && ext=".exe"
             name="pdx-${GITHUB_REF_NAME}-${os}-${arch}"
@@ -66,6 +66,50 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: cli
+          path: dist/*
+
+  # macOS-Binaries werden auf macOS gebaut, mit Developer ID signiert und
+  # notarisiert (packaging/macos).
+  cli-darwin:
+    needs: check
+    runs-on: macos-15
+    env:
+      MACOS_REQUIRE_NOTARIZATION: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Signatur einrichten
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+        run: designer/packaging/macos/ci-keychain.sh
+      - name: pdx und pdx-server für macOS, signiert und notarisiert
+        env:
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          set -eu
+          mkdir -p dist
+          for arch in arm64 amd64; do
+            name="pdx-${GITHUB_REF_NAME}-darwin-${arch}"
+            mkdir -p "build/$name"
+            for cmd in pdx pdx-server; do
+              CGO_ENABLED=0 GOOS=darwin GOARCH=$arch go build -trimpath -ldflags="-s -w -buildid=" \
+                -o "build/$name/$cmd" "./cmd/$cmd"
+            done
+            designer/packaging/macos/sign-bin.sh "build/$name/pdx" "build/$name/pdx-server"
+            cp LICENSE NOTICE THIRD_PARTY_NOTICES.txt README.md "build/$name/"
+            tar -C build -czf "dist/$name.tar.gz" "$name"
+          done
+      - name: Schlüsselbund entfernen
+        if: always()
+        run: if [ -n "${MACOS_KEYCHAIN:-}" ]; then security delete-keychain "$MACOS_KEYCHAIN"; fi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cli-darwin
           path: dist/*
 
   designer:
@@ -103,18 +147,33 @@ jobs:
         shell: pwsh
         run: |
           if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup --version=6.4.3 -y --no-progress }
+      - name: Signatur einrichten
+        if: runner.os == 'macOS'
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+        run: packaging/macos/ci-keychain.sh
+      # make installer baut Paket und Setup-Programm in einem Durchlauf, unter
+      # macOS mit signierter, notarisierter App und signiertem .pkg.
       - name: Bauen, Smoke-Test, Paket, Setup-Programm und Installationstests
+        env:
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+          MACOS_REQUIRE_NOTARIZATION: ${{ runner.os == 'macOS' && '1' || '' }}
         run: |
           make build
           ./smoke.sh
-          make package
-          packaging/test-install.sh
           if [ "$RUNNER_OS" = "Windows" ]; then
             make installer ISCC="C:/Program Files (x86)/Inno Setup 6/ISCC.exe"
           else
             make installer
           fi
+          packaging/test-install.sh
           packaging/test-installer.sh
+      - name: Schlüsselbund entfernen
+        if: always() && runner.os == 'macOS'
+        run: if [ -n "${MACOS_KEYCHAIN:-}" ]; then security delete-keychain "$MACOS_KEYCHAIN"; fi
       - name: Archiv
         run: |
           set -eu
@@ -168,7 +227,7 @@ jobs:
           path: image.txt
 
   release:
-    needs: [cli, designer, image]
+    needs: [cli, cli-darwin, designer, image]
     runs-on: ubuntu-24.04
     permissions:
       contents: write

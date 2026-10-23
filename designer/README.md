@@ -32,7 +32,7 @@ Everything lives in `packaging/`:
 | --- | --- |
 | `Info.plist.in` | metadata of the macOS app bundle |
 | `install.sh`, `install.ps1` | per-user install scripts of the archives |
-| `build-pkg.sh`, `macos/` | macOS installer package (per user, domain currentUserHome, no administrator rights) |
+| `build-pkg.sh`, `macos/` | macOS installer package (per user, domain currentUserHome, no administrator rights), signing and notarization (`macos/sign-app.sh`, `sign-bin.sh`, `ci-keychain.sh`) |
 | `windows/pdx-designer.iss` | Windows setup with Inno Setup 6 (per user, Start menu, WebView2 check) |
 | `build-deb.sh` | Debian package |
 | `test-install.sh`, `test-installer.sh` | CI: install, check and uninstall on all three systems |
@@ -40,6 +40,30 @@ Everything lives in `packaging/`:
 | `windows/pdx-designer.exe.manifest` | Windows manifest, embedded with icon and version info by `make build` on Windows |
 
 `make package` assembles the archive content, `make installer` builds the setup program for the current system into `../out/installer` (on Windows with `ISCC=<path to ISCC.exe>`).
+
+### Signing on macOS
+
+`make bundle` signs the app with Hardened Runtime when `MACOS_SIGN_IDENTITY` is set (name or SHA-1 of a Developer ID Application certificate), notarizes it and staples the ticket. `packaging/build-pkg.sh` signs the `.pkg` with `MACOS_INSTALLER_IDENTITY` (Developer ID Installer) and notarizes it as well. Notarization uses an App Store Connect API key (`NOTARY_KEY_PATH`, `NOTARY_KEY_ID`, `NOTARY_ISSUER_ID`) or a keychain profile (`NOTARY_PROFILE`). Without these variables everything stays unsigned, so normal builds and CI need no certificates. Locally:
+
+```bash
+xcrun notarytool store-credentials pdx --key AuthKey_KEYID.p8 --key-id KEYID --issuer ISSUER-ID
+```
+
+```bash
+MACOS_SIGN_IDENTITY="Developer ID Application: …" MACOS_INSTALLER_IDENTITY="Developer ID Installer: …" NOTARY_PROFILE=pdx make installer
+```
+
+The release workflow signs and notarizes the Designer and the macOS command line tools (`packaging/macos/sign-bin.sh`) with these repository secrets:
+
+| Secret | Content |
+| --- | --- |
+| `MACOS_CERT_P12` | Developer ID Application and Developer ID Installer with private keys, exported together as `.p12`, base64 encoded |
+| `MACOS_CERT_PASSWORD` | password of the `.p12` |
+| `NOTARY_KEY_P8` | content of the App Store Connect API key file `AuthKey_….p8` (role Developer) |
+| `NOTARY_KEY_ID` | key ID of the API key |
+| `NOTARY_ISSUER_ID` | issuer ID of the team |
+
+Without these secrets the release fails instead of publishing unsigned macOS files.
 
 veraPDF: the conformance panel shows under veraPDF which program the Designer uses. Without a path it searches the `PATH`, `~/verapdf`, `/usr/local/bin`, Homebrew and on Windows the user folder and Program Files, then Docker. A path set there is saved in `verapdf.json` in the settings directory and takes precedence over `PDX_VERAPDF`.
 

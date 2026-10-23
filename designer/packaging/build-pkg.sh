@@ -42,6 +42,20 @@ pkgutil --flatten "$work/expanded" "$work/pdx-designer.pkg"
 cp ../LICENSE "$work/resources/LICENSE.txt"
 sed "s/@VERSION@/$version/g" packaging/macos/welcome.html > "$work/resources/welcome.html"
 sed "s/@VERSION@/$version/g" packaging/macos/distribution.xml > "$work/distribution.xml"
+rm -f "$out"
+sign=""
+if [ -n "${MACOS_INSTALLER_IDENTITY:-}" ]; then
+  sign="--sign $MACOS_INSTALLER_IDENTITY --timestamp"
+fi
+# shellcheck disable=SC2086
 productbuild --quiet --distribution "$work/distribution.xml" --package-path "$work" \
-  --resources "$work/resources" "$out"
+  --resources "$work/resources" $sign "$out"
+if [ -n "$sign" ]; then
+  . packaging/macos/lib.sh
+  pkgutil --check-signature "$out"
+  if notarize "$out"; then
+    xcrun stapler staple "$out"
+    spctl --assess --type install --verbose=2 "$out"
+  fi
+fi
 echo "$out"

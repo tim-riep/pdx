@@ -50,7 +50,8 @@ VERSION := $(shell sed -n 's/^const Version = "\(.*\)"/\1/p' internal/app/app.go
 APP := $(OUT)/pdx Designer.app
 PKG := $(OUT)/package/pdx-designer
 
-# macOS: App-Bündel aus dem nativen Binary.
+# macOS: App-Bündel aus dem nativen Binary. Mit MACOS_SIGN_IDENTITY wird
+# es signiert und, mit Zugangsdaten, notarisiert (packaging/macos/lib.sh).
 bundle: build
 	rm -rf "$(APP)"
 	mkdir -p "$(APP)/Contents/MacOS" "$(APP)/Contents/Resources"
@@ -59,6 +60,7 @@ bundle: build
 	printf 'APPL????' > "$(APP)/Contents/PkgInfo"
 	cp ../LICENSE ../NOTICE notices/THIRD_PARTY_NOTICES.txt "$(APP)/Contents/Resources/"
 	cp packaging/icon/pdx-designer.icns "$(APP)/Contents/Resources/AppIcon.icns"
+	packaging/macos/sign-app.sh "$(APP)"
 
 # Inhalt des Release-Archivs für dieses System mit Installationsskript nach
 # der Konvention pro Benutzer (siehe README).

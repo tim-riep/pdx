@@ -43,7 +43,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 `./install.sh --uninstall` or `install.ps1 -Uninstall` removes the program and the menu entry. Settings and autosaves stay in place. On Linux the license files go to `~/.local/share/doc/pdx-designer`, on macOS they are inside the app bundle, on Windows next to the program. `PDX_DESIGNER_DATA` replaces the settings directory, for example for tests.
 
-The Designer needs GTK 4 and WebKitGTK 6 on Linux and the WebView2 runtime on Windows (included in Windows 11, the Windows setup points to it if missing). The programs and setup programs are not signed or notarized. On macOS open the `.pkg` with right click and Open the first time, on Windows confirm the SmartScreen notice with More info and Run anyway. The macOS install script removes the quarantine flag of the download.
+The Designer needs GTK 4 and WebKitGTK 6 on Linux and the WebView2 runtime on Windows (included in Windows 11, the Windows setup points to it if missing). On macOS the app, the `.pkg` and the command line tools are signed with Developer ID and notarized by Apple. The Windows programs are not signed yet, confirm the SmartScreen notice with More info and Run anyway.
 
 The Designer finds veraPDF on its own, also when started from Finder, Launchpad or the Start menu: it searches the `PATH`, `~/verapdf` (where the veraPDF installer puts it), `/usr/local/bin` and Homebrew, on Windows the user folder and Program Files, and uses Docker otherwise. A different location can be set in the conformance panel (Konformität, veraPDF).
 
