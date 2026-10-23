@@ -53,7 +53,10 @@ export async function openElementMenu(ref: string, x: number, y: number) {
   let insertable: { key: string; name: string }[] = [];
   try {
     insertable = (await TemplateAPI.Insertable(ref)) ?? [];
-  } catch {
+  } catch (e) {
+    // Etwa ein Element einer gerade ersetzten Vorlage: melden statt still
+    // „nichts einfügbar“ anzuzeigen.
+    if (s === seq) ui.error = message(e);
     insertable = [];
   }
   if (s !== seq) return;

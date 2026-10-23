@@ -7,6 +7,8 @@ test("Struktur: Kinder einfügen, duplizieren, verschieben, löschen", async ({ 
   await page.getByRole("tab", { name: "Hierarchie" }).click();
   const tree = page.getByTestId("hierarchy");
   const menu = page.getByTestId("context-menu");
+  // Erst wenn der Baum die neue Vorlage zeigt, nicht noch die vorige.
+  await expect(tree.locator(".id", { hasText: /^vorlage$/ })).toBeVisible();
 
   // Wurzel wählen, über den Knopf Formate einfügen.
   await tree.getByRole("button", { name: /^Vorlage/ }).click();
