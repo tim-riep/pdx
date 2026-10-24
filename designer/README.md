@@ -65,6 +65,16 @@ The release workflow signs and notarizes the Designer and the macOS command line
 
 Without these secrets the release fails instead of publishing unsigned macOS files.
 
+### Signing on Windows
+
+The Windows executables are signed with a Certum Open Source Code Signing certificate (SimplySign cloud). The certificate never goes into CI: the release workflow only creates a draft release, and `scripts/sign-windows.sh <tag>` finishes it on the maintainer's machine. The script signs every `.exe` in the Windows archives (`pdx.exe`, `pdx-server.exe`, `pdx-designer.exe`) with [ssign](https://github.com/Le-Syl21/ssign) 0.1.8 and verifies them with osslsigncode. It then starts the workflow `windows-installer.yml`, which builds the setup from the signed Designer and tests the installation, and finally signs the setup, writes `SHA256SUMS` anew and publishes the release after a confirmation. Each signing step asks for the current 6-digit code from the SimplySign app, so the TOTP seed stays on the phone. `--check` signs copies only and changes nothing. The uninstaller inside the setup stays unsigned, since Inno Setup can only sign it during the build.
+
+```sh
+brew install rust osslsigncode
+cargo install ssign --version 0.1.8 --locked
+CERTUM_EMAIL=… scripts/sign-windows.sh v0.4.0
+```
+
 veraPDF: the conformance panel shows under veraPDF which program the Designer uses. Without a path it searches the `PATH`, `~/verapdf`, `/usr/local/bin`, Homebrew and on Windows the user folder and Program Files, then Docker. A path set there is saved in `verapdf.json` in the settings directory and takes precedence over `PDX_VERAPDF`.
 
 ## Concept

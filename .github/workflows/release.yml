@@ -1,7 +1,11 @@
 # Release on a v* tag: check the engine, build pdx and pdx-server for all
 # systems, build the designer natively on macOS, Linux and Windows, push the
-# pdx-server image to ghcr.io and publish everything as a GitHub release with
+# pdx-server image to ghcr.io and create a DRAFT GitHub release with
 # checksums. The release notes come from the message of the annotated tag.
+# The Windows executables are signed afterwards on the maintainer's machine
+# (scripts/sign-windows.sh, Certum SimplySign), which also rebuilds the setup
+# (windows-installer.yml), writes the checksums anew and publishes the
+# release. Drafts are invisible to users.
 name: Release
 
 on:
@@ -249,4 +253,4 @@ jobs:
           git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
           git tag -l --format='%(contents:body)' "$GITHUB_REF_NAME" | sed '/-----BEGIN/,$d' > ../notes.md
           printf '\n## Container\n\n```\ndocker pull %s\n```\n' "$image" >> ../notes.md
-          gh release create "$GITHUB_REF_NAME" --title "pdx ${GITHUB_REF_NAME}" --notes-file ../notes.md *
+          gh release create "$GITHUB_REF_NAME" --draft --title "pdx ${GITHUB_REF_NAME}" --notes-file ../notes.md *
