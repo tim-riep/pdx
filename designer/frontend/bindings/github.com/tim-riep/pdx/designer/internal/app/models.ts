@@ -1416,6 +1416,112 @@ export class TokenOp {
 }
 
 /**
+ * UpdateInfo is the outcome of Check.
+ */
+export class UpdateInfo {
+    /**
+     * Current is the version of this build.
+     */
+    "current": string;
+
+    /**
+     * Latest is the version of the newest release, without a leading "v".
+     */
+    "latest": string;
+
+    /**
+     * URL is the page of the newest release.
+     */
+    "url": string;
+
+    /**
+     * Newer reports that Latest is newer than Current.
+     */
+    "newer": boolean;
+
+    /**
+     * NotesHTML holds the notes of the newest release, rendered and
+     * sanitized by GitHub. The UI cleans them once more before showing them.
+     */
+    "notesHtml": string;
+
+    /**
+     * PublishedAt is when the newest release was published (RFC 3339).
+     */
+    "publishedAt": string;
+
+    /**
+     * Error says why the check failed, empty on success.
+     */
+    "error"?: string;
+
+    /** Creates a new UpdateInfo instance. */
+    constructor($$source: Partial<UpdateInfo> = {}) {
+        if (!("current" in $$source)) {
+            this["current"] = "";
+        }
+        if (!("latest" in $$source)) {
+            this["latest"] = "";
+        }
+        if (!("url" in $$source)) {
+            this["url"] = "";
+        }
+        if (!("newer" in $$source)) {
+            this["newer"] = false;
+        }
+        if (!("notesHtml" in $$source)) {
+            this["notesHtml"] = "";
+        }
+        if (!("publishedAt" in $$source)) {
+            this["publishedAt"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new UpdateInfo instance from a string or object.
+     */
+    static createFrom($$source: any = {}): UpdateInfo {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new UpdateInfo($$parsedSource as Partial<UpdateInfo>);
+    }
+}
+
+/**
+ * UpdateSettings are the user's choices, stored in update.json in the data
+ * directory.
+ */
+export class UpdateSettings {
+    /**
+     * Check switches the check at start and every few hours on or off.
+     */
+    "check": boolean;
+
+    /**
+     * Skipped is the release whose dialog no longer opens by itself.
+     */
+    "skipped"?: string;
+
+    /** Creates a new UpdateSettings instance. */
+    constructor($$source: Partial<UpdateSettings> = {}) {
+        if (!("check" in $$source)) {
+            this["check"] = false;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new UpdateSettings instance from a string or object.
+     */
+    static createFrom($$source: any = {}): UpdateSettings {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new UpdateSettings($$parsedSource as Partial<UpdateSettings>);
+    }
+}
+
+/**
  * VeraPDFSetup describes which veraPDF the designer uses.
  */
 export class VeraPDFSetup {

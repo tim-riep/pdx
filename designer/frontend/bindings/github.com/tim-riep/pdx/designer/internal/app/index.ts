@@ -9,6 +9,7 @@ import * as RenderService from "./renderservice.js";
 import * as SampleDataService from "./sampledataservice.js";
 import * as SchemaService from "./schemaservice.js";
 import * as TemplateService from "./templateservice.js";
+import * as UpdateService from "./updateservice.js";
 import * as ValidationService from "./validationservice.js";
 export {
     AppService,
@@ -19,6 +20,7 @@ export {
     SampleDataService,
     SchemaService,
     TemplateService,
+    UpdateService,
     ValidationService
 };
 
@@ -54,6 +56,8 @@ export {
     Segment,
     TableOp,
     TokenOp,
+    UpdateInfo,
+    UpdateSettings,
     VeraPDFSetup,
     XPathInfo,
     XPathQuery

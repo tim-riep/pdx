@@ -112,6 +112,7 @@ More tools:
 * **Forms:** text fields, check boxes, radio groups, lists and signature fields from the palette, options from the XSD enumeration, fillable in the preview, tab order as numbers on the page.
 * **Publish:** the Veröffentlichen dialog connects to a pdx-server (address and API key with the templates right), compares the template with the active version on the server file by file and `template.xml` line by line, uploads it as a new version and activates it. The key stays in memory for the session only, only the address is saved.
 * **Licenses:** the Lizenzen button in the toolbar (also in the About dialog and the command palette) shows the Designer's own license and every included component with its license and full text, with search and copy.
+* **Updates:** at start and every six hours the Designer asks GitHub for the latest release. If it is newer, a dialog shows its notes (rendered by GitHub and cleaned once more, without images or scripts) with Herunterladen, Später and Diese Version überspringen, and a button in the toolbar stays until the update. The request carries only the version in the User-Agent, no templates or data. The switch in the About dialog turns the check off, the choice is stored in `update.json` in the settings directory. `PDX_UPDATE_URL` replaces the address (the end-to-end tests use a local stand-in), set but empty it turns the check off for good.
 * **View:** rulers in mm or pt, grid, snapping to edges and centers, page overview, align and distribute with multiple selection (Shift+click).
 
 ## Keyboard shortcuts

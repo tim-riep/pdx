@@ -39,6 +39,8 @@ type Dialogs interface {
 	SaveFile(title, name string, filters []Filter) (string, error)
 	// Show opens a file with the system's default program, for example a PDF.
 	Show(path string) error
+	// OpenURL opens a web page in the system's browser.
+	OpenURL(url string) error
 }
 
 // Events sent to the UI.

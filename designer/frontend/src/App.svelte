@@ -25,6 +25,7 @@
   import SchemaDiffDialog from "./components/SchemaDiffDialog.svelte";
   import PublishDialog from "./components/PublishDialog.svelte";
   import LicensesDialog from "./components/LicensesDialog.svelte";
+  import UpdateNotice from "./components/UpdateNotice.svelte";
   import { sd } from "./lib/schemadiff.svelte";
   import { closeMenu, duplicate, menu, moveBy, remove } from "./lib/menu.svelte";
   import StylesPanel from "./components/StylesPanel.svelte";
@@ -248,6 +249,7 @@
         </button>
       {/each}
     </div>
+    <UpdateNotice />
     <button data-testid="licenses-open" onclick={() => (licenses = true)}>{t("licenses.open")}</button>
     <button class="icon" title={t("theme.toggle")} aria-label={t("theme.toggle")} onclick={toggleTheme}>◐</button>
   </header>

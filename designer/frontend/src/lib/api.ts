@@ -12,6 +12,7 @@ export * as SampleAPI from "../../bindings/github.com/tim-riep/pdx/designer/inte
 export * as ValidationAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/validationservice";
 export * as SchemaAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/schemaservice";
 export * as PublishAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/publishservice";
+export * as UpdateAPI from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/updateservice";
 export type { Schema as DataSchema, Node as DataNode } from "../../bindings/github.com/tim-riep/pdx/designer/internal/schema/models";
 export type { Drop, TableOp, Insert, XPathInfo, XPathQuery, Field as DataField, Report, Problem, Conformance, ConformanceFinding, ConformanceItem, TokenOp, ChildInsert, Result, Segment, ContentEdit, Samples, Sample, SchemaDiff, SchemaChange, Rename } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 export type { Completion, Item as Suggestion, Result as XPathResult } from "../../bindings/github.com/tim-riep/pdx/designer/internal/xpath/models";
@@ -38,6 +39,8 @@ export type {
   PublishResult,
   FileChange,
   DiffLine,
+  UpdateInfo,
+  UpdateSettings,
 } from "../../bindings/github.com/tim-riep/pdx/designer/internal/app/models";
 
 // Names of the events, as in internal/app/app.go.

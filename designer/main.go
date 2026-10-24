@@ -75,6 +75,7 @@ func main() {
 			application.NewService(app.NewConformanceService(core)),
 			application.NewService(app.NewSampleDataService(core)),
 			application.NewService(app.NewPublishService(core)),
+			application.NewService(app.NewUpdateService(core)),
 			// Pages, fonts and images of the canvas over HTTP.
 			application.NewServiceWithOptions(app.NewAssets(core), application.ServiceOptions{Route: "/pdx"}),
 		},
@@ -182,6 +183,15 @@ func (d dialogs) OpenFile(title string, filters []app.Filter, dirs bool) (string
 
 // Show opens a file with the system's default program.
 func (d dialogs) Show(path string) error { return d.app().Browser.OpenFile(path) }
+
+// OpenURL opens a web page in the browser. The server build has no window of
+// its own and would start a browser on the host, so the UI opens the page.
+func (d dialogs) OpenURL(url string) error {
+	if application.System.IsServer() {
+		return app.ErrNoDialogs
+	}
+	return d.app().Browser.OpenURL(url)
+}
 
 func (d dialogs) SaveFile(title, name string, filters []app.Filter) (string, error) {
 	dlg := d.app().Dialog.SaveFile().SetFilename(name)

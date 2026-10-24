@@ -121,6 +121,10 @@ func (f *fakeDialogs) Show(path string) error {
 	f.shown = append(f.shown, path)
 	return nil
 }
+func (f *fakeDialogs) OpenURL(url string) error {
+	f.shown = append(f.shown, url)
+	return nil
+}
 
 func TestExportAndOpenPDF(t *testing.T) {
 	dir := t.TempDir()

@@ -37,6 +37,11 @@ writeFileSync(serverConfig, JSON.stringify({
 }));
 const serverBin = resolve(rootDir, "out", `pdx-server-e2e${exe}`);
 
+// A stand-in for GitHub answers the update check, so the tests make no
+// requests to the internet.
+const releasePort = Number(process.env.PDX_E2E_RELEASE_PORT ?? 8797);
+process.env.PDX_E2E_RELEASE = `http://127.0.0.1:${releasePort}`;
+
 export default defineConfig({
   testDir: "e2e",
   timeout: 30_000,
@@ -51,7 +56,14 @@ export default defineConfig({
     {
       command: `go build -tags server -o "${bin}" . && "${bin}"`,
       cwd: designerDir,
-      env: { ...process.env, CGO_ENABLED: "0", PDX_DESIGNER_DATA: data, PDX_VERAPDF: verapdf, WAILS_SERVER_PORT: String(port) } as Record<string, string>,
+      env: {
+        ...process.env,
+        CGO_ENABLED: "0",
+        PDX_DESIGNER_DATA: data,
+        PDX_VERAPDF: verapdf,
+        PDX_UPDATE_URL: `http://127.0.0.1:${releasePort}/release`,
+        WAILS_SERVER_PORT: String(port),
+      } as Record<string, string>,
       url: `http://localhost:${port}/health`,
       timeout: 180_000,
       reuseExistingServer: false,
@@ -62,6 +74,12 @@ export default defineConfig({
       env: { ...process.env, CGO_ENABLED: "0" } as Record<string, string>,
       url: `http://127.0.0.1:${serverPort}/healthz`,
       timeout: 120_000,
+      reuseExistingServer: false,
+    },
+    {
+      command: `node "${join(import.meta.dirname, "e2e", "fixtures", "release-server.mjs")}" ${releasePort}`,
+      url: `http://127.0.0.1:${releasePort}/health`,
+      timeout: 30_000,
       reuseExistingServer: false,
     },
   ],
