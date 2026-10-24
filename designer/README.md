@@ -33,7 +33,7 @@ Everything lives in `packaging/`:
 | `Info.plist.in` | metadata of the macOS app bundle |
 | `install.sh`, `install.ps1` | per-user install scripts of the archives |
 | `build-pkg.sh`, `macos/` | macOS installer package (per user, domain currentUserHome, no administrator rights), signing and notarization (`macos/sign-app.sh`, `sign-bin.sh`, `ci-keychain.sh`) |
-| `windows/pdx-designer.iss` | Windows setup with Inno Setup 6 (per user, Start menu, WebView2 check) |
+| `windows/pdx-designer.iss`, `windows/sign.sh` | Windows setup with Inno Setup 6 (per user, Start menu, WebView2 check), signing with the Certum certificate |
 | `build-deb.sh` | Debian package |
 | `test-install.sh`, `test-installer.sh` | CI: install, check and uninstall on all three systems |
 | `icon/` | app icon: `icon.svg` (master), PNG sizes, `pdx-designer.icns`, `pdx-designer.ico`, `banner.html` for the GitHub social preview. `node packaging/icon/render.mjs` regenerates everything with the Chromium from Playwright |
@@ -67,13 +67,14 @@ Without these secrets the release fails instead of publishing unsigned macOS fil
 
 ### Signing on Windows
 
-The Windows executables are signed with a Certum Open Source Code Signing certificate (SimplySign cloud). The certificate never goes into CI: the release workflow only creates a draft release, and `scripts/sign-windows.sh <tag>` finishes it on the maintainer's machine. The script signs every `.exe` in the Windows archives (`pdx.exe`, `pdx-server.exe`, `pdx-designer.exe`) with [ssign](https://github.com/Le-Syl21/ssign) 0.1.8 and verifies them with osslsigncode. It then starts the workflow `windows-installer.yml`, which builds the setup from the signed Designer and tests the installation, and finally signs the setup, writes `SHA256SUMS` anew and publishes the release after a confirmation. Each signing step asks for the current 6-digit code from the SimplySign app, so the TOTP seed stays on the phone. `--check` signs copies only and changes nothing. The uninstaller inside the setup stays unsigned, since Inno Setup can only sign it during the build.
+The release workflow signs `pdx.exe`, `pdx-server.exe`, `pdx-designer.exe`, the setup and its uninstaller with a Certum Open Source Code Signing certificate (SimplySign cloud). `packaging/windows/sign.sh` calls [ssign](https://github.com/Le-Syl21/ssign) 0.1.8, which derives the one-time code from the TOTP seed, and verifies every signature. Its output names the certificate holder and stays out of the log. `make package` and `make installer` sign on Windows when `SSIGN` (path to ssign) is set, Inno Setup signs setup and uninstaller during the build. Repository secrets:
 
-```sh
-brew install rust osslsigncode
-cargo install ssign --version 0.1.8 --locked
-CERTUM_EMAIL=… scripts/sign-windows.sh v0.4.0
-```
+| Secret | Content |
+| --- | --- |
+| `CERTUM_EMAIL` | e-mail of the Certum account |
+| `CERTUM_OTP` | TOTP seed of SimplySign (base32), the secret behind the QR code of the SimplySign app |
+
+Without these secrets the release fails instead of publishing unsigned Windows files. `gh workflow run signing-check.yml` checks the macOS and Windows secrets without publishing anything.
 
 veraPDF: the conformance panel shows under veraPDF which program the Designer uses. Without a path it searches the `PATH`, `~/verapdf`, `/usr/local/bin`, Homebrew and on Windows the user folder and Program Files, then Docker. A path set there is saved in `verapdf.json` in the settings directory and takes precedence over `PDX_VERAPDF`.
 

@@ -64,10 +64,13 @@ bundle: build
 
 # Content of the release archive for this system with an install script
 # following the per-user convention (see README).
+# On Windows with SSIGN (path to ssign) the copy is signed with the Certum
+# certificate (packaging/windows/sign.sh, CERTUM_EMAIL, CERTUM_OTP).
 ifeq ($(OS),Windows_NT)
 package: build
 	rm -rf "$(PKG)" && mkdir -p "$(PKG)"
 	cp $(OUT)/pdx-designer.exe packaging/install.ps1 "$(PKG)/"
+	$(if $(SSIGN),packaging/windows/sign.sh "pdx Designer" "$(PKG)/pdx-designer.exe")
 else ifeq ($(shell uname -s),Darwin)
 package: bundle
 	rm -rf "$(PKG)" && mkdir -p "$(PKG)"
@@ -84,11 +87,15 @@ endif
 # user), Linux .deb (system-wide), Windows setup with Inno Setup 6
 # (per user, ISCC=path to ISCC.exe, default from the PATH).
 INST := $(OUT)/installer
+# With SSIGN Inno Setup signs the setup and the uninstaller through sign.sh.
 ifeq ($(OS),Windows_NT)
 ISCC ?= ISCC.exe
+ifneq ($(SSIGN),)
+ISCC_SIGN = -DSign '-Sssign=$$q$(shell cygpath -m "$$(command -v bash)")$$q $(shell cygpath -m "$(CURDIR)")/packaging/windows/sign.sh $$qpdx Designer Setup$$q $$f'
+endif
 installer: package
 	mkdir -p $(INST)
-	"$(ISCC)" -Q -DVersion=$(VERSION) -DTag=v$(VERSION) -DOut=../../$(INST) packaging/windows/pdx-designer.iss
+	"$(ISCC)" -Q -DVersion=$(VERSION) -DTag=v$(VERSION) -DOut=../../$(INST) $(ISCC_SIGN) packaging/windows/pdx-designer.iss
 else ifeq ($(shell uname -s),Darwin)
 installer: package
 	mkdir -p $(INST)

@@ -1,6 +1,7 @@
-# Manual check of the macOS signing secrets without publishing anything:
-# load the certificates, find both identities, and sign in to the notary
-# service with the API key.
+# Manual check of the signing secrets without publishing anything.
+# macOS: load the certificates, find both identities, and sign in to the
+# notary service with the API key. Windows: sign pdx.exe with the Certum
+# certificate (CERTUM_EMAIL, CERTUM_OTP) and build a signed setup from it.
 #   gh workflow run signing-check.yml
 name: Signing check
 
@@ -40,3 +41,51 @@ jobs:
       - name: Remove keychain
         if: always()
         run: if [ -n "${MACOS_KEYCHAIN:-}" ]; then security delete-keychain "$MACOS_KEYCHAIN"; fi
+
+  windows:
+    runs-on: windows-2025
+    defaults:
+      run:
+        shell: bash
+    env:
+      CERTUM_EMAIL: ${{ secrets.CERTUM_EMAIL }}
+      CERTUM_OTP: ${{ secrets.CERTUM_OTP }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.4"
+      - name: Inno Setup
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup --version=6.4.3 -y --no-progress }
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cargo/bin/ssign*
+          key: ssign-0.1.8-${{ runner.os }}-${{ runner.arch }}
+      - name: ssign
+        run: |
+          set -eu
+          bin="$HOME/.cargo/bin/ssign"
+          [ -x "$bin.exe" ] || cargo install ssign --version 0.1.8 --locked
+          bin=$(cygpath -m "$bin.exe")
+          "$bin" --version
+          echo "SSIGN=$bin" >> "$GITHUB_ENV"
+      - name: Sign an executable
+        run: |
+          set -eu
+          pkg=out/package/pdx-designer
+          mkdir -p "$pkg"
+          go build -o "$pkg/pdx-designer.exe" ./cmd/pdx
+          cp LICENSE NOTICE README.md designer/notices/THIRD_PARTY_NOTICES.txt "$pkg/"
+          designer/packaging/windows/sign.sh "pdx Designer" "$pkg/pdx-designer.exe"
+      # The real installer target without rebuilding the package (-o).
+      - name: Signed setup with signed uninstaller
+        working-directory: designer
+        run: |
+          set -eu
+          make -o package installer ISCC="C:/Program Files (x86)/Inno Setup 6/ISCC.exe"
+          setup=$(ls ../out/installer/*-setup.exe)
+          status=$(powershell -NoProfile -Command "\$s = Get-AuthenticodeSignature -LiteralPath '$(cygpath -w "$setup")'; if (\$s.Status -eq 'Valid' -and \$s.TimeStamperCertificate) { 'ok' } else { \$s.Status }")
+          [ "${status//$'\r'/}" = ok ] || { echo "Setup nicht gültig signiert: $status" >&2; exit 1; }
+          echo "Setup signiert"

@@ -46,6 +46,13 @@ SetupIconFile=..\icon\pdx-designer.ico
 Compression=lzma2/max
 SolidCompression=yes
 CloseApplications=yes
+; -DSign with a sign tool named ssign (make installer with SSIGN): setup and
+; uninstaller are signed, sign.sh retries on its own.
+#ifdef Sign
+SignTool=ssign
+SignedUninstaller=yes
+SignToolRetryCount=0
+#endif
 
 [Languages]
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
