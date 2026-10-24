@@ -26,7 +26,7 @@ import (
 )
 
 // Version is the program version. It appears in the Producer of the PDF files.
-const Version = "0.3.4"
+const Version = "0.3.5"
 
 // DefaultProfile is the profile used when none is specified explicitly.
 const DefaultProfile = "pdfa-3b"

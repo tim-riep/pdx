@@ -158,9 +158,9 @@ func TestAuth(t *testing.T) {
 
 // Errors come back as a Problem with all findings.
 // entityBomb is a document of a few hundred bytes whose entities expand to
-// gigabytes. Before go-xslt v0.3.2 (GHSA-3qwg-cpmj-qx68) it hung the
-// request, v0.3.2 still allocates about 5 GB before refusing it. pdx refuses
-// it before parsing (internal/xmlsafe).
+// gigabytes. Before go-xslt v0.3.3 (GHSA-3qwg-cpmj-qx68, GHSA-6xxr-4cc9-4m89)
+// it hung the request or allocated gigabytes. pdx refuses it before parsing
+// (internal/xmlsafe).
 var entityBomb = []byte(`<?xml version="1.0"?>
 <!DOCTYPE rechnung [
 <!ENTITY a "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">

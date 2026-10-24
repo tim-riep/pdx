@@ -5,7 +5,7 @@ go 1.26.4
 replace github.com/tim-riep/pdx => ../
 
 require (
-	github.com/tim-riep/go-xslt v0.3.2
+	github.com/tim-riep/go-xslt v0.3.3
 	github.com/wailsapp/wails/v3 v3.0.0-beta.30
 )
 

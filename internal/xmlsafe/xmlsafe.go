@@ -1,10 +1,10 @@
 // Package xmlsafe refuses XML that declares entities in a DTD before it
 // reaches the XML parser of go-xslt. Entities that refer to each other
 // ("billion laughs") expand a few hundred bytes into gigabytes
-// (GHSA-3qwg-cpmj-qx68). go-xslt v0.3.2 limits the expansion, but checks the
-// limit only after a substitution has been built, so one step can still
-// allocate many times the limit. Data, templates and schemas of pdx never
-// need entity declarations, so pdx refuses them outright.
+// (GHSA-3qwg-cpmj-qx68, GHSA-6xxr-4cc9-4m89). go-xslt v0.3.3 bounds the
+// expansion, this check stays as a second line of defence: data, templates
+// and schemas of pdx never need entity declarations, so pdx refuses them
+// outright.
 package xmlsafe
 
 import (

@@ -296,7 +296,7 @@ Agreed targets for the sample invoice (three pages, PDF/A-3b) with 8 parallel re
 * Nothing is stored beyond the request except templates. `verify` keeps the PDF in a temporary file only while validating.
 * API keys only as hashes, compared in constant time, rights per key. The client and the Designer require HTTPS except for localhost. TLS belongs in front of the service (ingress or proxy).
 * The password and token of the signer only come from the environment, are read at startup and removed from it. In the Kubernetes example they come from a Secret.
-* Limits for size, concurrency and run time of every request. Data, template packages and schemas with entity declarations (`<!ENTITY`) are refused before parsing, which protects against entity expansion ("billion laughs", GHSA-3qwg-cpmj-qx68 in go-xslt) and external entities.
+* Limits for size, concurrency and run time of every request. Data, template packages and schemas with entity declarations (`<!ENTITY`) are refused before parsing, which protects against entity expansion ("billion laughs", GHSA-3qwg-cpmj-qx68 and GHSA-6xxr-4cc9-4m89 in go-xslt, fixed in go-xslt v0.3.3) and external entities, independent of the parser.
 * Fuzz targets for upload, rendering, signing and reading PDF.
 
 ## Supported FO subset
