@@ -157,6 +157,22 @@ func TestAuth(t *testing.T) {
 }
 
 // Errors come back as a Problem with all findings.
+// entityBomb is a document of a few hundred bytes whose entities expand to
+// gigabytes. Before go-xslt v0.3.2 (GHSA-3qwg-cpmj-qx68) it hung the
+// request, v0.3.2 still allocates about 5 GB before refusing it. pdx refuses
+// it before parsing (internal/xmlsafe).
+var entityBomb = []byte(`<?xml version="1.0"?>
+<!DOCTYPE rechnung [
+<!ENTITY a "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">
+<!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">
+<!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;">
+<!ENTITY d "&c;&c;&c;&c;&c;&c;&c;&c;&c;&c;">
+<!ENTITY e "&d;&d;&d;&d;&d;&d;&d;&d;&d;&d;">
+<!ENTITY f "&e;&e;&e;&e;&e;&e;&e;&e;&e;&e;">
+<!ENTITY z "` + strings.Repeat("&f;", 1000) + `">
+]>
+<rechnung>&z;</rechnung>`)
+
 func TestRenderErrors(t *testing.T) {
 	cfg := testConfig()
 	cfg.MaxBody = 64 << 10
@@ -172,6 +188,8 @@ func TestRenderErrors(t *testing.T) {
 		{"Parameter", "/v1/render/rechnung?profile=pdfa-9z&creationDate=gestern", data, 400, "creationDate"},
 		{"zu groß", "/v1/render/rechnung", bytes.Repeat([]byte("x"), 65<<10), 413, ""},
 		{"kaputte Daten", "/v1/render/rechnung", []byte("<rechnung"), 422, ""},
+		{"Entity-Bombe", "/v1/render/rechnung", entityBomb, 422, "ENTITY"},
+		{"Entity-Bombe streng", "/v1/render/rechnung?strict=true", entityBomb, 422, "ENTITY"},
 		{"strenge Prüfung", "/v1/render/rechnung?strict=true", []byte("<rechnung/>"), 422, "rechnung"},
 		{"Pfad", "/v2/irgendwas", nil, 404, ""},
 	}

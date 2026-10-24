@@ -202,3 +202,11 @@ func TestTargets(t *testing.T) {
 		t.Fatalf("unbekannte Ziele %q", got)
 	}
 }
+
+// Data with entity declarations is refused before go-xslt parses it.
+func TestEvalRefusesEntities(t *testing.T) {
+	r := Eval("count(//*)", "/", nil, []byte(`<!DOCTYPE r [<!ENTITY a "x"><!ENTITY b "&a;&a;">]><r>&b;</r>`))
+	if !strings.Contains(r.Error, "ENTITY") {
+		t.Fatalf("nicht abgelehnt: %+v", r)
+	}
+}

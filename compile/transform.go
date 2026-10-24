@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/tim-riep/go-xslt/engine"
+	"github.com/tim-riep/pdx/internal/xmlsafe"
 	"github.com/tim-riep/pdx/template"
 )
 
@@ -33,6 +34,9 @@ func (r *Result) check() error {
 // location in the stylesheet originates. Transform may be called
 // concurrently.
 func (r *Result) Transform(data []byte) ([]byte, error) {
+	if err := xmlsafe.Check(data); err != nil {
+		return nil, fmt.Errorf("Daten: %w", err)
+	}
 	res := r.sheet.Transform(engine.TransformRequest{Source: string(data)})
 	var errs template.Errors
 	for _, d := range res.Diagnostics {

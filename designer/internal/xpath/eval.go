@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/tim-riep/go-xslt/engine"
+	"github.com/tim-riep/pdx/internal/xmlsafe"
 )
 
 // Result is the result of an expression with sample data in the first
@@ -59,6 +60,9 @@ func Eval(expr, ctx string, ns map[string]string, data []byte) Result {
 		`<xsl:for-each select="subsequence($r, 1, ` + strconv.Itoa(maxValues) + `)"><xsl:value-of select="translate(string(.), '&#10;&#13;', '  ')"/><xsl:text>&#10;</xsl:text></xsl:for-each>`)
 	b.WriteString(`</xsl:for-each></xsl:template></xsl:stylesheet>`)
 
+	if err := xmlsafe.Check(data); err != nil {
+		return Result{Error: err.Error()}
+	}
 	res := engine.Transform(engine.Request{Stylesheet: b.String(), Source: string(data)})
 	for _, d := range res.Diagnostics {
 		if d.Severity == engine.SeverityError {

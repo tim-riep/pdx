@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tim-riep/pdx/internal/xmlsafe"
 	"github.com/tim-riep/pdx/template"
 )
 
@@ -150,6 +151,18 @@ func ReadDir(dir string) (*Package, error) {
 	return build(files)
 }
 
+// checkXML refuses XML files with entity declarations (template, schemas,
+// samples). They go to the parser of go-xslt, see internal/xmlsafe.
+func checkXML(name string, b []byte) error {
+	switch path.Ext(name) {
+	case ".xml", ".xsd", ".xsl", ".xslt":
+		if err := xmlsafe.Check(b); err != nil {
+			return fmt.Errorf("%s: %w", name, err)
+		}
+	}
+	return nil
+}
+
 // checkPath checks a path in the package.
 func checkPath(name string) error {
 	if name == "" || strings.HasPrefix(name, "/") || strings.Contains(name, "\\") || path.Clean(name) != name ||
@@ -169,8 +182,11 @@ func checkPath(name string) error {
 }
 
 func build(files map[string][]byte) (*Package, error) {
-	for name := range files {
+	for name, b := range files {
 		if err := checkPath(name); err != nil {
+			return nil, err
+		}
+		if err := checkXML(name, b); err != nil {
 			return nil, err
 		}
 	}
@@ -305,6 +321,9 @@ func New(t *template.Template, files map[string][]byte) (*Package, error) {
 			return nil, fmt.Errorf("template.xml gehört nicht in die übrigen Dateien")
 		}
 		if err := checkPath(name); err != nil {
+			return nil, err
+		}
+		if err := checkXML(name, files[name]); err != nil {
 			return nil, err
 		}
 	}

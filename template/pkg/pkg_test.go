@@ -75,6 +75,9 @@ func TestRejects(t *testing.T) {
 		"unzulässig":   {"template.xml": minimal, "../etc/passwd": "x"},
 		"gehört nicht": {"template.xml": minimal, "readme.txt": "x"},
 		"fehlt":        {"assets/logo.png": "x"},
+		// Entity declarations in schemas and samples go to the parser of go-xslt.
+		"schema/a.xsd: XML mit Entity": {"template.xml": minimal, "schema/a.xsd": `<!DOCTYPE s [<!ENTITY a "x">]><s/>`},
+		"ENTITY":                       {"template.xml": minimal, "samples/a.xml": `<!DOCTYPE r [<!ENTITY a "x">]><r>&a;</r>`},
 	}
 	for want, files := range cases {
 		if _, err := Read(zipOf(files)); err == nil || !strings.Contains(err.Error(), want) {

@@ -17,6 +17,7 @@ import (
 	"github.com/tim-riep/pdx/einvoice"
 	"github.com/tim-riep/pdx/fo/tree"
 	"github.com/tim-riep/pdx/font"
+	"github.com/tim-riep/pdx/internal/xmlsafe"
 	"github.com/tim-riep/pdx/pdf/profile"
 	"github.com/tim-riep/pdx/pdf/render"
 	"github.com/tim-riep/pdx/template"
@@ -222,6 +223,9 @@ func mapError(fo []byte, err error) error {
 
 // Validate validates data against the package's data XSD.
 func (t *Template) Validate(data []byte) error {
+	if err := xmlsafe.Check(data); err != nil {
+		return fmt.Errorf("Daten: %w", err)
+	}
 	main, files := t.Package.Schemas()
 	if main == "" {
 		return fmt.Errorf("die Vorlage nennt kein Daten-XSD (template/@schema), strenge Prüfung nicht möglich")

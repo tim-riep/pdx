@@ -2,6 +2,7 @@ package dataschema
 
 import (
 	"slices"
+	"strings"
 	"testing"
 )
 
@@ -45,6 +46,20 @@ func TestEnum(t *testing.T) {
 			if len(kids) != 1 || !slices.Equal(kids[0].Enum, want) {
 				t.Errorf("betrag/@waehrung: %+v", kids)
 			}
+		}
+	}
+}
+
+// Entity declarations in an XSD are refused before go-xslt parses it, also
+// in an imported file.
+func TestFromXSDRefusesEntities(t *testing.T) {
+	bomb := []byte(`<!DOCTYPE xs:schema [<!ENTITY a "x"><!ENTITY b "&a;&a;">]>` + enumXSD[strings.Index(enumXSD, "<xs:schema"):])
+	for _, files := range []map[string][]byte{
+		{"a.xsd": bomb},
+		{"a.xsd": []byte(enumXSD), "b.xsd": bomb},
+	} {
+		if _, err := FromXSD("a.xsd", files); err == nil || !strings.Contains(err.Error(), "ENTITY") {
+			t.Errorf("nicht abgelehnt: %v", err)
 		}
 	}
 }

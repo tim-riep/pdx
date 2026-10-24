@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/tim-riep/go-xslt/xsd"
+	"github.com/tim-riep/pdx/internal/xmlsafe"
 )
 
 // Unbounded is Max for maxOccurs="unbounded".
@@ -65,6 +66,11 @@ func FromXSD(main string, files map[string][]byte) (Model, error) {
 	sort.Strings(names)
 	for _, n := range names {
 		docs = append(docs, string(files[n]))
+	}
+	for _, n := range append([]string{main}, names...) {
+		if err := xmlsafe.Check(files[n]); err != nil {
+			return nil, fmt.Errorf("Datenschema %s: %w", n, err)
+		}
 	}
 	s, diags := xsd.Compile(xsd.Request{Schemas: docs})
 	if s == nil {
