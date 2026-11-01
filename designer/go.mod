@@ -1,6 +1,6 @@
 module github.com/tim-riep/pdx/designer
 
-go 1.26.4
+go 1.26.10
 
 replace github.com/tim-riep/pdx => ../
 

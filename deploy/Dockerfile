@@ -3,7 +3,7 @@
 # digest, Go without cgo with -trimpath and without build ID, timestamps
 # from SOURCE_DATE_EPOCH (deploy/build.sh). Building twice yields the same
 # digest.
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26.4-bookworm@sha256:b305420a68d0f229d91eb3b3ed9e519fcf2cf5461da4bef997bf927e8c0bfd2b AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26.10-bookworm@sha256:23ce71337b726608afb1bc00986e630a05034a87a87ea1fc2cd1ae5cf33387eb AS build
 ARG TARGETOS TARGETARCH
 WORKDIR /src
 COPY go.mod go.sum ./

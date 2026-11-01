@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: "1.26.4"
+          go-version: "1.26.10"
       - run: go vet ./...
       - run: CGO_ENABLED=0 go test ./...
 
@@ -56,7 +56,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: "1.26.4"
+          go-version: "1.26.10"
           cache-dependency-path: designer/go.sum
       - uses: actions/setup-node@v7
         with:
